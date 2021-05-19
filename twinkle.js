@@ -58,6 +58,7 @@ Twinkle.defaultConfig = {
 	spiWatchReport: 'yes',
 
 	// Block
+	defaultToBlock64: false,
 	defaultToPartialBlocks: false,
 	blankTalkpageOnIndefBlock: false,
 

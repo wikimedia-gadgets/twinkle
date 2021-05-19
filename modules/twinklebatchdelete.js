@@ -107,7 +107,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reason:',
 		size: 60
 	});
 

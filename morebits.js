@@ -92,6 +92,41 @@ var msg = Morebits.i18n.getMessage;
 
 
 /**
+ * Wiki-specific configurations for Morebits
+ */
+Morebits.l10n = {
+	/**
+	 * Local aliases for "redirect" magic word.
+	 * Check using api.php?action=query&format=json&meta=siteinfo&formatversion=2&siprop=magicwords
+	 */
+	redirectTagAliases: ['#REDIRECT'],
+
+	/**
+	 * Takes a string as argument and checks if it is a timestamp or not
+	 * If not, it returns null. If yes, it returns an array of integers
+	 * in the format [year, month, date, hour, minute, second]
+	 * which can be passed to Date.UTC()
+	 * @param {string} str
+	 * @returns {number[] | null}
+	 */
+	signatureTimestampFormat: function (str) {
+		// HH:mm, DD Month YYYY (UTC)
+		var rgx = /(\d{2}):(\d{2}), (\d{1,2}) (\w+) (\d{4}) \(UTC\)/;
+		var match = rgx.exec(str);
+		if (!match) {
+			return null;
+		}
+		var month = Morebits.date.localeData.months.indexOf(match[4]);
+		if (month === -1) {
+			return null;
+		}
+		// ..... year ... month .. date ... hour .... minute
+		return [match[5], month, match[3], match[1], match[2]];
+	}
+};
+
+
+/**
  * Simple helper function to see what groups a user might belong.
  *
  * @param {string} group - e.g. `sysop`, `extendedconfirmed`, etc.
@@ -181,17 +216,7 @@ Morebits.createHtml = function(input) {
 			fragment.appendChild(input[i]);
 		} else {
 			$.parseHTML(Morebits.createHtml.renderWikilinks(input[i])).forEach(function(node) {
-				if (node.nodeType === 3) { // text node
-					fragment.appendChild(node);
-				} else if (node.nodeType === 1) { // Element node, strip dangerous attributes
-					Array.prototype.slice.call(node.attributes).forEach(function(attr) {
-						// onclick, onerror, onload, etc
-						if (attr.name.indexOf('on') === 0) {
-							node.removeAttribute(attr.name);
-						}
-					});
-					fragment.appendChild(node);
-				} // any other node type is suspicious
+				fragment.appendChild(node);
 			});
 		}
 	}
@@ -315,7 +340,7 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  * Create a new element for the the form.
  *
  * Index to Morebits.quickForm.element types:
- * - Global attributes: id, className, style, tooltip, extra, adminonly
+ * - Global attributes: id, className, style, tooltip, extra, $data, adminonly
  * - `select`: A combo box (aka drop-down).
  *     - Attributes: name, label, multiple, size, list, event, disabled
  *  - `option`: An element for a combo box.
@@ -449,6 +474,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label = node.appendChild(document.createElement('label'));
 				label.setAttribute('for', id);
 				label.appendChild(Morebits.createHtml(data.label));
+				label.style.marginRight = '3px';
 			}
 			var select = node.appendChild(document.createElement('select'));
 			if (data.event) {
@@ -649,6 +675,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label = node.appendChild(document.createElement('label'));
 				label.appendChild(Morebits.createHtml(data.label));
 				label.setAttribute('for', data.id || id);
+				label.style.marginRight = '3px';
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
@@ -740,6 +767,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label = node.appendChild(document.createElement('label'));
 				label.appendChild(document.createTextNode(data.label));
 				label.setAttribute('for', id);
+				label.style.marginRight = '3px';
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
@@ -874,6 +902,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 
 	if (data.extra) {
 		childContainer.extra = data.extra;
+	}
+	if (data.$data) {
+		$(childContainer).data(data.$data);
 	}
 	if (data.style) {
 		childContainer.setAttribute('style', data.style);
@@ -1783,7 +1814,7 @@ Morebits.date = function() {
 			}
 		} else if (typeof param === 'string') {
 			// Wikitext signature timestamp
-			var dateParts = Morebits.date.localeData.signatureTimestampFormat(param);
+			var dateParts = Morebits.l10n.signatureTimestampFormat(param);
 			if (dateParts) {
 				this._d = new Date(Date.UTC.apply(null, dateParts));
 			}
@@ -1837,20 +1868,6 @@ Morebits.date.localeData = {
 		thisWeek: msg('relative-thisweek', 'dddd [at] h:mm A'),
 		pastWeek: msg('relative-pastweek', '[Last] dddd [at] h:mm A'),
 		other: msg('relative-other', 'YYYY-MM-DD')
-	},
-	signatureTimestampFormat: function (str) {
-		// HH:mm, DD Month YYYY (UTC)
-		var rgx = /(\d{2}):(\d{2}), (\d{1,2}) (\w+) (\d{4}) \(UTC\)/;
-		var match = rgx.exec(str);
-		if (!match) {
-			return null;
-		}
-		var month = Morebits.date.localeData.months.indexOf(match[4]);
-		if (month === -1) {
-			return null;
-		}
-		// ..... year ... month .. date ... hour .... minute
-		return [match[5], month, match[3], match[1], match[2]];
 	}
 };
 
@@ -2034,7 +2051,7 @@ Morebits.date.prototype = {
 		};
 		var h24 = udate.getHours(), m = udate.getMinutes(), s = udate.getSeconds(), ms = udate.getMilliseconds();
 		var D = udate.getDate(), M = udate.getMonth() + 1, Y = udate.getFullYear();
-		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? 'PM' : 'AM';
+		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? msg('period-pm', 'PM') : msg('period-am', 'AM');
 		var replacementMap = {
 			HH: pad(h24), H: h24, hh: pad(h12), h: h12, A: amOrPm,
 			mm: pad(m), m: m,
@@ -4016,7 +4033,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else if ((errorCode === null || errorCode === undefined) && ctx.retries++ < ctx.maxRetries) {
 
 			// the error might be transient, so try again
-			ctx.statusElement.info(msg('save-failed-retrying', 'Save failed, retrying in 2 seconds ...'));
+			ctx.statusElement.info(msg('save-failed-retrying', 2, 'Save failed, retrying in 2 seconds ...'));
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 
 			// wait for sometime for client to regain connectivity
@@ -4061,6 +4078,15 @@ Morebits.wiki.page = function(pageName, status) {
 		}
 	};
 
+	var isTextRedirect = function(text) {
+		if (!text) { // no text - content empty or inaccessible (revdelled or suppressed)
+			return false;
+		}
+		return Morebits.l10n.redirectTagAliases.some(function(tag) {
+			return new RegExp('^\\s*' + tag + '\\W', 'i').test(text);
+		});
+	};
+
 	var fnLookupCreationSuccess = function() {
 		var response = ctx.lookupCreationApi.getResponse().query;
 
@@ -4075,7 +4101,7 @@ Morebits.wiki.page = function(pageName, status) {
 			return;
 		}
 
-		if (!ctx.lookupNonRedirectCreator || !/^\s*#redirect/i.test(rev.content)) {
+		if (!ctx.lookupNonRedirectCreator || !isTextRedirect(rev.content)) {
 
 			ctx.creator = rev.user;
 			if (!ctx.creator) {
@@ -4109,7 +4135,8 @@ Morebits.wiki.page = function(pageName, status) {
 		var revs = response.pages[0].revisions;
 
 		for (var i = 0; i < revs.length; i++) {
-			if (!/^\s*#redirect/i.test(revs[i].content)) { // inaccessible revisions also check out
+
+			if (!isTextRedirect(revs[i].content)) {
 				ctx.creator = revs[i].user;
 				ctx.timestamp = revs[i].timestamp;
 				break;
@@ -7091,7 +7118,7 @@ Morebits.batchOperation = function(currentAction) {
 				}
 				if (pageName) {
 					// we know the page title - display a relevant message
-					statelem.info(msg('batch-done-page', pageName, 'completed ([[' + pageName + ']]'));
+					statelem.info(msg('batch-done-page', pageName, 'completed ([[' + pageName + ']])'));
 				} else {
 					// we don't know the page title - just display a generic message
 					statelem.info(msg('done', 'done'));
@@ -7102,7 +7129,7 @@ Morebits.batchOperation = function(currentAction) {
 			}
 
 		} else if (typeof arg === 'string' && ctx.options.preserveIndividualStatusLines) {
-			new Morebits.status(arg, msg('batch-done-page', arg, 'done ([[' + arg + ']])'));
+			new Morebits.status(arg, msg('batch-done-page', arg, 'completed ([[' + arg + ']])'));
 		}
 
 		ctx.countFinishedSuccess++;
@@ -7137,7 +7164,7 @@ Morebits.batchOperation = function(currentAction) {
 		var total = ctx.pageList.length;
 		if (ctx.countFinished < total) {
 			var progress = Math.round(100 * ctx.countFinished / total);
-			ctx.statusElement.status(msg('n-percent', progress, progress + '%'));
+			ctx.statusElement.status(msg('percent', progress, progress + '%'));
 
 			// start a new chunk if we're close enough to the end of the previous chunk, and
 			// we haven't already started the next one

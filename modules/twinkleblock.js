@@ -110,7 +110,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			name: 'block64',
 			event: Twinkle.block.callback.change_block64,
 			list: [{
-				checked: relevantUserName !== mw.config.get('wgRelevantUserName'), // In case the user closes and reopens the form
+				checked: Twinkle.getPref('defaultToBlock64'),
 				label: 'Block the /64 instead',
 				value: 'block64',
 				tooltip: Morebits.ip.isRange(mw.config.get('wgRelevantUserName')) ? 'Will eschew leaving a template.' : 'Any template issued will go to the original IP: ' + mw.config.get('wgRelevantUserName')
@@ -143,7 +143,12 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			// init the controls after user and block info have been fetched
 			var evt = document.createEvent('Event');
 			evt.initEvent('change', true, true);
-			result.actiontype[0].dispatchEvent(evt);
+			if (result.block64 && result.block64.checked) {
+				// Calls the same change_action event once finished
+				result.block64.dispatchEvent(evt);
+			} else {
+				result.actiontype[0].dispatchEvent(evt);
+			}
 		});
 	}, function() {
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
@@ -525,7 +530,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			field_template_options.append({
 				type: 'input',
 				name: 'template_expiry',
-				label: 'Period of blocking: ',
+				label: 'Period of blocking:',
 				value: '',
 				tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
 			});
@@ -533,7 +538,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		field_template_options.append({
 			type: 'input',
 			name: 'block_reason',
-			label: '"You have been blocked for ..." ',
+			label: '"You have been blocked for ..."',
 			tooltip: 'An optional reason, to replace the default generic reason. Only available for the generic block templates.',
 			value: Twinkle.block.field_template_options.block_reason
 		});

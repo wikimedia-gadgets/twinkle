@@ -213,6 +213,14 @@ Twinkle.config.sections = [
 		module: 'block',
 		adminOnly: true,
 		preferences: [
+			// TwinkleConfig.defaultToBlock64 (boolean)
+			// Whether to default to just blocking the /64 on or off
+			{
+				name: 'defaultToBlock64',
+				label: 'For IPv6 addresses, select the option to block the /64 range by default',
+				type: 'boolean'
+			},
+
 			// TwinkleConfig.defaultToPartialBlocks (boolean)
 			// Whether to default partial blocks on or off
 			{
@@ -695,11 +703,13 @@ Twinkle.config.sections = [
 			{
 				name: 'talkbackHeading',
 				label: 'Section heading to use for talkback and please see',
+				tooltip: 'Should NOT include the equals signs ("==") used for wikitext formatting',
 				type: 'string'
 			},
 			{
 				name: 'mailHeading',
 				label: "Section heading to use for \"you've got mail\" notices",
+				tooltip: 'Should NOT include the equals signs ("==") used for wikitext formatting',
 				type: 'string'
 			}
 		]

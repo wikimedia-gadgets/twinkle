@@ -44,7 +44,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reason:',
 		size: 60
 	});
 

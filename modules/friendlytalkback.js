@@ -389,14 +389,12 @@ Twinkle.talkback.callbacks = {
 				}
 				break;
 			case 'see':
-				// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
-				var heading = Twinkle.getPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1');
+				var heading = Twinkle.getPref('talkbackHeading');
 				text = '{{subst:Please see|location=' + input.page + (input.section ? '#' + input.section : '') +
 				'|more=' + input.message + '|heading=' + heading + '}}';
 				break;
 			default:  // talkback
-				// clean talkback heading: strip section header markers that were erroneously suggested in the documentation
-				text = '==' + Twinkle.getPref('talkbackHeading').replace(/^\s*=+\s*(.*?)\s*=+$\s*/, '$1') + '==\n' +
+				text = '==' + Twinkle.getPref('talkbackHeading') + '==\n' +
 					'{{talkback|' + input.page + (input.section ? '|' + input.section : '') + '|ts=~~~~~}}';
 
 				if (input.message) {

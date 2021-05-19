@@ -61,7 +61,7 @@ Twinkle.unlink.callback = function(presetReason) {
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reason:',
 		value: presetReason ? presetReason : '',
 		size: 60
 	});
