@@ -4693,7 +4693,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 	userName = Morebits.ip.sanitizeIPv6(userTitle.getMainText());
 
 	if (!currentAction) {
-		currentAction = 'Querying user "' + userName + '"';
+		currentAction = msg('querying-user', userName, 'Querying user "' + userName + '"');
 	}
 
 	/**
@@ -4881,7 +4881,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 			ctx.loadQuery.ellimit = 42;
 		}
 
-		ctx.userApi = new Morebits.wiki.api('Retrieving user information...', ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
+		ctx.userApi = new Morebits.wiki.api(msg('fetching-userinfo', 'Retrieving user information...'), ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
 		ctx.userApi.setParent(this);
 		ctx.userApi.post();
 	};
@@ -4904,7 +4904,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 		// clients can do as they please.  This tells when the user
 		// was loaded, which is useful for time-based functions.
 		if (!ctx.loadTime) {
-			ctx.statusElement.error('Failed to retrieve current timestamp.');
+			ctx.statusElement.error(msg('failed-timestamp', 'Failed to retrieve current timestamp.'));
 			ctx.onLoadFailure(this);
 			return;
 		}
@@ -4913,10 +4913,10 @@ Morebits.wiki.user = function(userName, currentAction) {
 		response = response.query;
 
 		// Even if this is unnecessary (notification), an issue here
-		// is a likely indicates *something* went wrong.  The same
+		// likely indicates *something* went wrong.  The same
 		// as Morebits.wiki.page, though it's more necessary there.
 		if (!response.tokens.csrftoken || !response.tokens.userrightstoken) {
-			ctx.statusElement.error('Failed to retrieve tokens.');
+			ctx.statusElement.error(msg('failed-token', 'Failed to retrieve token.'));
 			ctx.onLoadFailure(this);
 			return;
 		}
@@ -4926,7 +4926,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 		var user = response.users && response.users[0];
 		// Not sure scenario could lead to this, but might as well be safe
 		if (!user) {
-			ctx.statusElement.error('Failed to retrieve user ' + ctx.userName);
+			ctx.statusElement.error(msg('failed-userinfo', ctx.userName, 'Failed to retrieve user info for ' + ctx.userName));
 			ctx.onLoadFailure(this);
 			// force error to stay on the screen
 			++Morebits.wiki.numberOfActionsLeft;
@@ -5135,11 +5135,11 @@ Morebits.wiki.user = function(userName, currentAction) {
 		// If blocked and reblock is missing, assume we didn't know
 		// the user was already blocked, so ask to toggle
 		if (directBlock && !ctx.reblock) {
-			var message = ctx.userName + ' is already blocked (';
-			message += Morebits.string.isInfinity(this.getBlockExpiry()) ? 'indefinitely' : 'until ' + new Morebits.date(this.getBlockExpiry()).calendar();
-			message += '; by ' + this.getBlockingSysop() + '), would you like to override the block?';
+			var message = Morebits.string.isInfinity(this.getBlockExpiry())
+				? msg('already-blocked-indef', ctx.userName, this.getBlockingSysop(), ctx.userName + ' is already blocked (indefinitely; by ' + this.getBlockingSysop() + '), would you like to override the block?')
+				: msg('already-blocked', ctx.userName, this.getBlockExpiry(), this.getBlockingSysop(), ctx.userName + ' is already blocked (until ' +  new Morebits.date(this.getBlockExpiry()).calendar() + '; by ' + this.getBlockingSysop() + '), would you like to override the block?')
 			if (!confirm(message)) {
-				ctx.statusElement.error('Reblock aborted.');
+				ctx.statusElement.error(msg('reblock-aborted', 'Reblock aborted.'));
 				ctx.onBlockFailure(this);
 				return;
 			}
@@ -5149,7 +5149,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 		// setExpiry allows arrays because userrights accepts it, but block doesn't
 		if (Array.isArray(ctx.expiry)) {
 			if (ctx.expiry.length !== 1) {
-				ctx.statusElement.error('You must provide a valid block expiration.');
+				ctx.statusElement.error(msg('invalid-block-expiry', 'You must provide a valid block expiration.'));
 				ctx.onBlockFailure(this);
 				return;
 			}
@@ -5159,16 +5159,14 @@ Morebits.wiki.user = function(userName, currentAction) {
 
 		// Check before indefing IPs or blocking sysops
 		if (ctx.isIP && Morebits.string.isInfinity(ctx.expiry) &&
-			!confirm(ctx.userName + ' is an IP address, do you really want to block it indefinitely?' +
-			'\n\nClick OK to proceed with the block, or Cancel to skip this block.')) {
-			ctx.statusElement.error('Infinite block of IP addressed was aborted.');
+			!confirm(msg('ip-indef-confirm', ctx.userName, ctx.userName + ' is an IP address, do you really want to block it indefinitely?' +
+			'\n\nClick OK to proceed with the block, or Cancel to abort.'))) {
+			ctx.statusElement.error(msg('ip-indef-aborted', 'Indefinite block of IP address was aborted.'));
 			ctx.onBlockFailure(this);
 			return;
 		} else if (this.isSysop() &&
-			!confirm(ctx.userName + ' is an administrator' +
-			(Morebits.string.isInfinity(ctx.grantedGroups.sysop) ? '' : ' (expires ' + new Morebits.date(ctx.grantedGroups.sysop).calendar('utc') + ' (UTC))') +
-			', are you sure you want to block them?  \n\nClick OK to proceed with the block, or Cancel to skip this block.')) {
-			ctx.statusElement.error('Block of administrator was aborted.');
+			!confirm(msg('admin-block-confirm', ctx.userName, ctx.userName + ' is an administrator, are you sure you want to block them?  \n\nClick OK to proceed with the block, or Cancel to abort.'))) {
+			ctx.statusElement.error(msg('admin-block-aborted', 'Block of administrator was aborted.'));
 			ctx.onBlockFailure(this);
 			return;
 		}
@@ -5194,7 +5192,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 					(Array.isArray(ctx.namespacerestrictions) && ctx.namespacerestrictions.indexOf(3) === -1 && ctx.namespacerestrictions.indexOf('3') === -1) ||
 					(typeof ctx.namespacerestrictions === 'string' && ctx.namespacerestrictions.split('|').indexOf('3') === -1) ||
 					(typeof ctx.namespacerestrictions === 'number' && ctx.namespacerestrictions !== 3))) {
-					ctx.statusElement.error('Partial blocks cannot prevent talk page access unless also restricting User talk space.');
+					ctx.statusElement.error(msg('partial-usertalk', 'Partial blocks cannot prevent talk page access unless also restricting User talk namespace.'));
 					ctx.onBlockFailure(this);
 					return;
 				}
@@ -5229,7 +5227,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 			}
 		}
 
-		ctx.blockApi = new Morebits.wiki.api('blocking user...', query, fnBlockSuccess, ctx.statusElement, fnBlockError);
+		ctx.blockApi = new Morebits.wiki.api(msg('blocking', 'blocking user...'), query, fnBlockSuccess, ctx.statusElement, fnBlockError);
 		ctx.blockApi.setParent(this);
 		ctx.blockApi.post();
 	};
@@ -5259,18 +5257,18 @@ Morebits.wiki.user = function(userName, currentAction) {
 		}
 
 		if (!ctx.isBlocked) {
-			ctx.statusElement.error('User is not blocked.');
+			ctx.statusElement.error(msg('not-blocked', 'User is not blocked.'));
 			ctx.onUnblockFailure(this);
 			return;
 		} else if (ctx.blockInfo.user !== ctx.userName) {
-			ctx.statusElement.error('User is not directly blocked, but rather ' + ctx.blockInfo.user + ' is.');
+			ctx.statusElement.error(msg('indirect-block', ctx.blockInfo.user, 'User is not directly blocked, but rather ' + ctx.blockInfo.user + ' is.'));
 			ctx.onUnblockFailure(this);
 			return;
 		}
 
 		var query = fnBaseAction('unblock');
 
-		ctx.unblockApi = new Morebits.wiki.api('unblocking user...', query, fnUnblockSuccess, ctx.statusElement, fnUnblockError);
+		ctx.unblockApi = new Morebits.wiki.api(msg('unblocking', 'unblocking user...'), query, fnUnblockSuccess, ctx.statusElement, fnUnblockError);
 		ctx.unblockApi.setParent(this);
 		ctx.unblockApi.post();
 	};
@@ -5360,13 +5358,13 @@ Morebits.wiki.user = function(userName, currentAction) {
 		ctx.onNotifyFailure = onFailure || emptyFunction;
 
 		if (ctx.isIPRange) {
-			ctx.statusElement.error('Cannot notify IP ranges');
+			ctx.statusElement.error(msg('notify-fail-iprange', 'Cannot notify IP ranges'));
 			ctx.onNotifyFailure(this);
 			return;
 		}
 		// Check underscores
 		if (ctx.notifySelf && ctx.userName === mw.config.get('wgUserName')) {
-			ctx.statusElement.error('Skipping self notification');
+			ctx.statusElement.error(msg('notify-self-skip', ctx.userName, 'You (' + ctx.userName + ') created this page; skipping user notification'));
 			ctx.onNotifyFailure(this);
 			return;
 		}
@@ -5383,7 +5381,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 	var fnProcessNotify = function() {
 		// Empty reason, message, and token handled by Morebits.wiki.page
 		if (!ctx.exists) {
-			ctx.statusElement.error('Cannot notify the user because the user does not exist');
+			ctx.statusElement.error(msg('notify-fail-noexist', 'Cannot notify the user because the user does not exist'));
 			ctx.onNotifyFailure(this);
 			return;
 		}
@@ -5392,7 +5390,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 			// More efficient to do a for loop, but this is prettier?
 			var tlDups = Morebits.array.dups(ctx.talkTemplates.concat(ctx.notifySkipTemplates));
 			if (tlDups.length) {
-				ctx.statusElement.error('User talk page transcludes ' + tlDups[0] + ', aborting notification');
+				ctx.statusElement.error(msg('notify-fail-template', tlDups[0], 'User talk page transcludes {{' + tlDups[0] + '}}, aborting notification'));
 				ctx.onNotifyFailure(this);
 				return;
 			}
@@ -5400,7 +5398,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 			// Should be without leading protocol; relying on mw.Uri could help
 			var elDups = Morebits.array.dups(ctx.talkLinks.concat(ctx.notifySkipLink));
 			if (elDups.length) {
-				ctx.statusElement.error('User has opted out of this notification, aborting');
+				ctx.statusElement.error(msg('notify-fail-optout', 'User has opted out of this notification, aborting'));
 				ctx.onNotifyFailure(this);
 				return;
 			}
@@ -5408,21 +5406,21 @@ Morebits.wiki.user = function(userName, currentAction) {
 		}
 
 		if (!ctx.notifyBots && this.isBot()) {
-			ctx.statusElement.error('User is a bot, aborting notification');
+			ctx.statusElement.error(msg('notify-fail-bot', 'User is a bot, aborting notification'));
 			ctx.onNotifyFailure(this);
 			return;
 		}
 		// Clients may find this most useful iff notalk or the block isn't brand new
 		// ctx.isBlocked intentionally used to account for any indef block, not just direct ones
 		if (!ctx.notifyIndef && ctx.isBlocked && !this.getPartial() && Morebits.string.isInfinity(this.getBlockExpiry())) {
-			ctx.statusElement.error('User is indefinitely blocked, aborting notification');
+			ctx.statusElement.error(msg('notify-fail-blocked', 'User is indefinitely blocked, aborting notification'));
 			ctx.onNotifyFailure(this);
 			return;
 		}
 
 		// Intentionally *not* ctx.talkTitle, as that may have followed a cross-namespace redirect
 		var exactTalkPage = mw.Title.newFromText(ctx.userName, 3).toText();
-		var usertalk = new Morebits.wiki.page(exactTalkPage, 'Notifying ' + ctx.userName);
+		var usertalk = new Morebits.wiki.page(exactTalkPage, msg('notifying-user', ctx.userName, 'Notifying ' + ctx.userName));
 		// Usurp status element into new object
 		usertalk.setStatusElement(ctx.statusElement);
 
@@ -5516,7 +5514,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 		}
 
 		if ((!ctx.csrfToken && (action === 'block' || action === 'unblock')) || (!ctx.userrightsToken && action === 'change groups')) {
-			ctx.statusElement.error('Failed to retrieve token.');
+			ctx.statusElement.error(msg('failed-token', 'Failed to retrieve token.'));
 			onFailure(this);
 			return false;
 		}
@@ -5564,7 +5562,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 				if (ctx.watchlistExpiry) {
 					watch_query.expiry = ctx.watchlistExpiry;
 				}
-				new Morebits.wiki.api('Watching user page', watch_query).post();
+				new Morebits.wiki.api(msg('watching-user', 'Watching user page...'), watch_query).post();
 			}
 		}
 
@@ -5895,7 +5893,7 @@ Morebits.wiki.user = function(userName, currentAction) {
 			}
 			// The API will kindly ignore underscores, but if we set this
 			// before loading the page, we'll need to be able to compare
-			// the results to this list.  Alternativey, we could do regex
+			// the results to this list.  Alternatively, we could do regex
 			// matching in fnProcessNotify rather than checking for dups.
 			ctx.notifySkipTemplates = Morebits.array.uniq(templates).map(function(template) {
 				return template.replace(/_/, ' ');
