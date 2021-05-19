@@ -213,6 +213,14 @@ Twinkle.config.sections = [
 		module: 'block',
 		adminOnly: true,
 		preferences: [
+			// TwinkleConfig.defaultToBlock64 (boolean)
+			// Whether to default to just blocking the /64 on or off
+			{
+				name: 'defaultToBlock64',
+				label: 'For IPv6 addresses, select the option to block the /64 range by default',
+				type: 'boolean'
+			},
+
 			// TwinkleConfig.defaultToPartialBlocks (boolean)
 			// Whether to default partial blocks on or off
 			{
@@ -489,6 +497,15 @@ Twinkle.config.sections = [
 				type: 'boolean'
 			},
 
+			// TwinkleConfig.watchSpeedyUser (string)
+			// The watchlist setting of the user talk page if they receive a notification.
+			{
+				name: 'watchSpeedyUser',
+				label: 'Add user talk page of initial contributor to watchlist (when notifying)',
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
+			},
+
 			// TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
 			// On what types of speedy deletion notifications shall the user be welcomed
 			// with a "firstarticle" notice if their talk page has not yet been created.
@@ -685,12 +702,14 @@ Twinkle.config.sections = [
 			},
 			{
 				name: 'talkbackHeading',
-				label: 'Section heading to use for talkbacks',
+				label: 'Section heading to use for talkback and please see',
+				tooltip: 'Should NOT include the equals signs ("==") used for wikitext formatting',
 				type: 'string'
 			},
 			{
 				name: 'mailHeading',
 				label: "Section heading to use for \"you've got mail\" notices",
+				tooltip: 'Should NOT include the equals signs ("==") used for wikitext formatting',
 				type: 'string'
 			}
 		]
@@ -1103,7 +1122,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 							input.setAttribute('checked', 'checked');
 						}
 						label.appendChild(input);
-						label.appendChild(document.createTextNode(' ' + pref.label));
+						label.appendChild(document.createTextNode(pref.label));
 						cell.appendChild(label);
 						break;
 
@@ -1350,44 +1369,41 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 Twinkle.config.listDialog = {};
 
-Twinkle.config.listDialog.addRow = function twinkleconfigListDialogAddRow(dlgtable, value, label) {
-	var contenttr = document.createElement('tr');
-	// "remove" button
-	var contenttd = document.createElement('td');
-	var removeButton = document.createElement('button');
-	removeButton.setAttribute('type', 'button');
-	removeButton.addEventListener('click', function() {
-		$(contenttr).remove();
-	}, false);
-	removeButton.textContent = 'Remove';
-	contenttd.appendChild(removeButton);
-	contenttr.appendChild(contenttd);
+Twinkle.config.listDialog.addRow = function twinkleconfigListDialogAddRow($dlgtable, value, label) {
+	var $contenttr, $valueInput, $labelInput;
 
-	// value input box
-	contenttd = document.createElement('td');
-	var input = document.createElement('input');
-	input.setAttribute('type', 'text');
-	input.className = 'twinkle-config-customlist-value';
-	input.style.width = '97%';
+	$dlgtable.append(
+		$contenttr = $('<tr>').append(
+			$('<td>').append(
+				$('<button>')
+					.attr('type', 'button')
+					.on('click', function () {
+						$contenttr.remove();
+					})
+					.text('Remove')
+			),
+			$('<td>').append(
+				$valueInput = $('<input>')
+					.attr('type', 'text')
+					.addClass('twinkle-config-customlist-value')
+					.css('width', '97%')
+			),
+			$('<td>').append(
+				$labelInput = $('<input>')
+					.attr('type', 'text')
+					.addClass('twinkle-config-customlist-label')
+					.css('width', '98%')
+			)
+		)
+	);
+
 	if (value) {
-		input.setAttribute('value', value);
+		$valueInput.val(value);
 	}
-	contenttd.appendChild(input);
-	contenttr.appendChild(contenttd);
-
-	// label input box
-	contenttd = document.createElement('td');
-	input = document.createElement('input');
-	input.setAttribute('type', 'text');
-	input.className = 'twinkle-config-customlist-label';
-	input.style.width = '98%';
 	if (label) {
-		input.setAttribute('value', label);
+		$labelInput.val(label);
 	}
-	contenttd.appendChild(input);
-	contenttr.appendChild(contenttd);
 
-	dlgtable.appendChild(contenttr);
 };
 
 Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
@@ -1399,117 +1415,106 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 	dialog.setTitle(curpref.label);
 	dialog.setScriptName('Twinkle preferences');
 
-	var dialogcontent = document.createElement('div');
-	var dlgtable = document.createElement('table');
-	dlgtable.className = 'wikitable';
-	dlgtable.style.margin = '1.4em 1em';
-	dlgtable.style.width = 'auto';
+	var $dlgtbody;
 
-	var dlgtbody = document.createElement('tbody');
-
-	// header row
-	var dlgtr = document.createElement('tr');
-	// top-left cell
-	var dlgth = document.createElement('th');
-	dlgth.style.width = '5%';
-	dlgtr.appendChild(dlgth);
-	// value column header
-	dlgth = document.createElement('th');
-	dlgth.style.width = '35%';
-	dlgth.textContent = curpref.customListValueTitle ? curpref.customListValueTitle : 'Value';
-	dlgtr.appendChild(dlgth);
-	// label column header
-	dlgth = document.createElement('th');
-	dlgth.style.width = '60%';
-	dlgth.textContent = curpref.customListLabelTitle ? curpref.customListLabelTitle : 'Label';
-	dlgtr.appendChild(dlgth);
-	dlgtbody.appendChild(dlgtr);
+	dialog.setContent(
+		$('<div>').append(
+			$('<table>')
+				.addClass('wikitable')
+				.css({
+					margin: '1.4em 1em',
+					width: 'auto'
+				})
+				.append(
+					$dlgtbody = $('<tbody>').append(
+						// header row
+						$('<tr>').append(
+							$('<th>') // top-left cell
+								.css('width', '5%'),
+							$('<th>') // value column header
+								.css('width', '35%')
+								.text(curpref.customListValueTitle ? curpref.customListValueTitle : 'Value'),
+							$('<th>') // label column header
+								.css('width', '60%')
+								.text(curpref.customListLabelTitle ? curpref.customListLabelTitle : 'Label')
+						)
+					),
+					$('<tfoot>').append(
+						$('<tr>').append(
+							$('<td>')
+								.attr('colspan', '3')
+								.append(
+									$('<button>')
+										.text('Add')
+										.css('min-width', '8em')
+										.attr('type', 'button')
+										.on('click', function () {
+											Twinkle.config.listDialog.addRow($dlgtbody);
+										})
+								)
+						)
+					)
+				),
+			$('<button>')
+				.text('Save changes')
+				.attr('type', 'submit') // so Morebits.simpleWindow puts the button in the button pane
+				.on('click', function () {
+					Twinkle.config.listDialog.save($prefbutton, $dlgtbody);
+					dialog.close();
+				}),
+			$('<button>')
+				.text('Reset')
+				.attr('type', 'submit')
+				.on('click', function () {
+					Twinkle.config.listDialog.reset($prefbutton, $dlgtbody);
+				}),
+			$('<button>')
+				.text('Cancel')
+				.attr('type', 'submit')
+				.on('click', function () {
+					dialog.close();
+				})
+		)[0]
+	);
 
 	// content rows
 	var gotRow = false;
 	$.each(curvalue, function(k, v) {
 		gotRow = true;
-		Twinkle.config.listDialog.addRow(dlgtbody, v.value, v.label);
+		Twinkle.config.listDialog.addRow($dlgtbody, v.value, v.label);
 	});
 	// if there are no values present, add a blank row to start the user off
 	if (!gotRow) {
-		Twinkle.config.listDialog.addRow(dlgtbody);
+		Twinkle.config.listDialog.addRow($dlgtbody);
 	}
 
-	// final "add" button
-	var dlgtfoot = document.createElement('tfoot');
-	dlgtr = document.createElement('tr');
-	var dlgtd = document.createElement('td');
-	dlgtd.setAttribute('colspan', '3');
-	var addButton = document.createElement('button');
-	addButton.style.minWidth = '8em';
-	addButton.setAttribute('type', 'button');
-	addButton.addEventListener('click', function() {
-		Twinkle.config.listDialog.addRow(dlgtbody);
-	}, false);
-	addButton.textContent = 'Add';
-	dlgtd.appendChild(addButton);
-	dlgtr.appendChild(dlgtd);
-	dlgtfoot.appendChild(dlgtr);
-
-	dlgtable.appendChild(dlgtbody);
-	dlgtable.appendChild(dlgtfoot);
-	dialogcontent.appendChild(dlgtable);
-
-	// buttonpane buttons: [Save changes] [Reset] [Cancel]
-	var button = document.createElement('button');
-	button.setAttribute('type', 'submit');  // so Morebits.simpleWindow puts the button in the button pane
-	button.addEventListener('click', function() {
-		Twinkle.config.listDialog.save($prefbutton, dlgtbody);
-		dialog.close();
-	}, false);
-	button.textContent = 'Save changes';
-	dialogcontent.appendChild(button);
-	button = document.createElement('button');
-	button.setAttribute('type', 'submit');  // so Morebits.simpleWindow puts the button in the button pane
-	button.addEventListener('click', function() {
-		Twinkle.config.listDialog.reset($prefbutton, dlgtbody);
-	}, false);
-	button.textContent = 'Reset';
-	dialogcontent.appendChild(button);
-	button = document.createElement('button');
-	button.setAttribute('type', 'submit');  // so Morebits.simpleWindow puts the button in the button pane
-	button.addEventListener('click', function() {
-		dialog.close();  // the event parameter on this function seems to be broken
-	}, false);
-	button.textContent = 'Cancel';
-	dialogcontent.appendChild(button);
-
-	dialog.setContent(dialogcontent);
 	dialog.display();
 };
 
 // Resets the data value, re-populates based on the new (default) value, then saves the
 // old data value again (less surprising behaviour)
-Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset(button, tbody) {
+Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset($button, $tbody) {
 	// reset value on button
-	var $button = $(button);
 	var curpref = $button.data('pref');
 	var oldvalue = $button.data('value');
 	Twinkle.config.resetPref(curpref);
 
 	// reset form
-	var $tbody = $(tbody);
 	$tbody.find('tr').slice(1).remove();  // all rows except the first (header) row
 	// add the new values
 	var curvalue = $button.data('value');
 	$.each(curvalue, function(k, v) {
-		Twinkle.config.listDialog.addRow(tbody, v.value, v.label);
+		Twinkle.config.listDialog.addRow($tbody, v.value, v.label);
 	});
 
 	// save the old value
 	$button.data('value', oldvalue);
 };
 
-Twinkle.config.listDialog.save = function twinkleconfigListDialogSave(button, tbody) {
+Twinkle.config.listDialog.save = function twinkleconfigListDialogSave($button, $tbody) {
 	var result = [];
 	var current = {};
-	$(tbody).find('input[type="text"]').each(function(inputkey, input) {
+	$tbody.find('input[type="text"]').each(function(inputkey, input) {
 		if ($(input).hasClass('twinkle-config-customlist-value')) {
 			current = { value: input.value };
 		} else {
@@ -1520,7 +1525,7 @@ Twinkle.config.listDialog.save = function twinkleconfigListDialogSave(button, tb
 			}
 		}
 	});
-	$(button).data('value', result);
+	$button.data('value', result);
 };
 
 // reset/restore defaults

@@ -13,6 +13,7 @@ Whatever the case, the more detailed your description the easier it will be to r
 ### Reporting a bug
 
 A good bug report will include:
+
 - A brief, descriptive title that mentions the module you were using (tag, CSD, xfd, etc.).
 - The steps leading up to the issue so we can replicate it.  This should include the page and revision you were on, the action you were performing, and the options you selected.
 - Any errors or messages that Twinkle reported an error when it got stuck.
@@ -22,20 +23,21 @@ A good bug report will include:
 If you believe you have found a security issue, follow the guidelines in [SECURITY.md](./SECURITY.md).
 
 ## Contributing a pull request
+
 ### Getting started
 
 If you'd like to help with Twinkle's development, wonderful!  Anyone can contribute, and it's easy to get set up to do so.
 
-First, familiarize yourself with the code; most likely, the changes you want are to one of the [modules](./modules); you can also check out the [individual Gadget pages][twinkle_gadget] onwiki.  If the changes are to the [Morebits library](./morebits.js), you can view the full docs at http://wikimedia-gadgets.github.io/twinkle or on the [GitHub Wiki](https://github.com/wikimedia-gadgets/twinkle/wiki/morebits).  If you want to propose changes yourself, [fork the repository](https://help.github.com/articles/fork-a-repo/) to make sure you always have the latest versions.  If you're new to GitHub or Git in general, you probably want to read [Getting started with GitHub](https://help.github.com/en/github/getting-started-with-github) first.
+First, familiarize yourself with the code; most likely, the changes you want are to one of the [modules](./modules); you can also check out the [individual Gadget pages][twinkle_gadget] onwiki.  If the changes are to the [Morebits library](./morebits.js), you can view the full docs at <http://wikimedia-gadgets.github.io/twinkle> or on the [GitHub Wiki](https://github.com/wikimedia-gadgets/twinkle/wiki/morebits).  If you want to propose changes yourself, [fork the repository](https://help.github.com/articles/fork-a-repo/) to make sure you always have the latest versions.  If you're new to GitHub or Git in general, you probably want to read [Getting started with GitHub](https://help.github.com/en/github/getting-started-with-github) first.
 
 Once you've got a local fork up and running, commit your changes!
-
 
 ### Testing your code
 
 Testing Twinkle can be tricky, but thankfully we've made it easy with a helper script, [patch-test.js](./dev/patch-test.js).  Simply run `npm run patchtest` in your terminal, which will generate the `patch-test-loader.js` file.  Then, run a localhost server (`npm run server`) and paste the contents of `patch-test-loader.js` in your [browser's console window][jserrors].  You should be all set!  If you put `mw.loader.getScript('http://127.0.0.1:5500/scripts/patch-test-loader.js');` in your common.js page, you won't even need to paste anything once you run the server!  You can also test your code by simply pasting it into the browser console, although that's not recommended.
 
 Some things to watch out for:
+
 - If your tests have any chance of making actual edits, consider making them in a sandbox; be aware that some things may not work properly outside the appropriate namespace.  An even better place to test is on the [test wiki](http://test.wikipedia.org)!  Some parts of Twinkle rely on specific template code or on certain wiki-preferences, so testing certain things outside of enWiki may be difficlut (e.g., pending changes).
 - The non-module scripts `morebits.js` and `twinkle.js` can be more complicated to test.
 - The `twinkleconfig` pseudo-module holds the code to save and determine user preferences, while `twinkle.js` holds the defaults.
@@ -43,17 +45,15 @@ Some things to watch out for:
 
 As Twinkle is used many thousands of times a day, changes to how Twinkle works may be confusing or disruptive to editors.  Significant or major changes to workflow, design, or functionality should gain some modicum of consensus before being proposed or suggested, either through discussion at [Wikipedia talk:Twinkle][] or elsewhere.
 
-
 ### Submitting your pull request
 
 When you are ready to submit, commit your changes on a new branch, then [initiate a pull request (PR)](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork).  The title of your pull request should be the module you are proposing changes to, followed by a brief but descriptive explanation of what the changes do, such as:
 
     xfd: Prevent sysops from deleting the main page
 
-The usual rule of thumb is that a good subject line will complete the sentence "*If applied, this commit will...*"  The full commit message is a good place to explain further details, both for reviewers and anyone in the future, specifically focusing on *why* the changes are being made, not *how*.  There are many guides to writing good commit messages, one particularly helpful one is by @cbeams: https://chris.beams.io/posts/git-commit/
+The usual rule of thumb is that a good subject line will complete the sentence "*If applied, this commit will...*"  The full commit message is a good place to explain further details, both for reviewers and anyone in the future, specifically focusing on *why* the changes are being made, not *how*.  There are many guides to writing good commit messages, one particularly helpful one is by @cbeams: <https://chris.beams.io/posts/git-commit/>.
 
 If you made multiple commits while working on the same feature, it's a good idea to [squash and rebase your commits](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History) before submitting your PR; a good policy is that every commit should be capable of replacing the live on-wiki Gadget file for all users.  Separate ideas or enhancements should be different commits, and entirely separate concepts should be different pull requests.  For example, if you made three commits while changing the pulldown options in `twinkleprotect.js` and `twinklebatchprotect.js`, those should be squashed into one commit, but if you also disabled loading `twinklespeedy.js` and `twinklexfd.js` on the mainpage, that should be a separate pull request.  See also [how to file a bug report or feature request](README.md#how-to-file-a-bug-report-or-feature-request).
-
 
 ### Style guideline
 
@@ -62,7 +62,6 @@ For consistency and to cut down on potential errors, we've recently decided to u
 - Quotes: Single quotes should be used around strings, such as when using `mw.config.get('wgUserName')`
 - Spacing: `if (condition) {`
 - Each: The `array.forEach(function(item) {` method is preferable to `$.each(array, function(index, item) {`
-
 
 ## Expectations of Participants
 

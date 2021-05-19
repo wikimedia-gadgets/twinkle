@@ -118,7 +118,7 @@ if (@files) {
 
     print "\n\t";
     if ($conf{mode} eq 'deploy' || $conf{mode} eq 'push') {
-      my $summary = buildEditSummary($page, $file, $wikiPage->{comment}, $wikiPage->{timestamp});
+      my $summary = buildEditSummary($page, $file, $wikiPage->{comment}, $wikiPage->{timestamp}, $wikiPage->{user});
       my $editReturn = editPage($page, $fileText, $summary, $wikiPage->{timestamp});
       if ($editReturn->{_msg} eq 'OK') {
         print colored ['green'], "$file successfully $conf{mode}ed to $page";
@@ -320,7 +320,7 @@ sub checkPage {
 # Tries to figure out a good edit summary by using the last one onwiki to find
 # the latest changes; prompts user if it can't find a commit hash
 sub buildEditSummary {
-  my ($page, $file, $oldCommitish, $timestamp) = @_;
+  my ($page, $file, $oldCommitish, $timestamp, $user) = @_;
   my $editSummary;
   if ($conf{summary}) {
       $editSummary = $conf{summary};
@@ -351,7 +351,7 @@ sub buildEditSummary {
         my @log = $repo->run(log => '-5', '--pretty=format:%s (%h, %ad)', '--no-merges', '--no-color', '--date=short', $file);
         print colored ['yellow'], "Unable to autogenerate edit summary for $page\n\n";
         print "The most recent ON-WIKI edit summary is:\n";
-        print colored ['bright_cyan'], "\t$oldCommitish ($timestamp))\n";
+        print colored ['bright_cyan'], "\t$oldCommitish ($user, $timestamp))\n";
         print "The most recent GIT LOG entries are:\n";
         foreach (@log) {
           print colored ['bright_cyan'], "\t$_\n";

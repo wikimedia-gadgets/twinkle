@@ -45,10 +45,6 @@ Twinkle.unlink.callback = function(presetReason) {
 	} else {
 		linkPlainAfter = Morebits.htmlNode('code', Morebits.pageNameNorm);
 	}
-	[linkTextBefore, linkTextAfter, linkPlainBefore, linkPlainAfter].forEach(function(node) {
-		node.style.fontFamily = 'monospace';
-		node.style.fontStyle = 'normal';
-	});
 
 	form.append({
 		type: 'div',
@@ -65,7 +61,7 @@ Twinkle.unlink.callback = function(presetReason) {
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reason:',
 		value: presetReason ? presetReason : '',
 		size: 60
 	});
@@ -143,10 +139,7 @@ Twinkle.unlink.callbacks = {
 			var list, namespaces, i;
 
 			if (apiobj.params.image) {
-				var imageusage = response.query.imageusage.sort(function(one, two) {
-					// json formatversion=2 doesn't sort pages by namespace
-					return one.ns - two.ns || (one.title > two.title ? 1 : -1);
-				});
+				var imageusage = response.query.imageusage.sort(Twinkle.sortByNamespace);
 				list = [];
 				for (i = 0; i < imageusage.length; ++i) {
 					// Label made by Twinkle.generateBatchPageLinks
@@ -195,10 +188,7 @@ Twinkle.unlink.callbacks = {
 				}
 			}
 
-			var backlinks = response.query.backlinks.sort(function(one, two) {
-				// json formatversion=2 doesn't sort pages by namespace
-				return one.ns - two.ns || (one.title > two.title ? 1 : -1);
-			});
+			var backlinks = response.query.backlinks.sort(Twinkle.sortByNamespace);
 			if (backlinks.length > 0) {
 				list = [];
 				for (i = 0; i < backlinks.length; ++i) {

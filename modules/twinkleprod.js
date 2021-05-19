@@ -65,8 +65,9 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 
 	field.append({
 		type: 'div',
-		label: Twinkle.makeFindSourcesDiv(),
-		style: 'margin-bottom: 5px;'
+		label: '', // Added later by Twinkle.makeFindSourcesDiv()
+		id: 'twinkle-prod-findsources',
+		style: 'margin-bottom: 5px; margin-top: -5px;'
 	});
 
 	field.append({
@@ -179,6 +180,8 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 			break;
 	}
 
+	Twinkle.makeFindSourcesDiv('#twinkle-prod-findsources');
+
 	event.target.form.replaceChild(field.render(), $(event.target.form).find('fieldset[name="parameters"]')[0]);
 };
 
@@ -254,7 +257,7 @@ Twinkle.prod.callbacks = {
 			var text = pageobj.getPageText();
 
 			// Check for already existing deletion tags
-			var tag_re = /{{(?:db-?|delete|article for deletion\/dated|AfDM|ffd\b)|#invoke:Redirect for discussion/i;
+			var tag_re = /{{(?:db-?|delete|article for deletion\/dated|AfDM|ffd\b)|#invoke:RfD/i;
 			if (tag_re.test(text)) {
 				statelem.warn('Page already tagged with a deletion template, aborting procedure');
 				return def.reject();

@@ -79,7 +79,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 			{
 				label: 'Disputed fair use rationale (CSD F7)',
 				value: 'disputed fair use rationale',
-				tooltip: 'Image or media has a fair use rationale that is disputed'
+				tooltip: 'Image or media has a fair use rationale that is disputed or invalid, such as a {{Non-free logo}} tag on a photograph of a mascot'
 			},
 			{
 				label: 'Replaceable fair use (CSD F7)',
@@ -148,21 +148,21 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 			work_area.append({
 				type: 'input',
 				name: 'source',
-				label: 'Source: '
+				label: 'Source:'
 			});
 			break;
 		case 'disputed fair use rationale':
 			work_area.append({
 				type: 'textarea',
 				name: 'reason',
-				label: 'Concern: '
+				label: 'Concern:'
 			});
 			break;
 		case 'orphaned fair use':
 			work_area.append({
 				type: 'input',
 				name: 'replacement',
-				label: 'Replacement: ',
+				label: 'Replacement:',
 				tooltip: 'Optional file that replaces this one.  The "File:" prefix is optional.'
 			});
 			break;
@@ -170,7 +170,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 			work_area.append({
 				type: 'textarea',
 				name: 'reason',
-				label: 'Reason: '
+				label: 'Reason:'
 			});
 			break;
 		default:

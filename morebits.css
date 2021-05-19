@@ -68,8 +68,9 @@ form.quickform select
 form.quickform input[type=checkbox],
 form.quickform input[type=radio] {
 	height: 13px;
-	margin-bottom: 2px;
 	margin-top: 2px;
+	margin-right: 2px;
+	margin-bottom: 2px;
 	padding: 0;
 	width: 13px;
 	vertical-align: top;
@@ -107,6 +108,12 @@ form.quickform input:disabled + label
 form.quickform span.quickformDescription
 {
 	font-style: italic;
+}
+
+form.quickform span.quickformDescription code
+{
+	font-style: normal;
+	font-family: monospace;
 }
 
 form.quickform .quickformSubgroup

@@ -110,7 +110,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			name: 'block64',
 			event: Twinkle.block.callback.change_block64,
 			list: [{
-				checked: relevantUserName !== mw.config.get('wgRelevantUserName'), // In case the user closes and reopens the form
+				checked: Twinkle.getPref('defaultToBlock64'),
 				label: 'Block the /64 instead',
 				value: 'block64',
 				tooltip: Morebits.ip.isRange(mw.config.get('wgRelevantUserName')) ? 'Will eschew leaving a template.' : 'Any template issued will go to the original IP: ' + mw.config.get('wgRelevantUserName')
@@ -142,7 +142,13 @@ Twinkle.block.callback = function twinkleblockCallback() {
 		// init the controls after user and block info have been fetched
 		var evt = document.createEvent('Event');
 		evt.initEvent('change', true, true);
-		result.actiontype[0].dispatchEvent(evt);
+
+		if (result.block64 && result.block64.checked) {
+			// Calls the same change_action event once finished
+			result.block64.dispatchEvent(evt);
+		} else {
+			result.actiontype[0].dispatchEvent(evt);
+		}
 	});
 };
 
@@ -558,7 +564,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			field_template_options.append({
 				type: 'input',
 				name: 'template_expiry',
-				label: 'Period of blocking: ',
+				label: 'Period of blocking:',
 				value: '',
 				tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
 			});
@@ -566,7 +572,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		field_template_options.append({
 			type: 'input',
 			name: 'block_reason',
-			label: '"You have been blocked for ..." ',
+			label: '"You have been blocked for ..."',
 			tooltip: 'An optional reason, to replace the default generic reason. Only available for the generic block templates.',
 			value: Twinkle.block.field_template_options.block_reason
 		});
@@ -1049,8 +1055,8 @@ Twinkle.block.blockPresetsInfo = {
 	'uw-efblock': {
 		autoblock: true,
 		nocreate: true,
-		reason: 'Deliberately triggering the [[WP:Edit filter|Edit filter]]',
-		summary: 'You have been blocked from editing for making disruptive edits that repeatedly triggered the [[WP:EF|edit filter]]'
+		reason: 'Repeatedly triggering the [[WP:Edit filter|Edit filter]]',
+		summary: 'You have been blocked from editing for disruptive edits that repeatedly triggered the [[WP:EF|edit filter]]'
 	},
 	'uw-ewblock': {
 		autoblock: true,
@@ -1201,7 +1207,7 @@ Twinkle.block.blockPresetsInfo = {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		nocreate: true,
-		reason: '{{uw-ublock-double}} <!-- Username closely resembles another user, hard block -->',
+		reason: '{{uw-uhblock-double}} <!-- Attempted impersonation of another user, hard block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] appears to impersonate another established Wikipedia user'
 	},
 	'uw-upeblock': {
@@ -1365,9 +1371,9 @@ Twinkle.block.dsinfo = {
 		code: 'fg',
 		page: 'Wikipedia:Requests for arbitration/Falun Gong'
 	},
-	'GamerGate or any gender-related dispute or controversy': {
-		code: 'gg',
-		page: 'Wikipedia:Arbitration/Requests/Case/GamerGate'
+	'Gender-related dispute or controversy and associated people (includes GamerGate)': {
+		code: 'gas',
+		page: 'Wikipedia:Arbitration/Requests/Case/Gender and sexuality'
 	},
 	'Genetically modified organisms (GMO)': {
 		code: 'gmo',
@@ -1388,6 +1394,10 @@ Twinkle.block.dsinfo = {
 	'Infoboxes': {
 		code: 'cid',
 		page: 'Wikipedia:Arbitration/Requests/Case/Civility in infobox discussions'
+	},
+	'Kurds and Kurdistan': {
+		code: 'kurd',
+		page: 'Wikipedia:Arbitration/Requests/Case/Kurds and Kurdistan'
 	},
 	'Landmark Worldwide': {
 		code: 'lw',
@@ -1523,10 +1533,10 @@ Twinkle.block.blockGroups = [
 			{ label: 'Bot username, hard block', value: 'uw-botuhblock' },
 			{ label: 'Promotional username, hard block', value: 'uw-spamublock' },
 			{ label: 'Promotional username, soft block', value: 'uw-softerblock' },
-			{ label: 'Similar username soft block', value: 'uw-ublock-double' },
+			{ label: 'Similar username, soft block', value: 'uw-ublock-double' },
 			{ label: 'Username violation, soft block', value: 'uw-ublock' },
 			{ label: 'Username violation, hard block', value: 'uw-uhblock' },
-			{ label: 'Username impersonation hard block', value: 'uw-uhblock-double' },
+			{ label: 'Username impersonation, hard block', value: 'uw-uhblock-double' },
 			{ label: 'Username represents a well-known person, soft block', value: 'uw-ublock-wellknown' },
 			{ label: 'Username represents a non-profit, soft block', value: 'uw-causeblock' },
 			{ label: 'Username violation, vandalism-only account', value: 'uw-vaublock' }

@@ -47,7 +47,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	form.append({
 		type: 'input',
-		label: 'Filter tag list: ',
+		label: 'Filter tag list:',
 		name: 'quickfilter',
 		size: '30px',
 		event: function twinkletagquickfilter() {
@@ -484,7 +484,7 @@ var translationSubgroups = [
 		name: 'translationLanguage',
 		parameter: '1',
 		type: 'input',
-		label: 'Language of article (if known): ',
+		label: 'Language of article (if known):',
 		tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
 	}
 ].concat(mw.config.get('wgNamespaceNumber') === 0 ? [
@@ -520,7 +520,7 @@ var getMergeSubgroups = function(tag) {
 		{
 			name: 'mergeTarget',
 			type: 'input',
-			label: 'Other article(s): ',
+			label: 'Other article(s):',
 			tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two',
 			required: true
 		},
@@ -557,7 +557,7 @@ Twinkle.tag.article.tagList = {
 					name: 'cleanup',
 					parameter: 'reason',
 					type: 'input',
-					label: 'Specific reason why cleanup is needed: ',
+					label: 'Specific reason why cleanup is needed:',
 					tooltip: 'Required.',
 					size: 35,
 					required: true
@@ -574,7 +574,7 @@ Twinkle.tag.article.tagList = {
 					name: 'copyEdit',
 					parameter: 'for',
 					type: 'input',
-					label: '"This article may require copy editing for..." ',
+					label: '"This article may require copy editing for..."',
 					tooltip: 'e.g. "consistent spelling". Optional.',
 					size: 35
 				}
@@ -588,7 +588,7 @@ Twinkle.tag.article.tagList = {
 					name: 'closeParaphrasing',
 					parameter: 'source',
 					type: 'input',
-					label: 'Source: ',
+					label: 'Source:',
 					tooltip: 'Source that has been closely paraphrased'
 				}
 			},
@@ -600,7 +600,7 @@ Twinkle.tag.article.tagList = {
 					name: 'copypaste',
 					parameter: 'url',
 					type: 'input',
-					label: 'Source URL: ',
+					label: 'Source URL:',
 					tooltip: 'If known.',
 					size: 50
 				}
@@ -688,21 +688,21 @@ Twinkle.tag.article.tagList = {
 						name: 'expertNeeded',
 						parameter: '1',
 						type: 'input',
-						label: 'Name of relevant WikiProject: ',
+						label: 'Name of relevant WikiProject:',
 						tooltip: 'Optionally, enter the name of a WikiProject which might be able to help recruit an expert. Don\'t include the "WikiProject" prefix.'
 					},
 					{
 						name: 'expertNeededReason',
 						parameter: 'reason',
 						type: 'input',
-						label: 'Reason: ',
+						label: 'Reason:',
 						tooltip: 'Short explanation describing the issue. Either Reason or Talk link is required.'
 					},
 					{
 						name: 'expertNeededTalk',
 						parameter: 'talk',
 						type: 'input',
-						label: 'Talk discussion: ',
+						label: 'Talk discussion:',
 						tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Either Reason or Talk link is required.'
 					}
 				]
@@ -716,7 +716,12 @@ Twinkle.tag.article.tagList = {
 		],
 		'Neutrality, bias, and factual accuracy': [
 			{ tag: 'Autobiography', description: 'autobiography and may not be written neutrally' },
-			{ tag: 'COI', description: 'creator or major contributor may have a conflict of interest' },
+			{ tag: 'COI', description: 'creator or major contributor may have a conflict of interest', subgroup: mw.config.get('wgNamespaceNumber') === 0 ? {
+				name: 'coiReason',
+				type: 'textarea',
+				label: 'Explanation for COI tag (will be posted on this article\'s talk page):',
+				tooltip: 'Optional, but strongly recommended. Leave blank if not wanted.'
+			} : [] },
 			{ tag: 'Disputed', description: 'questionable factual accuracy' },
 			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
 			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject',
@@ -788,14 +793,14 @@ Twinkle.tag.article.tagList = {
 					name: 'expandLanguageLangCode',
 					parameter: 'langcode',
 					type: 'input',
-					label: 'Language code: ',
+					label: 'Language code:',
 					tooltip: 'Language code of the language from which article is to be expanded from',
 					required: true
 				}, {
 					name: 'expandLanguageArticle',
 					parameter: 'otherarticle',
 					type: 'input',
-					label: 'Name of article: ',
+					label: 'Name of article:',
 					tooltip: 'Name of article to be expanded from, without the interwiki prefix'
 				}]
 			}
@@ -827,7 +832,7 @@ Twinkle.tag.article.tagList = {
 					name: 'histmergeOriginalPage',
 					parameter: 'originalpage',
 					type: 'input',
-					label: 'Other article: ',
+					label: 'Other article:',
 					tooltip: 'Name of the page that should be merged into this one (required).',
 					required: true
 				},
@@ -835,14 +840,14 @@ Twinkle.tag.article.tagList = {
 					name: 'histmergeReason',
 					parameter: 'reason',
 					type: 'input',
-					label: 'Reason: ',
+					label: 'Reason:',
 					tooltip: 'Short explanation describing the reason a history merge is needed. Should probably begin with "because" and end with a period.'
 				},
 				{
 					name: 'histmergeSysopDetails',
 					parameter: 'details',
 					type: 'input',
-					label: 'Extra details: ',
+					label: 'Extra details:',
 					tooltip: 'For complex cases, provide extra instructions for the reviewing administrator.'
 				}
 			]
@@ -903,13 +908,13 @@ Twinkle.tag.redirectList = {
 					{
 						name: 'altLangFrom',
 						type: 'input',
-						label: 'From language (two-letter code): ',
+						label: 'From language (two-letter code):',
 						tooltip: 'Enter the two-letter code of the language the redirect name is in; such as en for English, de for German'
 					},
 					{
 						name: 'altLangTo',
 						type: 'input',
-						label: 'To language (two-letter code): ',
+						label: 'To language (two-letter code):',
 						tooltip: 'Enter the two-letter code of the language the target name is in; such as en for English, de for German'
 					},
 					{
@@ -981,8 +986,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R mentioned in hatnote', description: 'redirect from a title that is mentioned in a hatnote at the redirect target' },
 			{ tag: 'R to section', description: 'similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe' },
 			{ tag: 'R from shortcut', description: 'redirect from a Wikipedia shortcut' },
-			{ tag: 'R from template shortcut', description: 'redirect from a shortcut page name in any namespace to a page in template namespace' }
-
+			{ tag: 'R to subpage', description: 'redirect to a subpage' }
 		],
 		'Disambiguation': [
 			{ tag: 'R from ambiguous term', description: 'redirect from an ambiguous page name to a page that disambiguates it. This template should never appear on a page that has "(disambiguation)" in its title, use R to disambiguation page instead' },
@@ -1069,14 +1073,15 @@ Twinkle.tag.fileList = {
 				{
 					type: 'input',
 					name: 'DoNotMoveToCommons_reason',
-					label: 'Reason: ',
+					label: 'Reason:',
 					tooltip: 'Enter the reason why this image should not be moved to Commons (required). If the file is PD in the US but not in country of origin, enter "US only"',
 					required: true
 				},
 				{
-					type: 'input',
+					type: 'number',
 					name: 'DoNotMoveToCommons_expiry',
-					label: 'Expiration year: ',
+					label: 'Expiration year:',
+					min: new Morebits.date().getFullYear(),
 					tooltip: 'If this file can be moved to Commons beginning in a certain year, you can enter it here (optional).'
 				}
 			]
@@ -1087,7 +1092,7 @@ Twinkle.tag.fileList = {
 			subgroup: {
 				type: 'input',
 				name: 'keeplocalName',
-				label: 'Commons image name if different: ',
+				label: 'Commons image name if different:',
 				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 			}
 		},
@@ -1097,7 +1102,7 @@ Twinkle.tag.fileList = {
 			subgroup: {
 				type: 'input',
 				name: 'nowcommonsName',
-				label: 'Commons image name if different: ',
+				label: 'Commons image name if different:',
 				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 			}
 		}
@@ -1108,14 +1113,14 @@ Twinkle.tag.fileList = {
 		{ label: '{{Bad format}}: PDF/DOC/... file should be converted to a more useful format', value: 'Bad format' },
 		{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
 		{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
-		{ label: '{{Bad SVG}}: SVG containing raster grahpics', value: 'Bad SVG' },
+		{ label: '{{Bad SVG}}: SVG containing raster graphics', value: 'Bad SVG' },
 		{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
 		{
 			label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
 			subgroup: {
 				type: 'input',
 				name: 'cleanupimageReason',
-				label: 'Reason: ',
+				label: 'Reason:',
 				tooltip: 'Enter the reason for cleanup (required)',
 				required: true
 			}
@@ -1133,13 +1138,13 @@ Twinkle.tag.fileList = {
 				{
 					type: 'input',
 					name: 'renamemediaNewname',
-					label: 'New name: ',
+					label: 'New name:',
 					tooltip: 'Enter the new name for the image (optional)'
 				},
 				{
 					type: 'input',
 					name: 'renamemediaReason',
-					label: 'Reason: ',
+					label: 'Reason:',
 					tooltip: 'Enter the reason for the rename (optional)'
 				}
 			]
@@ -1180,7 +1185,7 @@ Twinkle.tag.fileList = {
 			subgroup: {
 				type: 'input',
 				name: 'ImagePoorQualityReason',
-				label: 'Reason: ',
+				label: 'Reason:',
 				tooltip: 'Enter the reason why this image is so bad (required)',
 				required: true
 			}
@@ -1191,7 +1196,7 @@ Twinkle.tag.fileList = {
 			subgroup: {
 				type: 'input',
 				name: 'lowQualityChemReason',
-				label: 'Reason: ',
+				label: 'Reason:',
 				tooltip: 'Enter the reason why the diagram is disputed (required)',
 				required: true
 			}
@@ -1206,7 +1211,7 @@ Twinkle.tag.fileList = {
 Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
 	el.subgroup = {
 		type: 'input',
-		label: 'Replacement file: ',
+		label: 'Replacement file:',
 		tooltip: 'Enter the name of the file which replaces this one (required)',
 		name: el.value.replace(/ /g, '_') + 'File',
 		required: true
@@ -1278,19 +1283,29 @@ Twinkle.tag.callbacks = {
 			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save(function() {
-				// special functions for merge tags
-				if (params.mergeReason) {
-					// post the rationale on the talk page (only operates in main namespace)
-					var talkpage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
-					talkpage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
-					talkpage.setNewSectionTitle(params.talkDiscussionTitleLinked);
-					talkpage.setChangeTags(Twinkle.changeTags);
-					talkpage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
-					talkpage.setCreateOption('recreate');
-					talkpage.newSection();
+				// COI: Start the discussion on the talk page (mainspace only)
+				if (params.coiReason) {
+					var coiTalkPage = new Morebits.wiki.page('Talk:' + Morebits.pageNameNorm, 'Starting discussion on talk page');
+					coiTalkPage.setNewSectionText(params.coiReason + ' ~~~~');
+					coiTalkPage.setNewSectionTitle('COI tag (' + new Morebits.date(pageobj.getLoadTime()).format('MMMM Y', 'utc') + ')');
+					coiTalkPage.setChangeTags(Twinkle.changeTags);
+					coiTalkPage.setCreateOption('recreate');
+					coiTalkPage.newSection();
 				}
+
+				// Special functions for merge tags
+				// Post a rationale on the talk page (mainspace only)
+				if (params.mergeReason) {
+					var mergeTalkPage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
+					mergeTalkPage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
+					mergeTalkPage.setNewSectionTitle(params.talkDiscussionTitleLinked);
+					mergeTalkPage.setChangeTags(Twinkle.changeTags);
+					mergeTalkPage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
+					mergeTalkPage.setCreateOption('recreate');
+					mergeTalkPage.newSection();
+				}
+				// Tag the target page (if requested)
 				if (params.mergeTagOther) {
-					// tag the target page if requested
 					var otherTagName = 'Merge';
 					if (params.mergeTag === 'Merge from') {
 						otherTagName = 'Merge to';
@@ -1313,7 +1328,8 @@ Twinkle.tag.callbacks = {
 					otherpage.load(Twinkle.tag.callbacks.article);
 				}
 
-				// post at WP:PNT for {{not English}} and {{rough translation}} tag
+				// Special functions for {{not English}} and {{rough translation}}
+				// Post at WP:PNT (mainspace only)
 				if (params.translationPostAtPNT) {
 					var pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English',
 						'Listing article at Wikipedia:Pages needing translation into English');
@@ -1348,8 +1364,9 @@ Twinkle.tag.callbacks = {
 						pageobj.save();
 					});
 				}
+				// Notify the user ({{Not English}} only)
 				if (params.translationNotify) {
-					pageobj.lookupCreation(function(innerPageobj) {
+					new Morebits.wiki.page(Morebits.pageNameNorm).lookupCreation(function(innerPageobj) {
 						var initialContrib = innerPageobj.getCreator();
 
 						// Disallow warning yourself
@@ -1730,7 +1747,7 @@ Twinkle.tag.callbacks = {
 			var oldPageTags = '';
 			if (pageTags) {
 				pageTags.forEach(function(pageTag) {
-					var pageRe = new RegExp(pageTag, 'img');
+					var pageRe = new RegExp(Morebits.string.escapeRegExp(pageTag), 'img');
 					pageText = pageText.replace(pageRe, '');
 					pageTag = pageTag.trim();
 					oldPageTags += '\n' + pageTag;
@@ -1980,7 +1997,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			}
 
 			if (params.tags.indexOf('Do not move to Commons') !== -1 && params.DoNotMoveToCommons_expiry &&
-				(!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getYear() + 1900)) {
+				(!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getFullYear())) {
 				alert('Must be a valid future year.');
 				return;
 			}
