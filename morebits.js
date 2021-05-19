@@ -102,6 +102,15 @@ Morebits.l10n = {
 	redirectTagAliases: ['#REDIRECT'],
 
 	/**
+	 * Additional regex used to identify usernames as likely unflagged bots.
+	 *
+	 * @constant
+	 * @default
+	 * @type {RegExp}
+	 */
+	botUsernameRegex: /bot\b/i,
+
+	/**
 	 * Takes a string as argument and checks if it is a timestamp or not
 	 * If not, it returns null. If yes, it returns an array of integers
 	 * in the format [year, month, date, hour, minute, second]
@@ -287,15 +296,6 @@ Morebits.namespaceRegex = function(namespaces) {
 	}
 	return regex;
 };
-
-/**
- * Additional regex used to identify usernames as likely unflagged bots.
- *
- * @constant
- * @default
- * @type {RegExp}
- */
-Morebits.botUsernameRegex = /bot\b/i;
 
 
 /* **************** Morebits.quickForm **************** */
@@ -6044,10 +6044,10 @@ Morebits.wiki.user = function(userName, currentAction) {
 	};
 	/**
 	 * @returns {boolean} - True if the user has the bot group or their
-	 * username matches {@link Morebits.botUsernameRegex}.
+	 * username matches {@link Morebits.l10n.botUsernameRegex}.
 	 */
 	this.isBot = function() {
-		return (ctx.grantedGroups && !!ctx.grantedGroups.bot) || (Morebits.botUsernameRegex && Morebits.botUsernameRegex.test(ctx.userName));
+		return (ctx.grantedGroups && !!ctx.grantedGroups.bot) || (Morebits.l10n.botUsernameRegex && Morebits.l10n.botUsernameRegex.test(ctx.userName));
 	};
 	/** @returns {string} - ISO 8601 timestamp at which the user was loaded. */
 	this.getLoadTime = function() {
