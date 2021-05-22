@@ -100,7 +100,6 @@ The latest development source is available at [GitHub](https://github.com/wikime
         * _instance_
             * [.link()](#Morebits.status+link)
             * [.unlink()](#Morebits.status+unlink)
-            * [.codify(obj)](#Morebits.status+codify) ⇒ <code>DocumentFragment</code>
             * [.update(status, type)](#Morebits.status+update)
             * [.generate()](#Morebits.status+generate)
             * [.render()](#Morebits.status+render)
@@ -140,6 +139,11 @@ The latest development source is available at [GitHub](https://github.com/wikime
             * [.setModality([modal])](#Morebits.simpleWindow+setModality) ⇒ [<code>simpleWindow</code>](#Morebits.simpleWindow)
         * _static_
             * [.setButtonsEnabled(enabled)](#Morebits.simpleWindow.setButtonsEnabled)
+    * [.i18n](#Morebits.i18n)
+        * [.setParser(parser)](#Morebits.i18n.setParser)
+    * [.l10n](#Morebits.l10n)
+        * [.redirectTagAliases](#Morebits.l10n.redirectTagAliases)
+        * [.signatureTimestampFormat(str)](#Morebits.l10n.signatureTimestampFormat) ⇒ <code>Array.&lt;number&gt;</code> \| <code>null</code>
     * [.userIsSysop](#Morebits.userIsSysop) : <code>boolean</code>
     * [.pageNameNorm](#Morebits.pageNameNorm) : <code>string</code>
     * [.ip](#Morebits.ip) : <code>object</code>
@@ -268,6 +272,8 @@ The latest development source is available at [GitHub](https://github.com/wikime
     * <del>[.sanitizeIPv6(address)](#Morebits.sanitizeIPv6) ⇒ <code>string</code></del>
     * [.isPageRedirect()](#Morebits.isPageRedirect) ⇒ <code>boolean</code>
     * [.pageNameRegex(pageName)](#Morebits.pageNameRegex) ⇒ <code>string</code>
+    * [.createHtml(input)](#Morebits.createHtml) ⇒ <code>DocumentFragment</code>
+    * [.createHtml.renderWikilinks(text)](#Morebits.createHtml.renderWikilinks) ⇒ <code>\*</code>
     * [.namespaceRegex(namespaces)](#Morebits.namespaceRegex) ⇒ <code>string</code>
     * [.htmlNode(type, content, [color])](#Morebits.htmlNode) ⇒ <code>HTMLElement</code>
     * [.checkboxShiftClickSupport(jQuerySelector, jQueryContext)](#Morebits.checkboxShiftClickSupport)
@@ -373,7 +379,7 @@ a quickform element is constructed.</p>
 Create a new element for the the form.
 
 Index to Morebits.quickForm.element types:
-- Global attributes: id, className, style, tooltip, extra, adminonly
+- Global attributes: id, className, style, tooltip, extra, $data, adminonly
 - `select`: A combo box (aka drop-down).
     - Attributes: name, label, multiple, size, list, event, disabled
  - `option`: An element for a combo box.
@@ -408,6 +414,10 @@ Index to Morebits.quickForm.element types:
      - Attributes: name, label, value, cols, rows, disabled, required, readonly
  - `fragment`: A DocumentFragment object.
      - No attributes, and no global attributes except adminonly.
+There is some difference on how types handle the `label` attribute:
+- `div`, `select`, `field`, `checkbox`/`radio`, `input`, `textarea`, `header`, and `dyninput` can accept an array of items,
+and the label item(s) can be `Element`s.
+- `option`, `optgroup`, `_dyninput_element`, `submit`, and `button` accept only a single string.
 
 <table>
   <thead>
@@ -965,22 +975,22 @@ Replacement syntax is a subset of that in moment.js:
 | Syntax | Output |
 |--------|--------|
 | H | Hours (24-hour) |
-| HH | Hours (24-hour, padded) |
+| HH | Hours (24-hour, padded to 2 digits) |
 | h | Hours (12-hour) |
-| hh | Hours (12-hour, padded) |
+| hh | Hours (12-hour, padded to 2 digits) |
 | A | AM or PM |
 | m | Minutes |
-| mm | Minutes (padded) |
+| mm | Minutes (padded to 2 digits) |
 | s | Seconds |
-| ss | Seconds (padded) |
-| SSS | Milliseconds fragment, padded |
+| ss | Seconds (padded to 2 digits) |
+| SSS | Milliseconds fragment, 3 digits |
 | d | Day number of the week (Sun=0) |
 | ddd | Abbreviated day name |
 | dddd | Full day name |
 | D | Date |
-| DD | Date (padded) |
-| M | Month number (0-indexed) |
-| MM | Month number (0-indexed, padded) |
+| DD | Date (padded to 2 digits) |
+| M | Month number (1-indexed) |
+| MM | Month number (1-indexed, padded to 2 digits) |
 | MMM | Abbreviated month name |
 | MMMM | Full month name |
 | Y | Year |
@@ -1162,7 +1172,6 @@ Log the entry.
     * _instance_
         * [.link()](#Morebits.status+link)
         * [.unlink()](#Morebits.status+unlink)
-        * [.codify(obj)](#Morebits.status+codify) ⇒ <code>DocumentFragment</code>
         * [.update(status, type)](#Morebits.status+update)
         * [.generate()](#Morebits.status+generate)
         * [.render()](#Morebits.status+render)
@@ -1216,26 +1225,6 @@ Add the status element node to the DOM.
 Remove the status element node from the DOM.
 
 **Kind**: instance method of [<code>status</code>](#Morebits.status)  
-<a name="Morebits.status+codify"></a>
-
-#### status.codify(obj) ⇒ <code>DocumentFragment</code>
-Create a document fragment with the status text, parsing as HTML.
-Runs upon construction for text (part before colon) and upon
-render/update for status (part after colon).
-
-**Kind**: instance method of [<code>status</code>](#Morebits.status)  
-<table>
-  <thead>
-    <tr>
-      <th>Param</th><th>Type</th>
-    </tr>
-  </thead>
-  <tbody>
-<tr>
-    <td>obj</td><td><code>string</code> | <code>Element</code> | <code>Array</code></td>
-    </tr>  </tbody>
-</table>
-
 <a name="Morebits.status+update"></a>
 
 #### status.update(status, type)
@@ -1573,7 +1562,7 @@ Runs the optional second callback when the whole batch has been processed.
 <a name="Morebits.batchOperation+workerSuccess"></a>
 
 #### batchOperation.workerSuccess(arg)
-To be called by worker before it terminates succesfully.
+To be called by worker before it terminates successfully.
 
 **Kind**: instance method of [<code>batchOperation</code>](#Morebits.batchOperation)  
 <table>
@@ -1916,6 +1905,75 @@ there will only be one `Morebits.simpleWindow` open, so this shouldn't matter.
     </tr>  </tbody>
 </table>
 
+<a name="Morebits.i18n"></a>
+
+### Morebits.i18n
+i18n support for strings in Morebits
+
+**Kind**: static property of [<code>Morebits</code>](#Morebits)  
+<a name="Morebits.i18n.setParser"></a>
+
+#### i18n.setParser(parser)
+Set an i18n library to use with Morebits.
+Examples:
+Use jquery-i18n:
+    Morebits.i18n.setParser({ get: $.i18n });
+Use banana-i18n or orange-i18n:
+    var banana = new Banana('en');
+    Morebits.i18n.setParser({ get: banana.i18n });
+
+**Kind**: static method of [<code>i18n</code>](#Morebits.i18n)  
+<table>
+  <thead>
+    <tr>
+      <th>Param</th><th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+<tr>
+    <td>parser</td><td><code>Object</code></td>
+    </tr>  </tbody>
+</table>
+
+<a name="Morebits.l10n"></a>
+
+### Morebits.l10n
+Wiki-specific configurations for Morebits
+
+**Kind**: static property of [<code>Morebits</code>](#Morebits)  
+
+* [.l10n](#Morebits.l10n)
+    * [.redirectTagAliases](#Morebits.l10n.redirectTagAliases)
+    * [.signatureTimestampFormat(str)](#Morebits.l10n.signatureTimestampFormat) ⇒ <code>Array.&lt;number&gt;</code> \| <code>null</code>
+
+<a name="Morebits.l10n.redirectTagAliases"></a>
+
+#### l10n.redirectTagAliases
+Local aliases for "redirect" magic word.
+Check using api.php?action=query&format=json&meta=siteinfo&formatversion=2&siprop=magicwords
+
+**Kind**: static property of [<code>l10n</code>](#Morebits.l10n)  
+<a name="Morebits.l10n.signatureTimestampFormat"></a>
+
+#### l10n.signatureTimestampFormat(str) ⇒ <code>Array.&lt;number&gt;</code> \| <code>null</code>
+Takes a string as argument and checks if it is a timestamp or not
+If not, it returns null. If yes, it returns an array of integers
+in the format [year, month, date, hour, minute, second]
+which can be passed to Date.UTC()
+
+**Kind**: static method of [<code>l10n</code>](#Morebits.l10n)  
+<table>
+  <thead>
+    <tr>
+      <th>Param</th><th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+<tr>
+    <td>str</td><td><code>string</code></td>
+    </tr>  </tbody>
+</table>
+
 <a name="Morebits.userIsSysop"></a>
 
 ### Morebits.userIsSysop : <code>boolean</code>
@@ -1947,7 +2005,7 @@ Utilities to help process IP addresses.
 #### ip.sanitizeIPv6(address) ⇒ <code>string</code>
 Converts an IPv6 address to the canonical form stored and used by MediaWiki.
 JavaScript translation of the [`IP::sanitizeIP()`](https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131)
-function from the IPUtils library.  Adddresses are verbose, uppercase,
+function from the IPUtils library.  Addresses are verbose, uppercase,
 normalized, and expanded to 8 words.
 
 **Kind**: static method of [<code>ip</code>](#Morebits.ip)  
@@ -1988,7 +2046,7 @@ Determine if the given IP address is a range.  Just conjoins
 
 #### ip.validCIDR() ⇒ <code>boolean</code>
 Check that an IP range is within the CIDR limits.  Most likely to be useful
-in conjunction with `wgRelevantUserName`.  CIDR limits are harcoded as /16
+in conjunction with `wgRelevantUserName`.  CIDR limits are hardcoded as /16
 for IPv4 and /32 for IPv6.
 
 **Kind**: static method of [<code>ip</code>](#Morebits.ip)  
@@ -2189,7 +2247,6 @@ infinite-length by MW.
 #### string.escapeRegExp(text) ⇒ <code>string</code>
 Escapes a string to be used in a RegExp, replacing spaces and
 underscores with `[_ ]` as they are often equivalent.
-Replaced RegExp.escape September 2020.
 
 **Kind**: static method of [<code>string</code>](#Morebits.string)  
 **Returns**: <code>string</code> - - The escaped text.  
@@ -2734,7 +2791,7 @@ Must be preceded by successfully calling `load()`.
 Warning: Calling `save()` can result in additional calls to the
 previous `load()` callbacks to recover from edit conflicts! In this
 case, callers must make the same edit to the new pageText and
-reinvoke `save()`.  This behavior can be disabled with
+re-invoke `save()`.  This behavior can be disabled with
 `setMaxConflictRetries(0)`.
 
 **Kind**: instance method of [<code>page</code>](#Morebits.wiki.page)  
@@ -3231,7 +3288,7 @@ the first non-redirect version of the page is retrieved.</p>
 <ol>
 <li>If there are no revisions among the first 50 that are
 non-redirects, or if there are less 50 revisions and all are
-redirects, the original creation is retrived.</li>
+redirects, the original creation is retrieved.</li>
 <li>Revisions that the user is not privileged to access
 (revdeled/suppressed) will be treated as non-redirects.</li>
 <li>Must not be used when the page has a non-wikitext contentmodel
@@ -4169,7 +4226,7 @@ Deprecated as of February 2021, use [sanitizeIPv6](#Morebits.ip.sanitizeIPv6).
 ### Morebits.isPageRedirect() ⇒ <code>boolean</code>
 Determines whether the current page is a redirect or soft redirect. Fails
 to detect soft redirects on edit, history, etc. pages.  Will attempt to
-detect [[Module:Redirect for discussion]], with the same failure points.
+detect Module:RfD, with the same failure points.
 
 **Kind**: static method of [<code>Morebits</code>](#Morebits)  
 <a name="Morebits.pageNameRegex"></a>
@@ -4191,6 +4248,45 @@ characters being escaped.  See also [namespaceRegex](#Morebits.namespaceRegex).
 <tr>
     <td>pageName</td><td><code>string</code></td><td><p>Page name without namespace.</p>
 </td>
+    </tr>  </tbody>
+</table>
+
+<a name="Morebits.createHtml"></a>
+
+### Morebits.createHtml(input) ⇒ <code>DocumentFragment</code>
+Converts string or array of DOM nodes into an HTML fragment.
+Wikilink syntax (`[[...]]`) is transformed into HTML anchor.
+Used in Morebits.quickForm and Morebits.status
+
+**Kind**: static method of [<code>Morebits</code>](#Morebits)  
+**Internal**:   
+<table>
+  <thead>
+    <tr>
+      <th>Param</th><th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+<tr>
+    <td>input</td><td><code>string</code> | <code>Node</code> | <code>Array</code></td>
+    </tr>  </tbody>
+</table>
+
+<a name="Morebits.createHtml.renderWikilinks"></a>
+
+### Morebits.createHtml.renderWikilinks(text) ⇒ <code>\*</code>
+Converts wikilinks to HTML anchor tags.
+
+**Kind**: static method of [<code>Morebits</code>](#Morebits)  
+<table>
+  <thead>
+    <tr>
+      <th>Param</th>
+    </tr>
+  </thead>
+  <tbody>
+<tr>
+    <td>text</td>
     </tr>  </tbody>
 </table>
 
@@ -4272,4 +4368,4 @@ with checkboxes inside a sortable table, so let's build our own.
     </tr>  </tbody>
 </table>
 
-**documentation generated on Tue Mar 09 2021**
+**documentation generated on Sat May 22 2021**

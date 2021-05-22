@@ -40,6 +40,90 @@
 var Morebits = {};
 window.Morebits = Morebits;  // allow global access
 
+/**
+ * i18n support for strings in Morebits
+ */
+Morebits.i18n = {
+	parser: null,
+	/**
+	 * Set an i18n library to use with Morebits.
+	 * Examples:
+	 * Use jquery-i18n:
+	 *     Morebits.i18n.setParser({ get: $.i18n });
+	 * Use banana-i18n or orange-i18n:
+	 *     var banana = new Banana('en');
+	 *     Morebits.i18n.setParser({ get: banana.i18n });
+	 * @param {Object} parser
+	 */
+	setParser: function(parser) {
+		if (!parser || typeof parser.get !== 'function') {
+			throw new Error('Morebits.i18n: parser must implement get()');
+		}
+		Morebits.i18n.parser = parser;
+	},
+	/**
+	 * @private
+	 * @returns {string}
+	 */
+	getMessage: function () {
+		var args = Array.prototype.slice.call(arguments); // array of size `n`
+		// 1st arg: message name
+		// 2nd to (n-1)th arg: message parameters
+		// nth arg: legacy English fallback
+		var msgName = args[0];
+		var fallback = args[args.length - 1];
+		if (!Morebits.i18n.parser) {
+			return fallback;
+		}
+		// i18n libraries are generally invoked with variable number of arguments
+		// as msg(msgName, ...parameters)
+		var i18nMessage = Morebits.i18n.parser.get.apply(null, args.slice(0, -1));
+		// if no i18n message exists, i18n libraries generally give back the message name
+		if (i18nMessage === msgName) {
+			return fallback;
+		}
+		return i18nMessage;
+	}
+};
+
+// shortcut
+var msg = Morebits.i18n.getMessage;
+
+
+/**
+ * Wiki-specific configurations for Morebits
+ */
+Morebits.l10n = {
+	/**
+	 * Local aliases for "redirect" magic word.
+	 * Check using api.php?action=query&format=json&meta=siteinfo&formatversion=2&siprop=magicwords
+	 */
+	redirectTagAliases: ['#REDIRECT'],
+
+	/**
+	 * Takes a string as argument and checks if it is a timestamp or not
+	 * If not, it returns null. If yes, it returns an array of integers
+	 * in the format [year, month, date, hour, minute, second]
+	 * which can be passed to Date.UTC()
+	 * @param {string} str
+	 * @returns {number[] | null}
+	 */
+	signatureTimestampFormat: function (str) {
+		// HH:mm, DD Month YYYY (UTC)
+		var rgx = /(\d{2}):(\d{2}), (\d{1,2}) (\w+) (\d{4}) \(UTC\)/;
+		var match = rgx.exec(str);
+		if (!match) {
+			return null;
+		}
+		var month = Morebits.date.localeData.months.indexOf(match[4]);
+		if (month === -1) {
+			return null;
+		}
+		// ..... year ... month .. date ... hour .... minute
+		return [match[5], month, match[3], match[1], match[2]];
+	}
+};
+
 
 /**
  * Simple helper function to see what groups a user might belong.
@@ -62,7 +146,7 @@ Morebits.userIsSysop = Morebits.userIsInGroup('sysop');
  * @deprecated Use {@link Morebits.ip.sanitizeIPv6}.
  * Converts an IPv6 address to the canonical form stored and used by MediaWiki.
  * JavaScript translation of the {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131|`IP::sanitizeIP()`}
- * function from the IPUtils library.  Adddresses are verbose, uppercase,
+ * function from the IPUtils library.  Addresses are verbose, uppercase,
  * normalized, and expanded to 8 words.
  *
  * @param {string} address - The IPv6 address, with or without CIDR.
@@ -76,12 +160,12 @@ Morebits.sanitizeIPv6 = function (address) {
 /**
  * Determines whether the current page is a redirect or soft redirect. Fails
  * to detect soft redirects on edit, history, etc. pages.  Will attempt to
- * detect [[Module:Redirect for discussion]], with the same failure points.
+ * detect Module:RfD, with the same failure points.
  *
  * @returns {boolean}
  */
 Morebits.isPageRedirect = function() {
-	return !!(mw.config.get('wgIsRedirect') || document.getElementById('softredirect') || $('.box-Redirect_for_discussion').length);
+	return !!(mw.config.get('wgIsRedirect') || document.getElementById('softredirect') || $('.box-RfD').length);
 };
 
 /**
@@ -114,6 +198,52 @@ Morebits.pageNameRegex = function(pageName) {
 };
 
 /**
+ * Converts string or array of DOM nodes into an HTML fragment.
+ * Wikilink syntax (`[[...]]`) is transformed into HTML anchor.
+ * Used in Morebits.quickForm and Morebits.status
+ * @internal
+ * @param {string|Node|Array} input
+ * @returns {DocumentFragment}
+ */
+Morebits.createHtml = function(input) {
+	var fragment = document.createDocumentFragment();
+	if (!Array.isArray(input)) {
+		input = [ input ];
+	}
+	for (var i = 0; i < input.length; ++i) {
+		if (input[i] instanceof Node) {
+			fragment.appendChild(input[i]);
+		} else {
+			$.parseHTML(Morebits.createHtml.renderWikilinks(input[i])).forEach(function(node) {
+				fragment.appendChild(node);
+			});
+		}
+	}
+	return fragment;
+};
+
+/**
+ * Converts wikilinks to HTML anchor tags.
+ * @param text
+ * @returns {*}
+ */
+Morebits.createHtml.renderWikilinks = function (text) {
+	var ub = new Morebits.unbinder(text);
+	// Don't convert wikilinks within code tags as they're used for displaying wiki-code
+	ub.unbind('<code>', '</code>');
+	ub.content = ub.content.replace(
+		/\[\[:?(?:([^|\]]+?)\|)?([^\]|]+?)\]\]/g,
+		function(_, target, text) {
+			if (!target) {
+				target = text;
+			}
+			return '<a target="_blank" href="' + mw.util.getUrl(target) +
+				'" title="' + target.replace(/"/g, '&#34;') + '">' + text + '</a>';
+		});
+	return ub.rebind();
+};
+
+/**
  * Create a string for use in regex matching all namespace aliases, regardless
  * of the capitalization and underscores/spaces.  Doesn't include the optional
  * leading `:`, but if there's more than one item, wraps the list in a
@@ -136,7 +266,7 @@ Morebits.namespaceRegex = function(namespaces) {
 	$.each(mw.config.get('wgNamespaceIds'), function(name, number) {
 		if (namespaces.indexOf(number) !== -1) {
 			// Namespaces are completely agnostic as to case,
-			// and a regex string is more useful/compatibile than a RegExp object,
+			// and a regex string is more useful/compatible than a RegExp object,
 			// so we accept any casing for any letter.
 			aliases.push(name.split('').map(function(char) {
 				return Morebits.pageNameRegex(char);
@@ -200,7 +330,7 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  * Create a new element for the the form.
  *
  * Index to Morebits.quickForm.element types:
- * - Global attributes: id, className, style, tooltip, extra, adminonly
+ * - Global attributes: id, className, style, tooltip, extra, $data, adminonly
  * - `select`: A combo box (aka drop-down).
  *     - Attributes: name, label, multiple, size, list, event, disabled
  *  - `option`: An element for a combo box.
@@ -235,6 +365,10 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  *      - Attributes: name, label, value, cols, rows, disabled, required, readonly
  *  - `fragment`: A DocumentFragment object.
  *      - No attributes, and no global attributes except adminonly.
+ * There is some difference on how types handle the `label` attribute:
+ * - `div`, `select`, `field`, `checkbox`/`radio`, `input`, `textarea`, `header`, and `dyninput` can accept an array of items,
+ * and the label item(s) can be `Element`s.
+ * - `option`, `optgroup`, `_dyninput_element`, `submit`, and `button` accept only a single string.
  *
  * @memberof Morebits.quickForm
  * @class
@@ -252,7 +386,6 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
 Morebits.quickForm.element = function QuickFormElement(data) {
 	this.data = data;
 	this.childs = [];
-	this.id = Morebits.quickForm.element.id++;
 };
 
 /**
@@ -297,12 +430,13 @@ Morebits.quickForm.element.prototype.render = function QuickFormElementRender(in
 	return currentNode[0];
 };
 
+
 /** @memberof Morebits.quickForm.element */
 Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(data, in_id) {
 	var node;
-	var childContainder = null;
+	var childContainer = null;
 	var label;
-	var id = (in_id ? in_id + '_' : '') + 'node_' + this.id;
+	var id = (in_id ? in_id + '_' : '') + 'node_' + Morebits.quickForm.element.id++;
 	if (data.adminonly && !Morebits.userIsSysop) {
 		// hell hack alpha
 		data.type = 'hidden';
@@ -329,7 +463,8 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.label) {
 				label = node.appendChild(document.createElement('label'));
 				label.setAttribute('for', id);
-				label.appendChild(document.createTextNode(data.label));
+				label.appendChild(Morebits.createHtml(data.label));
+				label.style.marginRight = '3px';
 			}
 			var select = node.appendChild(document.createElement('select'));
 			if (data.event) {
@@ -361,7 +496,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 					select.appendChild(subnode[0]);
 				}
 			}
-			childContainder = select;
+			childContainer = select;
 			break;
 		case 'option':
 			node = document.createElement('option');
@@ -394,7 +529,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		case 'field':
 			node = document.createElement('fieldset');
 			label = node.appendChild(document.createElement('legend'));
-			label.appendChild(document.createTextNode(data.label));
+			label.appendChild(Morebits.createHtml(data.label));
 			if (data.name) {
 				node.setAttribute('name', data.name);
 			}
@@ -411,7 +546,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 					current = data.list[i];
 					var cur_div;
 					if (current.type === 'header') {
-					// inline hack
+						// inline hack
 						cur_div = node.appendChild(document.createElement('h6'));
 						cur_div.appendChild(document.createTextNode(current.label));
 						if (current.tooltip) {
@@ -441,7 +576,8 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 						subnode.setAttribute('disabled', 'disabled');
 					}
 					label = cur_div.appendChild(document.createElement('label'));
-					label.appendChild(document.createTextNode(current.label));
+
+					label.appendChild(Morebits.createHtml(current.label));
 					label.setAttribute('for', cur_id);
 					if (current.tooltip) {
 						Morebits.quickForm.element.generateTooltip(label, current);
@@ -527,8 +663,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 
 			if (data.label) {
 				label = node.appendChild(document.createElement('label'));
-				label.appendChild(document.createTextNode(data.label));
+				label.appendChild(Morebits.createHtml(data.label));
 				label.setAttribute('for', data.id || id);
+				label.style.marginRight = '3px';
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
@@ -559,7 +696,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				subnode.addEventListener('keyup', data.event, false);
 			}
 
-			childContainder = subnode;
+			childContainer = subnode;
 			break;
 		case 'dyninput':
 			var min = data.min || 1;
@@ -568,8 +705,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createElement('div');
 
 			label = node.appendChild(document.createElement('h5'));
-			label.appendChild(document.createTextNode(data.label));
-
+			label.appendChild(Morebits.createHtml(data.label));
 			var listNode = node.appendChild(document.createElement('div'));
 
 			var more = this.compute({
@@ -621,6 +757,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label = node.appendChild(document.createElement('label'));
 				label.appendChild(document.createTextNode(data.label));
 				label.setAttribute('for', id);
+				label.style.marginRight = '3px';
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
@@ -669,7 +806,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			break;
 		case 'header':
 			node = document.createElement('h5');
-			node.appendChild(document.createTextNode(data.label));
+			node.appendChild(Morebits.createHtml(data.label));
 			break;
 		case 'div':
 			node = document.createElement('div');
@@ -677,46 +814,37 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				node.setAttribute('name', data.name);
 			}
 			if (data.label) {
-				if (!Array.isArray(data.label)) {
-					data.label = [ data.label ];
-				}
 				var result = document.createElement('span');
 				result.className = 'quickformDescription';
-				for (i = 0; i < data.label.length; ++i) {
-					if (typeof data.label[i] === 'string') {
-						result.appendChild(document.createTextNode(data.label[i]));
-					} else if (data.label[i] instanceof Element) {
-						result.appendChild(data.label[i]);
-					}
-				}
+				result.appendChild(Morebits.createHtml(data.label));
 				node.appendChild(result);
 			}
 			break;
 		case 'submit':
 			node = document.createElement('span');
-			childContainder = node.appendChild(document.createElement('input'));
-			childContainder.setAttribute('type', 'submit');
+			childContainer = node.appendChild(document.createElement('input'));
+			childContainer.setAttribute('type', 'submit');
 			if (data.label) {
-				childContainder.setAttribute('value', data.label);
+				childContainer.setAttribute('value', data.label);
 			}
-			childContainder.setAttribute('name', data.name || 'submit');
+			childContainer.setAttribute('name', data.name || 'submit');
 			if (data.disabled) {
-				childContainder.setAttribute('disabled', 'disabled');
+				childContainer.setAttribute('disabled', 'disabled');
 			}
 			break;
 		case 'button':
 			node = document.createElement('span');
-			childContainder = node.appendChild(document.createElement('input'));
-			childContainder.setAttribute('type', 'button');
+			childContainer = node.appendChild(document.createElement('input'));
+			childContainer.setAttribute('type', 'button');
 			if (data.label) {
-				childContainder.setAttribute('value', data.label);
+				childContainer.setAttribute('value', data.label);
 			}
-			childContainder.setAttribute('name', data.name);
+			childContainer.setAttribute('name', data.name);
 			if (data.disabled) {
-				childContainder.setAttribute('disabled', 'disabled');
+				childContainer.setAttribute('disabled', 'disabled');
 			}
 			if (data.event) {
-				childContainder.addEventListener('click', data.event, false);
+				childContainer.addEventListener('click', data.event, false);
 			}
 			break;
 		case 'textarea':
@@ -725,7 +853,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.label) {
 				label = node.appendChild(document.createElement('h5'));
 				var labelElement = document.createElement('label');
-				labelElement.textContent = data.label;
+				labelElement.appendChild(Morebits.createHtml(data.label));
 				labelElement.setAttribute('for', data.id || id);
 				label.appendChild(labelElement);
 			}
@@ -749,33 +877,36 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.value) {
 				subnode.value = data.value;
 			}
-			childContainder = subnode;
+			childContainer = subnode;
 			break;
 		default:
 			throw new Error('Morebits.quickForm: unknown element type ' + data.type.toString());
 	}
 
-	if (!childContainder) {
-		childContainder = node;
+	if (!childContainer) {
+		childContainer = node;
 	}
 	if (data.tooltip) {
 		Morebits.quickForm.element.generateTooltip(label || node, data);
 	}
 
 	if (data.extra) {
-		childContainder.extra = data.extra;
+		childContainer.extra = data.extra;
+	}
+	if (data.$data) {
+		$(childContainer).data(data.$data);
 	}
 	if (data.style) {
-		childContainder.setAttribute('style', data.style);
+		childContainer.setAttribute('style', data.style);
 	}
 	if (data.className) {
-		childContainder.className = childContainder.className ?
-			childContainder.className + ' ' + data.className :
+		childContainer.className = childContainer.className ?
+			childContainer.className + ' ' + data.className :
 			data.className;
 	}
-	childContainder.setAttribute('id', data.id || id);
+	childContainer.setAttribute('id', data.id || id);
 
-	return [ node, childContainder ];
+	return [ node, childContainer ];
 };
 
 /**
@@ -790,7 +921,7 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 	var tooltipButton = node.appendChild(document.createElement('span'));
 	tooltipButton.className = 'morebits-tooltipButton';
 	tooltipButton.title = data.tooltip; // Provides the content for jQuery UI
-	tooltipButton.appendChild(document.createTextNode('?'));
+	tooltipButton.appendChild(document.createTextNode(msg('tooltip-mark', '?')));
 	$(tooltipButton).tooltip({
 		position: { my: 'left top', at: 'center bottom', collision: 'flipfit' },
 		// Deprecated in UI 1.12, but MW stuck on 1.9.2 indefinitely; see #398 and T71386
@@ -907,7 +1038,7 @@ Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(ele
 Morebits.quickForm.getElementContainer = function QuickFormGetElementContainer(element) {
 	// for divs, headings and fieldsets, the container is the element itself
 	if (element instanceof HTMLFieldSetElement || element instanceof HTMLDivElement ||
-			element instanceof HTMLHeadingElement) {
+		element instanceof HTMLHeadingElement) {
 		return element;
 	}
 
@@ -926,12 +1057,12 @@ Morebits.quickForm.getElementContainer = function QuickFormGetElementContainer(e
 Morebits.quickForm.getElementLabelObject = function QuickFormGetElementLabelObject(element) {
 	// for buttons, divs and headers, the label is on the element itself
 	if (element.type === 'button' || element.type === 'submit' ||
-			element instanceof HTMLDivElement || element instanceof HTMLHeadingElement) {
+		element instanceof HTMLDivElement || element instanceof HTMLHeadingElement) {
 		return element;
-	// for fieldsets, the label is the child <legend> element
+		// for fieldsets, the label is the child <legend> element
 	} else if (element instanceof HTMLFieldSetElement) {
 		return element.getElementsByTagName('legend')[0];
-	// for textareas, the label is the sibling <h5> element
+		// for textareas, the label is the sibling <h5> element
 	} else if (element instanceof HTMLTextAreaElement) {
 		return element.parentNode.getElementsByTagName('h5')[0];
 	}
@@ -1147,7 +1278,7 @@ Morebits.ip = {
 	/**
 	 * Converts an IPv6 address to the canonical form stored and used by MediaWiki.
 	 * JavaScript translation of the {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131|`IP::sanitizeIP()`}
-	 * function from the IPUtils library.  Adddresses are verbose, uppercase,
+	 * function from the IPUtils library.  Addresses are verbose, uppercase,
 	 * normalized, and expanded to 8 words.
 	 *
 	 * @param {string} address - The IPv6 address, with or without CIDR.
@@ -1212,7 +1343,7 @@ Morebits.ip = {
 
 	/**
 	 * Check that an IP range is within the CIDR limits.  Most likely to be useful
-	 * in conjunction with `wgRelevantUserName`.  CIDR limits are harcoded as /16
+	 * in conjunction with `wgRelevantUserName`.  CIDR limits are hardcoded as /16
 	 * for IPv4 and /32 for IPv6.
 	 *
 	 * @returns {boolean} - True for valid ranges within the CIDR limits,
@@ -1255,30 +1386,6 @@ Morebits.ip = {
 		var ip_re = /^((?:[0-9A-F]{1,4}:){4})(?:[0-9A-F]{1,4}:){3}[0-9A-F]{1,4}(?:\/\d{1,3})?$/;
 		return ipv6.replace(ip_re, '$1' + '0:0:0:0/64');
 	}
-};
-
-
-/**
- * @external RegExp
- */
-/**
- * Deprecated as of September 2020, use {@link Morebits.string.escapeRegExp}
- * or `mw.util.escapeRegExp`.
- *
- * @function external:RegExp.escape
- * @deprecated Use {@link Morebits.string.escapeRegExp} or `mw.util.escapeRegExp`.
- * @param {string} text - String to be escaped.
- * @param {boolean} [space_fix=false] - Whether to replace spaces and
- * underscores with `[ _]` as they are often equivalent.
- * @returns {string} - The escaped text.
- */
-RegExp.escape = function(text, space_fix) {
-	if (space_fix) {
-		console.error('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with Morebits.string.escapeRegExp'); // eslint-disable-line no-console
-		return Morebits.string.escapeRegExp(text);
-	}
-	console.error('NOTE: RegExp.escape from Morebits was deprecated September 2020, please replace it with mw.util.escapeRegExp'); // eslint-disable-line no-console
-	return mw.util.escapeRegExp(text);
 };
 
 
@@ -1434,7 +1541,6 @@ Morebits.string = {
 	/**
 	 * Escapes a string to be used in a RegExp, replacing spaces and
 	 * underscores with `[_ ]` as they are often equivalent.
-	 * Replaced RegExp.escape September 2020.
 	 *
 	 * @param {string} text - String to be escaped.
 	 * @returns {string} - The escaped text.
@@ -1698,7 +1804,7 @@ Morebits.date = function() {
 			}
 		} else if (typeof param === 'string') {
 			// Wikitext signature timestamp
-			var dateParts = Morebits.date.localeData.signatureTimestampFormat(param);
+			var dateParts = Morebits.l10n.signatureTimestampFormat(param);
 			if (dateParts) {
 				this._d = new Date(Date.UTC.apply(null, dateParts));
 			}
@@ -1729,31 +1835,29 @@ Morebits.date = function() {
  * @private
  */
 Morebits.date.localeData = {
-	months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-	monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-	days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-	daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+	// message names here correspond to MediaWiki message names
+	months: [msg('january', 'January'), msg('february', 'February'), msg('march', 'March'),
+		msg('april', 'April'), msg('may_long', 'May'), msg('june', 'June'),
+		msg('july', 'July'), msg('august', 'August'), msg('september', 'September'),
+		msg('october', 'October'), msg('november', 'November'), msg('december', 'December')],
+	monthsShort: [msg('jan', 'Jan'), msg('feb', 'Feb'), msg('mar', 'Mar'),
+		msg('apr', 'Apr'), msg('may', 'May'), msg('jun', 'Jun'),
+		msg('jul', 'Jul'), msg('aug', 'Aug'), msg('sep', 'Sep'),
+		msg('oct', 'Oct'), msg('nov', 'Nov'), msg('dec', 'Dec')],
+	days: [msg('sunday', 'Sunday'), msg('monday', 'Monday'), msg('tuesday', 'Tuesday'),
+		msg('wednesday', 'Wednesday'), msg('thursday', 'Thursday'), msg('friday', 'Friday'),
+		msg('saturday', 'Saturday')],
+	daysShort: [msg('sun', 'Sun'), msg('mon', 'Mon'), msg('tue', 'Tue'),
+		msg('wed', 'Wed'), msg('thu', 'Thu'), msg('fri', 'Fri'),
+		msg('sat', 'Sat')],
+
 	relativeTimes: {
-		thisDay: '[Today at] h:mm A',
-		prevDay: '[Yesterday at] h:mm A',
-		nextDay: '[Tomorrow at] h:mm A',
-		thisWeek: 'dddd [at] h:mm A',
-		pastWeek: '[Last] dddd [at] h:mm A',
-		other: 'YYYY-MM-DD'
-	},
-	signatureTimestampFormat: function (str) {
-		// HH:mm, DD Month YYYY (UTC)
-		var rgx = /(\d{2}):(\d{2}), (\d{1,2}) (\w+) (\d{4}) \(UTC\)/;
-		var match = rgx.exec(str);
-		if (!match) {
-			return null;
-		}
-		var month = Morebits.date.localeData.months.indexOf(match[4]);
-		if (month === -1) {
-			return null;
-		}
-		// ..... year ... month .. date ... hour .... minute
-		return [match[5], month, match[3], match[1], match[2]];
+		thisDay: msg('relative-today', '[Today at] h:mm A'),
+		prevDay: msg('relative-prevday', '[Yesterday at] h:mm A'),
+		nextDay: msg('relative-nextday', '[Tomorrow at] h:mm A'),
+		thisWeek: msg('relative-thisweek', 'dddd [at] h:mm A'),
+		pastWeek: msg('relative-pastweek', '[Last] dddd [at] h:mm A'),
+		other: msg('relative-other', 'YYYY-MM-DD')
 	}
 };
 
@@ -1884,22 +1988,22 @@ Morebits.date.prototype = {
 	 * | Syntax | Output |
 	 * |--------|--------|
 	 * | H | Hours (24-hour) |
-	 * | HH | Hours (24-hour, padded) |
+	 * | HH | Hours (24-hour, padded to 2 digits) |
 	 * | h | Hours (12-hour) |
-	 * | hh | Hours (12-hour, padded) |
+	 * | hh | Hours (12-hour, padded to 2 digits) |
 	 * | A | AM or PM |
 	 * | m | Minutes |
-	 * | mm | Minutes (padded) |
+	 * | mm | Minutes (padded to 2 digits) |
 	 * | s | Seconds |
-	 * | ss | Seconds (padded) |
-	 * | SSS | Milliseconds fragment, padded |
+	 * | ss | Seconds (padded to 2 digits) |
+	 * | SSS | Milliseconds fragment, 3 digits |
 	 * | d | Day number of the week (Sun=0) |
 	 * | ddd | Abbreviated day name |
 	 * | dddd | Full day name |
 	 * | D | Date |
-	 * | DD | Date (padded) |
-	 * | M | Month number (0-indexed) |
-	 * | MM | Month number (0-indexed, padded) |
+	 * | DD | Date (padded to 2 digits) |
+	 * | M | Month number (1-indexed) |
+	 * | MM | Month number (1-indexed, padded to 2 digits) |
 	 * | MMM | Abbreviated month name |
 	 * | MMMM | Full month name |
 	 * | Y | Year |
@@ -1937,7 +2041,7 @@ Morebits.date.prototype = {
 		};
 		var h24 = udate.getHours(), m = udate.getMinutes(), s = udate.getSeconds(), ms = udate.getMilliseconds();
 		var D = udate.getDate(), M = udate.getMonth() + 1, Y = udate.getFullYear();
-		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? 'PM' : 'AM';
+		var h12 = h24 % 12 || 12, amOrPm = h24 >= 12 ? msg('period-pm', 'PM') : msg('period-am', 'AM');
 		var replacementMap = {
 			HH: pad(h24), H: h24, hh: pad(h12), h: h12, A: amOrPm,
 			mm: pad(m), m: m,
@@ -1953,9 +2057,9 @@ Morebits.date.prototype = {
 		unbinder.unbind('\\[', '\\]');
 		unbinder.content = unbinder.content.replace(
 			/* Regex notes:
-			 * d(d{2,3})? matches exactly 1, 3 or 4 occurrences of 'd' ('dd' is treated as a double match of 'd')
-			 * Y{1,2}(Y{2})? matches exactly 1, 2 or 4 occurrences of 'Y'
-			 */
+		 * d(d{2,3})? matches exactly 1, 3 or 4 occurrences of 'd' ('dd' is treated as a double match of 'd')
+		 * Y{1,2}(Y{2})? matches exactly 1, 2 or 4 occurrences of 'Y'
+		 */
 			/H{1,2}|h{1,2}|m{1,2}|s{1,2}|SSS|d(d{2,3})?|D{1,2}|M{1,4}|Y{1,2}(Y{2})?|A/g,
 			function(match) {
 				return replacementMap[match];
@@ -2296,7 +2400,7 @@ Morebits.wiki.api.prototype = {
 					// as the first argument to the callback (for legacy code)
 					this.onSuccess.call(this.parent, this);
 				} else {
-					this.statelem.info('done');
+					this.statelem.info(msg('done', 'done'));
 				}
 
 				Morebits.wiki.actionCompleted();
@@ -2308,7 +2412,7 @@ Morebits.wiki.api.prototype = {
 			function onAPIfailure(jqXHR, statusText, errorThrown) {
 				this.statusText = statusText;
 				this.errorThrown = errorThrown; // frequently undefined
-				this.errorText = statusText + ' "' + jqXHR.statusText + '" occurred while contacting the API.';
+				this.errorText = msg('api-error', statusText, jqXHR.statusText, statusText + ' "' + jqXHR.statusText + '" occurred while contacting the API.');
 				return this.returnError();
 			}
 
@@ -2317,7 +2421,7 @@ Morebits.wiki.api.prototype = {
 
 	returnError: function(callerAjaxParameters) {
 		if (this.errorCode === 'badtoken' && !this.badtokenRetry) {
-			this.statelem.warn('Invalid token. Getting a new token and retrying...');
+			this.statelem.warn(msg('invalid-token-retrying', 'Invalid token. Getting a new token and retrying...'));
 			this.badtokenRetry = true;
 			// Get a new CSRF token and retry. If the original action needs a different
 			// type of action than CSRF, we do one pointless retry before bailing out
@@ -2401,7 +2505,7 @@ var morebitsWikiChangeTag = '';
  * @returns {string} MediaWiki CSRF token.
  */
 Morebits.wiki.api.getToken = function() {
-	var tokenApi = new Morebits.wiki.api('Getting token', {
+	var tokenApi = new Morebits.wiki.api(msg('getting-token', 'Getting token'), {
 		action: 'query',
 		meta: 'tokens',
 		type: 'csrf',
@@ -2464,7 +2568,7 @@ Morebits.wiki.api.getToken = function() {
 Morebits.wiki.page = function(pageName, status) {
 
 	if (!status) {
-		status = 'Opening page "' + pageName + '"';
+		status = msg('opening-page', pageName, 'Opening page "' + pageName + '"');
 	}
 
 	/**
@@ -2631,7 +2735,7 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.loadQuery.inprop += '|protection';
 		}
 
-		ctx.loadApi = new Morebits.wiki.api('Retrieving page...', ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
+		ctx.loadApi = new Morebits.wiki.api(msg('retrieving-page', 'Retrieving page...'), ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
 		ctx.loadApi.setParent(this);
 		ctx.loadApi.post();
 	};
@@ -2643,7 +2747,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * Warning: Calling `save()` can result in additional calls to the
 	 * previous `load()` callbacks to recover from edit conflicts! In this
 	 * case, callers must make the same edit to the new pageText and
-	 * reinvoke `save()`.  This behavior can be disabled with
+	 * re-invoke `save()`.  This behavior can be disabled with
 	 * `setMaxConflictRetries(0)`.
 	 *
 	 * @param {Function} [onSuccess] - Callback function which is called when the save has succeeded.
@@ -2676,10 +2780,18 @@ Morebits.wiki.page = function(pageName, status) {
 
 		// shouldn't happen if canUseMwUserToken === true
 		if (ctx.fullyProtected && !ctx.suppressProtectWarning &&
-			!confirm('You are about to make an edit to the fully protected page "' + ctx.pageName +
-			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(ctx.fullyProtected).calendar('utc') + ' (UTC))') +
-			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
-			ctx.statusElement.error('Edit to fully protected page was aborted.');
+			!confirm(
+				ctx.fullyProtected === 'infinity'
+					? msg('protected-indef-edit-warning', ctx.pageName,
+					'You are about to make an edit to the fully protected page "' + ctx.pageName + '" (protected indefinitely).  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.'
+					)
+					: msg('protected-edit-warning', ctx.pageName, ctx.fullyProtected,
+					'You are about to make an edit to the fully protected page "' + ctx.pageName +
+					'" (protection expiring ' + new Morebits.date(ctx.fullyProtected).calendar('utc') + ' (UTC)).  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.'
+					)
+			)
+		) {
+			ctx.statusElement.error(msg('protected-aborted', 'Edit to fully protected page was aborted.'));
 			ctx.onSaveFailure(this);
 			return;
 		}
@@ -2713,7 +2825,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.notminor = true;  // force Twinkle config to override user preference setting for "all edits are minor"
 		}
 
-		// Set bot edit attribute. If this paramter is present with any value, it is interpreted as true
+		// Set bot edit attribute. If this parameter is present with any value, it is interpreted as true
 		if (ctx.botEdit) {
 			query.bot = true;
 		}
@@ -2770,7 +2882,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.redirect = true;
 		}
 
-		ctx.saveApi = new Morebits.wiki.api('Saving page...', query, fnSaveSuccess, ctx.statusElement, fnSaveError);
+		ctx.saveApi = new Morebits.wiki.api(msg('saving-page', 'Saving page...'), query, fnSaveSuccess, ctx.statusElement, fnSaveError);
 		ctx.saveApi.setParent(this);
 		ctx.saveApi.post();
 	};
@@ -3103,7 +3215,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * Warning:
 	 * 1. If there are no revisions among the first 50 that are
 	 * non-redirects, or if there are less 50 revisions and all are
-	 * redirects, the original creation is retrived.
+	 * redirects, the original creation is retrieved.
 	 * 2. Revisions that the user is not privileged to access
 	 * (revdeled/suppressed) will be treated as non-redirects.
 	 * 3. Must not be used when the page has a non-wikitext contentmodel
@@ -3334,7 +3446,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', query, fnLookupCreationSuccess, ctx.statusElement, ctx.onLookupCreationFailure);
+		ctx.lookupCreationApi = new Morebits.wiki.api(msg('getting-creator', 'Retrieving page creation information'), query, fnLookupCreationSuccess, ctx.statusElement, ctx.onLookupCreationFailure);
 		ctx.lookupCreationApi.setParent(this);
 		ctx.lookupCreationApi.post();
 	};
@@ -3384,7 +3496,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			var query = fnNeedTokenInfoQuery('move');
 
-			ctx.moveApi = new Morebits.wiki.api('retrieving token...', query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
+			ctx.moveApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
 			ctx.moveApi.setParent(this);
 			ctx.moveApi.post();
 		}
@@ -3423,7 +3535,7 @@ Morebits.wiki.page = function(pageName, status) {
 				format: 'json'
 			};
 
-			ctx.patrolApi = new Morebits.wiki.api('retrieving token...', patrolQuery, fnProcessPatrol);
+			ctx.patrolApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), patrolQuery, fnProcessPatrol);
 			ctx.patrolApi.setParent(this);
 			ctx.patrolApi.post();
 		}
@@ -3462,7 +3574,7 @@ Morebits.wiki.page = function(pageName, status) {
 			} else {
 				var query = fnNeedTokenInfoQuery('triage');
 
-				ctx.triageApi = new Morebits.wiki.api('retrieving token...', query, fnProcessTriageList);
+				ctx.triageApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessTriageList);
 				ctx.triageApi.setParent(this);
 				ctx.triageApi.post();
 			}
@@ -3489,7 +3601,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			var query = fnNeedTokenInfoQuery('delete');
 
-			ctx.deleteApi = new Morebits.wiki.api('retrieving token...', query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
+			ctx.deleteApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
 			ctx.deleteApi.setParent(this);
 			ctx.deleteApi.post();
 		}
@@ -3514,7 +3626,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			var query = fnNeedTokenInfoQuery('undelete');
 
-			ctx.undeleteApi = new Morebits.wiki.api('retrieving token...', query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
+			ctx.undeleteApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
 			ctx.undeleteApi.setParent(this);
 			ctx.undeleteApi.post();
 		}
@@ -3545,7 +3657,7 @@ Morebits.wiki.page = function(pageName, status) {
 		// protection levels from the server
 		var query = fnNeedTokenInfoQuery('protect');
 
-		ctx.protectApi = new Morebits.wiki.api('retrieving token...', query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectApi.setParent(this);
 		ctx.protectApi.post();
 	};
@@ -3580,16 +3692,16 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			var query = fnNeedTokenInfoQuery('stabilize');
 
-			ctx.stabilizeApi = new Morebits.wiki.api('retrieving token...', query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
+			ctx.stabilizeApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
 			ctx.stabilizeApi.setParent(this);
 			ctx.stabilizeApi.post();
 		}
 	};
 
 	/*
-	 * Private member functions
-	 * These are not exposed outside
-	 */
+ * Private member functions
+ * These are not exposed outside
+ */
 
 	/**
 	 * Determines whether we can save an API call by using the csrf token
@@ -3703,7 +3815,7 @@ Morebits.wiki.page = function(pageName, status) {
 		}
 		ctx.csrfToken = response.tokens.csrftoken;
 		if (!ctx.csrfToken) {
-			ctx.statusElement.error('Failed to retrieve edit token.');
+			ctx.statusElement.error(msg('token-fetch-fail', 'Failed to retrieve edit token.'));
 			ctx.onLoadFailure(this);
 			return;
 		}
@@ -3777,7 +3889,7 @@ Morebits.wiki.page = function(pageName, status) {
 		if (page) {
 			// check for invalid titles
 			if (page.invalid) {
-				ctx.statusElement.error('The page title is invalid: ' + ctx.pageName);
+				ctx.statusElement.error(msg('invalid-title', ctx.pageName, 'The page title is invalid: ' + ctx.pageName));
 				onFailure(this);
 				return false; // abort
 			}
@@ -3790,20 +3902,20 @@ Morebits.wiki.page = function(pageName, status) {
 				var origNs = new mw.Title(ctx.pageName).namespace;
 				var newNs = new mw.Title(resolvedName).namespace;
 				if (origNs !== newNs && !ctx.followCrossNsRedirect) {
-					ctx.statusElement.error(ctx.pageName + ' is a cross-namespace redirect to ' + resolvedName + ', aborted');
+					ctx.statusElement.error(msg('cross-redirect-abort', ctx.pageName, resolvedName, ctx.pageName + ' is a cross-namespace redirect to ' + resolvedName + ', aborted'));
 					onFailure(this);
 					return false;
 				}
 
 				// only notify user for redirects, not normalization
-				new Morebits.status('Note', 'Redirected from ' + ctx.pageName + ' to ' + resolvedName);
+				new Morebits.status('Note', msg('redirected', ctx.pageName, resolvedName, 'Redirected from ' + ctx.pageName + ' to ' + resolvedName));
 			}
 
 			ctx.pageName = resolvedName; // update to redirect target or normalized name
 
 		} else {
 			// could be a circular redirect or other problem
-			ctx.statusElement.error('Could not resolve redirects for: ' + ctx.pageName);
+			ctx.statusElement.error(msg('redirect-resolution-fail', ctx.pageName, 'Could not resolve redirects for: ' + ctx.pageName));
 			onFailure(this);
 
 			// force error to stay on the screen
@@ -3880,7 +3992,7 @@ Morebits.wiki.page = function(pageName, status) {
 		if (response.edit.captcha) {
 			ctx.statusElement.error('Could not save the page because the wiki server wanted you to fill out a CAPTCHA.');
 		} else {
-			ctx.statusElement.error('Unknown error received from API while saving page');
+			ctx.statusElement.error(msg('api-error-unknown', 'Unknown error received from API while saving page'));
 		}
 
 		// force error to stay on the screen
@@ -3902,10 +4014,10 @@ Morebits.wiki.page = function(pageName, status) {
 				titles: ctx.pageName  // redirects are already resolved
 			};
 
-			var purgeApi = new Morebits.wiki.api('Edit conflict detected, purging server cache', purgeQuery, function() {
+			var purgeApi = new Morebits.wiki.api(msg('editconflict-purging', 'Edit conflict detected, purging server cache'), purgeQuery, function() {
 				--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 
-				ctx.statusElement.info('Edit conflict detected, reapplying edit');
+				ctx.statusElement.info(msg('editconflict-retrying', 'Edit conflict detected, reapplying edit'));
 				if (fnCanUseMwUserToken('edit')) {
 					ctx.saveApi.post(); // necessarily append, prepend, or newSection, so this should work as desired
 				} else {
@@ -3914,19 +4026,19 @@ Morebits.wiki.page = function(pageName, status) {
 			}, ctx.statusElement);
 			purgeApi.post();
 
-		// check for network or server error
+			// check for network or server error
 		} else if ((errorCode === null || errorCode === undefined) && ctx.retries++ < ctx.maxRetries) {
 
 			// the error might be transient, so try again
-			ctx.statusElement.info('Save failed, retrying in 2 seconds ...');
+			ctx.statusElement.info(msg('save-failed-retrying', 2, 'Save failed, retrying in 2 seconds ...'));
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 
-			// wait for sometime for client to regain connnectivity
+			// wait for sometime for client to regain connectivity
 			sleep(2000).then(function() {
 				ctx.saveApi.post(); // give it another go!
 			});
 
-		// hard error, give up
+			// hard error, give up
 		} else {
 
 			switch (errorCode) {
@@ -3963,6 +4075,15 @@ Morebits.wiki.page = function(pageName, status) {
 		}
 	};
 
+	var isTextRedirect = function(text) {
+		if (!text) { // no text - content empty or inaccessible (revdelled or suppressed)
+			return false;
+		}
+		return Morebits.l10n.redirectTagAliases.some(function(tag) {
+			return new RegExp('^\\s*' + tag + '\\W', 'i').test(text);
+		});
+	};
+
 	var fnLookupCreationSuccess = function() {
 		var response = ctx.lookupCreationApi.getResponse().query;
 
@@ -3977,7 +4098,7 @@ Morebits.wiki.page = function(pageName, status) {
 			return;
 		}
 
-		if (!ctx.lookupNonRedirectCreator || !/^\s*#redirect/i.test(rev.content)) {
+		if (!ctx.lookupNonRedirectCreator || !isTextRedirect(rev.content)) {
 
 			ctx.creator = rev.user;
 			if (!ctx.creator) {
@@ -4011,7 +4132,8 @@ Morebits.wiki.page = function(pageName, status) {
 		var revs = response.pages[0].revisions;
 
 		for (var i = 0; i < revs.length; i++) {
-			if (!/^\s*#redirect/i.test(revs[i].content)) { // inaccessible revisions also check out
+
+			if (!isTextRedirect(revs[i].content)) {
 				ctx.creator = revs[i].user;
 				ctx.timestamp = revs[i].timestamp;
 				break;
@@ -4101,8 +4223,8 @@ Morebits.wiki.page = function(pageName, status) {
 		}
 		if (editprot && !ctx.suppressProtectWarning &&
 			!confirm('You are about to ' + action + ' the fully protected page "' + ctx.pageName +
-			(editprot.expiry === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.expiry).calendar('utc') + ' (UTC))') +
-			'.  \n\nClick OK to proceed with ' + action + ', or Cancel to skip.')) {
+				(editprot.expiry === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.expiry).calendar('utc') + ' (UTC))') +
+				'.  \n\nClick OK to proceed with ' + action + ', or Cancel to skip.')) {
 			ctx.statusElement.error('Aborted ' + action + ' on fully protected page.');
 			onFailure(this);
 			return false;
@@ -4161,7 +4283,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.noredirect = 'true';
 		}
 
-		ctx.moveProcessApi = new Morebits.wiki.api('moving page...', query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
+		ctx.moveProcessApi = new Morebits.wiki.api(msg('moving-page', 'moving page...'), query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
 		ctx.moveProcessApi.setParent(this);
 		ctx.moveProcessApi.post();
 	};
@@ -4319,7 +4441,7 @@ Morebits.wiki.page = function(pageName, status) {
 			if (ctx.onDeleteFailure) {
 				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
 			}
-		// hard error, give up
+			// hard error, give up
 		} else {
 			ctx.statusElement.error('Failed to delete the page: ' + ctx.deleteProcessApi.getErrorText());
 			if (ctx.onDeleteFailure) {
@@ -4390,7 +4512,7 @@ Morebits.wiki.page = function(pageName, status) {
 			if (ctx.onUndeleteFailure) {
 				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
 			}
-		// hard error, give up
+			// hard error, give up
 		} else {
 			ctx.statusElement.error('Failed to undelete the page: ' + ctx.undeleteProcessApi.getErrorText());
 			if (ctx.onUndeleteFailure) {
@@ -4451,8 +4573,8 @@ Morebits.wiki.page = function(pageName, status) {
 			if (((!ctx.protectEdit || ctx.protectEdit.level !== 'sysop') ||
 				(!ctx.protectMove || ctx.protectMove.level !== 'sysop')) &&
 				!confirm('You have cascading protection enabled on "' + ctx.pageName +
-				'" but have not selected uniform sysop-level protection.\n\n' +
-				'Click OK to adjust and proceed with sysop-level cascading protection, or Cancel to skip this action.')) {
+					'" but have not selected uniform sysop-level protection.\n\n' +
+					'Click OK to adjust and proceed with sysop-level cascading protection, or Cancel to skip this action.')) {
 				ctx.statusElement.error('Cascading protection was aborted.');
 				ctx.onProtectFailure(this);
 				return;
@@ -4540,10 +4662,10 @@ Morebits.wiki.page = function(pageName, status) {
 		};
 
 		/* Doesn't support watchlist expiry [[phab:T263336]]
-		if (fnApplyWatchlistExpiry()) {
-			query.watchlistexpiry = ctx.watchlistExpiry;
-		}
-		*/
+	if (fnApplyWatchlistExpiry()) {
+		query.watchlistexpiry = ctx.watchlistExpiry;
+	}
+	*/
 
 		ctx.stabilizeProcessApi = new Morebits.wiki.api('configuring stabilization settings...', query, ctx.onStabilizeSuccess, ctx.statusElement, ctx.onStabilizeFailure);
 		ctx.stabilizeProcessApi.setParent(this);
@@ -4774,7 +4896,7 @@ Morebits.wikitext.page.prototype = {
 	 * @returns {Morebits.wikitext.page}
 	 */
 	removeLink: function(link_target) {
-		// Rempve a leading colon, to be handled later
+		// Remove a leading colon, to be handled later
 		if (link_target.indexOf(':') === 0) {
 			link_target = link_target.slice(1);
 		}
@@ -4836,8 +4958,8 @@ Morebits.wikitext.page.prototype = {
 		// unbind the newly created comments
 		unbinder.unbind('<!--', '-->');
 
-		// Check free image usages, for example as template arguments, might have the File: prefix excluded, but must be preceeded by an |
-		// Will only eat the image name and the preceeding bar and an eventual named parameter
+		// Check free image usages, for example as template arguments, might have the File: prefix excluded, but must be preceded by an |
+		// Will only eat the image name and the preceding bar and an eventual named parameter
 		var free_image_re = new RegExp('(\\|\\s*(?:[\\w\\s]+\\=)?\\s*(?:' + Morebits.namespaceRegex(6) + ':\\s*)?' + image_re_string + ')', 'mg');
 		unbinder.content = unbinder.content.replace(free_image_re, '<!-- ' + reason + '$1 -->');
 		// Rebind the content now, we are done!
@@ -5047,7 +5169,7 @@ Morebits.userspaceLogger = function(logPageName) {
 
 Morebits.status = function Status(text, stat, type) {
 	this.textRaw = text;
-	this.text = this.codify(text);
+	this.text = Morebits.createHtml(text);
 	this.type = type || 'status';
 	this.generate();
 	if (stat) {
@@ -5115,33 +5237,6 @@ Morebits.status.prototype = {
 	},
 
 	/**
-	 * Create a document fragment with the status text, parsing as HTML.
-	 * Runs upon construction for text (part before colon) and upon
-	 * render/update for status (part after colon).
-	 *
-	 * @param {(string|Element|Array)} obj
-	 * @returns {DocumentFragment}
-	 */
-	codify: function(obj) {
-		if (!Array.isArray(obj)) {
-			obj = [ obj ];
-		}
-		var result;
-		result = document.createDocumentFragment();
-		for (var i = 0; i < obj.length; ++i) {
-			if (obj[i] instanceof Element) {
-				result.appendChild(obj[i]);
-			} else {
-				$.parseHTML(obj[i]).forEach(function(elem) {
-					result.appendChild(elem);
-				});
-			}
-		}
-		return result;
-
-	},
-
-	/**
 	 * Update the status.
 	 *
 	 * @param {string} status - Part of status message after colon.
@@ -5150,7 +5245,7 @@ Morebits.status.prototype = {
 	 */
 	update: function(status, type) {
 		this.statRaw = status;
-		this.stat = this.codify(status);
+		this.stat = Morebits.createHtml(status);
 		if (type) {
 			this.type = type;
 			if (type === 'error') {
@@ -5401,7 +5496,7 @@ Morebits.batchOperation = function(currentAction) {
 		},
 
 		// internal counters, etc.
-		statusElement: new Morebits.status(currentAction || 'Performing batch operation'),
+		statusElement: new Morebits.status(currentAction || msg('batch-starting', 'Performing batch operation')),
 		worker: null, // function that executes for each item in pageList
 		postFinish: null, // function that executes when the whole batch has been processed
 		countStarted: 0,
@@ -5468,7 +5563,7 @@ Morebits.batchOperation = function(currentAction) {
 
 		var total = ctx.pageList.length;
 		if (!total) {
-			ctx.statusElement.info('no pages specified');
+			ctx.statusElement.info(msg('batch-no-pages', 'no pages specified'));
 			ctx.running = false;
 			if (ctx.postFinish) {
 				ctx.postFinish();
@@ -5486,7 +5581,7 @@ Morebits.batchOperation = function(currentAction) {
 	};
 
 	/**
-	 * To be called by worker before it terminates succesfully.
+	 * To be called by worker before it terminates successfully.
 	 *
 	 * @param {(Morebits.wiki.page|Morebits.wiki.api|string)} arg -
 	 * This should be the `Morebits.wiki.page` or `Morebits.wiki.api` object used by worker
@@ -5496,13 +5591,6 @@ Morebits.batchOperation = function(currentAction) {
 	 */
 	this.workerSuccess = function(arg) {
 
-		var createPageLink = function(pageName) {
-			var link = document.createElement('a');
-			link.setAttribute('href', mw.util.getUrl(pageName));
-			link.appendChild(document.createTextNode(pageName));
-			return link;
-		};
-
 		if (arg instanceof Morebits.wiki.api || arg instanceof Morebits.wiki.page) {
 			// update or remove status line
 			var statelem = arg.getStatusElement();
@@ -5510,10 +5598,10 @@ Morebits.batchOperation = function(currentAction) {
 				if (arg.getPageName || arg.pageName || (arg.query && arg.query.title)) {
 					// we know the page title - display a relevant message
 					var pageName = arg.getPageName ? arg.getPageName() : arg.pageName || arg.query.title;
-					statelem.info(['completed (', createPageLink(pageName), ')']);
+					statelem.info(msg('batch-done-page', pageName, 'completed ([[' + pageName + ']])'));
 				} else {
 					// we don't know the page title - just display a generic message
-					statelem.info('done');
+					statelem.info(msg('done', 'done'));
 				}
 			} else {
 				// remove the status line automatically produced by Morebits.wiki.*
@@ -5521,7 +5609,7 @@ Morebits.batchOperation = function(currentAction) {
 			}
 
 		} else if (typeof arg === 'string' && ctx.options.preserveIndividualStatusLines) {
-			new Morebits.status(arg, ['done (', createPageLink(arg), ')']);
+			new Morebits.status(arg, msg('batch-done-page', arg, 'completed ([[' + arg + ']])'));
 		}
 
 		ctx.countFinishedSuccess++;
@@ -5555,7 +5643,8 @@ Morebits.batchOperation = function(currentAction) {
 		// update overall status line
 		var total = ctx.pageList.length;
 		if (ctx.countFinished < total) {
-			ctx.statusElement.status(parseInt(100 * ctx.countFinished / total, 10) + '%');
+			var progress = Math.round(100 * ctx.countFinished / total);
+			ctx.statusElement.status(msg('percent', progress, progress + '%'));
 
 			// start a new chunk if we're close enough to the end of the previous chunk, and
 			// we haven't already started the next one
@@ -5564,8 +5653,8 @@ Morebits.batchOperation = function(currentAction) {
 				fnStartNewChunk();
 			}
 		} else if (ctx.countFinished === total) {
-			var statusString = 'Done (' + ctx.countFinishedSuccess +
-				'/' + ctx.countFinished + ' actions completed successfully)';
+			var statusString = msg('batch-progress', ctx.countFinishedSuccess, ctx.countFinished, 'Done (' + ctx.countFinishedSuccess +
+				'/' + ctx.countFinished + ' actions completed successfully)');
 			if (ctx.countFinishedSuccess < ctx.countFinished) {
 				ctx.statusElement.warn(statusString);
 			} else {
@@ -5865,7 +5954,7 @@ Morebits.simpleWindow.prototype = {
 		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
 			value.style.display = 'none';
 			var button = document.createElement('button');
-			button.textContent = value.hasAttribute('value') ? value.getAttribute('value') : value.textContent ? value.textContent : 'Submit Query';
+			button.textContent = value.hasAttribute('value') ? value.getAttribute('value') : value.textContent ? value.textContent : msg('submit', 'Submit Query');
 			button.className = value.className || 'submitButtonProxy';
 			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
 			button.addEventListener('click', function() {
@@ -5913,7 +6002,7 @@ Morebits.simpleWindow.prototype = {
 		var $footerlinks = $(this.content).dialog('widget').find('.morebits-dialog-footerlinks');
 		if (this.hasFooterLinks) {
 			var bullet = document.createElement('span');
-			bullet.textContent = ' \u2022 ';  // U+2022 BULLET
+			bullet.textContent = msg('bullet-separator', ' \u2022 ');  // U+2022 BULLET
 			if (prep) {
 				$footerlinks.prepend(bullet);
 			} else {

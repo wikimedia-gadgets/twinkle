@@ -170,16 +170,24 @@
               <div class="summary-content">
                 <div class="summary-column">
                   <dl class="dl-summary-callout">
+                    <dt><a href="Morebits.html#.i18n">i18n</a></dt>
+                    <dd>
+                      <p>i18n support for strings in Morebits.</p>
+                    </dd>
+                    <dt><a href="Morebits.html#.l10n">l10n</a></dt>
+                    <dd>
+                      <p>Wiki-specific configurations for Morebits.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
                     <dt><a href="Morebits.html#.pageNameNorm">pageNameNorm</a></dt>
                     <dd>
                       <p>Stores a normalized (underscores converted to spaces) version of the
                         <code>wgPageName</code> variable.
                       </p>
                     </dd>
-                  </dl>
-                </div>
-                <div class="summary-column">
-                  <dl class="dl-summary-callout">
                     <dt><a href="Morebits.html#.userIsSysop">userIsSysop</a></dt>
                     <dd>
                       <p>Hardcodes whether the user is a sysop, used a lot.</p>
@@ -199,6 +207,18 @@
                     <dd>
                       <p>Add shift-click support for checkboxes.</p>
                     </dd>
+                    <dt><a href="Morebits.html#.createHtml">createHtml(input)</a></dt>
+                    <dd>
+                      <p>Converts string or array of DOM nodes into an HTML fragment.</p>
+                    </dd>
+                    <dt><a href="Morebits.html#.createHtml.renderWikilinks">createHtml.<wbr>renderWikilinks(text)</a></dt>
+                    <dd>
+                      <p>Converts wikilinks to HTML anchor tags.</p>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
                     <dt><a href="Morebits.html#.htmlNode">htmlNode(type, content[, color])</a></dt>
                     <dd>
                       <p>Simple helper function to create a simple node.</p>
@@ -207,15 +227,15 @@
                     <dd>
                       <p>Determines whether the current page is a redirect or soft redirect.</p>
                     </dd>
-                  </dl>
-                </div>
-                <div class="summary-column">
-                  <dl class="dl-summary-callout">
                     <dt><a href="Morebits.html#.namespaceRegex">namespaceRegex(namespaces)</a></dt>
                     <dd>
                       <p>Create a string for use in regex matching all namespace aliases, regardless
                         of the capitalization and underscores/spaces.</p>
                     </dd>
+                  </dl>
+                </div>
+                <div class="summary-column">
+                  <dl class="dl-summary-callout">
                     <dt><a href="Morebits.html#.pageNameRegex">pageNameRegex(pageName)</a></dt>
                     <dd>
                       <p>Create a string for use in regex matching a page name.</p>
@@ -224,10 +244,6 @@
                     <dd>
                       <p>Deprecated as of February 2021, use <a href="Morebits.ip.html#.sanitizeIPv6">Morebits.ip.sanitizeIPv6</a>.</p>
                     </dd>
-                  </dl>
-                </div>
-                <div class="summary-column">
-                  <dl class="dl-summary-callout">
                     <dt><a href="Morebits.html#.userIsInGroup">userIsInGroup(group)</a></dt>
                     <dd>
                       <p>Simple helper function to see what groups a user might belong.</p>
@@ -281,6 +297,16 @@
             </section>
             <h2>Properties</h2>
             <section>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".i18n"><span class="symbol-name">i18n</span></h3>
+              <p>i18n support for strings in Morebits</p>
+              <dl class="dl-compact">
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".l10n"><span class="symbol-name">l10n</span></h3>
+              <p>Wiki-specific configurations for Morebits</p>
+              <dl class="dl-compact">
+              </dl>
               <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
               <h3 id=".pageNameNorm"><span class="symbol-name">pageNameNorm</span><small class="property-type">
                   &nbsp;string</small></h3>
@@ -345,6 +371,82 @@
                 </table>
               </section>
               <dl class="dl-compact">
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".createHtml"><span class="symbol-name">createHtml</span><span class="signature"><span class="signature-params">(input)</span>&nbsp;&rarr; <span class="signature-returns"> DocumentFragment</span></span></h3>
+              <p>Converts string or array of DOM nodes into an HTML fragment.
+                Wikilink syntax (<code>[[...]]</code>) is transformed into HTML anchor.
+                Used in Morebits.quickForm and Morebits.status</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>input</p>
+                      </td>
+                      <td>
+                        <p>(string, Node, or Array)</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>DocumentFragment</code> </p>
+                </dd>
+              </dl>
+              <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
+              <h3 id=".createHtml.renderWikilinks"><span class="symbol-name">createHtml.renderWikilinks</span><span class="signature"><span class="signature-params">(text)</span>&nbsp;&rarr; <span class="signature-returns"> any type</span></span></h3>
+              <p>Converts wikilinks to HTML anchor tags.</p>
+              <section>
+                <h4>Parameter</h4>
+                <table class="jsdoc-details-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Optional</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>text</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                        <p>&nbsp;</p>
+                      </td>
+                      <td>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              <dl class="dl-compact">
+                <dt>Returns</dt>
+                <dd>
+                  <p><code>any type</code> </p>
+                </dd>
               </dl>
               <div class="symbol-detail-labels"><span class="label label-static">static</span></div>
               <h3 id=".htmlNode"><span class="symbol-name">htmlNode</span><span class="signature"><span class="signature-params">(type, content[, color])</span>&nbsp;&rarr; <span class="signature-returns"> HTMLElement</span></span></h3>
@@ -416,7 +518,7 @@
               <h3 id=".isPageRedirect"><span class="symbol-name">isPageRedirect</span><span class="signature"><span class="signature-params">()</span>&nbsp;&rarr; <span class="signature-returns"> boolean</span></span></h3>
               <p>Determines whether the current page is a redirect or soft redirect. Fails
                 to detect soft redirects on edit, history, etc. pages. Will attempt to
-                detect [[Module:Redirect for discussion]], with the same failure points.</p>
+                detect Module:RfD, with the same failure points.</p>
               <dl class="dl-compact">
                 <dt>Returns</dt>
                 <dd>
@@ -561,7 +663,7 @@ Morebits.namespaceRegex([6])</code></pre>
                 <dd>Use <a href="Morebits.ip.html#.sanitizeIPv6">Morebits.ip.sanitizeIPv6</a>.
                   Converts an IPv6 address to the canonical form stored and used by MediaWiki.
                   JavaScript translation of the <a href="https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131">`IP::sanitizeIP()`</a>
-                  function from the IPUtils library. Adddresses are verbose, uppercase,
+                  function from the IPUtils library. Addresses are verbose, uppercase,
                   normalized, and expanded to 8 words.</dd>
                 <dt>Returns</dt>
                 <dd>
@@ -616,7 +718,7 @@ Morebits.namespaceRegex([6])</code></pre>
   <footer id="jsdoc-footer" class="jsdoc-footer">
     <div id="jsdoc-footer-container">
       <p>
-        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on March 9, 2021.
+        Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc</a> 3.6.6 on May 22, 2021.
       </p>
     </div>
   </footer>
