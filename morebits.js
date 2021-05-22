@@ -1988,22 +1988,22 @@ Morebits.date.prototype = {
 	 * | Syntax | Output |
 	 * |--------|--------|
 	 * | H | Hours (24-hour) |
-	 * | HH | Hours (24-hour, padded) |
+	 * | HH | Hours (24-hour, padded to 2 digits) |
 	 * | h | Hours (12-hour) |
-	 * | hh | Hours (12-hour, padded) |
+	 * | hh | Hours (12-hour, padded to 2 digits) |
 	 * | A | AM or PM |
 	 * | m | Minutes |
-	 * | mm | Minutes (padded) |
+	 * | mm | Minutes (padded to 2 digits) |
 	 * | s | Seconds |
-	 * | ss | Seconds (padded) |
-	 * | SSS | Milliseconds fragment, padded |
+	 * | ss | Seconds (padded to 2 digits) |
+	 * | SSS | Milliseconds fragment, 3 digits |
 	 * | d | Day number of the week (Sun=0) |
 	 * | ddd | Abbreviated day name |
 	 * | dddd | Full day name |
 	 * | D | Date |
-	 * | DD | Date (padded) |
-	 * | M | Month number (0-indexed) |
-	 * | MM | Month number (0-indexed, padded) |
+	 * | DD | Date (padded to 2 digits) |
+	 * | M | Month number (1-indexed) |
+	 * | MM | Month number (1-indexed, padded to 2 digits) |
 	 * | MMM | Abbreviated month name |
 	 * | MMMM | Full month name |
 	 * | Y | Year |
