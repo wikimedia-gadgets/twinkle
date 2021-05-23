@@ -1988,22 +1988,22 @@ Morebits.date.prototype = {
 	 * | Syntax | Output |
 	 * |--------|--------|
 	 * | H | Hours (24-hour) |
-	 * | HH | Hours (24-hour, padded) |
+	 * | HH | Hours (24-hour, padded to 2 digits) |
 	 * | h | Hours (12-hour) |
-	 * | hh | Hours (12-hour, padded) |
+	 * | hh | Hours (12-hour, padded to 2 digits) |
 	 * | A | AM or PM |
 	 * | m | Minutes |
-	 * | mm | Minutes (padded) |
+	 * | mm | Minutes (padded to 2 digits) |
 	 * | s | Seconds |
-	 * | ss | Seconds (padded) |
-	 * | SSS | Milliseconds fragment, padded |
+	 * | ss | Seconds (padded to 2 digits) |
+	 * | SSS | Milliseconds fragment, 3 digits |
 	 * | d | Day number of the week (Sun=0) |
 	 * | ddd | Abbreviated day name |
 	 * | dddd | Full day name |
 	 * | D | Date |
-	 * | DD | Date (padded) |
-	 * | M | Month number (0-indexed) |
-	 * | MM | Month number (0-indexed, padded) |
+	 * | DD | Date (padded to 2 digits) |
+	 * | M | Month number (1-indexed) |
+	 * | MM | Month number (1-indexed, padded to 2 digits) |
 	 * | MMM | Abbreviated month name |
 	 * | MMMM | Full month name |
 	 * | Y | Year |
@@ -2788,9 +2788,17 @@ Morebits.wiki.page = function(pageName, status) {
 
 		// shouldn't happen if canUseMwUserToken === true
 		if (ctx.fullyProtected && !ctx.suppressProtectWarning &&
-			!confirm(msg('protected-edit-warning', ctx.pageName, new Morebits.date(ctx.fullyProtected).calendar('utc'), 'You are about to make an edit to the fully protected page "' + ctx.pageName +
-			(ctx.fullyProtected === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(ctx.fullyProtected).calendar('utc') + ' (UTC))')) +
-			'.  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.')) {
+			!confirm(
+				ctx.fullyProtected === 'infinity'
+					? msg('protected-indef-edit-warning', ctx.pageName,
+						'You are about to make an edit to the fully protected page "' + ctx.pageName + '" (protected indefinitely).  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.'
+					)
+					: msg('protected-edit-warning', ctx.pageName, ctx.fullyProtected,
+						'You are about to make an edit to the fully protected page "' + ctx.pageName +
+					'" (protection expiring ' + new Morebits.date(ctx.fullyProtected).calendar('utc') + ' (UTC)).  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.'
+					)
+			)
+		) {
 			ctx.statusElement.error(msg('protected-aborted', 'Edit to fully protected page was aborted.'));
 			ctx.onSaveFailure(this);
 			return;
