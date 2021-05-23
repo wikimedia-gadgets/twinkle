@@ -1,0 +1,211 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`quickform checkbox elements (with data-single attribute) 1`] = `
+<div
+  id="node_5"
+>
+  <div>
+    <input
+      checked="checked"
+      data-single="data-single"
+      id="node_5_0"
+      name="checkname1"
+      type="checkbox"
+      value="checkval1"
+    />
+    <label
+      for="node_5_0"
+    >
+      checkbox 1
+    </label>
+  </div>
+  <div>
+    <input
+      data-single="data-single"
+      id="node_5_1"
+      name="checkname2"
+      type="checkbox"
+      value="checkval2"
+    />
+    <label
+      for="node_5_1"
+    >
+      checkbox 2
+    </label>
+  </div>
+</div>
+`;
+
+exports[`quickform checkbox elements 1`] = `
+<div
+  id="node_4"
+>
+  <div>
+    <input
+      id="node_4_0"
+      name="checkboxlist1"
+      type="checkbox"
+      value="checkval1"
+    />
+    <label
+      for="node_4_0"
+    >
+      checkbox 1
+    </label>
+  </div>
+  <div>
+    <input
+      checked="checked"
+      id="node_4_1"
+      name="checkboxlist1"
+      type="checkbox"
+      value="checkval2"
+    />
+    <label
+      for="node_4_1"
+    >
+      checkbox 2
+    </label>
+  </div>
+</div>
+`;
+
+exports[`quickform getElements 1`] = `
+Array [
+  <input
+    id="node_20_0"
+    name="checkboxlist1"
+    type="checkbox"
+    value="checkval1"
+  />,
+  <input
+    checked="checked"
+    id="node_20_1"
+    name="checkboxlist1"
+    type="checkbox"
+    value="checkval2"
+  />,
+]
+`;
+
+exports[`quickform getInputData 1`] = `
+Object {
+  "checkboxlist1": Array [
+    "checkval2",
+  ],
+  "checkname1": true,
+  "checkname2": false,
+  "inputname": "prefilled value",
+  "radioname2": "radioval2",
+  "textareaname1": "textarea prefilled value",
+}
+`;
+
+exports[`quickform input element 1`] = `
+<div
+  id="div_node_0"
+>
+  <label
+    for="node_0"
+    style="margin-right: 3px;"
+  >
+    Label
+  </label>
+  <input
+    id="node_0"
+    name="inputname"
+    type="text"
+    value="prefilled value"
+  />
+</div>
+`;
+
+exports[`quickform radio elements 1`] = `
+<div
+  id="node_6"
+>
+  <div>
+    <input
+      data-single="data-single"
+      id="node_6_0"
+      name="radioname1"
+      type="radio"
+      value="radioval1"
+    />
+    <label
+      for="node_6_0"
+    >
+      radio 1
+    </label>
+  </div>
+  <div>
+    <input
+      checked="checked"
+      data-single="data-single"
+      id="node_6_1"
+      name="radioname2"
+      type="radio"
+      value="radioval2"
+    />
+    <label
+      for="node_6_1"
+    >
+      radio 2
+    </label>
+  </div>
+</div>
+`;
+
+exports[`quickform select element 1`] = `
+<div
+  id="div_node_1"
+>
+  <label
+    for="node_1"
+    style="margin-right: 3px;"
+  >
+    Select label
+  </label>
+  <select
+    id="node_1"
+    name="selectname"
+  >
+    <option
+      id="node_2"
+      label="select label 1"
+      value="selectvalue1"
+    >
+      select label 1
+    </option>
+    <option
+      id="node_3"
+      label="select label 2"
+      value="selectvalue2"
+    >
+      select label 2
+    </option>
+  </select>
+</div>
+`;
+
+exports[`quickform submit 1`] = `
+<span>
+  <input
+    id="node_8"
+    name="submit"
+    type="submit"
+  />
+</span>
+`;
+
+exports[`quickform textarea element 1`] = `
+<div
+  id="div_node_7"
+>
+  <textarea
+    cols="4"
+    id="node_7"
+    name="textareaname1"
+  />
+</div>
+`;
