@@ -2778,7 +2778,10 @@ Morebits.wiki.page = function(pageName, status) {
 				ctx.editSummary = '';
 			} else if (ctx.editMode === 'revert') {
 				// Default reversion edit summary
-				ctx.editSummary = 'Restored revision ' + ctx.revertOldID + ' by ' + (ctx.revertUser ? ctx.revertUser : 'an unknown user');
+				ctx.editSummary = msg('revert-summary',
+					ctx.revertOldID, ctx.revertUser || msg('hidden-user'),
+					'Restored revision ' + ctx.revertOldID + ' by ' + (ctx.revertUser || 'an unknown user')
+				);
 			} else {
 				ctx.statusElement.error('Internal error: edit summary not set before save!');
 				ctx.onSaveFailure(this);
@@ -3855,19 +3858,19 @@ Morebits.wiki.page = function(pageName, status) {
 			if (ctx.editMode === 'revert') {
 				// Is this ever even possible?
 				if (rev.revid !== ctx.revertOldID) {
-					ctx.statusElement.error('The retrieved revision does not match the requested revision.');
+					ctx.statusElement.error(msg('revert-mismatch', 'The retrieved revision does not match the requested revision.'));
 					ctx.onLoadFailure(this);
 					return;
 				}
 				if (!ctx.latestRevID) {
-					ctx.statusElement.error('Failed to retrieve current revision ID.');
+					ctx.statusElement.error(msg('revert-curid-fail', 'Failed to retrieve current revision ID.'));
 					ctx.onLoadFailure(this);
 					return;
 				}
 				if (!rev.userhidden) { // ensure username wasn't RevDel'd or oversighted
 					ctx.revertUser = rev.user;
 					if (!ctx.revertUser) {
-						ctx.statusElement.error('Failed to retrieve user who made the revision.');
+						ctx.statusElement.error(msg('revert-user-fail', 'Failed to retrieve user who made the revision.'));
 						ctx.onLoadFailure(this);
 						return;
 					}
