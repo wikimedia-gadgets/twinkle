@@ -891,7 +891,7 @@ Twinkle.block.blockPresetsInfo = {
 		autoblock: false,
 		expiry: 'infinity',
 		forRegisteredOnly: true,
-		nocreate: false, //Deze gebruiker mag wel een nieuw account aanmaken
+		nocreate: false,
 		pageParam: false,
 		reasonParam: false,
 		reason: '[[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|Ongewenste gebruikersnaam]]',
@@ -901,7 +901,7 @@ Twinkle.block.blockPresetsInfo = {
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		autoblock: false,
-		nocreate: false, //Deze gebruiker mag wel een nieuw account aanmaken
+		nocreate: false,
 		pageParam: false,
 		reasonParam: false,
 		reason: '[[Wikipedia:Gebruikersnaam#Ongewenste_gebruikersnaam|Ongewenste gebruikersnaam]]',
