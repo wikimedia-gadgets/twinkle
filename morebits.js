@@ -1696,7 +1696,7 @@ Morebits.select2 = {
 		target.select2('open');
 		var search = target.data('select2').dropdown.$search ||
 			target.data('select2').selection.$search;
-		// Use DOM .focus() to work around a jQuery 3.6.0 regression
+		// Use DOM .focus() to work around a jQuery 3.6.0 regression (https://github.com/select2/select2/issues/5993)
 		search[0].focus();
 	}
 
