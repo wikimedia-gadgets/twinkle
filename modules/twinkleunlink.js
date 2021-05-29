@@ -59,7 +59,7 @@ Twinkle.unlink.callback = function(presetReason) {
 		type: 'div',
 		style: 'margin-bottom: 0.5em',
 		label: [
-			'Deze tool ontlinkt deze pagina, dat wil zeggen dat het alle links naar deze pagina verwijderd' +
+			'Deze tool ontlinkt deze pagina, dat wil zeggen dat het alle links naar deze pagina verwijdert' +
 				(fileSpace ? ', en/of al het gebruik van dit bestand verbergt door er <!-- --> omheen te plaatsen' : '') +
 				'. Bijvoorbeeld, ',
 			linkTextBefore, ' wordt ', linkTextAfter, ' en ',
