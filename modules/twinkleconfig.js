@@ -50,7 +50,7 @@ Twinkle.config.commonSets = {
 	},
 	csdCriteriaDisplayOrder: [
 		'g1', 'g2', 'g3', 'g4', 'g5',
-		'g6', 'g7', 'g8', 'g9', 'g10', 
+		'g6', 'g7', 'g8', 'g9', 'g10',
 		'u1', 'u2'
 	],
 	csdCriteriaNotification: {
@@ -60,7 +60,7 @@ Twinkle.config.commonSets = {
 	},
 	csdCriteriaNotificationDisplayOrder: [
 		'g1', 'g2', 'g3', 'g4', 'g5',
-		'g6', 'g7', 'g8', 'g9', 'g10', 
+		'g6', 'g7', 'g8', 'g9', 'g10',
 		'u1', 'u2'
 	],
 	csdCriteriaDelete: {
@@ -75,12 +75,12 @@ Twinkle.config.commonSets = {
 	],
 	csdAndDICriteria: {
 		g1: 'Leeg halen', g2: 'Onzin', g3: 'Machinevertaling', g4: 'Zelfpromotie', g5: 'Cyberpesten',
-		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', g10: 'Enige auteur', 
+		g6: 'Reclame', g7: 'Copyvio', g8: 'Duplicaat', g9: 'Privacyschending', g10: 'Enige auteur',
 		u1: 'Eigen naamruimte', u2: 'Misbruik gebruikersnaamruimte'
 	},
 	csdAndDICriteriaDisplayOrder: [
 		'g1', 'g2', 'g3', 'g4', 'g5',
-		'g6', 'g7', 'g8', 'g9', 'g10', 
+		'g6', 'g7', 'g8', 'g9', 'g10',
 		'u1', 'u2'
 	],
 	namespacesNoSpecial: {
@@ -162,7 +162,7 @@ Twinkle.config.sections = [
 				label: 'Schakel bepaalde Twinkle modules uit',
 				helptip: 'Alles wat je uitschakelt kun je niet gebruiken. Haal het vinkje weg om de module weer in te schakelen.',
 				type: 'set',
-				setValues: { arv: 'Rapporteer', warn: 'Waarschuw', welcome: 'Welkom', shared: 'Gedeeld IP', speedy: 'Nuweg', xfd: 'TBx', protect: 'Beveiligen', tag: 'Tag', diff: 'Wijz', fluff: 'Terugdraaien' }
+				setValues: { arv: 'Rapporteer', warn: 'Waarschuw', welcome: 'Welkom', speedy: 'Nuweg', xfd: 'TBx', protect: 'Beveiligen', tag: 'Label', diff: 'Wijz', fluff: 'Terugdraaien' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)

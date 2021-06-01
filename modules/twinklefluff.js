@@ -67,7 +67,7 @@ Twinkle.fluff = function twinklefluff() {
 // makes edits seconds after the original edit is made.  This only affects
 // vandalism rollback; for good faith rollback, it will stop, indicating a bot
 // has no faith, and for normal rollback, it will rollback that edit.
-Twinkle.fluff.trustedBots = ['nlwikibots','RomaineBot'];
+Twinkle.fluff.trustedBots = ['nlwikibots']; //Tja, botjes met rollback hebben we (nog) niet, dus voor als nog alleen het meest onschuldige botje hier
 Twinkle.fluff.skipTalk = null;
 Twinkle.fluff.rollbackInPlace = null;
 // String to insert when a username is hidden
@@ -132,18 +132,6 @@ Twinkle.fluff.linkBuilder = {
 
 		var separator = inline ? ' ' : ' || ';
 
-		/* Een 'ga uit van goede wil terugdraaiing' op WPNL is niet toegestaan, en daarom uitgeschakeld
-		if (!inline) {
-			var agfNode = document.createElement('strong');
-			var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
-			$(agfLink).click(function() {
-				Twinkle.fluff.revert('agf', vandal, rev, page);
-				// Twinkle.fluff.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
-			});
-			agfNode.appendChild(agfLink);
-			revNode.appendChild(agfNode);
-		}
-		revNode.appendChild(document.createTextNode(separator));*/
 		revNode.appendChild(normNode);
 		revNode.appendChild(document.createTextNode(separator));
 		revNode.appendChild(vandNode);
@@ -524,12 +512,9 @@ Twinkle.fluff.callbacks = {
 				switch (params.type) {
 					case 'vand':
 						var diffUser = lastuser !== params.user;
-						Morebits.status.info('Info', [ 'Laatste bewerking was ' + (diffUser ? '' : 'also ') + 'gemaakt door ', Morebits.htmlNode('strong', userNorm),
+						Morebits.status.info('Info', [ 'Laatste bewerking was ' + (diffUser ? '' : 'ook ') + 'gemaakt door ', Morebits.htmlNode('strong', userNorm),
 							diffUser ? ', welke op het zelfde /64 subnet zit' : '', '. Aangezien we vandalisme vermoeden, draaien we deze ook terug.' ]);
 						break;
-					case 'agf':
-						Morebits.status.warn('Waarschuwing', [ 'Laatste bewerking was gemaakt door ', Morebits.htmlNode('strong', userNorm), '. Aangezien we uitgaan van goede wil, stoppen we de terugdraaiing hier, aangezien het probleem hier mogelijk opgelost is.' ]);
-						return;
 					default:
 						Morebits.status.warn('Note', [ 'Laatste bewerking was gemaakt door ', Morebits.htmlNode('strong', userNorm), ', maar we stoppen de terugdraaiing.' ]);
 						return;
@@ -561,9 +546,6 @@ Twinkle.fluff.callbacks = {
 					params.user = revs[1].user;
 					params.userHidden = !!revs[1].userhidden;
 					break;
-				case 'agf':
-					Morebits.status.warn('Note', [ 'Goede wil terugdraaiing was gekozen voor ', Morebits.htmlNode('strong', userNorm), '. Dit is een vertrouwde robot, dus de terugdraaiing wordt niet uitgevoerd.' ]);
-					return;
 				case 'norm':
 				/* falls through */
 				default:
@@ -630,18 +612,6 @@ Twinkle.fluff.callbacks = {
 
 		var summary, extra_summary;
 		switch (params.type) {
-			case 'agf':
-				extra_summary = prompt('Een optionele bewerkingssamenvatting:                              ', '');  // padded out to widen prompt in Firefox
-				if (extra_summary === null) {
-					statelem.error('Afgebroken door gebruiker.');
-					return;
-				}
-				userHasAlreadyConfirmedAction = true;
-
-				summary = Twinkle.fluff.formatSummary('[[WP:AGF|good faith]] bewerkingen van $USER teruggedraaid',
-					params.userHidden ? null : params.user, extra_summary);
-				break;
-
 			case 'vand':
 				summary = Twinkle.fluff.formatSummary(params.count + (params.count > 1 ? ' bewerkingen' : ' bewerking') + ' van $USER teruggedraaid tot laatste versie van ' +
 					(params.gooduserHidden ? Twinkle.fluff.hiddenName : params.gooduser), params.userHidden ? null : params.user);
