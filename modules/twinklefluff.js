@@ -682,7 +682,7 @@ Twinkle.fluff.callbacks = {
 
 		// figure out whether we need to/can review the edit
 		var flagged = page.flagged;
-		if ((Morebits.userIsInGroup('reviewer') || Morebits.userIsSysop) &&
+		if ((Morebits.userIsInGroup('autoconfirmed') || Morebits.userIsSysop) &&
 				!!flagged &&
 				flagged.stable_revid >= params.goodid &&
 				!!flagged.pending_since) {
@@ -786,7 +786,7 @@ Twinkle.fluff.callbacks = {
 					comment: 'Bewerking automatisch controleren' + Twinkle.summaryAd // until the below
 					// 'tags': Twinkle.changeTags // flaggedrevs tag support: [[phab:T247721]]
 				};
-				var wikipedia_api = new Morebits.wiki.api('Je bewerkingen automatisch goedkeuren', query);
+				var wikipedia_api = new Morebits.wiki.api('Bewerkingen markeren als gecontroleers', query);
 				wikipedia_api.post();
 			}
 		}
