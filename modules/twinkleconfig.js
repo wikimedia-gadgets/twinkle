@@ -195,6 +195,14 @@ Twinkle.config.sections = [
 		module: 'block',
 		adminOnly: true,
 		preferences: [
+			// TwinkleConfig.defaultToBlock64 (boolean)
+			// Whether to default to just blocking the /64 on or off
+			{
+				name: 'defaultToBlock64',
+				label: 'Kies bij IPv6-Blokkades standaard voor een /64-rangeblok.',
+				type: 'boolean'
+			},
+
 			// TwinkleConfig.defaultToPartialBlocks (boolean)
 			// Whether to default partial blocks on or off
 			{
@@ -526,7 +534,6 @@ Twinkle.config.sections = [
 			},
 		]
 	},
-
 
 	{
 		title: 'Ontlink',

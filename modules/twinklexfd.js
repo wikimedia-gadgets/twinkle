@@ -34,7 +34,6 @@
 		Twinkle.addPortletLink(Twinkle.xfd.callback, 'TBx', 'tw-xfd', tooltip);
 	};
 
-
 	var utils = {
 		/** Get ordinal number figure */
 		num2order: function(num) {

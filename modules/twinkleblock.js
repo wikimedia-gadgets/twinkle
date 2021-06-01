@@ -124,7 +124,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			name: 'block64',
 			event: Twinkle.block.callback.change_block64,
 			list: [{
-				checked: relevantUserName !== mw.config.get('wgRelevantUserName'), // In case the user closes and reopens the form
+				checked: Twinkle.getPref('defaultToBlock64'),
 				label: 'Blokkeer /64-subnet',
 				value: 'block64',
 				tooltip: Morebits.ip.isRange(mw.config.get('wgRelevantUserName')) ? 'Er wordt geen bloksjabloon geplaatst.' : 'Een bloksjabloon wordt geplaatst op: ' + mw.config.get('wgRelevantUserName')
@@ -156,7 +156,13 @@ Twinkle.block.callback = function twinkleblockCallback() {
 		// init the controls after user and block info have been fetched
 		var evt = document.createEvent('Event');
 		evt.initEvent('change', true, true);
-		result.actiontype[0].dispatchEvent(evt);
+
+		if (result.block64 && result.block64.checked) {
+			// Calls the same change_action event once finished
+			result.block64.dispatchEvent(evt);
+		} else {
+			result.actiontype[0].dispatchEvent(evt);
+		}
 	});
 };
 
