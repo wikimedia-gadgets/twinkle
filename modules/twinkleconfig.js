@@ -478,17 +478,10 @@ Twinkle.config.sections = [
 			}
 		]
 	},
-/* module komt later
 	{
 		title: 'Label',
 		module: 'tag',
 		preferences: [
-			{
-				name: 'watchTaggedVenues',
-				label: 'Volg dit type pagina, wanneer ik een label toevoeg',
-				type: 'set',
-				setValues: { articles: 'Artikelen', drafts: 'Drafts', redirects: 'Doorverwijzingen', files: 'Files' }
-			},
 			{
 				name: 'watchTaggedPages',
 				label: 'Indien gelabeld, volg het voor',
@@ -497,7 +490,7 @@ Twinkle.config.sections = [
 			},
 			{
 				name: 'watchMergeDiscussions',
-				label: 'Voeg overlegpagina toe aan volglijst zodra ik een samenvoegingsdiscussie start',
+				label: 'Voeg discussiepagina toe aan volglijst zodra ik een samenvoegingsdiscussie start',
 				type: 'enum',
 				enumValues: Twinkle.config.watchlistEnums
 			},
@@ -512,11 +505,6 @@ Twinkle.config.sections = [
 				type: 'boolean'
 			},
 			{
-				name: 'groupByDefault',
-				label: 'Vink het "groepeer {{meerdere problemen}}" vakje standaard aan',
-				type: 'boolean'
-			},
-			{
 				name: 'tagArticleSortOrder',
 				label: 'Standaard weergavevolgorde voor artikel labels',
 				type: 'enum',
@@ -528,21 +516,11 @@ Twinkle.config.sections = [
 				helptip: "Deze worden weergegeven als extra sjablonen onder aan de lijst. Hiermee kun je nieuwe sjablonen toevoegen die (nog) niet zijn opgenomen in Twinkle.",
 				type: 'customList',
 				customListValueTitle: 'Sjabloonnaam (zonder accolades)',
-				customListLabelTitle: 'Label zoals weertegeven in het overzicht'
+				customListLabelTitle: 'Label zoals weer te geven in het overzicht'
 			},
-			//  <verwijderen?>
-			{
-				name: 'customRedirectTagList',
-				label: 'Custom redirect category tags to display',
-				helptip: 'Additional tags that you wish to add for redirects.',
-				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in Tag dialog'
-			}
-			//  </verwijderen?>
 		]
 	},
-*/
+
 
 	{
 		title: 'Ontlink',

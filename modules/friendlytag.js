@@ -108,7 +108,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				type: 'select',
 				name: 'sortorder',
 				label: 'Toon deze lijst:',
-				tooltip: 'Je kunt de standaard sortering aanpassen in je Twinkle voorkeuren (WP:TWPREFS).',
+				tooltip: 'Je kunt de standaard sortering aanpassen op het Twinkle configuratiescherm.',
 				event: Twinkle.tag.updateSortOrder,
 				list: [
 					{ type: 'option', value: 'cat', label: 'Op categorie', selected: Twinkle.getPref('tagArticleSortOrder') === 'cat' },
@@ -134,27 +134,12 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				style: 'max-height: 28em'
 			});
 
-			/*
-			form.append({
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Samenvoegen met {{meerdere problemen}} indien mogelijk',
-						value: 'group',
-						name: 'group',
-						tooltip: 'Indien twee of meer sjablonen ondersteund worden ondersteund door {{meerdere problemen}} en dit vakje is aangeving, dan worden alle ondersteunde sjablonen samengevoegd in {{meerdere problemen}}.',
-						checked: Twinkle.getPref('groupByDefault')
-					}
-				]
-			});
-			*/
-
 			form.append({
 				type: 'input',
-				label: 'Reden',
+				label: 'Bewerkingssamenvatting',
 				name: 'reason',
-				tooltip: '(Optioneel) Voeg een reden toe voor de bewerkingssamenvatting. Aanbevolen als je sjablonen hebt verwijderd.',
-				size: '60px'
+				tooltip: '(Optioneel) Aanbevolen als je sjablonen hebt verwijderd. Namen van toegevoegde en verwijderde sjablonen staan standaard in de BWS',
+				size: '50px'
 			});
 
 			break;
@@ -212,34 +197,18 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					return false;
 				}
 
-				// The ability to remove tags depends on the template's {{ambox}} |name=
-				// parameter bearing the template's correct name (preferably) or a name that at
-				// least redirects to the actual name
-
-				// All tags have their first class name as "box-" + template name
-				if (e.className.indexOf('box-') === 0) {
-					if (e.classList[0] === 'box-Multiple_issues') {
-						$(e).find('.ambox').each(function(idx, e) {
-							if (e.classList[0].indexOf('box-') === 0) {
-								var tag = e.classList[0].slice('box-'.length).replace(/_/g, ' ');
-								Twinkle.tag.alreadyPresentTags.push(tag);
-							}
-						});
-						return true; // continue
-					}
-
-					var tag = e.classList[0].slice('box-'.length).replace(/_/g, ' ');
+				// All tags have their first class name as "label-" + template name
+				if (e.className.indexOf('label-') === 0) {
+					var tag = e.classList[0].slice('label-'.length).replace(/_/g, ' ');
 					Twinkle.tag.alreadyPresentTags.push(tag);
 				}
 			});
 
-			// {{Uncategorized}} and {{Improve categories}} are usually placed at the end
-			if ($('.box-Uncategorized').length) {
-				Twinkle.tag.alreadyPresentTags.push('Ongecategoriseerd');
+			// {{Beginnetje}} is usually placed at the end of the page
+			if ($('.beginnetje').length) {
+				Twinkle.tag.alreadyPresentTags.push('Beginnetje');
 			}
-			if ($('.box-Improve_categories').length) {
-				Twinkle.tag.alreadyPresentTags.push('Verbeter categorieën');
-			}
+
 
 		}
 
@@ -432,32 +401,6 @@ var generateLinks = function(checkbox) {
 // Tags for ARTICLES start here
 Twinkle.tag.article = {};
 
-// Shared across {{Rough translation}} and {{Not English}}
-var translationSubgroups = [
-	{
-		name: 'translationLanguage',
-		parameter: '1',
-		type: 'input',
-		label: 'Taal van artikel (indien bekend): ',
-		tooltip: 'Consider looking at [[WP:LRC]] for help. If listing the article at PNT, please try to avoid leaving this box blank, unless you are completely unsure.'
-	}
-].concat(mw.config.get('wgNamespaceNumber') === 0 ? [
-	{
-		type: 'checkbox',
-		list: [ {
-			name: 'translationPostAtPNT',
-			label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
-			checked: true
-		} ]
-	},
-	{
-		name: 'translationComments',
-		type: 'textarea',
-		label: 'Additional comments to post at PNT',
-		tooltip: 'Optional, and only relevant if "List this article ..." above is checked.'
-	}
-] : []);
-
 // Subgroups for {{samenvoegen}}, {{Samenvoegennaar}} and {{Samenvoegenvan}}
 var getMergeSubgroups = function(tag) {
 	var otherTagName = 'Samenvoegen';
@@ -493,9 +436,8 @@ var getMergeSubgroups = function(tag) {
 	].concat(mw.config.get('wgNamespaceNumber') === 0 ? {
 		name: 'mergeReason',
 		type: 'textarea',
-		label: 'Reden (wordt geplaatst op de overlegpagina van ' +
-			(tag === 'Samenvoegennaar' ? 'het andere artikel' : 'dit artikel') + '):',
-		tooltip: 'Optioneel, maar sterk aanbevolen.'
+		label: 'Onderbouwing (wordt geplaatst op Wikipedia:Samenvoegen):',
+		required: true
 	} : []);
 };
 
@@ -678,10 +620,43 @@ Twinkle.tag.article.tagList = {
 			}
 		],
 		'Overige sjablonen': [
-			{ tag: 'Incompleet', description: 'Het artikel is incompleet.' },
-			{ tag: 'Wikify', description: 'De opmaak van het artikel voldoet nog niet aan wiki-standaarden' },
+			{ tag: 'Incompleet', description: 'Dit artikel is incompleet.' },
+			{ tag: 'Lijstbeg', description: 'Deze lijst is incompleet.' },
+			{
+				tag: 'Wikify',
+				description: 'De opmaak van het artikel voldoet nog niet aan wiki-standaarden',
+				subgroup:
+					[
+						{
+							name: 'Reden',
+							parameter: '1',
+							type: 'input',
+							label: 'Reden: ',
+							size: 35,
+							required: true
+						},
+						{
+							name: 'Jaar',
+							parameter: '2',
+							type: 'hidden',
+							value: '{{subst:LOCALYEAR}}'
+						},
+						{
+							name: 'Maand',
+							parameter: '3',
+							type: 'hidden',
+							value: '{{subst:LOCALMONTH}}'
+						},
+						{
+							name: 'Dag',
+							parameter: '4',
+							type: 'hidden',
+							value: '{{subst:LOCALDAY2}}'
+						}
+					]
+			},
 			{ tag: 'Wereldwijd', description: "Het artikel geeft geen wereldwijd standpunt" },
-			{ tag: 'BeschrijftNederland', description: 'Het artikel beschrijft enkel de situatie in Nederland' },
+			{ tag: 'BeschrijftNederlands', description: 'Het artikel beschrijft enkel de situatie in Nederland' },
 			{ tag: 'BeschrijftNederlandBelgië', description: 'Het artikel beschrijft enkel de situatie in Nederland en België' }
 		]
 	},
@@ -694,7 +669,21 @@ Twinkle.tag.article.tagList = {
 			subgroup: getMergeSubgroups('Samenvoegennaar') }
 	],
 	'Overig': [
-		{ tag: 'Meebezig', description: 'Aan dit artikel wordt op dit moment gewerkt' }
+		{
+			tag: 'Meebezig',
+			description: 'Aan dit artikel wordt op dit moment gewerkt',
+			subgroup:
+				[
+					{
+						name: 'Toelichting',
+						parameter: '1',
+						type: 'input',
+						label: 'Toelichting: ',
+						size: 35,
+						required: false
+					}
+				]
+		}
 	]
 };
 
@@ -711,13 +700,6 @@ Twinkle.tag.callbacks = {
 		 * Called from removeTags()
 		 */
 		var postRemoval = function() {
-			if (params.tagsToRemove.length) {
-				// Remove empty {{multiple issues}} if found
-				pageText = pageText.replace(/\{\{(multiple ?issues|article ?issues|mi)\s*\|\s*\}\}\n?/im, '');
-				// Remove single-element {{multiple issues}} if found
-				pageText = pageText.replace(/\{\{(?:multiple ?issues|article ?issues|mi)\s*\|\s*(\{\{[^}]+\}\})\s*\}\}/im, '$1');
-			}
-
 			// Build edit summary
 			var makeSentence = function(array) {
 				if (array.length < 3) {
@@ -762,26 +744,21 @@ Twinkle.tag.callbacks = {
 			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save(function() {
-				// COI: Start the discussion on the talk page (mainspace only)
-				if (params.coiReason) {
-					var coiTalkPage = new Morebits.wiki.page('Overleg:' + Morebits.pageNameNorm, 'Discussie starten op overlegpagina');
-					coiTalkPage.setNewSectionText(params.coiReason + ' ~~~~');
-					coiTalkPage.setNewSectionTitle('COI tag (' + new Morebits.date(pageobj.getLoadTime()).format('MMMM Y', 'utc') + ')');
-					coiTalkPage.setChangeTags(Twinkle.changeTags);
-					coiTalkPage.setCreateOption('recreate');
-					coiTalkPage.newSection();
-				}
-
 				// Special functions for merge tags
-				// Post a rationale on the talk page (mainspace only)
+				// Post a rationale on the discussionpage
 				if (params.mergeReason) {
-					var mergeTalkPage = new Morebits.wiki.page('Overleg:' + params.discussArticle, 'Reden op overlegpagina plaatsen');
-					mergeTalkPage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
-					mergeTalkPage.setNewSectionTitle(params.talkDiscussionTitleLinked);
+					var date = new Morebits.date(pageobj.getLoadTime());
+					var mergeTalkPage = new Morebits.wiki.page('Wikipedia:Samenvoegen/' + date.format('YYYYMM', '120'), 'Wikipedia:Samenvoegen ophalen');
+					mergeTalkPage.setPageSection(2);
+					mergeTalkPage.setFollowRedirect(true);
+
+					var text = mergeTalkPage.getPageText();
+					mergeTalkPage.getStatusElement().status('Samenvoeg-discussie opslaan...');
+					mergeTalkPage.setEditSummary('Voorstel: Samenvoegen van ' + params.talkDiscussionTitleLinked);
+					mergeTalkPage.setAppendText('* ' + params.talkDiscussionTitleLinked + ' - ' + params.mergeReason.trim() + ' - ~~~~');
 					mergeTalkPage.setChangeTags(Twinkle.changeTags);
 					mergeTalkPage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
-					mergeTalkPage.setCreateOption('recreate');
-					mergeTalkPage.newSection();
+					mergeTalkPage.append();
 				}
 				// Tag the target page (if requested)
 				if (params.mergeTagOther) {
@@ -806,43 +783,6 @@ Twinkle.tag.callbacks = {
 					otherpage.setCallbackParameters(newParams);
 					otherpage.load(Twinkle.tag.callbacks.article);
 				}
-
-				// Special functions for {{not English}} and {{rough translation}}
-				// Post at WP:PNT (mainspace only)
-				if (params.translationPostAtPNT) {
-					var pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English',
-						'Listing article at Wikipedia:Pages needing translation into English');
-					pntPage.setFollowRedirect(true);
-					pntPage.load(function friendlytagCallbacksTranslationListPage(pageobj) {
-						var old_text = pageobj.getPageText();
-
-						var lang = params.translationLanguage;
-						var reason = params.translationComments;
-
-						var templateText = '{{subst:needtrans|pg=' + Morebits.pageNameNorm + '|Language=' +
-							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
-
-						var text, summary;
-						if (params.tags.indexOf('Rough translation') !== -1) {
-							text = old_text + '\n\n' + templateText;
-							summary = 'Translation cleanup requested on ';
-						} else {
-							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
-								'\n\n' + templateText + '\n\n$1');
-							summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';
-						}
-
-						if (text === old_text) {
-							pageobj.getStatusElement().error('failed to find target spot for the discussion');
-							return;
-						}
-						pageobj.setPageText(text);
-						pageobj.setEditSummary(summary + ' [[:' + Morebits.pageNameNorm + ']]');
-						pageobj.setChangeTags(Twinkle.changeTags);
-						pageobj.setCreateOption('recreate');
-						pageobj.save();
-					});
-				}
 			});
 
 			if (params.patrol) {
@@ -861,7 +801,7 @@ Twinkle.tag.callbacks = {
 				return;
 			}
 
-			Morebits.status.info('Info', 'Removing deselected tags that were already present');
+			Morebits.status.info('Info', 'Gedeselecteerde labels verwijderen');
 
 			var getRedirectsFor = [];
 
@@ -937,8 +877,23 @@ Twinkle.tag.callbacks = {
 		 */
 		var addTag = function articleAddTag(tagIndex, tagName) {
 			var currentTag = '';
-			if (tagName === 'Uncategorized' || tagName === 'Improve categories') {
-				pageText += '\n\n{{' + tagName + '|date={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}}}}';
+
+			// Place {{Beginnetje}} at the bottom of the page.
+			if (tagName === 'Beginnetje') {
+				pageText += '\n\n{{' + tagName
+				var subgroupObj2 = Twinkle.tag.article.flatObject[tagName] &&
+					Twinkle.tag.article.flatObject[tagName].subgroup;
+				if (subgroupObj2) {
+					var subgroups2 = Array.isArray(subgroupObj2) ? subgroupObj2 : [ subgroupObj2 ];
+					subgroups2.forEach(function(gr) {
+						if (gr.parameter && (params[gr.name] || gr.required)) {
+							pageText += '|' + gr.parameter + '=' + (params[gr.name] || '');
+						}
+					});
+				}
+				pageText += '}}';
+
+			// And place the other tags at the top.
 			} else {
 				currentTag += '{{' + tagName;
 				// fill in other parameters, based on the tag
@@ -967,12 +922,12 @@ Twinkle.tag.callbacks = {
 						// link to the correct section on the talk page, for article space only
 						if (mw.config.get('wgNamespaceNumber') === 0 && (params.mergeReason || params.discussArticle)) {
 							if (!params.discussArticle) {
-								// discussArticle is the article whose talk page will contain the discussion
-								params.discussArticle = tagName === 'Samenvoegennaar' ? params.mergeTarget : mw.config.get('wgTitle');
-								// nonDiscussArticle is the article which won't have the discussion
-								params.nonDiscussArticle = tagName === 'Samenvoegennaar' ? mw.config.get('wgTitle') : params.mergeTarget;
-								var direction = '[[' + params.nonDiscussArticle + ']]' + (params.mergeTag === 'Samenvoegen' ? ' met ' : ' naar ') + '[[' + params.discussArticle + ']]';
-								params.talkDiscussionTitleLinked = 'Voorgestelde samenvoeging van ' + direction;
+								// define primary and secondary article
+								params.primaryArticle = tagName === 'Samenvoegennaar' ? params.mergeTarget : mw.config.get('wgTitle');
+								params.secondaryArticle = tagName === 'Samenvoegennaar' ? mw.config.get('wgTitle') : params.mergeTarget;
+
+								var direction = '[[' + params.secondaryArticle + ']]' + (params.mergeTag === 'Samenvoegen' ? ' met ' : ' naar ') + '[[' + params.primaryArticle + ']]';
+								params.talkDiscussionTitleLinked = direction;
 								params.talkDiscussionTitle = params.talkDiscussionTitleLinked.replace(/\[\[(.*?)\]\]/g, '$1');
 							}
 						}
@@ -1195,7 +1150,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		Morebits.wiki.actionCompleted.followRedirect = false;
 	}
 
-	var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, 'Labelen ' + Twinkle.tag.mode);
+	var wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, 'Labelen pagina');
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
 	wikipedia_page.load(Twinkle.tag.callbacks[Twinkle.tag.mode]);
