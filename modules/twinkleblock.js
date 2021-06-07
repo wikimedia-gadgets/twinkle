@@ -1472,6 +1472,7 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	Morebits.wiki.actionCompleted.notice = 'Handelingen voltooid, overlegpagina wordt geladen...';
 
 	var wikipedia_page = new Morebits.wiki.page(userTalkPage, 'Overlegpagina bewerken');
+	wikipedia_page.setFollowRedirect(true, false); //Make sure that the template gets placed on the page for the whole range
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.block.callback.main);
 };
