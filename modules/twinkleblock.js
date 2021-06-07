@@ -1602,7 +1602,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 
 	params.expiry = typeof params.template_expiry !== 'undefined' ? params.template_expiry : params.expiry;
 
-	text += Twinkle.block.callback.getBlockNoticeWikitext(params);
+	text += Twinkle.block.callback.getBlockNoticeWikitext(params); //Calls the function that generates the block message for the user's talk page
 
 	// build the edit summary
 	var summary = messageData.summary;
