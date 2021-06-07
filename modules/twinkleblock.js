@@ -34,7 +34,7 @@ Twinkle.block = function twinkleblock() {
 };
 
 Twinkle.block.callback = function twinkleblockCallback() {
-	if (relevantUserName === 'Bas dehaan'){ //don't fight me with my own weapon
+	if (relevantUserName === 'Bas dehaan'){ //don't fight me with my own weapon - first of two easter eggs
 		alert('Uw zoekopdracht \"Blokkeer Bas_dehaan\" gaf geen resultaten. Bedoelde u \"WP:DESYSOP#' + mw.config.get('wgUserName') + '\"?');
 		return;
 	}
@@ -50,7 +50,8 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Twinkle.block.currentBlockInfo = undefined;
 	Twinkle.block.field_block_options = {};
 	Twinkle.block.field_template_options = {};
-
+	
+	//Prepare the interface for the blocking sysop
 	var Window = new Morebits.simpleWindow(650, 530);
 	// need to be verbose about who we're blocking
 	Window.setTitle('Blokkeer of plaats blokkeersjabloon op ' + relevantUserName);
@@ -67,7 +68,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 		type: 'field',
 		label: 'Uit te voeren handelingen'
 	});
-	actionfield.append({
+	actionfield.append({ //Define the relevant actions and options for the sysop
 		type: 'checkbox',
 		name: 'actiontype',
 		event: Twinkle.block.callback.change_action,
@@ -860,7 +861,7 @@ Twinkle.block.blockPresetsInfo = {
 		disabletalk: true,
 		noemail: true,
 		templateName: 'blok',
-		reason: '[[Wikipedia:LSV|Langdurig structureel vandalisme]]',
+		reason: '[[Wikipedia:LSV|Langdurig structureel vandalisme]] (LTA)', //Adding 'LTA' as an internationally approved abbreviation
 		summary: 'Je bent voor onbepaalde tijd geblokkeerd wegens [[Wikipedia:LSV|Langdurig structureel vandalisme]]',
 		suppressArticleInSummary: true
 	},
@@ -1006,7 +1007,7 @@ Twinkle.block.blockGroups = [
 		list: [
 			{ label: 'Herhaald vandalisme', value: 'vandalisme' },
 			{ label: 'Ingelogde vandaal', value: 'ingelogde vandaal' },
-			{ label: 'Langdurig structureel vandalisme', value: 'lta' },
+			{ label: 'Langdurig structureel vandalisme (LTA)', value: 'lta' }, //Adding LTA as common abbreviation
 			{ label: 'Ongewenste gebruikersnaam', value: 'og' },
 			{ label: 'Ongewenste gebruikersnaam - bedrijf', value: 'ogbedrijf' },
 			{ label: 'Afkoelblok (informeel)', value: 'douche' },
@@ -1217,7 +1218,8 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 
 Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemplate(e) {
 	var form = e.target.form, value = form.template.value, settings = Twinkle.block.blockPresetsInfo[value];
-
+	
+	//Load the different settings of the checkboxes set by the sysop
 	var blockBox = $(form).find('[name=actiontype][value=block]').is(':checked');
 	var partialBox = $(form).find('[name=actiontype][value=partial]').is(':checked');
 	var templateBox = $(form).find('[name=actiontype][value=template]').is(':checked');
@@ -1319,7 +1321,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	templateoptions.expiry = templateoptions.template_expiry || blockoptions.expiry;
 
 	if (toBlock) {
-		if (blockoptions.partial) {
+		if (blockoptions.partial) {//Check some easily made errors with partial blocks
 			if (blockoptions.disabletalk && blockoptions.namespacerestrictions.indexOf('3') === -1) {
 				return alert('Deelblokkades kunnen de overlegpagina niet blokkeren, tenzij de \'Overleg gebruiker\' naamruimte ook geblokkeerd wordt!');
 			}
@@ -1332,7 +1334,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		if (!blockoptions.expiry) {
 			return alert('Geef een blokkadeduur!');
 		} else if (Morebits.string.isInfinity(blockoptions.expiry) && !Twinkle.block.isRegistered) {
-			return alert("Een IP-adres kan niet voor onbepaalde tijd geblokkeerd worden!");
+			return alert("Een IP-adres kan niet voor onbepaalde tijd geblokkeerd worden!"); //It is sometimes done, but not good practice
 		}
 		if (!blockoptions.reason) {
 			return alert('Geef een rede voor de blokkade!');
@@ -1474,13 +1476,14 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	wikipedia_page.load(Twinkle.block.callback.main);
 };
 
+//Prepare the text that will be dropped onto the wiki
 Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 	var text = '\n{{', settings = Twinkle.block.blockPresetsInfo[params.template];
 	if (!settings.nonstandard) {
-		if (params.template === 'ogbedrijf') {
+		if (params.template === 'ogbedrijf') { //Catch a specific exception that might occur when a company gets blocked
 			text += 'subst:';
 		}
-		text += params.template;
+		text += params.template; //Add the name of the template to the message that is being prepared
 		if (params.article && settings.pageParam) {
 			text += '|pagina=' + params.article;
 		}
