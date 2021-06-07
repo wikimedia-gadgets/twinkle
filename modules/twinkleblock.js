@@ -1483,7 +1483,13 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 		if (params.template === 'ogbedrijf') { //Catch a specific exception that might occur when a company gets blocked
 			text += 'subst:';
 		}
+		if (params.template === 'og') { //A very specific case for inappropriate usernames
+			text += '{{bog}}\nsubst:'; //Add the bog-template, and substitute what comes next
+		}
 		text += params.template; //Add the name of the template to the message that is being prepared
+		if (params.template === 'og') { //Catch a specific problem with blocking someone with an undesired username - due to the OG-template
+			text += '|naam={{subst:PAGENAME}}'; //Add the bog-template, and substitute what comes next
+		}
 		if (params.article && settings.pageParam) {
 			text += '|pagina=' + params.article;
 		}
