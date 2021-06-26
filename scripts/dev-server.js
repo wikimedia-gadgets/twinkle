@@ -27,26 +27,24 @@ const server = http.createServer(async (request, response) => {
 const hostname = '127.0.0.1';
 const port = process.env.PORT || '5500';
 
-const credentialsProvided = process.env.USERNAME && process.env.PASSWORD;
+const credentialsProvided = process.env.MW_USERNAME && process.env.MW_PASSWORD;
 server.listen(port, hostname, () => {
 	console.log(`Server running at http://${hostname}:${port}/`);
-	console.log(`Please add "mw.loader.load('http://${hostname}:${port}');" to your on-wiki common.js file to begin testing.` + (!credentialsProvided ? `\nEnsure the Twinkle gadget version is disabled. If you provide your USERNAME and PASSWORD as environment variables, we'll try to automatically disable the gadget for you and re-enable it when you're done testing.` : ''));
+	console.log(`Please add "mw.loader.load('http://${hostname}:${port}');" to your on-wiki common.js file to begin testing.` + (!credentialsProvided ? `\nEnsure the Twinkle gadget version is disabled. If you provide your MW_USERNAME and MW_PASSWORD as environment variables, we'll try to automatically disable the gadget for you and re-enable it when you're done testing.` : ''));
 });
 
 const GADGET_NAME = 'Twinkle';
 
 // Disable the deployed gadget version when we begin our testing,
 // enable it back again when we stop testing.
-// You need to create a credentials.json file in this directory
-// (it will be git-ignored) with the "apiUrl", "username" and "password" fields.
 (async () => {
 	if (!credentialsProvided) return;
 	let user;
 	try {
 		user = await mwn.init({
 			"apiUrl": "https://en.wikipedia.org/w/api.php",
-			"username": process.env.USERNAME,
-			"password": process.env.PASSWORD,
+			"username": process.env.MW_USERNAME,
+			"password": process.env.MW_PASSWORD,
 			"silent": true
 		});
 	} catch (e) {
