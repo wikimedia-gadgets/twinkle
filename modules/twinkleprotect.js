@@ -1601,13 +1601,13 @@ Twinkle.protect.callbacks = {
 					}
 				});
 			} else {
-				var originalTextLength = text2.length;
+				var originalTextLength2 = text2.length;
 				text2 += '\n' + newtag;
-				if (text2.length === originalTextLength) {
-					var linknode = document.createElement('a');
-					linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
-					linknode.appendChild(document.createTextNode('How to fix RPP'));
-					statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ]);
+				if (text2.length === originalTextLength2) {
+					var linknode2 = document.createElement('a');
+					linknode2.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
+					linknode2.appendChild(document.createTextNode('How to fix RPP'));
+					statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode2, '.' ]);
 					return;
 				}
 				statusElement.status('Adding new request...');
