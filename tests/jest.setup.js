@@ -2,8 +2,6 @@
 mw.config.set({
 	wgPageName: 'Macbeth,_King_of_Scotland',
 	wgUserGroups: ['interface-admin', 'sysop', '*', 'user', 'autoconfirmed'],
-	wgArticlePath: "/wiki/$1",
-	wgScriptPath: "/w"
 });
 
 require('../morebits.js');
