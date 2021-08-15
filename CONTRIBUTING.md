@@ -34,16 +34,18 @@ Once you've got a local fork up and running, commit your changes!
 
 ### Testing your code
 
-Testing Twinkle can be tricky, but thankfully we've made it easy with a helper script, [patch-test.js](./dev/patch-test.js).  Simply run `npm run patchtest` in your terminal, which will generate the `patch-test-loader.js` file.  Then, run a localhost server (`npm run server`) and paste the contents of `patch-test-loader.js` in your [browser's console window][jserrors].  You should be all set!  If you put `mw.loader.getScript('http://127.0.0.1:5500/scripts/patch-test-loader.js');` in your common.js page, you won't even need to paste anything once you run the server!  You can also test your code by simply pasting it into the browser console, although that's not recommended.
+Once you have made your changes, run `npm start`. This launches a webserver listening on `http://127.0.0.1:5500`. So, to load the local version of Twinkle on-wiki, you need to run `mw.loader.load('http://127.0.0.1:5500')` in your browser console. A more permanent solution would be to add that line in your [common.js page](https://en.wikipedia.org/wiki/Special:MyPage/common.js), since code entered in the console does not persist on page navigation.
+
+You can also test your code by simply pasting it into the browser console, but that's not recommended.
+
+The [Test Wiki](http://test.wikipedia.org) is recommended for tests that cause actual edits. However, in some situations where the functionality relies on specific template code or certain wiki-preferences, it may be necessary to test on enwiki itself. You can use the sandboxes, but be aware that some things may not work properly outside the appropriate namespace.
 
 Some things to watch out for:
 
-- If your tests have any chance of making actual edits, consider making them in a sandbox; be aware that some things may not work properly outside the appropriate namespace.  An even better place to test is on the [test wiki](http://test.wikipedia.org)!  Some parts of Twinkle rely on specific template code or on certain wiki-preferences, so testing certain things outside of enWiki may be difficlut (e.g., pending changes).
-- The non-module scripts `morebits.js` and `twinkle.js` can be more complicated to test.
 - The `twinkleconfig` pseudo-module holds the code to save and determine user preferences, while `twinkle.js` holds the defaults.
 - There is some variety in how the individual modules are written, in particular among the `friendly` family as well as with `twinkleconfig.js`.
 
-As Twinkle is used many thousands of times a day, changes to how Twinkle works may be confusing or disruptive to editors.  Significant or major changes to workflow, design, or functionality should gain some modicum of consensus before being proposed or suggested, either through discussion at [Wikipedia talk:Twinkle][] or elsewhere.
+As Twinkle is used many thousands of times a day, changes to how Twinkle works may be confusing or disruptive to editors.  Significant or major changes to workflow, design, or functionality should gain some modicum of consensus before being worked on, either through discussion at [Wikipedia talk:Twinkle][] or elsewhere.
 
 ### Submitting your pull request
 
@@ -53,7 +55,7 @@ When you are ready to submit, commit your changes on a new branch, then [initiat
 
 The usual rule of thumb is that a good subject line will complete the sentence "*If applied, this commit will...*"  The full commit message is a good place to explain further details, both for reviewers and anyone in the future, specifically focusing on *why* the changes are being made, not *how*.  There are many guides to writing good commit messages, one particularly helpful one is by @cbeams: <https://chris.beams.io/posts/git-commit/>.
 
-If you made multiple commits while working on the same feature, it's a good idea to [squash and rebase your commits](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History) before submitting your PR; a good policy is that every commit should be capable of replacing the live on-wiki Gadget file for all users.  Separate ideas or enhancements should be different commits, and entirely separate concepts should be different pull requests.  For example, if you made three commits while changing the pulldown options in `twinkleprotect.js` and `twinklebatchprotect.js`, those should be squashed into one commit, but if you also disabled loading `twinklespeedy.js` and `twinklexfd.js` on the mainpage, that should be a separate pull request.  See also [how to file a bug report or feature request](README.md#how-to-file-a-bug-report-or-feature-request).
+If you made multiple commits while working on the same feature, it's a good idea to [squash and rebase your commits](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History) before submitting your PR. Separate ideas or enhancements should be different commits, and entirely separate concepts should be different pull requests.  For example, if you made three commits while changing the pulldown options in `twinkleprotect.js` and `twinklebatchprotect.js`, those should be squashed into one commit, but if you also disabled loading `twinklespeedy.js` and `twinklexfd.js` on the mainpage, that should be a separate pull request.  See also [how to file a bug report or feature request](README.md#how-to-file-a-bug-report-or-feature-request).
 
 ### Style guideline
 
