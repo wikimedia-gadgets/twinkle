@@ -28,9 +28,13 @@ If you believe you have found a security issue, follow the guidelines in [SECURI
 
 If you'd like to help with Twinkle's development, wonderful!  Anyone can contribute, and it's easy to get set up to do so.
 
+- Download and install Node.js if you don't have it already (https://nodejs.org/en/download/).
+- Set up your code editor or IDE to work with JavaScript so that you get proper syntax highlightening and code completion.
+- Clone the repository: `git clone https://github.com/wikimedia-gadgets/twinkle`
+- Install eslint and other dependencies: `npm install` while inside Twinkle directory.
+
 First, familiarize yourself with the code; most likely, the changes you want are to one of the [modules](./modules); you can also check out the [individual Gadget pages][twinkle_gadget] onwiki.  If the changes are to the [Morebits library](./morebits.js), you can view the full docs at <http://wikimedia-gadgets.github.io/twinkle> or on the [GitHub Wiki](https://github.com/wikimedia-gadgets/twinkle/wiki/morebits).  If you want to propose changes yourself, [fork the repository](https://help.github.com/articles/fork-a-repo/) to make sure you always have the latest versions.  If you're new to GitHub or Git in general, you probably want to read [Getting started with GitHub](https://help.github.com/en/github/getting-started-with-github) first.
 
-Once you've got a local fork up and running, commit your changes!
 
 ### Testing your code
 
@@ -40,12 +44,20 @@ You can also test your code by simply pasting it into the browser console, but t
 
 The [Test Wiki](http://test.wikipedia.org) is recommended for tests that cause actual edits. However, in some situations where the functionality relies on specific template code or certain wiki-preferences, it may be necessary to test on enwiki itself. You can use the sandboxes, but be aware that some things may not work properly outside the appropriate namespace.
 
+Specifically, the following pages on enwiki may be helpful:
+- [Wikipedia:Sandbox](https://en.wikipedia.org/wiki/Wikipedia:Sandbox)
+- [Draft:Sandbox](https://en.wikipedia.org/wiki/Draft:Sandbox)
+- [User talk:Sandbox for user warnings](https://en.wikipedia.org/wiki/User_talk:Sandbox_for_user_warnings) - for testing Warn/Welcome modules
+- [Category:X1](https://en.wikipedia.org/wiki/Category:X1)
+- [User:192.0.2.16](https://en.wikipedia.org/wiki/User:192.0.2.16), [User:2001:DB8:10:0:0:0:0:1](https://en.wikipedia.org/wiki/User:2001:DB8:10:0:0:0:0:1), User:192.0.2.16/32 - for testing IP blocks
+- [Wikipedia:Administrators' guide/Protecting/Protect](https://en.wikipedia.org/wiki/Wikipedia:Administrators'_guide/Protecting/Protect) - for testing page protections
+
 Some things to watch out for:
 
 - The `twinkleconfig` pseudo-module holds the code to save and determine user preferences, while `twinkle.js` holds the defaults.
 - There is some variety in how the individual modules are written, in particular among the `friendly` family as well as with `twinkleconfig.js`.
 
-As Twinkle is used many thousands of times a day, changes to how Twinkle works may be confusing or disruptive to editors.  Significant or major changes to workflow, design, or functionality should gain some modicum of consensus before being worked on, either through discussion at [Wikipedia talk:Twinkle][] or elsewhere.
+As Twinkle is used many thousands of times a day, changes to how Twinkle works may be confusing or disruptive to editors.  Significant or major changes to workflow, design, or functionality should gain some modicum of consensus before being worked on, through discussion at [Wikipedia talk:Twinkle][] or a GitHub issue.
 
 ### Submitting your pull request
 
@@ -59,11 +71,11 @@ If you made multiple commits while working on the same feature, it's a good idea
 
 ### Style guideline
 
-For consistency and to cut down on potential errors, we've recently decided to utilize a more coherent style throughout the code.  [eslint][eslint.org] can be used to check your code before submission and even repair many common issues.  To install via `npm`, just run `npm install` from the main Twinkle directory in your terminal.  You can then freely check your code by running `npm run lint`, and if you run `npm run lint:fix` then `eslint` will clean up some (but not all!) style differences.  More information on specific style rules can be seen in [issue #500][fivehundred] and in `.eslintrc.json`, but the best advice is to just follow the style of surrounding code!  Some specific examples and deviations are elucidated below.
+For consistency and to cut down on potential errors, we follow a coherent style throughout the code.  [eslint][eslint.org] can be used to check your code before submission and even repair many common issues.  To install via `npm`, just run `npm install` from the main Twinkle directory in your terminal.  You can then freely check your code by running `npm run lint`, and if you run `npm run lint:fix` then `eslint` will clean up some (but not all!) style differences.  More information on specific style rules can be seen in [issue #500][fivehundred] and in `.eslintrc.json`, but the best advice is to just follow the style of surrounding code!  Some specific examples and deviations are elucidated below.
 
-- Quotes: Single quotes should be used around strings, such as when using `mw.config.get('wgUserName')`
+- Tabs, not spaces
+- Use single quotes for strings, such as: `mw.config.get('wgUserName')`
 - Spacing: `if (condition) {`
-- Each: The `array.forEach(function(item) {` method is preferable to `$.each(array, function(index, item) {`
 
 ## Expectations of Participants
 
