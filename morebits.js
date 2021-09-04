@@ -207,6 +207,9 @@ Morebits.pageNameRegex = function(pageName) {
  */
 Morebits.createHtml = function(input) {
 	var fragment = document.createDocumentFragment();
+	if (!input) {
+		return fragment;
+	}
 	if (!Array.isArray(input)) {
 		input = [ input ];
 	}
