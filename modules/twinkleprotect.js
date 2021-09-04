@@ -1371,10 +1371,10 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
 
-			var rppName = 'Wikipedia:Requests for page protection';
+			var rppName = 'Wikipedia:Requests for page protection/Increase';
 
 			// Updating data for the action completed event
-			Morebits.wiki.actionCompleted.redirect = rppName;
+			Morebits.wiki.actionCompleted.redirect = 'Wikipedia: Requests for page protection';
 			Morebits.wiki.actionCompleted.notice = 'Nomination completed, redirecting now to the discussion page';
 
 			var rppPage = new Morebits.wiki.page(rppName, 'Requesting protection of page');
@@ -1487,120 +1487,155 @@ Twinkle.protect.callbacks = {
 
 	fileRequest: function(rppPage) {
 
-		var params = rppPage.getCallbackParameters();
-		var text = rppPage.getPageText();
-		var statusElement = rppPage.getStatusElement();
+		var rppPage2 = new Morebits.wiki.page('Wikipedia:Requests for page protection/Decrease', 'Loading requests pages');
+		rppPage2.load(function() {
+			var params = rppPage.getCallbackParameters();
+			var text = rppPage.getPageText();
+			var statusElement = rppPage.getStatusElement();
+			var text2 = rppPage2.getPageText();
 
-		var rppRe = new RegExp('===\\s*(\\[\\[)?\\s*:?\\s*' + Morebits.string.escapeRegExp(Morebits.pageNameNorm) + '\\s*(\\]\\])?\\s*===', 'm');
-		var tag = rppRe.exec(text);
+			var rppRe = new RegExp('===\\s*(\\[\\[)?\\s*:?\\s*' + Morebits.string.escapeRegExp(Morebits.pageNameNorm) + '\\s*(\\]\\])?\\s*===', 'm');
+			var tag = rppRe.exec(text) || rppRe.exec(text2);
 
-		var rppLink = document.createElement('a');
-		rppLink.setAttribute('href', mw.util.getUrl(rppPage.getPageName()));
-		rppLink.appendChild(document.createTextNode(rppPage.getPageName()));
+			var rppLink = document.createElement('a');
+			rppLink.setAttribute('href', mw.util.getUrl('Wikipedia:Requests for page protection'));
+			rppLink.appendChild(document.createTextNode('Wikipedia:Requests for page protection'));
 
-		if (tag) {
-			statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
-			return;
-		}
-
-		var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
-		if (new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text)) {
-			statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
-			return;
-		}
-		newtag += '* {{pagelinks|1=' + Morebits.pageNameNorm + '}}\n\n';
-
-		var words;
-		switch (params.expiry) {
-			case 'temporary':
-				words = 'Temporary ';
-				break;
-			case 'infinity':
-				words = 'Indefinite ';
-				break;
-			default:
-				words = '';
-				break;
-		}
-
-		words += params.typename;
-
-		newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + (params.reason !== '' ? ":''' " +
-			Morebits.string.formatReasonText(params.reason) : ".'''") + ' ~~~~';
-
-		// If either protection type results in a increased status, then post it under increase
-		// else we post it under decrease
-		var increase = false;
-		var protInfo = Twinkle.protect.protectionPresetsInfo[params.category];
-
-		// function to compute protection weights (see comment at Twinkle.protect.protectionWeight)
-		var computeWeight = function(mainLevel, stabilizeLevel) {
-			var result = Twinkle.protect.protectionWeight[mainLevel || 'all'];
-			if (stabilizeLevel) {
-				if (result) {
-					if (stabilizeLevel.level === 'autoconfirmed') {
-						result += 2;
-					}
-				} else {
-					result = Twinkle.protect.protectionWeight['flaggedrevs_' + stabilizeLevel];
-				}
+			if (tag) {
+				statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
+				return;
 			}
-			return result;
-		};
 
-		// compare the page's current protection weights with the protection we are requesting
-		var editWeight = computeWeight(Twinkle.protect.currentProtectionLevels.edit &&
-			Twinkle.protect.currentProtectionLevels.edit.level,
-		Twinkle.protect.currentProtectionLevels.stabilize &&
-			Twinkle.protect.currentProtectionLevels.stabilize.level);
-		if (computeWeight(protInfo.edit, protInfo.stabilize) > editWeight ||
-			computeWeight(protInfo.move) > computeWeight(Twinkle.protect.currentProtectionLevels.move &&
-			Twinkle.protect.currentProtectionLevels.move.level) ||
-			computeWeight(protInfo.create) > computeWeight(Twinkle.protect.currentProtectionLevels.create &&
-			Twinkle.protect.currentProtectionLevels.create.level)) {
-			increase = true;
-		}
+			var newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
+			if (new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text) || new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text2)) {
+				statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
+				return;
+			}
+			newtag += '* {{pagelinks|1=' + Morebits.pageNameNorm + '}}\n\n';
 
-		var reg;
-		if (increase) {
-			reg = /(\n==\s*Current requests for reduction in protection level\s*==)/;
-		} else {
-			reg = /(\n==\s*Current requests for edits to a protected page\s*==)/;
-		}
+			var words;
+			switch (params.expiry) {
+				case 'temporary':
+					words = 'Temporary ';
+					break;
+				case 'infinity':
+					words = 'Indefinite ';
+					break;
+				default:
+					words = '';
+					break;
+			}
 
-		var originalTextLength = text.length;
-		text = text.replace(reg, '\n' + newtag + '\n$1');
-		if (text.length === originalTextLength) {
-			var linknode = document.createElement('a');
-			linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
-			linknode.appendChild(document.createTextNode('How to fix RPP'));
-			statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ]);
-			return;
-		}
-		statusElement.status('Adding new request...');
-		rppPage.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Requesting ' + params.typename + (params.typename === 'pending changes' ? ' on [[:' : ' of [[:') +
-			Morebits.pageNameNorm + ']].');
-		rppPage.setChangeTags(Twinkle.changeTags);
-		rppPage.setPageText(text);
-		rppPage.setCreateOption('recreate');
-		rppPage.save(function() {
-			// Watch the page being requested
-			var watchPref = Twinkle.getPref('watchRequestedPages');
-			// action=watch has no way to rely on user preferences (T262912), so we do it manually.
-			// The watchdefault pref appears to reliably return '1' (string),
-			// but that's not consistent among prefs so might as well be "correct"
-			var watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
-			if (watch) {
-				var watch_query = {
-					action: 'watch',
-					titles: mw.config.get('wgPageName'),
-					token: mw.user.tokens.get('watchToken')
-				};
-				// Only add the expiry if page is unwatched or already temporarily watched
-				if (Twinkle.protect.watched !== true && watchPref !== 'default' && watchPref !== 'yes') {
-					watch_query.expiry = watchPref;
+			words += params.typename;
+
+			newtag += "'''" + Morebits.string.toUpperCaseFirstChar(words) + (params.reason !== '' ? ":''' " +
+				Morebits.string.formatReasonText(params.reason) : ".'''") + ' ~~~~';
+
+			// If either protection type results in a increased status, then post it under increase
+			// else we post it under decrease
+			var increase = false;
+			var protInfo = Twinkle.protect.protectionPresetsInfo[params.category];
+
+			// function to compute protection weights (see comment at Twinkle.protect.protectionWeight)
+			var computeWeight = function(mainLevel, stabilizeLevel) {
+				var result = Twinkle.protect.protectionWeight[mainLevel || 'all'];
+				if (stabilizeLevel) {
+					if (result) {
+						if (stabilizeLevel.level === 'autoconfirmed') {
+							result += 2;
+						}
+					} else {
+						result = Twinkle.protect.protectionWeight['flaggedrevs_' + stabilizeLevel];
+					}
 				}
-				new Morebits.wiki.api('Adding requested page to watchlist', watch_query).post();
+				return result;
+			};
+
+			// compare the page's current protection weights with the protection we are requesting
+			var editWeight = computeWeight(Twinkle.protect.currentProtectionLevels.edit &&
+				Twinkle.protect.currentProtectionLevels.edit.level,
+			Twinkle.protect.currentProtectionLevels.stabilize &&
+				Twinkle.protect.currentProtectionLevels.stabilize.level);
+			if (computeWeight(protInfo.edit, protInfo.stabilize) > editWeight ||
+				computeWeight(protInfo.move) > computeWeight(Twinkle.protect.currentProtectionLevels.move &&
+				Twinkle.protect.currentProtectionLevels.move.level) ||
+				computeWeight(protInfo.create) > computeWeight(Twinkle.protect.currentProtectionLevels.create &&
+				Twinkle.protect.currentProtectionLevels.create.level)) {
+				increase = true;
+			}
+
+			if (increase) {
+				var originalTextLength = text.length;
+				text += '\n' + newtag;
+				if (text.length === originalTextLength) {
+					var linknode = document.createElement('a');
+					linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
+					linknode.appendChild(document.createTextNode('How to fix RPP'));
+					statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ]);
+					return;
+				}
+				statusElement.status('Adding new request...');
+				rppPage.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Requesting ' + params.typename + (params.typename === 'pending changes' ? ' on [[:' : ' of [[:') +
+					Morebits.pageNameNorm + ']].');
+				rppPage.setChangeTags(Twinkle.changeTags);
+				rppPage.setPageText(text);
+				rppPage.setCreateOption('recreate');
+				rppPage.save(function() {
+					// Watch the page being requested
+					var watchPref = Twinkle.getPref('watchRequestedPages');
+					// action=watch has no way to rely on user preferences (T262912), so we do it manually.
+					// The watchdefault pref appears to reliably return '1' (string),
+					// but that's not consistent among prefs so might as well be "correct"
+					var watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
+					if (watch) {
+						var watch_query = {
+							action: 'watch',
+							titles: mw.config.get('wgPageName'),
+							token: mw.user.tokens.get('watchToken')
+						};
+						// Only add the expiry if page is unwatched or already temporarily watched
+						if (Twinkle.protect.watched !== true && watchPref !== 'default' && watchPref !== 'yes') {
+							watch_query.expiry = watchPref;
+						}
+						new Morebits.wiki.api('Adding requested page to watchlist', watch_query).post();
+					}
+				});
+			} else {
+				var originalTextLength2 = text2.length;
+				text2 += '\n' + newtag;
+				if (text2.length === originalTextLength2) {
+					var linknode2 = document.createElement('a');
+					linknode2.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
+					linknode2.appendChild(document.createTextNode('How to fix RPP'));
+					statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode2, '.' ]);
+					return;
+				}
+				statusElement.status('Adding new request...');
+				rppPage2.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Requesting ' + params.typename + (params.typename === 'pending changes' ? ' on [[:' : ' of [[:') +
+					Morebits.pageNameNorm + ']].');
+				rppPage2.setChangeTags(Twinkle.changeTags);
+				rppPage2.setPageText(text2);
+				rppPage2.setCreateOption('recreate');
+				rppPage2.save(function() {
+					// Watch the page being requested
+					var watchPref = Twinkle.getPref('watchRequestedPages');
+					// action=watch has no way to rely on user preferences (T262912), so we do it manually.
+					// The watchdefault pref appears to reliably return '1' (string),
+					// but that's not consistent among prefs so might as well be "correct"
+					var watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
+					if (watch) {
+						var watch_query = {
+							action: 'watch',
+							titles: mw.config.get('wgPageName'),
+							token: mw.user.tokens.get('watchToken')
+						};
+						// Only add the expiry if page is unwatched or already temporarily watched
+						if (Twinkle.protect.watched !== true && watchPref !== 'default' && watchPref !== 'yes') {
+							watch_query.expiry = watchPref;
+						}
+						new Morebits.wiki.api('Adding requested page to watchlist', watch_query).post();
+					}
+				});
 			}
 		});
 	}
