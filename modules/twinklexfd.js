@@ -319,7 +319,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Wrap deletion tag with <noinclude>',
+						label: 'Wrap deletion tag with &lt;noinclude&gt;',
 						value: 'noinclude',
 						name: 'noinclude',
 						tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. This option is not normally required.'
@@ -489,7 +489,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Wrap deletion tag with <noinclude> (for substituted templates only)',
+						label: 'Wrap deletion tag with &lt;noinclude&gt; (for substituted templates only)',
 						value: 'noinclude',
 						name: 'noinclude',
 						tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.',
@@ -527,7 +527,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Wrap deletion tag with <noinclude>',
+						label: 'Wrap deletion tag with &lt;noinclude&gt;',
 						value: 'noinclude',
 						name: 'noinclude',
 						tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. Select this option for userboxes.'
