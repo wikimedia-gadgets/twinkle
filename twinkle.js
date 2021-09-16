@@ -279,7 +279,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
 				navigation = 'mw-panel';
 			}
-			outerNavClass = 'mw-portlet vector-menu vector-menu-' + (navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'dropdown' : 'tabs');
+			outerNavClass = 'mw-portlet vector-menu vector-menu-' + (navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'dropdown vector-menu-dropdown-noicon' : 'tabs');
 			innerDivClass = 'vector-menu-content';
 			break;
 		case 'modern':
