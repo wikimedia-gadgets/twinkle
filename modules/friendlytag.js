@@ -660,6 +660,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Cleanup tense', description: 'does not follow guidelines on use of different tenses.' },
 			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
 			{ tag: 'Fanpov', description: "written from a fan's point of view" },
+			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
 			{ tag: 'Like resume', description: 'written like a resume' },
 			{ tag: 'Manual', description: 'written like a manual or guidebook' },
 			{ tag: 'Cleanup-PR', description: 'reads like a press release or news article',
