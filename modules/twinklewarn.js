@@ -568,19 +568,19 @@ Twinkle.warn.messages = {
 			'uw-paid': {
 				level1: {
 					label: 'Paid editing without disclosure under the Wikimedia Terms of Use',
-					summary: 'General note: Paid editing without disclosure under the Wikimedia Terms of Use'
+					summary: 'General note: Disclosure requirements for paid editing under the Wikimedia Terms of Use'
 				},
 				level2: {
 					label: 'Paid editing without disclosure under the Wikimedia Terms of Use',
-					summary: 'Caution: Paid editing without disclosure under the Wikimedia Terms of Use'
+					summary: 'Caution: Disclosure requirements for paid editing under the Wikimedia Terms of Use'
 				},
 				level3: {
 					label: 'Paid editing without disclosure under the Wikimedia Terms of Use',
-					summary: 'Warning: Paid editing without disclosure under the Wikimedia Terms of Use'
+					summary: 'Warning: Disclosure requirements for paid editing under the Wikimedia Terms of Use'
 				},
 				level4: {
 					label: 'Paid editing without disclosure under the Wikimedia Terms of Use',
-					summary: 'Final warning: Paid editing without disclosure under the Wikimedia Terms of Use'
+					summary: 'Final warning: Disclosure requirements for paid editing under the Wikimedia Terms of Use'
 				}
 			},
 			'uw-spam': {
@@ -1168,7 +1168,7 @@ Twinkle.warn.messages = {
 		},
 		'uw-coi-username': {
 			label: 'Username is against policy, and conflict of interest',
-			summary: 'Warning: Username and conflict of interest policy',
+			summary: 'Warning: Username and conflict of interest',
 			heading: 'Your username'
 		},
 		'uw-userpage': {
