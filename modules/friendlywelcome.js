@@ -84,7 +84,8 @@ Twinkle.welcome.normal = function() {
 			}
 		}
 	}
-	if (mw.config.get('wgRelevantUserName')) {
+	// Users and IPs but not IP ranges
+	if (mw.config.exists('wgRelevantUserName') && !Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
 		Twinkle.addPortletLink(function() {
 			Twinkle.welcome.callback(mw.config.get('wgRelevantUserName'));
 		}, 'Wel', 'friendly-welcome', 'Welcome user');
@@ -129,7 +130,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 	form.append({
 		type: 'select',
 		name: 'type',
-		label: 'Type of welcome: ',
+		label: 'Type of welcome:',
 		event: Twinkle.welcome.populateWelcomeList,
 		list: [
 			{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
@@ -476,7 +477,7 @@ Twinkle.welcome.templates = {
 			},
 			'TWA invite': {
 				description: 'invite the user to The Wikipedia Adventure (not a welcome template)',
-				syntax: '{{WP:TWA/InviteTW|signature=~~~~}}'
+				syntax: '{{subst:WP:TWA/InviteTW|signature=~~~~}}'
 			}
 		}
 	},

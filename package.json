@@ -4,19 +4,20 @@
 	"private": true,
 	"repository": "wikimedia-gadgets/twinkle",
 	"scripts": {
+	  	"start": "node scripts/dev-server.js",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"patchtest": "node scripts/patch-test.js",
 		"server": "node scripts/server.js",
 		"sync": "perl scripts/sync.pl",
-		"test": "qunit --require ./tests/mocking/mb_repl.js ./tests/*",
+		"test": "jest",
 		"deployall": "perl scripts/sync.pl --mode=deploy --all"
 	},
 	"devDependencies": {
-		"eslint": "^7.18.0",
+		"eslint": "^7.32.0",
 		"eslint-plugin-es5": "^1.5.0",
-		"jsdom": "^16.4.0",
-		"jquery": "^3.5.1",
-		"qunit": "^2.14.0"
+		"jest": "^27.0.6",
+		"mock-mediawiki": "^1.2.2",
+		"mwn": "^0.11.1"
 	}
 }

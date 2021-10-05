@@ -142,7 +142,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reason:',
 		size: 60,
 		tooltip: 'For the protection log and page history.'
 	});
@@ -182,10 +182,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		var response = apiobj.getResponse();
 		var pages = (response.query && response.query.pages) || [];
 		var list = [];
-		// json formatversion=2 doesn't sort pages by namespace
-		pages.sort(function(one, two) {
-			return one.ns - two.ns || (one.title > two.title ? 1 : -1);
-		});
+		pages.sort(Twinkle.sortByNamespace);
 		pages.forEach(function(page) {
 			var metadata = [];
 			var missing = !!page.missing, editProt;
@@ -250,6 +247,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		result.moveexpiry.value = '2 days';
 		result.createexpiry.value = 'infinity';
 
+		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
 
 	}, statelem);
 

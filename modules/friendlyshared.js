@@ -9,7 +9,7 @@
  *** friendlyshared.js: Shared IP tagging module
  ****************************************
  * Mode of invocation:     Tab ("Shared")
- * Active on:              Existing IP user talk pages
+ * Active on:              IP user talk pages
  */
 
 Twinkle.shared = function friendlyshared() {

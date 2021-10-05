@@ -107,7 +107,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	form.append({
 		type: 'input',
 		name: 'reason',
-		label: 'Reason: ',
+		label: 'Reason:',
 		size: 60
 	});
 
@@ -172,10 +172,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		pages = pages.filter(function(page) {
 			return !page.missing && page.imagerepository !== 'shared';
 		});
-		// json formatversion=2 doesn't sort pages by namespace
-		pages.sort(function(one, two) {
-			return one.ns - two.ns || (one.title > two.title ? 1 : -1);
-		});
+		pages.sort(Twinkle.sortByNamespace);
 		pages.forEach(function(page) {
 			var metadata = [];
 			if (page.redirect) {
@@ -243,21 +240,13 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 		var result = form.render();
 		apiobj.params.Window.setContent(result);
 
-		Morebits.quickForm.getElements(result, 'pages').forEach(generateArrowLinks);
+		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
 
 	}, statelem);
 
 	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
 };
-
-function generateArrowLinks (checkbox) {
-	var link = Morebits.htmlNode('a', ' >');
-	link.setAttribute('class', 'tw-dbatch-page-link');
-	link.setAttribute('href', mw.util.getUrl(checkbox.value));
-	link.setAttribute('target', '_blank');
-	checkbox.nextElementSibling.append(link);
-}
 
 Twinkle.batchdelete.generateNewPageList = function(form) {
 
@@ -307,8 +296,8 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
 			$('#tw-dbatch-pages').replaceWith(newPageList);
 
-			Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
-			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages').forEach(Twinkle.generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(Twinkle.generateArrowLinks);
 
 			return;
 		}
@@ -347,10 +336,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 				var response = apiobj.getResponse();
 				var pages = (response.query && response.query.pages) || [];
 				var subpageList = [];
-				// json formatversion=2 doesn't sort pages by namespace
-				pages.sort(function(one, two) {
-					return one.ns - two.ns || (one.title > two.title ? 1 : -1);
-				});
+				pages.sort(Twinkle.sortByNamespace);
 				pages.forEach(function(page) {
 					var metadata = [];
 					if (page.redirect) {
@@ -402,8 +388,8 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
 			$('#tw-dbatch-pages').replaceWith(newPageList);
 
-			Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
-			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages').forEach(Twinkle.generateArrowLinks);
+			Morebits.quickForm.getElements(newPageList, 'pages.subpages').forEach(Twinkle.generateArrowLinks);
 
 			subpagesLoaded = true;
 
@@ -427,7 +413,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		newPageList = Twinkle.batchdelete.generateNewPageList(form);
 		$('#tw-dbatch-pages').replaceWith(newPageList);
 
-		Morebits.quickForm.getElements(newPageList, 'pages').forEach(generateArrowLinks);
+		Morebits.quickForm.getElements(newPageList, 'pages').forEach(Twinkle.generateArrowLinks);
 	}
 };
 

@@ -290,7 +290,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		work_area.append({
 			type: 'textarea',
 			name: 'reason',
-			label: 'Reason: ',
+			label: 'Reason:',
 			value: oldreason,
 			tooltip: 'You can use wikimarkup in your reason. Twinkle will automatically sign your post.'
 		});
@@ -310,15 +310,16 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 			work_area.append({
 				type: 'div',
-				label: Twinkle.makeFindSourcesDiv(),
-				style: 'margin-bottom: 5px;'
+				label: '', // Added later by Twinkle.makeFindSourcesDiv()
+				id: 'twinkle-xfd-findsources',
+				style: 'margin-bottom: 5px; margin-top: -5px;'
 			});
 
 			work_area.append({
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Wrap deletion tag with <noinclude>',
+						label: 'Wrap deletion tag with &lt;noinclude&gt;',
 						value: 'noinclude',
 						name: 'noinclude',
 						tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. This option is not normally required.'
@@ -382,7 +383,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'select',
 				multiple: true,
 				name: 'delsortCats',
-				label: 'Choose deletion sorting categories: ',
+				label: 'Choose deletion sorting categories:',
 				tooltip: 'Select a few categories that are specifically relevant to the subject of the article. Be as precise as possible; categories like People and USA should only be used when no other categories apply.'
 			});
 
@@ -396,6 +397,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			appendReasonBox();
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
+
+			Twinkle.makeFindSourcesDiv('#twinkle-xfd-findsources');
 
 			$(work_area).find('[name=delsortCats]')
 				.attr('data-placeholder', 'Select delsort pages')
@@ -442,7 +445,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			var templateOrModule = mw.config.get('wgPageContentModel') === 'Scribunto' ? 'module' : 'template';
 			work_area.append({
 				type: 'select',
-				label: 'Choose type of action wanted: ',
+				label: 'Choose type of action wanted:',
 				name: 'xfdcat',
 				event: function(e) {
 					var target = e.target,
@@ -452,7 +455,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						tfdtarget = new Morebits.quickForm.element({
 							name: 'tfdtarget',
 							type: 'input',
-							label: 'Other ' + templateOrModule + ' to be merged: ',
+							label: 'Other ' + templateOrModule + ' to be merged:',
 							tooltip: 'Required. Should not include the ' + Morebits.string.toUpperCaseFirstChar(templateOrModule) + ': namespace prefix.',
 							required: true
 						});
@@ -470,7 +473,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			work_area.append({
 				type: 'select',
 				name: 'templatetype',
-				label: 'Deletion tag display style: ',
+				label: 'Deletion tag display style:',
 				tooltip: 'Which <code>type=</code> parameter to pass to the TfD tag template.',
 				list: templateOrModule === 'module' ? [
 					{ type: 'option', value: 'module', label: 'Module', selected: true }
@@ -486,7 +489,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Wrap deletion tag with <noinclude> (for substituted templates only)',
+						label: 'Wrap deletion tag with &lt;noinclude&gt; (for substituted templates only)',
 						value: 'noinclude',
 						name: 'noinclude',
 						tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t get substituted along with the template.',
@@ -524,7 +527,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Wrap deletion tag with <noinclude>',
+						label: 'Wrap deletion tag with &lt;noinclude&gt;',
 						value: 'noinclude',
 						name: 'noinclude',
 						tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. Select this option for userboxes.'
@@ -569,7 +572,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			var isCategory = mw.config.get('wgNamespaceNumber') === 14;
 			work_area.append({
 				type: 'select',
-				label: 'Choose type of action wanted: ',
+				label: 'Choose type of action wanted:',
 				name: 'xfdcat',
 				event: function(e) {
 					var value = e.target.value,
@@ -623,7 +626,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			work_area.append({
 				type: 'input',
 				name: 'cfdtarget',
-				label: 'Target category: ', // default, changed above
+				label: 'Target category:', // default, changed above
 				disabled: true,
 				required: true, // only when enabled
 				value: ''
@@ -641,7 +644,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			});
 			work_area.append({
 				type: 'select',
-				label: 'C2 sub-criterion: ',
+				label: 'C2 sub-criterion:',
 				name: 'xfdcat',
 				tooltip: 'See WP:CFDS for full explanations.',
 				list: [
@@ -657,7 +660,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			work_area.append({
 				type: 'input',
 				name: 'cfdstarget',
-				label: 'New name: ',
+				label: 'New name:',
 				value: '',
 				required: true
 			});
@@ -714,7 +717,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			work_area.append({
 				type: 'input',
 				name: 'newname',
-				label: 'New title: ',
+				label: 'New title:',
 				tooltip: 'Required for technical requests. Otherwise, if unsure of the appropriate title, you may leave it blank.'
 			});
 
@@ -750,7 +753,8 @@ Twinkle.xfd.callbacks = {
 			pageobj.getStatusElement().warn('Page protected, requesting edit');
 
 			var editRequest = '{{subst:Xfd edit protected|page=' + pageobj.getPageName() +
-				'|discussion=' + params.discussionpage + '|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
+				'|discussion=' + params.discussionpage + (params.venue === 'rfd' ? '|rfd=yes' : '') +
+				'|tag=<nowiki>' + params.tagText + '\u003C/nowiki>}}'; // U+003C: <
 
 			var talk_page = new Morebits.wiki.page(talkName, 'Automatically posting edit request on talk page');
 			talk_page.setNewSectionTitle('Edit request to complete ' + utils.toTLACase(params.venue) + ' nomination');

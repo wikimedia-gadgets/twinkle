@@ -18,12 +18,16 @@ Twinkle.arv = function twinklearv() {
 		return;
 	}
 
-	var isIP = mw.util.isIPAddress(username);
-	var title = isIP ? 'Report IP to administrators' : 'Report user to administrators';
+	var isIP = mw.util.isIPAddress(username, true);
+	// Ignore ranges wider than the CIDR limit
+	if (Morebits.ip.isRange(username) && !Morebits.ip.validCIDR(username)) {
+		return;
+	}
+	var userType = isIP ? 'IP' + (Morebits.ip.isRange(username) ? ' range' : '') : 'user';
 
 	Twinkle.addPortletLink(function() {
 		Twinkle.arv.callback(username, isIP);
-	}, 'ARV', 'tw-arv', title);
+	}, 'ARV', 'tw-arv', 'Report ' + userType + ' to administrators');
 };
 
 Twinkle.arv.callback = function (uid, isIP) {
@@ -41,7 +45,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 	var categories = form.append({
 		type: 'select',
 		name: 'category',
-		label: 'Select report type: ',
+		label: 'Select report type:',
 		event: Twinkle.arv.callback.changeCategory
 	});
 	categories.append({
@@ -53,7 +57,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 		type: 'option',
 		label: 'Username (WP:UAA)',
 		value: 'username',
-		disabled: mw.util.isIPAddress(uid)
+		disabled: isIP
 	});
 	categories.append({
 		type: 'option',
@@ -68,7 +72,8 @@ Twinkle.arv.callback = function (uid, isIP) {
 	categories.append({
 		type: 'option',
 		label: 'Edit warring (WP:AN3)',
-		value: 'an3'
+		value: 'an3',
+		disabled: Morebits.ip.isRange(uid) // rvuser template doesn't support ranges
 	});
 	form.append({
 		type: 'div',
@@ -108,8 +113,9 @@ Twinkle.arv.callback = function (uid, isIP) {
 	new Morebits.wiki.api("Checking the user's block status", query, function(apiobj) {
 		var blocklist = apiobj.getResponse().query.blocks;
 		if (blocklist.length) {
+			// If an IP is blocked *and* rangeblocked, only use whichever is more recent
 			var block = blocklist[0];
-			var message = (isIP ? 'This IP address' : 'This account') + ' is ' + (block.partial ? 'partially' : 'already') + ' blocked';
+			var message = (isIP ? 'This IP ' + (Morebits.ip.isRange(uid) ? 'range' : 'address') : 'This account') + ' is ' + (block.partial ? 'partially' : 'already') + ' blocked';
 			// Start and end differ, range blocked
 			message += block.rangestart !== block.rangeend ? ' as part of a rangeblock.' : '.';
 			if (block.partial) {
@@ -144,7 +150,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append({
 				type: 'input',
 				name: 'page',
-				label: 'Primary linked page: ',
+				label: 'Primary linked page:',
 				tooltip: 'Leave blank to not link to the page in the report',
 				value: mw.util.getParamValue('vanarticle') || '',
 				event: function(e) {
@@ -161,7 +167,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append({
 				type: 'input',
 				name: 'badid',
-				label: 'Revision ID for target page when vandalised: ',
+				label: 'Revision ID for target page when vandalised:',
 				tooltip: 'Leave blank for no diff link',
 				value: mw.util.getParamValue('vanarticlerevid') || '',
 				disabled: !mw.util.getParamValue('vanarticle'),
@@ -174,7 +180,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append({
 				type: 'input',
 				name: 'goodid',
-				label: 'Last good revision ID before vandalism of target page: ',
+				label: 'Last good revision ID before vandalism of target page:',
 				tooltip: 'Leave blank for diff link to previous revision',
 				value: mw.util.getParamValue('vanarticlegoodrevid') || '',
 				disabled: !mw.util.getParamValue('vanarticle') || mw.util.getParamValue('vanarticlerevid')
@@ -194,12 +200,12 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					{
 						label: 'Evidently a vandalism-only account',
 						value: 'vandalonly',
-						disabled: mw.util.isIPAddress(root.uid.value)
+						disabled: mw.util.isIPAddress(root.uid.value, true)
 					},
 					{
 						label: 'Account is a promotion-only account',
 						value: 'promoonly',
-						disabled: mw.util.isIPAddress(root.uid.value)
+						disabled: mw.util.isIPAddress(root.uid.value, true)
 					},
 					{
 						label: 'Account is evidently a spambot or a compromised account',
@@ -210,7 +216,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append({
 				type: 'textarea',
 				name: 'reason',
-				label: 'Comment: '
+				label: 'Comment:'
 			});
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
@@ -277,7 +283,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					type: 'input',
 					name: 'sockmaster',
 					label: 'Sockpuppeteer',
-					tooltip: 'The username of the sockpuppeteer (sockmaster) without the User:-prefix'
+					tooltip: 'The username of the sockpuppeteer (sockmaster) without the "User:" prefix'
 				}
 			);
 			work_area.append({
@@ -315,8 +321,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					type: 'dyninput',
 					name: 'sockpuppet',
 					label: 'Sockpuppets',
-					sublabel: 'Sock: ',
-					tooltip: 'The username of the sockpuppet without the User:-prefix',
+					sublabel: 'Sock:',
+					tooltip: 'The username of the sockpuppet without the "User:" prefix',
 					min: 2
 				});
 			work_area.append({
@@ -583,7 +589,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					aivPage.getStatusElement().status('Adding new report...');
 					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
 					aivPage.setChangeTags(Twinkle.changeTags);
-					aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
+					aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid, true) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
 					aivPage.append();
 				});
 			});
@@ -667,9 +673,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 
 			sockParameters.uid = puppetReport ? form.sockmaster.value.trim() : uid;
-			sockParameters.sockpuppets = puppetReport ? [uid] : $.map($('input:text[name=sockpuppet]', form), function(o) {
+			sockParameters.sockpuppets = puppetReport ? [uid] : Morebits.array.uniq($.map($('input:text[name=sockpuppet]', form), function(o) {
 				return $(o).val() || null;
-			});
+			}));
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
@@ -857,7 +863,7 @@ Twinkle.arv.processSock = function(params) {
 	// prepare the SPI report
 	var text = '\n\n{{subst:SPI report|socksraw=' +
 		params.sockpuppets.map(function(v) {
-			return '* {{' + (mw.util.isIPAddress(v) ? 'checkip' : 'checkuser') + '|1=' + v + '}}';
+			return '* {{' + (mw.util.isIPAddress(v, true) ? 'checkip' : 'checkuser') + '|1=' + v + '}}';
 		}).join('\n') + '\n|evidence=' + params.evidence + ' \n';
 
 	if (params.checkuser) {
