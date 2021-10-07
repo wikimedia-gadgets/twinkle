@@ -4729,11 +4729,13 @@ Morebits.wiki.preview = function(previewbox) {
 
 		var query = {
 			action: 'parse',
-			prop: 'text',
-			pst: 'true',  // PST = pre-save transform; this makes substitution work properly
+			prop: ['text', 'modules'],
+			pst: true,  // PST = pre-save transform; this makes substitution work properly
+			preview: true,
 			text: wikitext,
 			title: pageTitle || mw.config.get('wgPageName'),
 			disablelimitreport: true,
+			disableeditsection: true,
 			format: 'json'
 		};
 		if (sectionTitle) {
@@ -4745,13 +4747,18 @@ Morebits.wiki.preview = function(previewbox) {
 	};
 
 	var fnRenderSuccess = function(apiobj) {
-		var html = apiobj.getResponse().parse.text;
+		var response = apiobj.getResponse();
+		var html = response.parse.text;
 		if (!html) {
 			apiobj.statelem.error('failed to retrieve preview, or template was blanked');
 			return;
 		}
 		previewbox.innerHTML = html;
-		$(previewbox).find('a').attr('target', '_blank'); // this makes links open in new tab
+		mw.loader.load(response.parse.modulestyles);
+		mw.loader.load(response.parse.modules);
+
+		// this makes links open in new tab
+		$(previewbox).find('a').attr('target', '_blank');
 	};
 
 	/** Hides the preview box and clears it. */
