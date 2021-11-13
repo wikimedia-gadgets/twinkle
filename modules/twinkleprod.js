@@ -465,7 +465,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	tm.add(cbs.checkPriors, []);
 	tm.add(cbs.fetchCreationInfo, []);
 	// tag the page once we're clear of the pre-requisites
-	tm.add(cbs.taggingPage, [ cbs.checkPriors ]);
+	tm.add(cbs.taggingPage, [ cbs.checkPriors, cbs.fetchCreationInfo ]);
 	// notify the author once we know who's the author, and also wait for the
 	// taggingPage() as we don't need to notify if tagging was not done, such as
 	// there was already a tag and the user chose not to endorse.
