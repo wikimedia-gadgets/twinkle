@@ -9,13 +9,13 @@
  *** twinkleprod.js: PROD module
  ****************************************
  * Mode of invocation:     Tab ("PROD")
- * Active on:              Existing articles, files, books which are not redirects,
- *                         and user pages in [[:Category:Wikipedia books (user books)]]
+ * Active on:              Existing articles, files which are not redirects
  */
 
 Twinkle.prod = function twinkleprod() {
-	if ((([0, 6, 108].indexOf(mw.config.get('wgNamespaceNumber')) === -1) && (mw.config.get('wgNamespaceNumber') !== 2 || mw.config.get('wgCategories').indexOf('Wikipedia books (user books)') === -1))
-		|| !mw.config.get('wgCurRevisionId') || Morebits.isPageRedirect()) {
+	if (([0, 6].indexOf(mw.config.get('wgNamespaceNumber')) === -1) ||
+		!mw.config.get('wgCurRevisionId') ||
+		Morebits.isPageRedirect()) {
 		return;
 	}
 
@@ -35,10 +35,6 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		case 6:
 			namespace = 'file';
 			break;
-		case 2:
-		case 108:
-			namespace = 'book';
-			break;
 		// no default
 	}
 
@@ -51,10 +47,8 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	if (namespace === 'article') {
 		Window.addFooterLink('Proposed deletion policy', 'WP:PROD');
 		Window.addFooterLink('BLP PROD policy', 'WP:BLPPROD');
-	} else if (namespace === 'file') {
+	} else { // if file
 		Window.addFooterLink('Proposed deletion policy', 'WP:PROD');
-	} else { // if book
-		Window.addFooterLink('Proposed deletion (books) policy', 'WP:BOOKPROD');
 	}
 
 	var field = form.append({
@@ -105,7 +99,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	Window.setContent(result);
 	Window.display();
 
-	// Hide fieldset for File and Book PROD types since only normal PROD is allowed
+	// Hide fieldset for File PROD type since only normal PROD is allowed
 	if (namespace !== 'article') {
 		$(result).find('#prodtype_fieldset').hide();
 	}
@@ -266,7 +260,7 @@ Twinkle.prod.callbacks = {
 
 			// Remove tags that become superfluous with this action
 			text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, '');
-			var prod_re = /{{\s*(?:Prod blp|Proposed deletion|book-prod)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
+			var prod_re = /{{\s*(?:Prod blp|Proposed deletion)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 			var summaryText;
 
 			if (!prod_re.test(text)) {
@@ -300,9 +294,6 @@ Twinkle.prod.callbacks = {
 				if (params.blp) {
 					summaryText = 'Proposing article for deletion per [[WP:BLPPROD]].';
 					tag = '{{subst:prod blp' + (params.usertalk ? '|help=off' : '') + '}}';
-				} else if (params.book) {
-					summaryText = 'Proposing book for deletion per [[WP:BOOKPROD]].';
-					tag = '{{subst:book-prod|1=' + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? '|help=off' : '') + '}}';
 				} else {
 					summaryText = 'Proposing ' + namespace + ' for deletion per [[WP:PROD]].';
 					tag = '{{subst:prod|1=' + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? '|help=off' : '') + '}}';
@@ -327,7 +318,7 @@ Twinkle.prod.callbacks = {
 					return def.reject();
 				}
 
-				summaryText = 'Endorsing proposed deletion per [[WP:' + (params.blp ? 'BLP' : params.book ? 'BOOK' : '') + 'PROD]].';
+				summaryText = 'Endorsing proposed deletion per [[WP:' + (params.blp ? 'BLP' : '') + 'PROD]].';
 				text = text.replace(prod_re, text.match(prod_re) + '\n{{Proposed deletion endorsed|1=' + (params.blp ?
 					'article is a [[WP:BLPPROD|biography of a living person with no sources]]' :
 					Morebits.string.formatReasonText(params.reason)) + '}}\n');
@@ -387,8 +378,6 @@ Twinkle.prod.callbacks = {
 		var notifyTemplate;
 		if (params.blp) {
 			notifyTemplate = 'prodwarningBLP';
-		} else if (params.book) {
-			notifyTemplate = 'bprodwarning';
 		} else {
 			notifyTemplate = 'proposed deletion notify';
 		}
@@ -424,13 +413,13 @@ Twinkle.prod.callbacks = {
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 		logText += namespace === 'file' ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log]): ' : ': ';
 		if (params.logEndorsing) {
-			logText += 'endorsed ' + (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD. ~~~~~';
+			logText += 'endorsed ' + (params.blp ? 'BLP ' : '') + 'PROD. ~~~~~';
 			if (params.reason) {
 				logText += "\n#* '''Reason''': " + params.reason + '\n';
 			}
 			summaryText = 'Logging endorsement of PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
 		} else {
-			logText += (params.blp ? 'BLP ' : params.book ? 'BOOK' : '') + 'PROD';
+			logText += (params.blp ? 'BLP ' : '') + 'PROD';
 			if (params.logInitialContrib) {
 				logText += '; notified {{user|' + params.logInitialContrib + '}}';
 			}
@@ -454,7 +443,6 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	params = {
 		usertalk: input.notify || input.prodtype === 'prodblp',
 		blp: input.prodtype === 'prodblp',
-		book: namespace === 'book',
 		reason: input.reason || '' // using an empty string here as fallback will help with prod-2.
 	};
 
