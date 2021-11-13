@@ -345,7 +345,7 @@ Twinkle.prod.callbacks = {
 	addOldProd: function twinkleprodAddOldProd() {
 		var def = $.Deferred();
 
-		if (params.oldProdPresent) {
+		if (params.oldProdPresent || params.blp) {
 			return def.resolve();
 		}
 
