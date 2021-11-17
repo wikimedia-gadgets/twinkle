@@ -683,6 +683,7 @@ Twinkle.tag.article.tagList = {
 		],
 		'Information and detail': [
 			{ tag: 'Context', description: 'insufficient context for those unfamiliar with the subject' },
+			{ tag: 'Excessive examples', description: 'may contain indiscriminate, excessive, or irrelevant examples'},
 			{ tag: 'Expert needed', description: 'needs attention from an expert on the subject',
 				subgroup: [
 					{
