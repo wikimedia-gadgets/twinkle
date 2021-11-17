@@ -2028,14 +2028,14 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 
 	// analyse each criterion to determine whether to watch the page/notify the creator
 	var watchPage = normalizeds.some(function(csdCriteria) {
-		let isWatchingThisCriteria = ( Twinkle.getPref('watchSpeedyPages').indexOf(csdCriteria) !== -1 );
-		let isWatchingAllCSDs = ( Twinkle.getPref('watchSpeedyExpiry') !== "no" );
-		let shouldWatchThis = ( isWatchingThisCriteria && isWatchingAllCSDs );
+		var isWatchingThisCriteria = Twinkle.getPref('watchSpeedyPages').indexOf(csdCriteria) !== -1 ;
+		var isWatchingAllCSDs = Twinkle.getPref('watchSpeedyExpiry') !== 'no' ;
+		var shouldWatchThis = isWatchingThisCriteria && isWatchingAllCSDs ;
 		return shouldWatchThis;
 	});
 
 	// if we should watch the page, replace "true" with the duration we should watch for
-	if ( watchPage ) {
+	if (watchPage) {
 		watchPage = Twinkle.getPref('watchSpeedyExpiry');
 	}
 
