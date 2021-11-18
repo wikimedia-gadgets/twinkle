@@ -2012,14 +2012,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 	}
 
-	/*
-	// return if no tags selected
-	if (params.tags.length === 0 && params.existingTags.length === 0) {
-		alert('You must select at least one tag!');
-		return;
-	}
-	*/
-
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
