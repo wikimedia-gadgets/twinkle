@@ -1467,7 +1467,7 @@ Twinkle.tag.callbacks = {
 
 		};
 
-		if (!params.tags.length) {
+		if (!params.tags.length && !params.existingTags.length) {
 			removeTags();
 			return;
 		}
@@ -2012,12 +2012,13 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 	}
 
-	// File/redirect: return if no tags selected
-	// Article: return if no tag is selected and no already present tag is deselected
-	if (params.tags.length === 0 && (Twinkle.tag.mode !== 'article' || params.tagsToRemove.length === 0)) {
+	/*
+	// return if no tags selected
+	if (params.tags.length === 0 && params.existingTags.length === 0) {
 		alert('You must select at least one tag!');
 		return;
 	}
+	*/
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
