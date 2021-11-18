@@ -934,6 +934,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from less specific name', description: 'redirect from a less specific title to a more specific, less general one' },
 			{ tag: 'R from long name', description: 'redirect from a more complete title' },
 			{ tag: 'R from more specific name', description: 'redirect from a more specific title to a less specific, more general one' },
+			{ tag: 'R from non-neutral name', description: 'redirect from a title that contains a non-neutral, pejorative, controversial, or offensive word, phrase, or name' },
 			{ tag: 'R from short name', description: 'redirect from a title that is a shortened form of a person\'s full name, a book title, or other more complete title' },
 			{ tag: 'R from sort name', description: 'redirect from the target\'s sort name, such as beginning with their surname rather than given name' },
 			{ tag: 'R from synonym', description: 'redirect from a semantic synonym of the target page title' }
