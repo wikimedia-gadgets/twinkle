@@ -767,6 +767,10 @@ Twinkle.warn.messages = {
 				level4: {
 					label: 'Triggering the edit filter',
 					summary: 'Final warning: Triggering the edit filter'
+				},
+				level4im: {
+					label: 'Triggering the edit filter',
+					summary: 'Only warning: Triggering the edit filter'
 				}
 			},
 			'uw-chat': {
