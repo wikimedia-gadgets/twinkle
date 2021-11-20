@@ -2012,6 +2012,13 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 	}
 
+	// File/redirect: return if no tags selected
+	// Article: do nothing. unlike file/redirect, article detects existing tags and checks the boxes. also unlike file/redirect, we want the user to be able to apply the {{multiple issues}} tag, which may be applied without adding/removing any tags.
+	if (params.tags.length === 0 && Twinkle.tag.mode !== 'article') {
+		alert('You must select at least one tag!');
+		return;
+	}
+
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
