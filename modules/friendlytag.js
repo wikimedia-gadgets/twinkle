@@ -219,6 +219,247 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
 
+			// Certain redirect tags shouldn't be used in certain namespaces
+			// I generated the below lists using this search, and also added some manually.
+			// https://en.wikipedia.org/w/index.php?title=Special:Search&limit=500&offset=0&ns0=1&ns1=1&ns3=1&ns4=1&ns5=1&ns6=1&ns7=1&ns8=1&ns9=1&ns10=1&ns11=1&ns12=1&ns13=1&ns14=1&ns15=1&ns100=1&ns101=1&ns118=1&ns119=1&ns710=1&ns711=1&ns828=1&ns829=1&ns2300=1&ns2301=1&ns2302=1&ns2303=1&search=insource%3A%22Use+this+rcat+template+on%22
+			var mainspaceOnly = [
+				'R animal with possibilities',
+				'R comics from alternative name',
+				'R comics from merge',
+				'R comics from related word',
+				'R comics naming convention',
+				'R comics to list entry',
+				'R comics to section',
+				'R comics with possibilities',
+				'R fictional work',
+				'R from abbreviation',
+				'R from acronym',
+				'R from adjective',
+				'R from adverb',
+				'R from airline code',
+				'R from airport code',
+				'R from album',
+				'R from alternative military designation',
+				'R from alternative scientific name',
+				'R from alternative translation',
+				'R from alternative transliteration',
+				'R from animal',
+				'R from ATC code',
+				'R from ATCvet code',
+				'R from birth name',
+				'R from book',
+				'R from brand name',
+				'R from bus route',
+				'R from calling code',
+				'R from Canadian settlement name',
+				'R from CAS Registry Number',
+				'R from case citation',
+				'R from catchphrase',
+				'R from chemical formula',
+				'R from chemical formula',
+				'R from city and province',
+				'R from city and state',
+				'R from code',
+				'R from common noun',
+				'R from cover song',
+				'R from demonym',
+				'R from DOI prefix',
+				'R from domain name',
+				'R from E number',
+				'R from E2 symmetry',
+				'R from eponym',
+				'R from fictional character',
+				'R from fictional element',
+				'R from fictional location',
+				'R from file extension',
+				'R from file metadata link',
+				'R from filename',
+				'R from film',
+				'R from former name',
+				'R from former name',
+				'R from former Swiss municipality',
+				'R from gender',
+				'R from gene symbol',
+				'R from gerund',
+				'R from given name',
+				'R from Greek letter organization letters',
+				'R from H2 symmetry',
+				'R from highway in region without possibilities',
+				'R from highway in region',
+				'R from highway',
+				'R from IMO number',
+				'R from imprint',
+				'R from initialism',
+				'R from ISO 15924 code',
+				'R from ISO 3166 code',
+				'R from ISO 4 abbreviation',
+				'R from ISO 4217 code',
+				'R from ISO 639 code',
+				'R from Java package name',
+				'R from journal',
+				'R from legislation',
+				'R from London bus route',
+				'R from London place name',
+				'R from manufacturer\'s designation',
+				'R from married name',
+				'R from mathematical expression',
+				'R from MathSciNet abbreviation',
+				'R from military designation',
+				'R from mojibake',
+				'R from monotypic taxon',
+				'R from more specific geographic name',
+				'R from name and country',
+				'R from name with title',
+				'R from NLM abbreviation',
+				'R from numerals',
+				'R from numeronym',
+				'R from NYC bus route',
+				'R from other capitalisation',
+				'R from person',
+				'R from personal name',
+				'R from plural',
+				'R from postal abbreviation',
+				'R from postal code',
+				'R from predecessor company name',
+				'R from product name',
+				'R from proper noun',
+				'R from pseudonym',
+				'R from railroad name with ampersand',
+				'R from relative',
+				'R from reporting name',
+				'R from Roman numerals',
+				'R from S2 symmetry',
+				'R from school',
+				'R from scientific abbreviation',
+				'R from scientific name',
+				'R from second-level domain',
+				'R from slogan',
+				'R from song',
+				'R from sort name',
+				'R from spouse',
+				'R from stock symbol',
+				'R from stylization',
+				'R from subsidiary title',
+				'R from subsidiary',
+				'R from subtopic',
+				'R from surname',
+				'R from symbol',
+				'R from systematic abbreviation',
+				'R from systematic name',
+				'R from technical name',
+				'R from telephone number',
+				'R from television episode',
+				'R from top-level domain',
+				'R from tour',
+				'R from trade name',
+				'R from trade name',
+				'R from trademark',
+				'R from Twitter username',
+				'R from UK postcode',
+				'R from Unicode character',
+				'R from Unicode code',
+				'R from upcoming film',
+				'R from US military aircraft designator',
+				'R from US postal abbreviation',
+				'R from variant military designation',
+				'R from verb',
+				'R from Wade–Giles romanization',
+				'R from work',
+				'R from writer',
+				'R from year',
+				'R ME from alternative name',
+				'R ME from alternative spelling',
+				'R ME from duplicated article',
+				'R ME from former name',
+				'R ME to list entry',
+				'R ME to section',
+				'R ME with possibilities',
+				'R ME without diacritics',
+				'R plant with possibilities',
+				'R printworthy',
+				'R scouting from merge',
+				'R taxon with possibilities',
+				'R to acronym',
+				'R to article without mention',
+				'R to century',
+				'R to decade',
+				'R to former name',
+				'R to initialism',
+				'R to joint biography',
+				'R to list entry',
+				'R to monotypic taxon',
+				'R to name with title',
+				'R to numerals',
+				'R to plural',
+				'R to related topic',
+				'R to scientific name',
+				'R to sports league',
+				'R to subtopic',
+				'R to Swiss municipality (, Switzerland)',
+				'R to Swiss municipality (canton)',
+				'R to Swiss municipality 2L',
+				'R to systematic name',
+				'R to technical name',
+				'R unprintworthy'
+			];
+			var talkOnly = [
+				'R from remote talk page',
+				'R from comment subpage'
+			];
+			var templateOnly = [
+				'R to stub template',
+				'R to warning template',
+				'R to userbox'
+			];
+			var disambiguationOnly = [
+				'R to disambiguation page'
+			];
+			var userOnly = [
+				'R to user namespace'
+			];
+
+			var deleteTag = function(tagToDelete, tagList) {
+				for (var key1 in tagList) {
+					if (Object.prototype.hasOwnProperty.call(tagList, key1)) {
+						for (var key2 in tagList[key1]) {
+							if (Object.prototype.hasOwnProperty.call(tagList[key1], key2)) {
+								for (var key3 in tagList[key1][key2]) {
+									if (tagList[key1][key2][key3].tag === tagToDelete) {
+										tagList[key1][key2].splice(key3, 1);
+										return;
+									}
+								}
+							}
+						}
+					}
+				}
+			};
+			var deleteTags = function(tagList, redirectList) {
+				tagList.forEach(function(tag) {
+					deleteTag(tag, redirectList);
+				});
+			};
+			var endsWith = function(str, suffix) {
+				return str.indexOf(suffix, str.length - suffix.length) !== -1;
+			};
+
+			var namespace = mw.config.get('wgNamespaceNumber');
+			if (namespace !== 0 && namespace !== 1) { // not mainspace
+				deleteTags(mainspaceOnly, Twinkle.tag.redirectList);
+			}
+			if (namespace !== 10 && namespace !== 11) { // not template namespace
+				deleteTags(templateOnly, Twinkle.tag.redirectList);
+			}
+			if (namespace !== 2 && namespace !== 3) { // not user namespace
+				deleteTags(userOnly, Twinkle.tag.redirectList);
+			}
+			if (namespace % 2 !== 1 || namespace < 0) { // not a talk namespace
+				deleteTags(talkOnly, Twinkle.tag.redirectList);
+			}
+			if (!endsWith(mw.config.get('wgPageName'), '_(disambiguation)')) { // not a page ending in (disambiguation)
+				deleteTags(disambiguationOnly, Twinkle.tag.redirectList);
+			}
+
 			var i = 1;
 			$.each(Twinkle.tag.redirectList, function(groupName, group) {
 				form.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
