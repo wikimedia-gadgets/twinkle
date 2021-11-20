@@ -439,6 +439,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					deleteTag(tag, redirectList);
 				});
 			};
+			// https://stackoverflow.com/a/2548133/3480193
 			var endsWith = function(str, suffix) {
 				return str.indexOf(suffix, str.length - suffix.length) !== -1;
 			};
