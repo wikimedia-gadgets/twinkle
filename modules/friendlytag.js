@@ -219,248 +219,47 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
 
-			// Certain redirect tags shouldn't be used in certain namespaces
-			// I generated the below lists using this search, and also added some manually.
-			// https://en.wikipedia.org/w/index.php?title=Special:Search&limit=500&offset=0&ns0=1&ns1=1&ns3=1&ns4=1&ns5=1&ns6=1&ns7=1&ns8=1&ns9=1&ns10=1&ns11=1&ns12=1&ns13=1&ns14=1&ns15=1&ns100=1&ns101=1&ns118=1&ns119=1&ns710=1&ns711=1&ns828=1&ns829=1&ns2300=1&ns2301=1&ns2302=1&ns2303=1&search=insource%3A%22Use+this+rcat+template+on%22
-			var mainspaceOnly = [
-				'R animal with possibilities',
-				'R comics from alternative name',
-				'R comics from merge',
-				'R comics from related word',
-				'R comics naming convention',
-				'R comics to list entry',
-				'R comics to section',
-				'R comics with possibilities',
-				'R fictional work',
-				'R from abbreviation',
-				'R from acronym',
-				'R from adjective',
-				'R from adverb',
-				'R from airline code',
-				'R from airport code',
-				'R from album',
-				'R from alternative military designation',
-				'R from alternative scientific name',
-				'R from alternative translation',
-				'R from alternative transliteration',
-				'R from animal',
-				'R from ATC code',
-				'R from ATCvet code',
-				'R from birth name',
-				'R from book',
-				'R from brand name',
-				'R from bus route',
-				'R from calling code',
-				'R from Canadian settlement name',
-				'R from CAS Registry Number',
-				'R from case citation',
-				'R from catchphrase',
-				'R from chemical formula',
-				'R from chemical formula',
-				'R from city and province',
-				'R from city and state',
-				'R from code',
-				'R from common noun',
-				'R from cover song',
-				'R from demonym',
-				'R from DOI prefix',
-				'R from domain name',
-				'R from E number',
-				'R from E2 symmetry',
-				'R from eponym',
-				'R from fictional character',
-				'R from fictional element',
-				'R from fictional location',
-				'R from file extension',
-				'R from file metadata link',
-				'R from filename',
-				'R from film',
-				'R from former name',
-				'R from former name',
-				'R from former Swiss municipality',
-				'R from gender',
-				'R from gene symbol',
-				'R from gerund',
-				'R from given name',
-				'R from Greek letter organization letters',
-				'R from H2 symmetry',
-				'R from highway in region without possibilities',
-				'R from highway in region',
-				'R from highway',
-				'R from IMO number',
-				'R from imprint',
-				'R from initialism',
-				'R from ISO 15924 code',
-				'R from ISO 3166 code',
-				'R from ISO 4 abbreviation',
-				'R from ISO 4217 code',
-				'R from ISO 639 code',
-				'R from Java package name',
-				'R from journal',
-				'R from legislation',
-				'R from London bus route',
-				'R from London place name',
-				'R from manufacturer\'s designation',
-				'R from married name',
-				'R from mathematical expression',
-				'R from MathSciNet abbreviation',
-				'R from military designation',
-				'R from mojibake',
-				'R from monotypic taxon',
-				'R from more specific geographic name',
-				'R from name and country',
-				'R from name with title',
-				'R from NLM abbreviation',
-				'R from numerals',
-				'R from numeronym',
-				'R from NYC bus route',
-				'R from other capitalisation',
-				'R from person',
-				'R from personal name',
-				'R from plural',
-				'R from postal abbreviation',
-				'R from postal code',
-				'R from predecessor company name',
-				'R from product name',
-				'R from proper noun',
-				'R from pseudonym',
-				'R from railroad name with ampersand',
-				'R from relative',
-				'R from reporting name',
-				'R from Roman numerals',
-				'R from S2 symmetry',
-				'R from school',
-				'R from scientific abbreviation',
-				'R from scientific name',
-				'R from second-level domain',
-				'R from slogan',
-				'R from song',
-				'R from sort name',
-				'R from spouse',
-				'R from stock symbol',
-				'R from stylization',
-				'R from subsidiary title',
-				'R from subsidiary',
-				'R from subtopic',
-				'R from surname',
-				'R from symbol',
-				'R from systematic abbreviation',
-				'R from systematic name',
-				'R from technical name',
-				'R from telephone number',
-				'R from television episode',
-				'R from top-level domain',
-				'R from tour',
-				'R from trade name',
-				'R from trade name',
-				'R from trademark',
-				'R from Twitter username',
-				'R from UK postcode',
-				'R from Unicode character',
-				'R from Unicode code',
-				'R from upcoming film',
-				'R from US military aircraft designator',
-				'R from US postal abbreviation',
-				'R from variant military designation',
-				'R from verb',
-				'R from Wade–Giles romanization',
-				'R from work',
-				'R from writer',
-				'R from year',
-				'R ME from alternative name',
-				'R ME from alternative spelling',
-				'R ME from duplicated article',
-				'R ME from former name',
-				'R ME to list entry',
-				'R ME to section',
-				'R ME with possibilities',
-				'R ME without diacritics',
-				'R plant with possibilities',
-				'R printworthy',
-				'R scouting from merge',
-				'R taxon with possibilities',
-				'R to acronym',
-				'R to article without mention',
-				'R to century',
-				'R to decade',
-				'R to former name',
-				'R to initialism',
-				'R to joint biography',
-				'R to list entry',
-				'R to monotypic taxon',
-				'R to name with title',
-				'R to numerals',
-				'R to plural',
-				'R to related topic',
-				'R to scientific name',
-				'R to sports league',
-				'R to subtopic',
-				'R to Swiss municipality (, Switzerland)',
-				'R to Swiss municipality (canton)',
-				'R to Swiss municipality 2L',
-				'R to systematic name',
-				'R to technical name',
-				'R unprintworthy'
-			];
-			var talkOnly = [
-				'R from remote talk page',
-				'R from comment subpage'
-			];
-			var templateOnly = [
-				'R to stub template',
-				'R to warning template',
-				'R to userbox'
-			];
-			var disambiguationOnly = [
-				'R to disambiguation page'
-			];
-			var userOnly = [
-				'R to user namespace'
-			];
-
-			var deleteTag = function(tagToDelete, tagList) {
-				for (var key1 in tagList) {
-					if (Object.prototype.hasOwnProperty.call(tagList, key1)) {
-						for (var key2 in tagList[key1]) {
-							if (Object.prototype.hasOwnProperty.call(tagList[key1], key2)) {
-								for (var key3 in tagList[key1][key2]) {
-									if (tagList[key1][key2][key3].tag === tagToDelete) {
-										tagList[key1][key2].splice(key3, 1);
-										return;
-									}
-								}
-							}
-						}
-					}
-				}
-			};
-			var deleteTags = function(tagList, redirectList) {
-				tagList.forEach(function(tag) {
-					deleteTag(tag, redirectList);
-				});
-			};
+			// Utility function
 			// https://stackoverflow.com/a/2548133/3480193
 			var endsWith = function(str, suffix) {
 				return str.indexOf(suffix, str.length - suffix.length) !== -1;
 			};
 
-			var namespace = mw.config.get('wgNamespaceNumber');
-			if (namespace !== 0) { // not mainspace
-				deleteTags(mainspaceOnly, Twinkle.tag.redirectList);
-			}
-			if (namespace !== 10 && namespace !== 11) { // not template namespace
-				deleteTags(templateOnly, Twinkle.tag.redirectList);
-			}
-			if (namespace !== 2 && namespace !== 3) { // not user namespace
-				deleteTags(userOnly, Twinkle.tag.redirectList);
-			}
-			if (namespace % 2 !== 1 || namespace < 0) { // not a talk namespace
-				deleteTags(talkOnly, Twinkle.tag.redirectList);
-			}
-			if (!endsWith(mw.config.get('wgPageName'), '_(disambiguation)')) { // not a page ending in (disambiguation)
-				deleteTags(disambiguationOnly, Twinkle.tag.redirectList);
-			}
+			// If a tag has a restriction for this namespace or title, return true, so that we know not to display it in the list of check boxes.
+			var isRestricted = function(item) {
+				if (typeof item.restriction === 'undefined') {
+					return false;
+				}
+				var namespace = mw.config.get('wgNamespaceNumber');
+				switch (item.restriction) {
+					case 'insideMainspaceOnly':
+						if (namespace !== 0) {
+							return true;
+						}
+						break;
+					case 'outsideUserspaceOnly':
+						if (namespace === 2 || namespace === 3) {
+							return true;
+						}
+						break;
+					case 'insideTalkNamespaceOnly':
+						if (namespace % 2 !== 1 || namespace < 0) {
+							return true;
+						}
+						break;
+					case 'disambiguationPagesOnly':
+						if (!endsWith(mw.config.get('wgPageName'), '_(disambiguation)')) {
+							return true;
+						}
+						break;
+					default:
+						alert('Twinkle.tag: unknown restriction ' + item.restriction);
+						break;
+				}
+				return false;
+			};
 
+			// Generate the HTML form with the list of redirect tags that the user can choose to apply.
 			var i = 1;
 			$.each(Twinkle.tag.redirectList, function(groupName, group) {
 				form.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
@@ -470,9 +269,13 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					subdiv.append({
 						type: 'checkbox',
 						name: 'tags',
-						list: subgroup.map(function (item) {
-							return { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup };
-						})
+						list: subgroup
+							.filter(function(item) {
+								return !isRestricted(item);
+							})
+							.map(function (item) {
+								return { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup };
+							})
 					});
 				});
 			});
@@ -1159,24 +962,24 @@ Twinkle.tag.article.tagList = {
 Twinkle.tag.redirectList = {
 	'Grammar, punctuation, and spelling': {
 		'Abbreviation': [
-			{ tag: 'R from acronym', description: 'redirect from an acronym (e.g. POTUS) to its expanded form' },
-			{ tag: 'R from initialism', description: 'redirect from an initialism (e.g. AGF) to its expanded form' },
-			{ tag: 'R from MathSciNet abbreviation', description: 'redirect from MathSciNet publication title abbreviation to the unabbreviated title' },
-			{ tag: 'R from NLM abbreviation', description: 'redirect from a NLM publication title abbreviation to the unabbreviated title' }
+			{ tag: 'R from acronym', description: 'redirect from an acronym (e.g. POTUS) to its expanded form', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from initialism', description: 'redirect from an initialism (e.g. AGF) to its expanded form', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from MathSciNet abbreviation', description: 'redirect from MathSciNet publication title abbreviation to the unabbreviated title', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from NLM abbreviation', description: 'redirect from a NLM publication title abbreviation to the unabbreviated title', restriction: 'insideMainspaceOnly' }
 		],
 		'Capitalisation': [
 			{ tag: 'R from CamelCase', description: 'redirect from a CamelCase title' },
-			{ tag: 'R from other capitalisation', description: 'redirect from a title with another method of capitalisation' },
+			{ tag: 'R from other capitalisation', description: 'redirect from a title with another method of capitalisation', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from miscapitalisation', description: 'redirect from a capitalisation error' }
 		],
 		'Grammar & punctuation': [
 			{ tag: 'R from modification', description: 'redirect from a modification of the target\'s title, such as with words rearranged' },
-			{ tag: 'R from plural', description: 'redirect from a plural word to the singular equivalent' },
-			{ tag: 'R to plural', description: 'redirect from a singular noun to its plural form' }
+			{ tag: 'R from plural', description: 'redirect from a plural word to the singular equivalent', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R to plural', description: 'redirect from a singular noun to its plural form', restriction: 'insideMainspaceOnly' }
 		],
 		'Parts of speech': [
-			{ tag: 'R from verb', description: 'redirect from an English-language verb or verb phrase' },
-			{ tag: 'R from adjective', description: 'redirect from an adjective (word or phrase that describes a noun)' }
+			{ tag: 'R from verb', description: 'redirect from an English-language verb or verb phrase', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from adjective', description: 'redirect from an adjective (word or phrase that describes a noun)', restriction: 'insideMainspaceOnly' }
 		],
 		'Spelling': [
 			{ tag: 'R from alternative spelling', description: 'redirect from a title with a different spelling' },
@@ -1215,7 +1018,7 @@ Twinkle.tag.redirectList = {
 			},
 			{ tag: 'R from alternative name', description: 'redirect from a title that is another name, a pseudonym, a nickname, or a synonym' },
 			{ tag: 'R from ambiguous sort name', description: 'redirect from an ambiguous sort name to a page or list that disambiguates it' },
-			{ tag: 'R from former name', description: 'redirect from a former or historic name or a working title' },
+			{ tag: 'R from former name', description: 'redirect from a former name or working title', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from incomplete name', description: 'R from incomplete name' },
 			{ tag: 'R from incorrect name', description: 'redirect from an erroneus name that is unsuitable as a title' },
 			{ tag: 'R from less specific name', description: 'redirect from a less specific title to a more specific, less general one' },
@@ -1223,38 +1026,38 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from more specific name', description: 'redirect from a more specific title to a less specific, more general one' },
 			{ tag: 'R from non-neutral name', description: 'redirect from a title that contains a non-neutral, pejorative, controversial, or offensive word, phrase, or name' },
 			{ tag: 'R from short name', description: 'redirect from a title that is a shortened form of a person\'s full name, a book title, or other more complete title' },
-			{ tag: 'R from sort name', description: 'redirect from the target\'s sort name, such as beginning with their surname rather than given name' },
+			{ tag: 'R from sort name', description: 'redirect from the target\'s sort name, such as beginning with their surname rather than given name', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from synonym', description: 'redirect from a semantic synonym of the target page title' }
 		],
 		People: [
-			{ tag: 'R from birth name', description: 'redirect from a person\'s birth name to a more common name' },
-			{ tag: 'R from given name', description: 'redirect from a person\'s given name' },
-			{ tag: 'R from married name', description: 'redirect from a person\'s married name to a more common name' },
-			{ tag: 'R from name with title', description: 'redirect from a person\'s name preceded or followed by a title to the name with no title or with the title in parentheses' },
-			{ tag: 'R from person', description: 'redirect from a person or persons to a related article' },
-			{ tag: 'R from personal name', description: 'redirect from an individual\'s personal name to an article titled with their professional or other better known moniker' },
-			{ tag: 'R from pseudonym', description: 'redirect from a pseudonym' },
-			{ tag: 'R from surname', description: 'redirect from a title that is a surname' }
+			{ tag: 'R from birth name', description: 'redirect from a person\'s birth name to a more common name', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from given name', description: 'redirect from a person\'s given name', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from married name', description: 'redirect from a person\'s married name to a more common name', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from name with title', description: 'redirect from a person\'s name preceded or followed by a title to the name with no title or with the title in parentheses', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from person', description: 'redirect from a person or persons to a related article', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from personal name', description: 'redirect from an individual\'s personal name to an article titled with their professional or other better known moniker', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from pseudonym', description: 'redirect from a pseudonym', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from surname', description: 'redirect from a title that is a surname', restriction: 'insideMainspaceOnly' }
 		],
 		Technical: [
 			{ tag: 'R from drug trade name', description: 'redirect from (or to) the trade name of a drug to (or from) the international nonproprietary name (INN)' },
-			{ tag: 'R from filename', description: 'redirect from a title that is a filename of the target' },
+			{ tag: 'R from filename', description: 'redirect from a title that is a filename of the target', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from molecular formula', description: 'redirect from a molecular/chemical formula to its technical or trivial name' },
 
-			{ tag: 'R from gene symbol', description: 'redirect from a Human Genome Organisation (HUGO) symbol for a gene to an article about the gene' }
+			{ tag: 'R from gene symbol', description: 'redirect from a Human Genome Organisation (HUGO) symbol for a gene to an article about the gene', restriction: 'insideMainspaceOnly' }
 		],
 		Organisms: [
-			{ tag: 'R to scientific name', description: 'redirect from the common name to the scientific name' },
-			{ tag: 'R from scientific name', description: 'redirect from the scientific name to the common name' },
-			{ tag: 'R from alternative scientific name', description: 'redirect from an alternative scientific name to the accepted scientific name' },
-			{ tag: 'R from scientific abbreviation', description: 'redirect from a scientific abbreviation' },
-			{ tag: 'R to monotypic taxon', description: 'redirect from the only lower-ranking member of a monotypic taxon to its monotypic taxon' },
-			{ tag: 'R from monotypic taxon', description: 'redirect from a monotypic taxon to its only lower-ranking member' },
-			{ tag: 'R taxon with possibilities', description: 'redirect from a title related to a living organism that potentially could be expanded into an article' }
+			{ tag: 'R to scientific name', description: 'redirect from the common name to the scientific name', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from scientific name', description: 'redirect from the scientific name to the common name', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from alternative scientific name', description: 'redirect from an alternative scientific name to the accepted scientific name', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from scientific abbreviation', description: 'redirect from a scientific abbreviation', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R to monotypic taxon', description: 'redirect from the only lower-ranking member of a monotypic taxon to its monotypic taxon', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from monotypic taxon', description: 'redirect from a monotypic taxon to its only lower-ranking member', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R taxon with possibilities', description: 'redirect from a title related to a living organism that potentially could be expanded into an article', restriction: 'insideMainspaceOnly' }
 		],
 		Geography: [
-			{ tag: 'R from name and country', description: 'redirect from the specific name to the briefer name' },
-			{ tag: 'R from more specific geographic name', description: 'redirect from a geographic location that includes extraneous identifiers such as the county or region of a city' }
+			{ tag: 'R from name and country', description: 'redirect from the specific name to the briefer name', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from more specific geographic name', description: 'redirect from a geographic location that includes extraneous identifiers such as the county or region of a city', restriction: 'insideMainspaceOnly' }
 		]
 	},
 	'Navigation aids': {
@@ -1270,8 +1073,8 @@ Twinkle.tag.redirectList = {
 					tooltip: 'Enter the page this redirect would target if the page wasn\'t also a redirect'
 				}
 			},
-			{ tag: 'R from file metadata link', description: 'redirect of a wikilink created from EXIF, XMP, or other information (i.e. the "metadata" section on some image description pages)' },
-			{ tag: 'R to list entry', description: 'redirect to a list which contains brief descriptions of subjects not notable enough to have separate articles' },
+			{ tag: 'R from file metadata link', description: 'redirect of a wikilink created from EXIF, XMP, or other information (i.e. the "metadata" section on some image description pages)', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R to list entry', description: 'redirect to a list which contains brief descriptions of subjects not notable enough to have separate articles', restriction: 'insideMainspaceOnly' },
 
 			{ tag: 'R mentioned in hatnote', description: 'redirect from a title that is mentioned in a hatnote at the redirect target' },
 			{ tag: 'R to section', description: 'similar to {{R to list entry}}, but when list is organized in sections, such as list of characters in a fictional universe' },
@@ -1280,7 +1083,7 @@ Twinkle.tag.redirectList = {
 		],
 		'Disambiguation': [
 			{ tag: 'R from ambiguous term', description: 'redirect from an ambiguous page name to a page that disambiguates it. This template should never appear on a page that has "(disambiguation)" in its title, use R to disambiguation page instead' },
-			{ tag: 'R to disambiguation page', description: 'redirect to a disambiguation page' },
+			{ tag: 'R to disambiguation page', description: 'redirect to a disambiguation page', restriction: 'disambiguationPagesOnly' },
 			{ tag: 'R from incomplete disambiguation', description: 'redirect from a page name that is too ambiguous to be the title of an article and should redirect to an appropriate disambiguation page' },
 			{ tag: 'R from incorrect disambiguation', description: 'redirect from a page name with incorrect disambiguation due to an error or previous editorial misconception' },
 			{ tag: 'R from other disambiguation', description: 'redirect from a page name with an alternative disambiguation qualifier' },
@@ -1293,55 +1096,55 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from merge', description: 'redirect from a merged page in order to preserve its edit history' }
 		],
 		'Namespace': [
-			{ tag: 'R from remote talk page', description: 'redirect from a talk page in any talk namespace to a corresponding page that is more heavily watched' },
+			{ tag: 'R from remote talk page', description: 'redirect from a talk page in any talk namespace to a corresponding page that is more heavily watched', restriction: 'insideTalkNamespaceOnly' },
 			{ tag: 'R to category namespace', description: 'redirect from a page outside the category namespace to a category page' },
 			{ tag: 'R to help namespace', description: 'redirect from any page inside or outside of help namespace to a page in that namespace' },
 			{ tag: 'R to main namespace', description: 'redirect from a page outside the main-article namespace to an article in mainspace' },
 			{ tag: 'R to portal namespace', description: 'redirect from any page inside or outside of portal space to a page in that namespace' },
 			{ tag: 'R to project namespace', description: 'redirect from any page inside or outside of project (Wikipedia: or WP:) space to any page in the project namespace' },
-			{ tag: 'R to user namespace', description: 'redirect from a page outside the user namespace to a user page (not to a user talk page)' }
+			{ tag: 'R to user namespace', description: 'redirect from a page outside the user namespace to a user page (not to a user talk page)', restriction: 'outsideUserspaceOnly' }
 		]
 	},
 	'Media': {
 		General: [
-			{ tag: 'R from album', description: 'redirect from an album to a related topic such as the recording artist or a list of albums' },
-			{ tag: 'R from book', description: 'redirect from a book title to a more general, relevant article' },
-			{ tag: 'R from film', description: 'redirect from a film title that is a subtopic of the redirect target or a title in an alternative language that has been produced in that language' },
+			{ tag: 'R from album', description: 'redirect from an album to a related topic such as the recording artist or a list of albums', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from book', description: 'redirect from a book title to a more general, relevant article', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from film', description: 'redirect from a film title that is a subtopic of the redirect target or a title in an alternative language that has been produced in that language', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from song', description: 'redirect from a song title to a more general, relevant article' },
-			{ tag: 'R from television episode', description: 'redirect from a television episode title to a related work or lists of episodes' }
+			{ tag: 'R from television episode', description: 'redirect from a television episode title to a related work or lists of episodes', restriction: 'insideMainspaceOnly' }
 		],
 		Fiction: [
-			{ tag: 'R from fictional character', description: 'redirect from a fictional character to a related fictional work or list of characters' },
-			{ tag: 'R from fictional element', description: 'redirect from a fictional element (such as an object or concept) to a related fictional work or list of similar elements' },
-			{ tag: 'R from fictional location', description: 'redirect from a fictional location or setting to a related fictional work or list of places' }
+			{ tag: 'R from fictional character', description: 'redirect from a fictional character to a related fictional work or list of characters', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from fictional element', description: 'redirect from a fictional element (such as an object or concept) to a related fictional work or list of similar elements', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from fictional location', description: 'redirect from a fictional location or setting to a related fictional work or list of places', restriction: 'insideMainspaceOnly' }
 		]
 	},
 	'Miscellaneous': {
 		'Related information': [
-			{ tag: 'R to article without mention', description: 'redirect to an article without any mention of the redirected word or phrase' },
-			{ tag: 'R to decade', description: 'redirect from a year to the decade article' },
-			{ tag: 'R from domain name', description: 'redirect from a domain name to an article about a website' },
+			{ tag: 'R to article without mention', description: 'redirect to an article without any mention of the redirected word or phrase', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R to decade', description: 'redirect from a year to the decade article', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from domain name', description: 'redirect from a domain name to an article about a website', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from phrase', description: 'redirect from a phrase to a more general relevant article covering the topic' },
 			{ tag: 'R from list topic', description: 'redirect from the topic of a list to the equivalent list' },
 			{ tag: 'R from member', description: 'redirect from a member of a group to a related topic such as the group or organization' },
-			{ tag: 'R to related topic', description: 'redirect to an article about a similar topic' },
+			{ tag: 'R to related topic', description: 'redirect to an article about a similar topic', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from related word', description: 'redirect from a related word' },
-			{ tag: 'R from school', description: 'redirect from a school article that had very little information' },
-			{ tag: 'R from subtopic', description: 'redirect from a title that is a subtopic of the target article' },
-			{ tag: 'R to subtopic', description: 'redirect to a subtopic of the redirect\'s title' },
-			{ tag: 'R from Unicode character', description: 'redirect from a single Unicode character to an article or Wikipedia project page that infers meaning for the symbol' },
-			{ tag: 'R from Unicode code', description: 'redirect from a Unicode code point to an article about the character it represents' }
+			{ tag: 'R from school', description: 'redirect from a school article that had very little information', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from subtopic', description: 'redirect from a title that is a subtopic of the target article', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R to subtopic', description: 'redirect to a subtopic of the redirect\'s title', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from Unicode character', description: 'redirect from a single Unicode character to an article or Wikipedia project page that infers meaning for the symbol', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from Unicode code', description: 'redirect from a Unicode code point to an article about the character it represents', restriction: 'insideMainspaceOnly' }
 		],
 		'With possibilities': [
 			{ tag: 'R with possibilities', description: 'redirect from a specific title to a more general, less detailed article (something which can and should be expanded)' }
 		],
 		'ISO codes': [
-			{ tag: 'R from ISO 4 abbreviation', description: 'redirect from an ISO 4 publication title abbreviation to the unabbreviated title' },
-			{ tag: 'R from ISO 639 code', description: 'redirect from a title that is an ISO 639 language code to an article about the language' }
+			{ tag: 'R from ISO 4 abbreviation', description: 'redirect from an ISO 4 publication title abbreviation to the unabbreviated title', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from ISO 639 code', description: 'redirect from a title that is an ISO 639 language code to an article about the language', restriction: 'insideMainspaceOnly' }
 		],
 		'Printworthiness': [
-			{ tag: 'R printworthy', description: 'redirect from a title that would be helpful in a printed or CD/DVD version of Wikipedia' },
-			{ tag: 'R unprintworthy', description: 'redirect from a title that would NOT be helpful in a printed or CD/DVD version of Wikipedia' }
+			{ tag: 'R printworthy', description: 'redirect from a title that would be helpful in a printed or CD/DVD version of Wikipedia', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R unprintworthy', description: 'redirect from a title that would NOT be helpful in a printed or CD/DVD version of Wikipedia', restriction: 'insideMainspaceOnly' }
 		]
 	}
 };
