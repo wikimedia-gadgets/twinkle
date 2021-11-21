@@ -445,7 +445,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			};
 
 			var namespace = mw.config.get('wgNamespaceNumber');
-			if (namespace !== 0 && namespace !== 1) { // not mainspace
+			if (namespace !== 0) { // not mainspace
 				deleteTags(mainspaceOnly, Twinkle.tag.redirectList);
 			}
 			if (namespace !== 10 && namespace !== 11) { // not template namespace
