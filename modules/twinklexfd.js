@@ -364,19 +364,18 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				maxage: '86400' // cache for 1 day
 			};
 			new Morebits.wiki.api('Get JSON list of deletion sorting categories', query, function(apiobj) {
-				var wikitext = apiobj.getResponse().parse.wikitext;
-				console.log(wikitext);
 				try {
+					var wikitext = apiobj.getResponse().parse.wikitext;
 					var delsortCategories = JSON.parse(wikitext);
-					console.log(delsortCategories);
+					var select = $('[name="delsortCats"]');
 					$.each(delsortCategories, function(groupname, list) {
-						var group = delsort.append({ type: 'optgroup', label: groupname });
+						var delsortCat = $(select).append('<optgroup label="' + groupname + '">');
 						list.forEach(function(item) {
-							group.append({ type: 'option', label: item, value: item });
+							$(delsortCat).append('<option value="' + item + '" label="' + item + '">' + item + '</option>');
 						});
 					});
-				} catch (err) { // if the data is junk, just give up and exit this function
-					console.log(err);
+				} catch (err) {
+					// If unable to pull usable Deletion Sort categories, just give up and exit this function. The user won't be able to pick any categories, but that won't stop the AFD nomination.
 				}
 			}).post();
 
