@@ -2018,7 +2018,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		return;
 	}
 
-	// Article: Return if zero tags present AND no new/existing selected. This prevents Twinkle from hanging when trying to submit.
+	// Article: Return if zero tags present in article AND no new/existing tags selected via the form. This prevents Twinkle from hanging when trying to submit.
 	if (Twinkle.tag.mode === 'article' && params.tags.length === 0 && (typeof params.existingTags === 'undefined' || params.existingTags.length === 0) && Twinkle.tag.status.numAdded === 0 && Twinkle.tag.status.numRemoved === 0) {
 		alert('You must select at least one tag!');
 		return;
