@@ -375,9 +375,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 							group.append({ type: 'option', label: item, value: item });
 						});
 					});
-				} catch(err) { // if the data is junk, just give up and exit this function
+				} catch (err) { // if the data is junk, just give up and exit this function
 					console.log(err);
-					return;
 				}
 			}).post();
 
