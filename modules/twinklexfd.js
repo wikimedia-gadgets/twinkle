@@ -346,7 +346,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				]
 			});
 
-			var delsort = work_area.append({
+			work_area.append({
 				type: 'select',
 				multiple: true,
 				name: 'delsortCats',
