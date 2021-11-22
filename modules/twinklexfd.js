@@ -715,6 +715,21 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				]
 			});
 			work_area.append({
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Opt out of discussion if the request is contested',
+						value: 'rmtr-discuss',
+						name: 'rmtr-discuss',
+						tooltip: 'Use this option when when you are filing an uncontroversial technical request AND you prefer to withdraw the request if it is contested, rather than discuss it. This will suppress the "discuss" link which may be used to convert your request to a discussion on the talk page of the page which is requested to be moved.',
+						checked: false,
+						event: function() {
+							form.newname.required = this.checked;
+						}
+					}
+				]
+			});
+			work_area.append({
 				type: 'input',
 				name: 'newname',
 				label: 'New title:',
@@ -778,10 +793,10 @@ Twinkle.xfd.callbacks = {
 		if (venue === 'rm') {
 			// even if invoked from talk page, propose the subject page for move
 			var pageName = new mw.Title(Morebits.pageNameNorm).getSubjectPage().toText();
-			return (params.rmtr ?
-				'{{subst:RMassist|1=' + pageName + '|2=' + params.newname :
-				'{{subst:Requested move|current1=' + pageName + '|new1=' + params.newname)
-				+ '|reason=' + params.reason + '}}';
+			var rmtrDiscuss = params['rmtr-discuss'] ? '|discuss=no' : '';
+			var rmAssist = '{{subst:RMassist|1=' + pageName + '|2=' + params.newname + rmtrDiscuss + '|reason=' + params.reason + '}}';
+			var requestedMove = '{{subst:Requested move|current1=' + pageName + '|new1=' + params.newname + '|reason=' + params.reason + '}}';
+			return params.rmtr ? rmAssist : requestedMove;
 		}
 
 		var text = '{{subst:' + venue + '2';
