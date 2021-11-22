@@ -346,39 +346,6 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				]
 			});
 
-			// delsort categories taken from [[WP:DS/C]], inspired by off [[User:Enterprisey/delsort.js]]
-			var delsortCategories = {
-				'People': ['People', 'Academics and educators', 'Actors and filmmakers', 'Artists', 'Authors', 'Bands and musicians', 'Businesspeople', 'Politicians', 'Sportspeople', 'Women', 'Lists of people'],
-				'Arts': ['Arts', 'Fictional elements', 'Science fiction and fantasy'],
-				'Arts/Culinary': ['Food and drink', 'Wine'],
-				'Arts/Language': ['Language', 'Academic journals', 'Bibliographies', 'Journalism', 'Literature', 'Logic', 'News media', 'Philosophy', 'Poetry'],
-				'Arts/Performing': ['Albums and songs', 'Dance', 'Film', 'Magic', 'Music', 'Radio', 'Television', 'Theatre', 'Video games'],
-				'Arts/Visual arts': ['Visual arts', 'Architecture', 'Fashion', 'Photography'],
-				'Arts/Comics and animation': ['Comics and animation', 'Anime and manga', 'Webcomics'],
-				'Places of interest': ['Museums and libraries', 'Shopping malls'],
-				'Topical': ['Animal', 'Bilateral relations', 'Conservatism', 'Conspiracy theories', 'Crime', 'Disability', 'Discrimination', 'Entertainment', 'Ethnic groups', 'Events', 'Finance', 'Games', 'Health and fitness', 'History', 'Law', 'Military', 'Organizations', 'Paranormal', 'Piracy', 'Politics', 'Terrorism'],
-				'Topical/Business': ['Business', 'Advertising', 'Companies', 'Management', 'Products'],
-				'Topical/Culture': ['Beauty pageants', 'Fashion', 'Mythology', 'Popular culture', 'Sexuality and gender'],
-				'Topical/Education': ['Education', 'Fraternities and sororities', 'Schools'],
-				'Topical/Religion': ['Religion', 'Atheism', 'Bible', 'Buddhism', 'Christianity', 'Islam', 'Judaism', 'Hinduism', 'Paganism', 'Sikhism', 'Spirituality'],
-				'Topical/Science': ['Science', 'Archaeology', 'Astronomy', 'Behavioural science', 'Biology', 'Economics', 'Engineering', 'Environment', 'Geography', 'Mathematics', 'Medicine', 'Organisms', 'Psychiatry', 'Psychology', 'Social science'],
-				'Topical/Sports': ['Sports', 'American football', 'Baseball', 'Basketball', 'Bodybuilding', 'Boxing', 'Cricket', 'Cycling', 'Football', 'Golf', 'Handball', 'Horse racing', 'Ice hockey', 'Motorsport', 'Rugby union', 'Softball', 'Martial arts', 'Wrestling'],
-				'Topical/Technology': ['Technology', 'Aviation', 'Computing', 'Firearms', 'Internet', 'Software', 'Transportation', 'Websites'],
-				'Wikipedia page type': ['Disambiguations', 'Lists'],
-				'Geographic/Africa': ['Africa', 'Algeria', 'Democratic Republic of the Congo', 'Egypt', 'Ethiopia', 'Ghana', 'Kenya', 'Libya', 'Mauritius', 'Morocco', 'Nigeria', 'Somalia', 'South Africa', 'Zimbabwe'],
-				'Geographic/Asia': ['Asia', 'Afghanistan', 'Bangladesh', 'Brunei', 'Cambodia', 'China', 'Hong Kong', 'Indonesia', 'Japan', 'Korea', 'Laos', 'Malaysia', 'Maldives', 'Mongolia', 'Myanmar', 'Nepal', 'Pakistan', 'Philippines', 'Singapore', 'South Korea', 'Sri Lanka', 'Taiwan', 'Thailand', 'Vietnam'],
-				'Geographic/Asia/Central Asia': ['Central Asia', 'Kazakhstan', 'Kyrgyzstan', 'Tajikistan', 'Turkmenistan', 'Uzbekistan'],
-				'Geographic/Asia/Middle East': ['Middle East', 'Bahrain', 'Iran', 'Iraq', 'Israel', 'Jordan', 'Kuwait', 'Lebanon', 'Libya', 'Palestine', 'Qatar', 'Saudi Arabia', 'Syria', 'United Arab Emirates', 'Yemen'],
-				'Geographic/Asia/India': ['India', 'Kerala'],
-				'Geographic/Europe': ['Europe', 'Albania', 'Armenia', 'Austria', 'Azerbaijan', 'Belarus', 'Belgium', 'Bosnia and Herzegovina', 'Bulgaria', 'Croatia', 'Cyprus', 'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Georgia (country)', 'Germany', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Jersey', 'Kosovo', 'Latvia', 'Lithuania', 'Luxembourg', 'Malta', 'Moldova', 'Montenegro', 'Netherlands', 'North Macedonia', 'Norway', 'Poland', 'Portugal', 'Romania', 'Russia', 'Serbia', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'Turkey', 'Ukraine', 'Yugoslavia'],
-				'Geographic/Europe/United Kingdom': ['United Kingdom', 'England', 'Northern Ireland', 'Scotland', 'Wales'],
-				'Geographic/Oceania': ['Oceania', 'Antarctica', 'Australia', 'New Zealand'],
-				'Geographic/Americas/Canada': ['Canada', 'Alberta', 'British Columbia', 'Manitoba', 'Nova Scotia', 'Ontario', 'Quebec'],
-				'Geographic/Americas/Latin America': ['Latin America', 'Caribbean', 'South America', 'Argentina', 'Barbados', 'Belize', 'Bolivia', 'Brazil', 'Chile', 'Colombia', 'Costa Rica', 'Cuba', 'Ecuador', 'El Salvador', 'Grenada', 'Guatemala', 'Haiti', 'Mexico', 'Nicaragua', 'Panama', 'Paraguay', 'Peru', 'Puerto Rico', 'Trinidad and Tobago', 'Uruguay', 'Venezuela'],
-				'Geographic/Americas/USA': ['United States of America', 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia (U.S. state)', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'Washington, D.C.', 'West Virginia', 'Wisconsin', 'Wyoming'],
-				'Geographic/Unsorted': ['Islands']
-			};
-
 			var delsort = work_area.append({
 				type: 'select',
 				multiple: true,
@@ -387,12 +354,32 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				tooltip: 'Select a few categories that are specifically relevant to the subject of the article. Be as precise as possible; categories like People and USA should only be used when no other categories apply.'
 			});
 
-			$.each(delsortCategories, function(groupname, list) {
-				var group = delsort.append({ type: 'optgroup', label: groupname });
-				list.forEach(function(item) {
-					group.append({ type: 'option', label: item, value: item });
-				});
-			});
+			// delsort categories taken from [[Wikipedia:WikiProject Deletion sorting/Computer-readable.json]]
+			var query = {
+				action: 'parse',
+				format: 'json',
+				page: 'Wikipedia:WikiProject_Deletion_sorting/Computer-readable.json',
+				prop: 'wikitext',
+				smaxage: '86400', // cache for 1 day
+				maxage: '86400' // cache for 1 day
+			};
+			new Morebits.wiki.api('Get JSON list of deletion sorting categories', query, function(apiobj) {
+				var wikitext = apiobj.getResponse().parse.wikitext;
+				console.log(wikitext);
+				try {
+					var delsortCategories = JSON.parse(wikitext);
+					console.log(delsortCategories);
+					$.each(delsortCategories, function(groupname, list) {
+						var group = delsort.append({ type: 'optgroup', label: groupname });
+						list.forEach(function(item) {
+							group.append({ type: 'option', label: item, value: item });
+						});
+					});
+				} catch(err) { // if the data is junk, just give up and exit this function
+					console.log(err);
+					return;
+				}
+			}).post();
 
 			appendReasonBox();
 			work_area = work_area.render();
