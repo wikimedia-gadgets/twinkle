@@ -794,9 +794,9 @@ Twinkle.xfd.callbacks = {
 			// even if invoked from talk page, propose the subject page for move
 			var pageName = new mw.Title(Morebits.pageNameNorm).getSubjectPage().toText();
 			var rmtrDiscuss = params['rmtr-discuss'] ? '|discuss=no' : '';
-			var rmAssist = '{{subst:RMassist|1=' + pageName + '|2=' + params.newname + rmtrDiscuss + '|reason=' + params.reason + '}}';
+			var rmtr = '{{subst:RMassist|1=' + pageName + '|2=' + params.newname + rmtrDiscuss + '|reason=' + params.reason + '}}';
 			var requestedMove = '{{subst:Requested move|current1=' + pageName + '|new1=' + params.newname + '|reason=' + params.reason + '}}';
-			return params.rmtr ? rmAssist : requestedMove;
+			return params.rmtr ? rmtr : requestedMove;
 		}
 
 		var text = '{{subst:' + venue + '2';
