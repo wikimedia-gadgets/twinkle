@@ -2024,8 +2024,6 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 		return;
 	}
 
-	// TODO: adding one redirect tag is freezing. fix.
-
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
