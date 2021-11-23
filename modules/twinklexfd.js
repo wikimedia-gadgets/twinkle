@@ -710,21 +710,21 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						checked: false,
 						event: function() {
 							form.newname.required = this.checked;
-						}
-					}
-				]
-			});
-			work_area.append({
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Opt out of discussion if the request is contested',
-						value: 'rmtr-discuss',
-						name: 'rmtr-discuss',
-						tooltip: 'Use this option when when you are filing an uncontroversial technical request AND you prefer to withdraw the request if it is contested, rather than discuss it. This will suppress the "discuss" link which may be used to convert your request to a discussion on the talk page of the page which is requested to be moved.',
-						checked: false,
-						event: function() {
-							form.newname.required = this.checked;
+						},
+						subgroup: {
+							type: 'checkbox',
+							list: [
+								{
+									label: 'Opt out of discussion if the request is contested',
+									value: 'rmtr-discuss',
+									name: 'rmtr-discuss',
+									tooltip: 'Use this option when when you are filing an uncontroversial technical request AND you prefer to withdraw the request if it is contested, rather than discuss it. This will suppress the "discuss" link which may be used to convert your request to a discussion on the talk page of the page which is requested to be moved.',
+									checked: false,
+									event: function() {
+										form.newname.required = this.checked;
+									}
+								}
+							]
 						}
 					}
 				]
