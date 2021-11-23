@@ -2007,6 +2007,22 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			break;
 
 		case 'redirect':
+			if (checkIncompatible(['R printworthy', 'R unprintworthy'])) {
+				return;
+			}
+			if (checkIncompatible(['R from subtopic', 'R to subtopic'])) {
+				return;
+			}
+			if (checkIncompatible([
+				'R to category namespace',
+				'R to help namespace',
+				'R to main namespace',
+				'R to portal namespace',
+				'R to project namespace',
+				'R to user namespace'
+			])) {
+				return;
+			}
 			break;
 
 		default:
