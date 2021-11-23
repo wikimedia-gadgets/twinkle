@@ -364,21 +364,17 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				maxage: '86400' // cache for 1 day
 			};
 			new Morebits.wiki.api('Get JSON list of deletion sorting categories', query, function(apiobj) {
-				try {
-					var wikitext = apiobj.getResponse().parse.wikitext;
-					var delsortCategories = JSON.parse(wikitext);
-					var select = $('[name="delsortCats"]');
-					$.each(delsortCategories, function(groupname, list) {
-						var optgroup = $('<optgroup>').attr('label', groupname);
-						var delsortCat = $(select).append(optgroup);
-						list.forEach(function(item) {
-							var option = $('<option>').val(item).text(item);
-							$(delsortCat).append(option);
-						});
+				var wikitext = apiobj.getResponse().parse.wikitext;
+				var delsortCategories = JSON.parse(wikitext);
+				var select = $('[name="delsortCats"]');
+				$.each(delsortCategories, function(groupname, list) {
+					var optgroup = $('<optgroup>').attr('label', groupname);
+					var delsortCat = $(select).append(optgroup);
+					list.forEach(function(item) {
+						var option = $('<option>').val(item).text(item);
+						$(delsortCat).append(option);
 					});
-				} catch (err) {
-					// If unable to pull usable Deletion Sort categories, just give up and exit this function. The user won't be able to pick any categories, but that won't stop the AFD nomination.
-				}
+				});
 			}).post();
 
 			appendReasonBox();
