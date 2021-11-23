@@ -366,13 +366,13 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			new Morebits.wiki.api('Get JSON list of deletion sorting categories', query, function(apiobj) {
 				var wikitext = apiobj.getResponse().parse.wikitext;
 				var delsortCategories = JSON.parse(wikitext);
-				var select = $('[name="delsortCats"]');
+				var $select = $('[name="delsortCats"]');
 				$.each(delsortCategories, function(groupname, list) {
-					var optgroup = $('<optgroup>').attr('label', groupname);
-					var delsortCat = $(select).append(optgroup);
+					var $optgroup = $('<optgroup>').attr('label', groupname);
+					var $delsortCat = $select.append($optgroup);
 					list.forEach(function(item) {
-						var option = $('<option>').val(item).text(item);
-						$(delsortCat).append(option);
+						var $option = $('<option>').val(item).text(item);
+						$delsortCat.append($option);
 					});
 				});
 			}).post();
