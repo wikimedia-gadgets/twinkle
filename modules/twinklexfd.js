@@ -368,15 +368,12 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					var wikitext = apiobj.getResponse().parse.wikitext;
 					var delsortCategories = JSON.parse(wikitext);
 					var select = $('[name="delsortCats"]');
-					var escapeDoubleQuotes = function(s) {
-						return s.replace(/"/g, '&quot;');
-					};
 					$.each(delsortCategories, function(groupname, list) {
-						groupname = escapeDoubleQuotes(groupname);
-						var delsortCat = $(select).append('<optgroup label="' + groupname + '">');
+						var optgroup = $('<optgroup>').attr('label', groupname);
+						var delsortCat = $(select).append(optgroup);
 						list.forEach(function(item) {
-							item = escapeDoubleQuotes(item);
-							$(delsortCat).append('<option value="' + item + '" label="' + item + '">' + item + '</option>');
+							var option = $('<option>').val(item).text(item);
+							$(delsortCat).append(option);
 						});
 					});
 				} catch (err) {
