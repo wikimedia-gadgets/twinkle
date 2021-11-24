@@ -299,11 +299,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						label: 'Request CheckUser',
 						name: 'checkuser',
 						tooltip: 'CheckUser is a tool used to obtain technical evidence related to a sockpuppetry allegation. It will not be used without good cause, which you must clearly demonstrate. Make sure your evidence explains why using the tool is appropriate. It will not be used to publicly connect user accounts and IP addresses.'
-					},
-					{
-						label: 'Notify reported users',
-						name: 'notify',
-						tooltip: 'Notification is not mandatory. In many cases, especially of chronic sockpuppeteers, notification may be counterproductive. However, especially in less egregious cases involving users who have not been reported before, notification may make the cases fairer and also appear to be fairer in the eyes of the accused. Use your judgment.'
 					}
 				]
 			});
@@ -337,10 +332,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					label: 'Request CheckUser',
 					name: 'checkuser',
 					tooltip: 'CheckUser is a tool used to obtain technical evidence related to a sockpuppetry allegation. It will not be used without good cause, which you must clearly demonstrate. Make sure your evidence explains why using the tool is appropriate. It will not be used to publicly connect user accounts and IP addresses.'
-				}, {
-					label: 'Notify reported users',
-					name: 'notify',
-					tooltip: 'Notification is not mandatory. In many cases, especially of chronic sockpuppeteers, notification may be counterproductive. However, especially in less egregious cases involving users who have not been reported before, notification may make the cases fairer and also appear to be fairer in the eyes of the accused. Use your judgment.'
 				} ]
 			});
 			work_area = work_area.render();
@@ -659,8 +650,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 		case 'puppet':
 			var sockParameters = {
 				evidence: form.evidence.value.trim(),
-				checkuser: form.checkuser.checked,
-				notify: form.notify.checked
+				checkuser: form.checkuser.checked
 			};
 
 			var puppetReport = form.category.value === 'puppet';
@@ -818,47 +808,6 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 Twinkle.arv.processSock = function(params) {
 	Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
-
-	// notify all user accounts if requested
-	if (params.notify && params.sockpuppets.length > 0) {
-
-		var notifyEditSummary = 'Notifying about suspicion of sockpuppeteering.';
-		var notifyText = '\n\n{{subst:socksuspectnotice|1=' + params.uid + '}} ~~~~';
-
-		// notify user's master account
-		var masterTalkPage = new Morebits.wiki.page('User talk:' + params.uid, 'Notifying suspected sockpuppeteer');
-		masterTalkPage.setFollowRedirect(true);
-		masterTalkPage.setEditSummary(notifyEditSummary);
-		masterTalkPage.setChangeTags(Twinkle.changeTags);
-		masterTalkPage.setAppendText(notifyText);
-		masterTalkPage.append();
-
-		var statusIndicator = new Morebits.status('Notifying suspected sockpuppets', '0%');
-		var total = params.sockpuppets.length;
-		var current = 0;
-
-		// display status of notifications as they progress
-		var onSuccess = function(sockTalkPage) {
-			var now = parseInt(100 * ++current / total, 10) + '%';
-			statusIndicator.update(now);
-			sockTalkPage.getStatusElement().unlink();
-			if (current >= total) {
-				statusIndicator.info(now + ' (completed)');
-			}
-		};
-
-		var socks = params.sockpuppets;
-
-		// notify each puppet account
-		for (var i = 0; i < socks.length; ++i) {
-			var sockTalkPage = new Morebits.wiki.page('User talk:' + socks[i], 'Notification for ' + socks[i]);
-			sockTalkPage.setFollowRedirect(true);
-			sockTalkPage.setEditSummary(notifyEditSummary);
-			sockTalkPage.setChangeTags(Twinkle.changeTags);
-			sockTalkPage.setAppendText(notifyText);
-			sockTalkPage.append(onSuccess);
-		}
-	}
 
 	// prepare the SPI report
 	var text = '\n\n{{subst:SPI report|socksraw=' +
