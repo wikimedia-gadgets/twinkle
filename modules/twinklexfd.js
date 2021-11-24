@@ -718,7 +718,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 									label: 'Opt out of discussion if the request is contested',
 									value: 'rmtr-discuss',
 									name: 'rmtr-discuss',
-									tooltip: 'Use this option when you prefer to withdraw the request if it is contested, rather than discuss it. This will suppress the "discuss" link, which may be used to convert your request to a discussion on the talk page of the page which is requested to be moved.',
+									tooltip: 'Use this option if you prefer to withdraw the request if contested, rather than discuss it. This suppresses the "discuss" link, which may be used to convert your request to a discussion on the talk page.',
 									checked: false
 								}
 							]
