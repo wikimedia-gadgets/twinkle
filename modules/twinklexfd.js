@@ -354,17 +354,20 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				tooltip: 'Select a few categories that are specifically relevant to the subject of the article. Be as precise as possible; categories like People and USA should only be used when no other categories apply.'
 			});
 
-			// delsort categories taken from [[Wikipedia:WikiProject Deletion sorting/Computer-readable.json]]
+			// grab delsort categories from on-wiki
 			var query = {
-				action: 'parse',
+				action: 'query',
+				prop: 'revisions',
+				titles: 'Wikipedia:WikiProject_Deletion_sorting/Computer-readable.json',
+				rvslots: '*',
+				rvprop: 'content',
 				format: 'json',
-				page: 'Wikipedia:WikiProject_Deletion_sorting/Computer-readable.json',
-				prop: 'wikitext',
 				smaxage: '86400', // cache for 1 day
 				maxage: '86400' // cache for 1 day
 			};
 			new Morebits.wiki.api('Get JSON list of deletion sorting categories', query, function(apiobj) {
-				var wikitext = apiobj.getResponse().parse.wikitext;
+				var response = apiobj.getResponse();
+				var wikitext = response.query.pages[0].revisions[0].slots.main.content;
 				var delsortCategories = JSON.parse(wikitext);
 				var $select = $('[name="delsortCats"]');
 				$.each(delsortCategories, function(groupname, list) {
