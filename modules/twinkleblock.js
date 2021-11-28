@@ -516,6 +516,28 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		}
 	}
 
+	// grab discretionary sanctions list from en-wiki
+	var query = {
+		action: 'query',
+		prop: 'revisions',
+		titles: 'Template:Ds/topics.json',
+		rvslots: '*',
+		rvprop: 'content',
+		format: 'json',
+		smaxage: '86400', // cache for 1 day
+		maxage: '86400' // cache for 1 day
+	};
+	new Morebits.wiki.api('Get JSON list of discretionary sanctions', query, function(apiobj) {
+		var response = apiobj.getResponse();
+		var wikitext = response.query.pages[0].revisions[0].slots.main.content;
+		var dsinfo = JSON.parse(wikitext);
+		var $select = $('[name="dstopic"]');
+		$.each(dsinfo, function(key, value) {
+			var $option = $('<option>').val(value.code).text(key).prop('label', key);
+			$select.append($option);
+		});
+	}).post();
+
 	// DS selection visible in either the template field set or preset,
 	// joint settings saved here
 	var dsSelectSettings = {
@@ -525,9 +547,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		value: '',
 		tooltip: 'If selected, it will inform the template and may be added to the blocking message',
 		event: Twinkle.block.callback.toggle_ds_reason,
-		list: $.map(Twinkle.block.dsinfo, function(info, label) {
-			return {label: label, value: info.code};
-		})
+		list: ''
 	};
 	if (templateBox) {
 		field_template_options = new Morebits.quickForm.element({ type: 'field', label: 'Template options', name: 'field_template_options' });
@@ -1321,146 +1341,6 @@ Twinkle.block.blockPresetsInfo = {
 	}
 };
 
-// Codes and links for Discretionary Sanctions, see [[Template:Ds/topics]]
-// Used for uw-ae(p)block
-Twinkle.block.dsinfo = {
-	'': {
-		code: ''
-	},
-	'Abortion': {
-		code: 'ab',
-		page: 'Wikipedia:Arbitration/Requests/Case/Abortion'
-	},
-	'American politics post-1992': {
-		code: 'ap',
-		page: 'Wikipedia:Arbitration/Requests/Case/American politics 2'
-	},
-	'Ancient Egyptian race controversy': {
-		code: 'aerc',
-		page: 'Wikipedia:Requests for arbitration/Ancient Egyptian race controversy'
-	},
-	'Arab-Israeli conflict': {
-		code: 'a-i',
-		page: 'Wikipedia:Arbitration/Index/Palestine-Israel articles'
-	},
-	'Armenia, Azerbaijan, or related conflicts': {
-		code: 'a-a',
-		page: 'Wikipedia:Requests for arbitration/Armenia-Azerbaijan 2'
-	},
-	'Biographies of Living Persons (BLPs)': {
-		code: 'blp',
-		page: 'Wikipedia:Requests for arbitration/Editing of Biographies of Living Persons'
-	},
-	'Climate change': {
-		code: 'cc',
-		page: 'Wikipedia:Arbitration/Requests/Case/Climate change'
-	},
-	'Complementary and alternative medicine': {
-		code: 'com',
-		page: 'Wikipedia:Arbitration/Requests/Case/Acupuncture'
-	},
-	'Eastern Europe or the Balkans': {
-		code: 'e-e',
-		page: 'Wikipedia:Requests for arbitration/Eastern Europe'
-	},
-	'Electronic cigarettes': {
-		code: 'ecig',
-		page: 'Wikipedia:Arbitration/Requests/Case/Editor conduct in e-cigs articles'
-	},
-	'Falun Gong': {
-		code: 'fg',
-		page: 'Wikipedia:Requests for arbitration/Falun Gong'
-	},
-	'Gender-related dispute or controversy and associated people (includes GamerGate)': {
-		code: 'gas',
-		page: 'Wikipedia:Arbitration/Requests/Case/Gender and sexuality'
-	},
-	'Genetically modified organisms (GMO)': {
-		code: 'gmo',
-		page: 'Wikipedia:Arbitration/Requests/Case/Genetically modified organisms'
-	},
-	'Gun control': {
-		code: 'gc',
-		page: 'Wikipedia:Arbitration/Requests/Case/Gun control'
-	},
-	'Horn of Africa (Ethiopia, Somalia, Eritrea, Djibouti)': {
-		code: 'horn',
-		page: 'Wikipedia:Arbitration/Requests/Case/Horn of Africa'
-	},
-	'India, Pakistan, and Afghanistan': {
-		code: 'ipa',
-		page: 'Wikipedia:Requests for arbitration/India-Pakistan'
-	},
-	'Infoboxes': {
-		code: 'cid',
-		page: 'Wikipedia:Arbitration/Requests/Case/Civility in infobox discussions'
-	},
-	'Kurds and Kurdistan': {
-		code: 'kurd',
-		page: 'Wikipedia:Arbitration/Requests/Case/Kurds and Kurdistan'
-	},
-	'Landmark Worldwide': {
-		code: 'lw',
-		page: 'Wikipedia:Arbitration/Requests/Case/Landmark Worldwide'
-	},
-	'Liancourt Rocks': {
-		code: 'lr',
-		page: 'Wikipedia:Requests for arbitration/Liancourt Rocks'
-	},
-	'Manual of Style and article titles': {
-		code: 'mos',
-		page: 'Wikipedia:Arbitration/Requests/Case/Article titles and capitalisation'
-	},
-	'Muhammad': {
-		code: 'muh-im',
-		page: 'Wikipedia:Arbitration/Requests/Case/Muhammad images'
-	},
-	'Pharmaceutical drug prices (medicine)': {
-		code: 'med',
-		page: 'Wikipedia:Arbitration/Requests/Case/Medicine'
-	},
-	'Prem Rawat': {
-		code: 'pr',
-		page: 'Wikipedia:Requests for arbitration/Prem Rawat'
-	},
-	'Pseudoscience and fringe science': {
-		code: 'ps',
-		page: 'Wikipedia:Requests for arbitration/Pseudoscience'
-	},
-	'Race/ethnicity and human abilities, behaviour, and intelligence': {
-		code: 'r-i',
-		page: 'Wikipedia:Arbitration/Requests/Case/Race and intelligence'
-	},
-	'Scientology': {
-		code: 'sci',
-		page: 'Wikipedia:Requests for arbitration/Scientology'
-	},
-	'Senkaku Islands dispute': {
-		code: 'sen',
-		page: 'Wikipedia:Arbitration/Requests/Case/Senkaku Islands'
-	},
-	'September 11 attacks': {
-		code: '9/11',
-		page: 'Wikipedia:Requests for arbitration/September 11 conspiracy theories'
-	},
-	'Shakespeare authorship question': {
-		code: 'saq',
-		page: 'Wikipedia:Arbitration/Requests/Case/Shakespeare authorship question'
-	},
-	'Transcendental Meditation movement': {
-		code: 'tm',
-		page: 'Wikipedia:Arbitration/Requests/Case/Transcendental Meditation movement'
-	},
-	'The Troubles': {
-		code: 'tt',
-		page: 'Wikipedia:Requests for arbitration/The Troubles'
-	},
-	'Waldorf education': {
-		code: 'we',
-		page: 'Wikipedia:Requests for arbitration/Waldorf education'
-	}
-};
-
 Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets() {
 	// supply sensible defaults
 	$.each(Twinkle.block.blockPresetsInfo, function(preset, settings) {
@@ -1692,12 +1572,31 @@ Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSR
 		new RegExp(' ?\\(\\[\\[' + Twinkle.block.dsReason + '\\]\\]\\)'), ''
 	);
 
-	Twinkle.block.dsReason = Twinkle.block.dsinfo[this.options[this.selectedIndex].label].page;
-	if (!this.value) {
-		this.form.reason.value = reason;
-	} else {
-		this.form.reason.value = reason + ' ([[' + Twinkle.block.dsReason + ']])';
-	}
+	// grab discretionary sanctions list from en-wiki
+	var query = {
+		action: 'query',
+		prop: 'revisions',
+		titles: 'Template:Ds/topics.json',
+		rvslots: '*',
+		rvprop: 'content',
+		format: 'json',
+		smaxage: '86400', // cache for 1 day
+		maxage: '86400' // cache for 1 day
+	};
+	var obj = this;
+	new Morebits.wiki.api('Get JSON list of discretionary sanctions', query, function(apiobj) {
+		var response = apiobj.getResponse();
+		var wikitext = response.query.pages[0].revisions[0].slots.main.content;
+		var dsinfo = JSON.parse(wikitext);
+		var sanctionCode = obj.selectedIndex;
+		var sanctionName = obj.options[sanctionCode].label;
+		Twinkle.block.dsReason = dsinfo[sanctionName].page;
+		if (!obj.value) {
+			obj.form.reason.value = reason;
+		} else {
+			obj.form.reason.value = reason + ' ([[' + Twinkle.block.dsReason + ']])';
+		}
+	}).post();
 };
 
 Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, data) {
