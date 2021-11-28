@@ -18,6 +18,12 @@ const server = http.createServer(async (request, response) => {
 	const cssFiles = ['morebits.css', 'twinkle.css'];
 
 	let jsCode = `mw.loader.load(['jquery.ui', 'ext.gadget.select2']);`;
+
+	if (process.argv[2] !== '--no-sysop') {
+		// Pretend to be a sysop, if not one already - enables testing of sysop modules by non-sysops
+		jsCode += `if (mw.config.get('wgUserGroups').indexOf('sysop') === -1) mw.config.get('wgUserGroups').push('sysop');`;
+	}
+
 	for (let file of jsFiles) {
 		jsCode += await readFile(file);
 	}
