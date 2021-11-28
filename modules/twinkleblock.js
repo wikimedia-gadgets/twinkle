@@ -517,26 +517,15 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	}
 
 	// grab discretionary sanctions list from en-wiki
-	var query = {
-		action: 'query',
-		prop: 'revisions',
-		titles: 'Template:Ds/topics.json',
-		rvslots: '*',
-		rvprop: 'content',
-		format: 'json',
-		smaxage: '86400', // cache for 1 day
-		maxage: '86400' // cache for 1 day
-	};
-	new Morebits.wiki.api('Get JSON list of discretionary sanctions', query, function(apiobj) {
-		var response = apiobj.getResponse();
-		var wikitext = response.query.pages[0].revisions[0].slots.main.content;
+	var parent = this;
+	new Morebits.wiki.getCachedWikitext('Template:Ds/topics.json', 'Get JSON list of discretionary sanctions', parent, function(wikitext) {
 		var dsinfo = JSON.parse(wikitext);
 		var $select = $('[name="dstopic"]');
 		$.each(dsinfo, function(key, value) {
 			var $option = $('<option>').val(value.code).text(key).prop('label', key);
 			$select.append($option);
 		});
-	}).post();
+	});
 
 	// DS selection visible in either the template field set or preset,
 	// joint settings saved here
@@ -1573,30 +1562,18 @@ Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSR
 	);
 
 	// grab discretionary sanctions list from en-wiki
-	var query = {
-		action: 'query',
-		prop: 'revisions',
-		titles: 'Template:Ds/topics.json',
-		rvslots: '*',
-		rvprop: 'content',
-		format: 'json',
-		smaxage: '86400', // cache for 1 day
-		maxage: '86400' // cache for 1 day
-	};
-	var obj = this;
-	new Morebits.wiki.api('Get JSON list of discretionary sanctions', query, function(apiobj) {
-		var response = apiobj.getResponse();
-		var wikitext = response.query.pages[0].revisions[0].slots.main.content;
+	var parent = this;
+	new Morebits.wiki.getCachedWikitext('Template:Ds/topics.json', 'Get JSON list of discretionary sanctions', parent, function(wikitext) {
 		var dsinfo = JSON.parse(wikitext);
-		var sanctionCode = obj.selectedIndex;
-		var sanctionName = obj.options[sanctionCode].label;
+		var sanctionCode = parent.selectedIndex;
+		var sanctionName = parent.options[sanctionCode].label;
 		Twinkle.block.dsReason = dsinfo[sanctionName].page;
-		if (!obj.value) {
-			obj.form.reason.value = reason;
+		if (!parent.value) {
+			parent.form.reason.value = reason;
 		} else {
-			obj.form.reason.value = reason + ' ([[' + Twinkle.block.dsReason + ']])';
+			parent.form.reason.value = reason + ' ([[' + Twinkle.block.dsReason + ']])';
 		}
-	}).post();
+	});
 };
 
 Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, data) {
