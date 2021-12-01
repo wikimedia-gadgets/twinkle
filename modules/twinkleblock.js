@@ -535,7 +535,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		label: 'DS topic',
 		value: '',
 		tooltip: 'If selected, it will inform the template and may be added to the blocking message',
-		event: Twinkle.block.callback.toggle_ds_reason,
+		event: Twinkle.block.callback.toggle_ds_reason
 	};
 	if (templateBox) {
 		field_template_options = new Morebits.quickForm.element({ type: 'field', label: 'Template options', name: 'field_template_options' });
