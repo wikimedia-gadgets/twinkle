@@ -521,10 +521,10 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	new Morebits.wiki.getCachedWikitext('Template:Ds/topics.json', 'Get JSON list of discretionary sanctions', parent, function(wikitext) {
 		var dsinfo = JSON.parse(wikitext);
 		var $select = $('[name="dstopic"]');
-		$.each(dsinfo, function(key, value) {
-			var $option = $('<option>').val(value.code).text(key).prop('label', key);
-			$select.append($option);
+		var $options = $.map(dsinfo, function (value, key) {
+			return $('<option>').val(value.code).text(key).prop('label', key);
 		});
+		$select.append($options);
 	});
 
 	// DS selection visible in either the template field set or preset,
