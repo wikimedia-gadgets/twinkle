@@ -267,7 +267,7 @@ Twinkle.xfd.callback.wrongVenueWarning = function twinklexfdWrongVenueWarning(ve
 			if (namespace === 14) { // category
 				text = 'Please use CfD or CfDS for category renames.';
 			} else if ([118, 119, 2, 3].indexOf(namespace) > -1) { // draft, draft talk, user, user talk
-				text = 'RMs are not permitted in draft and userspace, unless they are technical requests.';
+				text = 'RMs are not permitted in draft and userspace, unless they are uncontroversial technical requests.';
 			}
 			break;
 
