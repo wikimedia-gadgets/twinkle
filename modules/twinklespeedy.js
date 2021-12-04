@@ -1500,7 +1500,23 @@ Twinkle.speedy.callbacks = {
 				pageobj.setPageText(text);
 				pageobj.setEditSummary(editsummary);
 				pageobj.setWatchlist(params.watch);
-				pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
+				pageobj.save(Twinkle.speedy.callbacks.user.tagComplete, function () {
+					// On failure, check if this is a G12. If so, failure may be due to the spam blacklist. Remove http(s):// and resubmit.
+					var g12 = params.normalizeds.indexOf('g12') !== -1;
+					if (!g12) {
+						return;
+					}
+					var matches = text.match(/^([\s\S]*)(\{\{db-copyvio\|[^\}]*\}\})([\s\S]*)$/i);
+					// Matches should have 3 chunks, and the middle chunk should be the {{db-copyvio}} tag that Twinkle added to the page. This is where we want to remove http(s):// from the URLs in the parameters of the tag.
+					// Using [\s\S]* as a workaround for no RegEx /s flag in ES5.
+					if (matches.length !== 3) {
+						return;
+					}
+					matches[2] = matches[2].replace(/https?:\/\//g, '');
+					text = matches[1] + matches[2] + matches[3];
+					pageobj.setPageText(text);
+					pageobj.save(Twinkle.speedy.callbacks.user.tagComplete);
+				});
 			} else { // Attempt to place on talk page
 				var talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
 				if (talkName !== pageobj.getPageName()) {
