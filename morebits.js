@@ -2472,7 +2472,7 @@ Morebits.wiki.api.prototype = {
 };
 
 /** Retrieves wikitext from a page. Caching enabled, duration 1 day. */
-Morebits.wiki.getCachedJson = function(title, parent, callback) {
+Morebits.wiki.getCachedJson = function(title, parent) {
 	var query = {
 		action: 'query',
 		prop: 'revisions',
@@ -2483,11 +2483,10 @@ Morebits.wiki.getCachedJson = function(title, parent, callback) {
 		smaxage: '86400', // cache for 1 day
 		maxage: '86400' // cache for 1 day
 	};
-	new Morebits.wiki.api('', query, function(apiobj) {
+	return new Morebits.wiki.api('', query, function(apiobj) {
 		var response = apiobj.getResponse();
 		var wikitext = response.query.pages[0].revisions[0].slots.main.content;
-		var json = JSON.parse(wikitext);
-		callback(json, parent);
+		return JSON.parse(wikitext);
 	}).post();
 };
 
