@@ -1506,7 +1506,7 @@ Twinkle.speedy.callbacks = {
 					if (!g12) {
 						return;
 					}
-					var matches = text.match(/^([\s\S]*)(\{\{db-copyvio\|[^\}]*\}\})([\s\S]*)$/i);
+					var matches = text.match(/^([\s\S]*)(\{\{db-copyvio\|[^}]*\}\})([\s\S]*)$/i);
 					// Matches should have 3 chunks, and the middle chunk should be the {{db-copyvio}} tag that Twinkle added to the page. This is where we want to remove http(s):// from the URLs in the parameters of the tag.
 					// Using [\s\S]* as a workaround for no RegEx /s flag in ES5.
 					if (matches.length !== 3) {
