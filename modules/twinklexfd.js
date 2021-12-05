@@ -355,7 +355,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			});
 
 			// grab deletion sort categories from en-wiki
-			new Morebits.wiki.getCachedJson('Wikipedia:WikiProject_Deletion_sorting/Computer-readable.json').then(function(delsortCategories) {
+			Morebits.wiki.getCachedJson('Wikipedia:WikiProject_Deletion_sorting/Computer-readable.json').then(function(delsortCategories) {
 				var $select = $('[name="delsortCats"]');
 				$.each(delsortCategories, function(groupname, list) {
 					var $optgroup = $('<optgroup>').attr('label', groupname);

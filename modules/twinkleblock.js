@@ -517,7 +517,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	}
 
 	// grab discretionary sanctions list from en-wiki
-	new Morebits.wiki.getCachedJson('Template:Ds/topics.json').then(function(dsinfo) {
+	Morebits.wiki.getCachedJson('Template:Ds/topics.json').then(function(dsinfo) {
 		var $select = $('[name="dstopic"]');
 		var $options = $.map(dsinfo, function (value, key) {
 			return $('<option>').val(value.code).text(key).prop('label', key);
@@ -1559,7 +1559,7 @@ Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSR
 	);
 
 	// grab discretionary sanctions list from en-wiki
-	new Morebits.wiki.getCachedJson('Template:Ds/topics.json').then(function(dsinfo) {
+	Morebits.wiki.getCachedJson('Template:Ds/topics.json').then(function(dsinfo) {
 		var sanctionCode = this.selectedIndex;
 		var sanctionName = this.options[sanctionCode].label;
 		Twinkle.block.dsReason = dsinfo[sanctionName].page;
