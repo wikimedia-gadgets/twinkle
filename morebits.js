@@ -2472,7 +2472,7 @@ Morebits.wiki.api.prototype = {
 };
 
 /** Retrieves wikitext from a page. Caching enabled, duration 1 day. */
-Morebits.wiki.getCachedJson = function(title, parent) {
+Morebits.wiki.getCachedJson = function(title) {
 	var query = {
 		action: 'query',
 		prop: 'revisions',
