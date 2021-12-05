@@ -2483,11 +2483,11 @@ Morebits.wiki.getCachedJson = function(title, parent) {
 		smaxage: '86400', // cache for 1 day
 		maxage: '86400' // cache for 1 day
 	};
-	return new Morebits.wiki.api('', query, function(apiobj) {
+	return new Morebits.wiki.api('', query).post().then(function(apiobj) {
 		var response = apiobj.getResponse();
 		var wikitext = response.query.pages[0].revisions[0].slots.main.content;
 		return JSON.parse(wikitext);
-	}).post();
+	});
 };
 
 var morebitsWikiApiUserAgent = 'morebits.js ([[w:WT:TW]])';
