@@ -447,7 +447,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append({
 				type: 'field',
 				name: 'diffs',
-				label: 'User\'s reverts',
+				label: 'User\'s reverts (within last 48 hours)',
 				tooltip: 'Select the edits you believe are reverts'
 			});
 			work_area.append({
