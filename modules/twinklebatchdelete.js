@@ -575,11 +575,9 @@ Twinkle.batchdelete.callbacks = {
 
 		var talkPages = [];
 		$.each(pages, function(i, page) {
-			var isTalkPage = page.ns % 2 === 1 && page.ns > 0;
+			var isTalkPage = mw.Title.isTalkNamespace(page.ns);
 			if (!isTalkPage) {
-				var talkPageTitle = page.ns === 0 ?
-					'Talk:' + page.title :
-					page.title.replace(/^([^:]+)(:.*)$/, '$1 talk$2');
+				var talkPageTitle = new mw.Title(page.title).getTalkPage().toText();
 				talkPages.push(talkPageTitle);
 			}
 		});
