@@ -544,11 +544,13 @@ Twinkle.batchdelete.callbacks = {
 				query = {
 					action: 'query',
 					titles: params.page,
-					prop: 'redirects',
-					rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
-					format: 'json'
+					prop: 'info',
+					format: 'json',
+					generator: 'redirects',
+					grdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
+					inprop: 'talkid' // check if redirect's talk page exists in the same API query
 				};
-				wikipedia_api = new Morebits.wiki.api('Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain);
+				wikipedia_api = new Morebits.wiki.api('Grabbing list of redirects and redirect talk pages', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain);
 				wikipedia_api.params = params;
 				wikipedia_api.post();
 			}
@@ -571,62 +573,36 @@ Twinkle.batchdelete.callbacks = {
 	},
 	deleteRedirectsMain: function(apiobj) {
 		var response = apiobj.getResponse();
-		var pages = response.query.pages[0].redirects || [];
+		var pages = response.query.pages || [];
 
-		var talkPages = [];
+		// build list of redirects and their talk pages to delete
+		var pagesToDelete = [];
 		$.each(pages, function(i, page) {
-			var isTalkPage = mw.Title.isTalkNamespace(page.ns);
-			if (!isTalkPage) {
+			// build list of redirects
+			pagesToDelete.push(page.title);
+
+			// build list of redirect talk pages, if needed
+			var isRedirectOnATalkPage = mw.Title.isTalkNamespace(page.ns);
+			var hasExistingTalkPage = typeof page.talkid !== 'undefined';
+			if (!isRedirectOnATalkPage && hasExistingTalkPage) {
 				var talkPageTitle = new mw.Title(page.title).getTalkPage().toText();
-				talkPages.push(talkPageTitle);
+				pagesToDelete.push(talkPageTitle);
 			}
 		});
 
-		// API call to check that these talk pages exist. Deleting non-existent talk pages throws an error, so we're trying to avoid that.
-		var query = {
-			action: 'query',
-			titles: talkPages,
-			prop: 'redirects',
-			rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
-			format: 'json'
-		};
-		new Morebits.wiki.api('Getting list of redirect talk pages', query).post().then(function(results) {
-			talkPages = [];
-			$.each(results.response.query.pages, function(i, page) {
-				if (typeof page.pageid !== 'undefined') {
-					talkPages.push(page.title);
-				}
-			});
+		if (!pagesToDelete.length) {
+			return;
+		}
 
-			pages = pages.map(function(redirect) {
-				return redirect.title;
-			});
-
-			if (!pages.length && !talkPages.length) {
-				return;
-			}
-
-			// Delete redirects
-			var redirectDeleter = new Morebits.batchOperation('Deleting redirects to ' + apiobj.params.page);
-			redirectDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
-			redirectDeleter.setPageList(pages);
-			redirectDeleter.run(function(pageName) {
-				var wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting ' + pageName);
-				wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"');
-				wikipedia_page.setChangeTags(Twinkle.changeTags);
-				wikipedia_page.deletePage(redirectDeleter.workerSuccess, redirectDeleter.workerFailure);
-			});
-
-			// Delete talk pages. Do this as its own step so that we can get the edit summary correct.
-			var redirectDeleter2 = new Morebits.batchOperation('Deleting redirect talk pages');
-			redirectDeleter2.setOption('chunkSize', Twinkle.getPref('batchChunks'));
-			redirectDeleter2.setPageList(talkPages);
-			redirectDeleter2.run(function(pageName) {
-				var wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting ' + pageName);
-				wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page');
-				wikipedia_page.setChangeTags(Twinkle.changeTags);
-				wikipedia_page.deletePage(redirectDeleter2.workerSuccess, redirectDeleter2.workerFailure);
-			});
+		// delete redirects and redirect talk pages
+		var redirectDeleter = new Morebits.batchOperation('Deleting redirects to ' + apiobj.params.page + ' and their associated talk pages');
+		redirectDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
+		redirectDeleter.setPageList(pagesToDelete);
+		redirectDeleter.run(function(pageName) {
+			var wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting ' + pageName);
+			wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect or redirect talk page to deleted page "' + apiobj.params.page + '"');
+			wikipedia_page.setChangeTags(Twinkle.changeTags);
+			wikipedia_page.deletePage(redirectDeleter.workerSuccess, redirectDeleter.workerFailure);
 		});
 	},
 	deleteTalk: function(apiobj) {
