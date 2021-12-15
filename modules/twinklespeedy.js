@@ -759,12 +759,6 @@ Twinkle.speedy.userList = [
 		tooltip: 'User pages of users that do not exist (Check Special:Listusers)'
 	},
 	{
-		label: 'U3: Non-free galleries',
-		value: 'gallery',
-		tooltip: 'Galleries in the userspace which consist mostly of "fair use" or non-free files. Wikipedia\'s non-free content policy forbids users from displaying non-free files, even ones they have uploaded themselves, in userspace. It is acceptable to have free files, GFDL-files, Creative Commons and similar licenses along with public domain material, but not "fair use" files',
-		hideWhenRedirect: true
-	},
-	{
 		label: 'U5: Blatant WP:NOTWEBHOST violations',
 		value: 'notwebhost',
 		tooltip: 'Pages in userspace consisting of writings, information, discussions, and/or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of userspace, with the exception of plausible drafts and pages adhering to WP:UPYES.',
@@ -1088,7 +1082,6 @@ Twinkle.speedy.normalizeHash = {
 	catempty: 'c1',
 	userreq: 'u1',
 	nouser: 'u2',
-	gallery: 'u3',
 	notwebhost: 'u5',
 	p1: 'p1',
 	emptyportal: 'p2'
