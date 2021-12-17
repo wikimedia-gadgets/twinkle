@@ -469,7 +469,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					{ type: 'option', value: 'standard', label: 'Standard', selected: true },
 					{ type: 'option', value: 'sidebar', label: 'Sidebar/infobox', selected: $('.infobox').length },
 					{ type: 'option', value: 'inline', label: 'Inline template', selected: $('.mw-parser-output > p .Inline-Template').length },
-					{ type: 'option', value: 'tiny', label: 'Tiny inline' }
+					{ type: 'option', value: 'tiny', label: 'Tiny inline' },
+					{ type: 'option', value: 'disabled', label: 'Disabled' }
 				]
 			});
 
@@ -1385,7 +1386,7 @@ Twinkle.xfd.callbacks = {
 				if (params.noinclude) {
 					params.tagText = '<noinclude>' + params.tagText + '</noinclude>';
 				}
-				params.tagText += params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
+				params.tagText += params.templatetype === 'standard' || params.templatetype === 'sidebar' || params.templatetype === 'disabled' ? '\n' : ''; // No newline for inline
 			}
 
 			if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
@@ -1414,7 +1415,7 @@ Twinkle.xfd.callbacks = {
 				if (params.noinclude) {
 					params.tagText = '<noinclude>' + params.tagText + '</noinclude>';
 				}
-				params.tagText += params.templatetype === 'standard' || params.templatetype === 'sidebar' ? '\n' : ''; // No newline for inline
+				params.tagText += params.templatetype === 'standard' || params.templatetype === 'sidebar' || params.templatetype === 'disabled' ? '\n' : ''; // No newline for inline
 			}
 
 			if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
