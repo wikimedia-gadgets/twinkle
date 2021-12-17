@@ -299,10 +299,10 @@ Twinkle.talkback.noticeboards = {
 		text: "== Teahouse talkback: you've got messages! ==\n{{WP:Teahouse/Teahouse talkback|WP:Teahouse/Questions|$SECTION|ts=~~~~}}",
 		editSummary: 'You have replies at the [[Wikipedia:Teahouse/Questions|Teahouse question board]]'
 	},
-	otrs: {
-		label: 'WP:OTRS/N (OTRS noticeboard)',
-		text: '{{OTRSreply|1=$SECTION|2=~~~~}}',
-		editSummary: 'You have replies at the [[Wikipedia:OTRS noticeboard|OTRS noticeboard]]'
+	vrt: {
+		label: 'WP:VRTN (VRT noticeboard)',
+		text: '{{subst:VRTreply|1=$SECTION}}\n~~~~',
+		editSummary: 'You have replies at the [[Wikipedia:VRT noticeboard|VRT noticeboard]]'
 	}
 };
 
