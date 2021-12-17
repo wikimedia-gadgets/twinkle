@@ -1080,7 +1080,8 @@ Twinkle.xfd.callbacks = {
 					var match = order_re.exec(title);
 
 					// No match; A non-good value
-					if (!match) {
+					// Or the match is an unrealistically high number. Avoid false positives such as Wikipedia:Articles for deletion/The Basement (2014), by ignoring matches greater than 100
+					if (!match || match[1] > 100) {
 						continue;
 					}
 
