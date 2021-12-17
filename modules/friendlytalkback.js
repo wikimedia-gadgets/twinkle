@@ -280,7 +280,7 @@ Twinkle.talkback.noticeboards = {
 		editSummary: 'You have replies at the [[Wikipedia:Help desk|Wikipedia help desk]]'
 	},
 	norn: {
-		label: 'WP:NORN (Reliable sources noticeboard)',
+		label: 'WP:NORN (No original research noticeboard)',
 		text: '{{subst:Norn-notice|thread=$SECTION}} ~~~~',
 		editSummary: 'Notice of discussion at [[Wikipedia:Reliable sources/Noticeboard]]'
 	},
