@@ -630,7 +630,14 @@ Twinkle.welcome.callbacks = {
 		var welcomeText = Twinkle.welcome.getTemplateWikitext(params.type, params.template, params.article);
 
 		if (Twinkle.getPref('topWelcomes')) {
-			text = welcomeText + '\n\n' + text;
+			var hasTalkHeader = /^\{\{Talk header\}\}/i.test(text);
+			if (hasTalkHeader) {
+				text = text.replace(/^\{\{Talk header\}\}\n{0,2}/i, '');
+				text = '{{Talk header}}\n\n' + welcomeText + '\n\n' + text;
+				text = text.trim();
+			} else {
+				text = welcomeText + '\n\n' + text;
+			}
 		} else {
 			text += '\n' + welcomeText;
 		}
