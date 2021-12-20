@@ -1263,10 +1263,13 @@ Twinkle.tag.callbacks = {
 			if (addedTags.length) {
 				summaryText = 'Added ' + makeSentence(addedTags);
 				summaryText += removedTags.length ? '; and removed ' + makeSentence(removedTags) : '';
-			} else {
+				summaryText += ' tag' + (addedTags.length + removedTags.length > 1 ? 's' : '');
+			} else if (removedTags.length) {
 				summaryText = 'Removed ' + makeSentence(removedTags);
+				summaryText += ' tag' + (addedTags.length + removedTags.length > 1 ? 's' : '');
+			} else {
+				summaryText = 'Added {{Multiple issues}} wrapper around maintenance tags';
 			}
-			summaryText += ' tag' + (addedTags.length + removedTags.length > 1 ? 's' : '');
 			if (params.reason) {
 				summaryText += ': ' + params.reason;
 			}
