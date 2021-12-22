@@ -2484,6 +2484,7 @@ Morebits.wiki.getCachedJson = function(title) {
 		maxage: '86400' // cache for 1 day
 	};
 	return new Morebits.wiki.api('', query).post().then(function(apiobj) {
+		apiobj.getStatusElement().unlink();
 		var response = apiobj.getResponse();
 		var wikitext = response.query.pages[0].revisions[0].slots.main.content;
 		return JSON.parse(wikitext);
