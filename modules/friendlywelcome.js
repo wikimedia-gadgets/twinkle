@@ -248,18 +248,13 @@ Twinkle.welcome.templates = {
 				description: 'a welcome message with some helpful links and a plate of cookies',
 				syntax: '{{subst:welcome cookie}} ~~~~'
 			},
-			'welcome-graphical': {
-				description: 'colorful welcome message with table of about 20 links',
-				syntax: '$HEADER$ {{subst:welcome-graphical|$EXTRA$}}'
-			},
-			'welcome-menu': {
-				description: 'welcome message with large table of about 60 links',
-				syntax: '{{subst:welcome-menu}}'
-			},
-			'welcome-screen': {
-				description: 'welcome message with clear, annotated table of 10 links',
-				syntax: '$HEADER$ {{subst:welcome-screen}}'
-			},
+			'welcoming': {
+				description: 'welcome message with tutorial links and basic editing tips',
+				syntax: '{{subst:Welcoming}}'
+			}
+		},
+
+		'Specific welcome templates': {
 			'welcome-belated': {
 				description: 'welcome for users with more substantial contributions',
 				syntax: '{{subst:welcome-belated|$USERNAME$}}'
