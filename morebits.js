@@ -2471,6 +2471,26 @@ Morebits.wiki.api.prototype = {
 
 };
 
+/** Retrieves wikitext from a page. Caching enabled, duration 1 day. */
+Morebits.wiki.getCachedJson = function(title) {
+	var query = {
+		action: 'query',
+		prop: 'revisions',
+		titles: title,
+		rvslots: '*',
+		rvprop: 'content',
+		format: 'json',
+		smaxage: '86400', // cache for 1 day
+		maxage: '86400' // cache for 1 day
+	};
+	return new Morebits.wiki.api('', query).post().then(function(apiobj) {
+		apiobj.getStatusElement().unlink();
+		var response = apiobj.getResponse();
+		var wikitext = response.query.pages[0].revisions[0].slots.main.content;
+		return JSON.parse(wikitext);
+	});
+};
+
 var morebitsWikiApiUserAgent = 'morebits.js ([[w:WT:TW]])';
 /**
  * Set the custom user agent header, which is used for server-side logging.
