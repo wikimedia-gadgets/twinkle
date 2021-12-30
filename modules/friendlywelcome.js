@@ -343,6 +343,11 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcome-anon|art=$ARTICLE$}} ~~~~'
 			},
+			'thanks': {
+				description: 'for anonymous users; short; encourages creating an account',
+				linkedArticle: true,
+				syntax: '== Welcome! ==\n{{subst:thanks|page=$ARTICLE$}} ~~~~'
+			},
 			'welcome-anon-test': {
 				description: 'for anonymous users who have performed test edits',
 				linkedArticle: true,
