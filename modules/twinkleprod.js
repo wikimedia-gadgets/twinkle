@@ -406,7 +406,7 @@ Twinkle.prod.callbacks = {
 		usl.initialText =
 			"This is a log of all [[WP:PROD|proposed deletion]] tags applied or endorsed by this user using [[WP:TW|Twinkle]]'s PROD module.\n\n" +
 			'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
-			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].';
+			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].\n';
 
 		var logText = '# [[:' + Morebits.pageNameNorm + ']]';
 		var summaryText;
