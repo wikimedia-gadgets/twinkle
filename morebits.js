@@ -4924,12 +4924,12 @@ Morebits.wikitext.page.prototype = {
 		if (link_target.indexOf(':') === 0) {
 			link_target = link_target.slice(1);
 		}
-		var link_re_string = '';
 
 		var mwTitle = new mw.Title.newFromText(link_target);
 		var ns = mwTitle.getNamespacePrefix().slice(0, -1); // remove trailing colon
 		var title = mwTitle.title;
 
+		var link_re_string = '';
 		if (ns) {
 			link_re_string = Morebits.namespaceRegex(mw.config.get('wgNamespaceIds')[ns.toLowerCase().replace(/ /g, '_')]) + ':';
 		}
