@@ -4930,15 +4930,15 @@ Morebits.wikitext.page.prototype = {
 		var title = mwTitle.getMainText();
 
 		var link_regex_string = '';
-		if (namespaceID !== 1) {
+		if (namespaceID !== 0) {
 			link_regex_string = Morebits.namespaceRegex(namespaceID) + ':';
 		}
 		link_regex_string += Morebits.pageNameRegex(title);
 
 		// Allow for an optional leading colon, e.g. [[:User:Test]]
 		// Do not remove files and catgegories, just links to files and categories
-		// Files and Categories become links with a leading colon, e.g. [[:File:Test.png]]
-		var isFileOrCategory = [6, 14].indexOf(namespaceID) !== 0;
+		// Files and Categories must have a leading colon, e.g. [[:File:Test.png]]
+		var isFileOrCategory = [6, 14].indexOf(namespaceID) !== -1;
 		var colon = isFileOrCategory ? ':' : ':?';
 
 		var link_simple_regex = new RegExp('\\[\\[' + colon + '(' + link_regex_string + ')\\]\\]', 'g');
