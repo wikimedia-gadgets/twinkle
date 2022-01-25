@@ -4929,19 +4929,19 @@ Morebits.wikitext.page.prototype = {
 		var ns = mwTitle.getNamespacePrefix().slice(0, -1); // remove trailing colon
 		var title = mwTitle.title;
 
-		var link_re_string = '';
+		var link_regex_string = '';
 		if (ns) {
-			link_re_string = Morebits.namespaceRegex(mw.config.get('wgNamespaceIds')[ns.toLowerCase().replace(/ /g, '_')]) + ':';
+			link_regex_string = Morebits.namespaceRegex(mw.config.get('wgNamespaceIds')[ns.toLowerCase().replace(/ /g, '_')]) + ':';
 		}
-		link_re_string += Morebits.pageNameRegex(title);
+		link_regex_string += Morebits.pageNameRegex(title);
 
 		// Allow for an optional leading colon, e.g. [[:User:Test]]
 		// Files and Categories become links with a leading colon, e.g. [[:File:Test.png]]
 		var colon = new RegExp(Morebits.namespaceRegex([6, 14])).test(ns) ? ':' : ':?';
 
-		var link_simple_re = new RegExp('\\[\\[' + colon + '(' + link_re_string + ')\\]\\]', 'g');
-		var link_named_re = new RegExp('\\[\\[' + colon + link_re_string + '\\|(.+?)\\]\\]', 'g');
-		this.text = this.text.replace(link_simple_re, '$1').replace(link_named_re, '$1');
+		var link_simple_regex = new RegExp('\\[\\[' + colon + '(' + link_regex_string + ')\\]\\]', 'g');
+		var link_named_regex = new RegExp('\\[\\[' + colon + link_regex_string + '\\|(.+?)\\]\\]', 'g');
+		this.text = this.text.replace(link_simple_regex, '$1').replace(link_named_regex, '$1');
 		return this;
 	},
 
