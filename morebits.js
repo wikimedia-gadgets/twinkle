@@ -4926,18 +4926,20 @@ Morebits.wikitext.page.prototype = {
 		}
 
 		var mwTitle = mw.Title.newFromText(link_target);
-		var ns = mwTitle.getNamespacePrefix().slice(0, -1); // remove trailing colon
+		var namespaceID = mwTitle.getNamespaceId();
 		var title = mwTitle.getMainText();
 
 		var link_regex_string = '';
-		if (ns) {
-			link_regex_string = Morebits.namespaceRegex(mw.config.get('wgNamespaceIds')[ns.toLowerCase().replace(/ /g, '_')]) + ':';
+		if (namespaceID !== 1) {
+			link_regex_string = Morebits.namespaceRegex(namespaceID) + ':';
 		}
 		link_regex_string += Morebits.pageNameRegex(title);
 
 		// Allow for an optional leading colon, e.g. [[:User:Test]]
+		// Do not remove files and catgegories, just links to files and categories
 		// Files and Categories become links with a leading colon, e.g. [[:File:Test.png]]
-		var colon = new RegExp(Morebits.namespaceRegex([6, 14])).test(ns) ? ':' : ':?';
+		var isFileOrCategory = [6, 14].indexOf(namespaceID) !== 0;
+		var colon = isFileOrCategory ? ':' : ':?';
 
 		var link_simple_regex = new RegExp('\\[\\[' + colon + '(' + link_regex_string + ')\\]\\]', 'g');
 		var link_named_regex = new RegExp('\\[\\[' + colon + link_regex_string + '\\|(.+?)\\]\\]', 'g');
