@@ -4925,7 +4925,7 @@ Morebits.wikitext.page.prototype = {
 			link_target = link_target.slice(1);
 		}
 
-		var mwTitle = new mw.Title.newFromText(link_target);
+		var mwTitle = mw.Title.newFromText(link_target);
 		var ns = mwTitle.getNamespacePrefix().slice(0, -1); // remove trailing colon
 		var title = mwTitle.title;
 
