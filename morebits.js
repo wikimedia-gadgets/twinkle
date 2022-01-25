@@ -4935,15 +4935,14 @@ Morebits.wikitext.page.prototype = {
 		}
 		link_regex_string += Morebits.pageNameRegex(title);
 
-		// Allow for an optional leading colon, e.g. [[:User:Test]]
-		// Do not remove files and catgegories, just links to files and categories
-		// Files and Categories must have a leading colon, e.g. [[:File:Test.png]]
+		// For most namespaces, unlink both [[User:Test]] and [[:User:Test]]
+		// For files and categories, only unlink [[:Category:Test]]. Do not unlink [[Category:Test]]
 		var isFileOrCategory = [6, 14].indexOf(namespaceID) !== -1;
 		var colon = isFileOrCategory ? ':' : ':?';
 
-		var link_simple_regex = new RegExp('\\[\\[' + colon + '(' + link_regex_string + ')\\]\\]', 'g');
-		var link_named_regex = new RegExp('\\[\\[' + colon + link_regex_string + '\\|(.+?)\\]\\]', 'g');
-		this.text = this.text.replace(link_simple_regex, '$1').replace(link_named_regex, '$1');
+		var simple_link_regex = new RegExp('\\[\\[' + colon + '(' + link_regex_string + ')\\]\\]', 'g');
+		var piped_link_regex = new RegExp('\\[\\[' + colon + link_regex_string + '\\|(.+?)\\]\\]', 'g');
+		this.text = this.text.replace(simple_link_regex, '$1').replace(piped_link_regex, '$1');
 		return this;
 	},
 
