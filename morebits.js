@@ -4920,11 +4920,6 @@ Morebits.wikitext.page.prototype = {
 	 * @returns {Morebits.wikitext.page}
 	 */
 	removeLink: function(link_target) {
-		// Remove a leading colon, to be handled later
-		if (link_target.indexOf(':') === 0) {
-			link_target = link_target.slice(1);
-		}
-
 		var mwTitle = mw.Title.newFromText(link_target);
 		var namespaceID = mwTitle.getNamespaceId();
 		var title = mwTitle.getMainText();
