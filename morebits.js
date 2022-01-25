@@ -4924,13 +4924,13 @@ Morebits.wikitext.page.prototype = {
 		if (link_target.indexOf(':') === 0) {
 			link_target = link_target.slice(1);
 		}
-		var link_re_string = '', ns = '', title = link_target;
+		var link_re_string = '';
 
-		var idx = link_target.indexOf(':');
-		if (idx > 0) {
-			ns = link_target.slice(0, idx);
-			title = link_target.slice(idx + 1);
+		var mwTitle = new mw.Title.newFromText(link_target);
+		var ns = mwTitle.getNamespacePrefix().slice(0, -1); // remove trailing colon
+		var title = mwTitle.title;
 
+		if (ns) {
 			link_re_string = Morebits.namespaceRegex(mw.config.get('wgNamespaceIds')[ns.toLowerCase().replace(/ /g, '_')]) + ':';
 		}
 		link_re_string += Morebits.pageNameRegex(title);
