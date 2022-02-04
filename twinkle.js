@@ -181,6 +181,7 @@ Twinkle.defaultConfig = {
 // now some skin dependent config.
 switch (mw.config.get('skin')) {
 	case 'vector':
+	case 'vector-2022':
 		Twinkle.defaultConfig.portletArea = 'right-navigation';
 		Twinkle.defaultConfig.portletId = 'p-twinkle';
 		Twinkle.defaultConfig.portletName = 'TW';
@@ -269,12 +270,13 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 
 	// verify/normalize input
 	var skin = mw.config.get('skin');
-	if (skin !== 'vector' || (navigation !== 'left-navigation' && navigation !== 'right-navigation')) {
+	if ((skin !== 'vector' && skin !== 'vector-2022') || (navigation !== 'left-navigation' && navigation !== 'right-navigation')) {
 		type = null; // menu supported only in vector's #left-navigation & #right-navigation
 	}
 	var outerNavClass, innerDivClass;
 	switch (skin) {
 		case 'vector':
+		case 'vector-2022':
 			// XXX: portal doesn't work
 			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
 				navigation = 'mw-panel';
@@ -313,7 +315,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	h3.id = id + '-label';
 	var ul = document.createElement('ul');
 
-	if (skin === 'vector') {
+	if (skin === 'vector' || skin === 'vector-2022') {
 		ul.className = 'vector-menu-content-list';
 
 		// add invisible checkbox to keep menu open when clicked
@@ -479,7 +481,8 @@ Twinkle.load = function () {
 	}
 
 	// Hide the lingering space if the TW menu is empty
-	if (mw.config.get('skin') === 'vector' && Twinkle.getPref('portletType') === 'menu' && $('#p-twinkle').length === 0) {
+	var isVector = mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022';
+	if (isVector && Twinkle.getPref('portletType') === 'menu' && $('#p-twinkle').length === 0) {
 		$('#p-cactions').css('margin-right', 'initial');
 	}
 };

@@ -1350,7 +1350,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.appendChild(document.createTextNode(', or by editing this page.'));
 			$(box).insertAfter($('#contentSub'));
 
-		} else if (['monobook', 'vector', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].indexOf(scriptPageName) !== -1) {
+		} else if (['monobook', 'vector', 'vector-2022', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].indexOf(scriptPageName) !== -1) {
 			// place "Looking for Twinkle options?" notice
 			box.setAttribute('class', 'config-userskin-box');
 
