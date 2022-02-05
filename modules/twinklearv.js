@@ -811,9 +811,9 @@ Twinkle.arv.processSock = function(params) {
 
 	// prepare the SPI report
 	var text = '\n{{subst:SPI report|' +
-            params.sockpuppets.map(function(sock, index) {
-                return (index + 1) + '=' + sock;
-            }).join('|') + '\n|evidence=' + params.evidence + ' \n';
+		params.sockpuppets.map(function(sock, index) {
+			return (index + 1) + '=' + sock;
+		}).join('|') + '\n|evidence=' + params.evidence + ' \n';
 
 	if (params.checkuser) {
 		text += '|checkuser=yes';
