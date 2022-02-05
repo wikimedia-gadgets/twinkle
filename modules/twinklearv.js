@@ -810,10 +810,10 @@ Twinkle.arv.processSock = function(params) {
 	Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
 
 	// prepare the SPI report
-	var text = '\n\n{{subst:SPI report|socksraw=' +
-		params.sockpuppets.map(function(v) {
-			return '* {{' + (mw.util.isIPAddress(v, true) ? 'checkip' : 'checkuser') + '|1=' + v + '}}';
-		}).join('\n') + '\n|evidence=' + params.evidence + ' \n';
+	var text = '\n{{subst:SPI report|' +
+            params.sockpuppets.map(function(sock, index) {
+                return (index + 1) + '=' + sock;
+            }).join('|') + '\n|evidence=' + params.evidence + ' \n';
 
 	if (params.checkuser) {
 		text += '|checkuser=yes';
