@@ -1527,7 +1527,8 @@ Twinkle.tag.callbacks = {
 								params.talkDiscussionTitleLinked = 'Proposed merge of ' + direction;
 								params.talkDiscussionTitle = params.talkDiscussionTitleLinked.replace(/\[\[(.*?)\]\]/g, '$1');
 							}
-							currentTag += '|discuss=Talk:' + params.discussArticle + '#' + params.talkDiscussionTitle;
+							var articleWithNoSection = params.discussArticle.replace(/^([^#]*)#.*$/, '$1'); // If article name is Test#Section, delete #Section
+							currentTag += '|discuss=Talk:' + articleWithNoSection + '#' + params.talkDiscussionTitle;
 						}
 						break;
 					default:
