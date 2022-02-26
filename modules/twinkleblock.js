@@ -1472,7 +1472,7 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 					}
 					break;
 				case 'oversightblock':
-					if (!Morebits.userIsInGroup('oversight')) {
+					if (!Morebits.userIsInGroup('suppress')) {
 						return;
 					}
 					break;
