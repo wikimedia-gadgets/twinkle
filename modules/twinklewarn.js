@@ -813,6 +813,20 @@ Twinkle.warn.messages = {
 					summary: 'Only warning: Creating inappropriate pages'
 				}
 			},
+			'uw-islamhon': {
+				level1: {
+					label: 'Islamic honorifics',
+					summary: 'General note: Islamic honorifics'
+				},
+				level2: {
+					label: 'Islamic honorifics',
+					summary: 'Caution: Islamic honorifics'
+				},
+				level3: {
+					label: 'Islamic honorifics',
+					summary: 'Warning: Islamic honorifics'
+				}
+			},
 			'uw-mos': {
 				level1: {
 					label: 'Manual of style',
