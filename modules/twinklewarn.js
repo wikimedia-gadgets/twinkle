@@ -813,20 +813,6 @@ Twinkle.warn.messages = {
 					summary: 'Only warning: Creating inappropriate pages'
 				}
 			},
-			'uw-islamhon': {
-				level1: {
-					label: 'Islamic honorifics',
-					summary: 'General note: Islamic honorifics'
-				},
-				level2: {
-					label: 'Islamic honorifics',
-					summary: 'Caution: Islamic honorifics'
-				},
-				level3: {
-					label: 'Islamic honorifics',
-					summary: 'Warning: Islamic honorifics'
-				}
-			},
 			'uw-mos': {
 				level1: {
 					label: 'Manual of style',
@@ -1004,6 +990,10 @@ Twinkle.warn.messages = {
 		'uw-italicize': {
 			label: 'Italicize books, films, albums, magazines, TV series, etc within articles',
 			summary: 'Notice: Italicize books, films, albums, magazines, TV series, etc within articles'
+		},
+		'uw-islamhon': {
+			label: 'Use of islamic honorifics',
+			summary: 'Notice: Use of islamic honorifics'
 		},
 		'uw-lang': {
 			label: 'Unnecessarily changing between British and American English',
