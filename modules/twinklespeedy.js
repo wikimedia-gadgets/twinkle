@@ -1036,6 +1036,7 @@ Twinkle.speedy.normalizeHash = {
 	repost: 'g4',
 	banned: 'g5',
 	move: 'g6',
+	moved: 'g6',
 	xfd: 'g6',
 	movedab: 'g6',
 	copypaste: 'g6',
