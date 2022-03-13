@@ -865,6 +865,12 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
+		label: 'G6: Moved',
+		value: 'move',
+		tooltip: 'Holding up a page move until it was moved aside by a page mover',
+		hideWhenMultiple: true
+	},
+	{
 		label: 'G6: XfD',
 		value: 'xfd',
 		tooltip: 'A deletion discussion (at AfD, FfD, RfD, TfD, CfD, or MfD) was closed as "delete", but the page wasn\'t actually deleted.',
