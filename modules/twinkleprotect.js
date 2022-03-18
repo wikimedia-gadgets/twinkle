@@ -528,7 +528,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					},
 					{
 						name: 'noinclude',
-						label: 'Wrap protection template with <noinclude>',
+						label: 'Wrap protection template with &lt;noinclude&gt;',
 						tooltip: 'Will wrap the protection template in &lt;noinclude&gt; tags, so that it won\'t transclude',
 						checked: mw.config.get('wgNamespaceNumber') === 10 || (mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project && mw.config.get('wgTitle').indexOf('Articles for deletion/') === 0)
 					}
@@ -1077,7 +1077,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 			// We only have one TE template at the moment, so this
 			// should be expanded if more are added (e.g. pp-semi-template)
-			if (form.category.value === 'pp-template') {
+			if (form.category.value === 'pp-template' || (mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project && mw.config.get('wgTitle').indexOf('Articles for deletion/') === 0)) {
 				form.noinclude.checked = true;
 			} else if (mw.config.get('wgNamespaceNumber') !== 10) {
 				form.noinclude.checked = false;
