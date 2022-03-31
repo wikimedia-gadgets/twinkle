@@ -867,7 +867,7 @@ Twinkle.speedy.generalList = [
 	{
 		label: 'G6: Moved',
 		value: 'move',
-		tooltip: 'Holding up a page move until it was moved aside by a page mover',
+		tooltip: 'Redirect left over from a page move by a page mover',
 		hideWhenMultiple: true
 	},
 	{
