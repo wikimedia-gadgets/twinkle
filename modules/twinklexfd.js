@@ -806,10 +806,8 @@ Twinkle.xfd.callbacks = {
 
 		text += '}}';
 
-		if (params.delsortCats) { // Only for AFDs
-			params.delsortCats.forEach(function (cat) {
-				text += '\n{{subst:delsort|' + cat + '|~~~~}}';
-			});
+		if (params.delsortCats.length) { // Only for AFDs
+			text += '\n{{subst:Deletion sorting/multi|' + params.delsortCats.join('|') + '|sig=~~~~}}';
 		}
 
 		return text;
