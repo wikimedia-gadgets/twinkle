@@ -4920,28 +4920,24 @@ Morebits.wikitext.page.prototype = {
 	 * @returns {Morebits.wikitext.page}
 	 */
 	removeLink: function(link_target) {
-		// Remove a leading colon, to be handled later
-		if (link_target.indexOf(':') === 0) {
-			link_target = link_target.slice(1);
+		var mwTitle = mw.Title.newFromText(link_target);
+		var namespaceID = mwTitle.getNamespaceId();
+		var title = mwTitle.getMainText();
+
+		var link_regex_string = '';
+		if (namespaceID !== 0) {
+			link_regex_string = Morebits.namespaceRegex(namespaceID) + ':';
 		}
-		var link_re_string = '', ns = '', title = link_target;
+		link_regex_string += Morebits.pageNameRegex(title);
 
-		var idx = link_target.indexOf(':');
-		if (idx > 0) {
-			ns = link_target.slice(0, idx);
-			title = link_target.slice(idx + 1);
+		// For most namespaces, unlink both [[User:Test]] and [[:User:Test]]
+		// For files and categories, only unlink [[:Category:Test]]. Do not unlink [[Category:Test]]
+		var isFileOrCategory = [6, 14].indexOf(namespaceID) !== -1;
+		var colon = isFileOrCategory ? ':' : ':?';
 
-			link_re_string = Morebits.namespaceRegex(mw.config.get('wgNamespaceIds')[ns.toLowerCase().replace(/ /g, '_')]) + ':';
-		}
-		link_re_string += Morebits.pageNameRegex(title);
-
-		// Allow for an optional leading colon, e.g. [[:User:Test]]
-		// Files and Categories become links with a leading colon, e.g. [[:File:Test.png]]
-		var colon = new RegExp(Morebits.namespaceRegex([6, 14])).test(ns) ? ':' : ':?';
-
-		var link_simple_re = new RegExp('\\[\\[' + colon + '(' + link_re_string + ')\\]\\]', 'g');
-		var link_named_re = new RegExp('\\[\\[' + colon + link_re_string + '\\|(.+?)\\]\\]', 'g');
-		this.text = this.text.replace(link_simple_re, '$1').replace(link_named_re, '$1');
+		var simple_link_regex = new RegExp('\\[\\[' + colon + '(' + link_regex_string + ')\\]\\]', 'g');
+		var piped_link_regex = new RegExp('\\[\\[' + colon + link_regex_string + '\\|(.+?)\\]\\]', 'g');
+		this.text = this.text.replace(simple_link_regex, '$1').replace(piped_link_regex, '$1');
 		return this;
 	},
 

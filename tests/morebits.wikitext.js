@@ -336,6 +336,20 @@ describe('Morebits.wikitext', () => {
 				input: 'O, [[File:Fee.svg]] she [[file:Fee.svg|doth|teach]] the [[File:fee.svg|torches]] to burn [[file:fee.svg]] bright!',
 				expected: 'O, [[File:Fee.svg|thumb]] she [[file:Fee.svg|doth|teach|thumb]] the [[File:fee.svg|torches|thumb]] to burn [[file:fee.svg|thumb]] bright!',
 				params: ['Fee.svg', 'thumb']
+			},
+			{
+				name: 'Don\'t unlink categories',
+				method: 'removeLink',
+				input: '[[:Category:Test]] should unlink, [[Category:Test]] should not.',
+				expected: 'Category:Test should unlink, [[Category:Test]] should not.',
+				params: ['Category:Test']
+			},
+			{
+				name: 'Handle article titles with colons',
+				method: 'removeLink',
+				input: 'Test [[Cyber Seduction: His Secret Life]] test.',
+				expected: 'Test Cyber Seduction: His Secret Life test.',
+				params: ['Cyber Seduction: His Secret Life']
 			}
 		];
 
