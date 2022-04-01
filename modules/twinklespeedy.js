@@ -846,7 +846,7 @@ Twinkle.speedy.generalList = [
 		}
 	},
 	{
-		label: 'G6: Move',
+		label: 'G6: To be moved',
 		value: 'move',
 		tooltip: 'Making way for an uncontroversial move like reversing a redirect',
 		subgroup: [
@@ -865,7 +865,7 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Moved',
+		label: 'G6: Moved by page mover',
 		value: 'move',
 		tooltip: 'Redirect left over from a page move by a page mover',
 		hideWhenMultiple: true
