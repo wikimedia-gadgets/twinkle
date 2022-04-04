@@ -430,7 +430,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						tfdtarget = new Morebits.quickForm.element({
 							name: 'tfdtarget',
 							type: 'input',
-							label: 'Other ' + templateOrModule + ' to be merged:',
+							label: 'Other ' + templateOrModule + ' destination template for merge:',
 							tooltip: 'Required. Should not include the ' + Morebits.string.toUpperCaseFirstChar(templateOrModule) + ': namespace prefix.',
 							required: true
 						});
