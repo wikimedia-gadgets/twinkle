@@ -942,6 +942,7 @@ Twinkle.tag.redirectList = {
 		People: [
 			{ tag: 'R from birth name', description: 'redirect from a person\'s birth name to a more common name' },
 			{ tag: 'R from given name', description: 'redirect from a person\'s given name' },
+			{ tag: 'R from married name', description: 'redirect from a person\'s married name to a more common name' },
 			{ tag: 'R from name with title', description: 'redirect from a person\'s name preceded or followed by a title to the name with no title or with the title in parentheses' },
 			{ tag: 'R from person', description: 'redirect from a person or persons to a related article' },
 			{ tag: 'R from personal name', description: 'redirect from an individual\'s personal name to an article titled with their professional or other better known moniker' },
