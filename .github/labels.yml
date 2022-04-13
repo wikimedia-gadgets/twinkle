@@ -16,6 +16,8 @@
   - modules/twinkleblock.js
 "Module: config":
   - modules/twinkleconfig.js
+"Module: diff":
+  - modules/twinklediff.js
 "Module: fluff":
   - modules/twinklefluff.js
 "Module: protect":
