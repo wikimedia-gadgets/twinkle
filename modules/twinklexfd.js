@@ -806,10 +806,8 @@ Twinkle.xfd.callbacks = {
 
 		text += '}}';
 
-		if (params.delsortCats) { // Only for AFDs
-			params.delsortCats.forEach(function (cat) {
-				text += '\n{{subst:delsort|' + cat + '|~~~~}}';
-			});
+		if (params.delsortCats.length) { // Only for AFDs
+			text += '\n{{subst:Deletion sorting/multi|' + params.delsortCats.join('|') + '|sig=~~~~}}';
 		}
 
 		return text;
@@ -1420,6 +1418,8 @@ Twinkle.xfd.callbacks = {
 		},
 		todaysList: function(pageobj) {
 			var params = pageobj.getCallbackParameters();
+			var statelem = pageobj.getStatusElement();
+
 			var added_data = Twinkle.xfd.callbacks.getDiscussionWikitext(params.xfdcat, params);
 			var text;
 
@@ -1428,7 +1428,12 @@ Twinkle.xfd.callbacks = {
 				text = '{{subst:TfD log}}\n' + added_data;
 			} else {
 				var old_text = pageobj.getPageText();
-				text = old_text + '\n\n' + added_data;
+
+				text = old_text.replace('-->', '-->\n' + added_data);
+				if (text === old_text) {
+					statelem.error('failed to find target spot for the discussion');
+					return;
+				}
 			}
 
 			pageobj.setPageText(text);

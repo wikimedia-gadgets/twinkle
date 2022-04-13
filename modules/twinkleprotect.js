@@ -760,7 +760,6 @@ Twinkle.protect.protectionTypesCreate = [
 	{
 		label: 'Create protection',
 		list: [
-			{ label: 'Generic ({{pp-create}})', value: 'pp-create' },
 			{ label: 'Offensive name', value: 'pp-create-offensive' },
 			{ label: 'Repeatedly recreated', selected: true, value: 'pp-create-salt' },
 			{ label: 'Recently deleted BLP', value: 'pp-create-blp' }
@@ -947,10 +946,6 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-create-blp': {
 		create: 'extendedconfirmed',
 		reason: '[[WP:BLPDEL|Recently deleted BLP]]'
-	},
-	'pp-create': {
-		create: 'extendedconfirmed',
-		reason: '{{pp-create}}'
 	}
 };
 
@@ -1268,7 +1263,6 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-move-vandalism':
 					typename = 'move protection';
 					break;
-				case 'pp-create':
 				case 'pp-create-offensive':
 				case 'pp-create-blp':
 				case 'pp-create-salt':
