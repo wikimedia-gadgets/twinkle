@@ -806,7 +806,9 @@ Twinkle.xfd.callbacks = {
 
 		text += '}}';
 
-		if (Array.isArray(params.delsortCats) && params.delsortCats.length) { // Only for AFDs
+		// Don't try to delsort if no delsort categories chosen in the modal
+		// Most XFDs will not have delsort categories, e.g. TFD, FFD, etc.
+		if (Array.isArray(params.delsortCats) && params.delsortCats.length) {
 			text += '\n{{subst:Deletion sorting/multi|' + params.delsortCats.join('|') + '|sig=~~~~}}';
 		}
 
