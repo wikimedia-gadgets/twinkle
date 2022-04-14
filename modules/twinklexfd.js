@@ -806,7 +806,7 @@ Twinkle.xfd.callbacks = {
 
 		text += '}}';
 
-		if (params.delsortCats && params.delsortCats.length) { // Only for AFDs
+		if (params && Array.isArray(params.delsortCats) && params.delsortCats.length) { // Only for AFDs
 			text += '\n{{subst:Deletion sorting/multi|' + params.delsortCats.join('|') + '|sig=~~~~}}';
 		}
 
