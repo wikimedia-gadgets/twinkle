@@ -806,9 +806,8 @@ Twinkle.xfd.callbacks = {
 
 		text += '}}';
 
-		// Don't try to delsort if no delsort categories chosen in the modal
-		// delsortCats will be undefined for TFD, FFD, etc.
-		// or will be numeric for AFD (depending on what cats the user chose)
+		// Don't delsort if delsortCats is an empty array (AFD where user chose no categories)
+		// Don't delsort if delsortCats is undefined (TFD, FFD, etc.)
 		if (Array.isArray(params.delsortCats) && params.delsortCats.length) {
 			text += '\n{{subst:Deletion sorting/multi|' + params.delsortCats.join('|') + '|sig=~~~~}}';
 		}
