@@ -714,6 +714,7 @@ Twinkle.tag.article.tagList = {
 		],
 		'Timeliness': [
 			{ tag: 'Current', description: 'documents a current event', excludeMI: true }, // Works but not intended for use in MI
+			{ tag: 'Current related', description: 'documents a topic affected by a current event', excludeMI: true }, // Works but not intended for use in MI
 			{ tag: 'Update', description: 'needs additional up-to-date information added' }
 		],
 		'Neutrality, bias, and factual accuracy': [
