@@ -45,6 +45,20 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	var form = new Morebits.quickForm(Twinkle.tag.callback.evaluate);
 
+	if (document.getElementsByClassName('patrollink').length) {
+		form.append({
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Mark the page as patrolled/reviewed',
+					value: 'patrol',
+					name: 'patrol',
+					checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
+				}
+			]
+		});
+	}
+
 	form.append({
 		type: 'input',
 		label: 'Filter tag list:',
@@ -210,19 +224,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			break;
 	}
 
-	if (document.getElementsByClassName('patrollink').length) {
-		form.append({
-			type: 'checkbox',
-			list: [
-				{
-					label: 'Mark the page as patrolled/reviewed',
-					value: 'patrol',
-					name: 'patrol',
-					checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
-				}
-			]
-		});
-	}
 	form.append({ type: 'submit', className: 'tw-tag-submit' });
 
 	var result = form.render();
