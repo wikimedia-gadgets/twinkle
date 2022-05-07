@@ -29,6 +29,7 @@ const server = http.createServer(async (request, response) => {
 	}
 	for (let file of cssFiles) {
 		let css = (await readFile(file)).replace(/\s+/g, ' ');
+		css = css.replace(/'/g, "\\'"); // escape apostrophes
 		jsCode += `;mw.loader.addStyleTag('${css}');`;
 	}
 	jsCode += `;console.log('Loaded debug version of Twinkle.');`;
