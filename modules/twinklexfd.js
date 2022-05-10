@@ -1349,7 +1349,7 @@ Twinkle.xfd.callbacks = {
 				var categoryNotificationPageMap = {
 					'Templates used by Twinkle': 'Wikipedia talk:Twinkle',
 					'Templates used by AutoWikiBrowser': 'Wikipedia talk:AutoWikiBrowser',
-					'Templates used by Ultraviolet': 'Wikipedia talk:RedWarn'
+					'Templates used by Ultraviolet': 'Wikipedia talk:Ultraviolet'
 				};
 				$.each(categoryNotificationPageMap, function(category, page) {
 					if (inCategories.indexOf(category) !== -1) {
