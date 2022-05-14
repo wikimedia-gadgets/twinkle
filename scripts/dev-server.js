@@ -29,7 +29,8 @@ const server = http.createServer(async (request, response) => {
 	}
 	for (let file of cssFiles) {
 		let css = (await readFile(file)).replace(/\s+/g, ' ');
-		jsCode += `;mw.loader.addStyleTag('${css}');`;
+		css = JSON.stringify(css); // escape double quotes and backslashes
+		jsCode += `;mw.loader.addStyleTag(${css});`;
 	}
 	jsCode += `;console.log('Loaded debug version of Twinkle.');`;
 	response.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' });

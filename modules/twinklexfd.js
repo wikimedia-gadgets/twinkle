@@ -482,7 +482,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						label: 'Notify users of the template',
 						value: 'devpages',
 						name: 'devpages',
-						tooltip: 'A notification template will be sent to Twinkle, AWB, and RedWarn if this is true.',
+						tooltip: 'A notification template will be sent to Twinkle, AWB, and Ultraviolet if this is true.',
 						checked: true
 					}
 				]
@@ -806,7 +806,9 @@ Twinkle.xfd.callbacks = {
 
 		text += '}}';
 
-		if (params.delsortCats.length) { // Only for AFDs
+		// Don't delsort if delsortCats is undefined (TFD, FFD, etc.)
+		// Don't delsort if delsortCats is an empty array (AFD where user chose no categories)
+		if (Array.isArray(params.delsortCats) && params.delsortCats.length) {
 			text += '\n{{subst:Deletion sorting/multi|' + params.delsortCats.join('|') + '|sig=~~~~}}';
 		}
 
@@ -1349,7 +1351,7 @@ Twinkle.xfd.callbacks = {
 				var categoryNotificationPageMap = {
 					'Templates used by Twinkle': 'Wikipedia talk:Twinkle',
 					'Templates used by AutoWikiBrowser': 'Wikipedia talk:AutoWikiBrowser',
-					'Templates used by RedWarn': 'Wikipedia talk:RedWarn'
+					'Templates used by Ultraviolet': 'Wikipedia talk:Ultraviolet'
 				};
 				$.each(categoryNotificationPageMap, function(category, page) {
 					if (inCategories.indexOf(category) !== -1) {
