@@ -714,7 +714,24 @@ Twinkle.tag.article.tagList = {
 		],
 		'Timeliness': [
 			{ tag: 'Current', description: 'documents a current event', excludeMI: true }, // Works but not intended for use in MI
-			{ tag: 'Update', description: 'needs additional up-to-date information added' }
+			{ tag: 'Update', description: 'needs additional up-to-date information added',
+				subgroup: [
+					{
+						name: 'updatePart',
+						parameter: 'part',
+						type: 'input',
+						label: 'Part that needs updating:',
+						tooltip: 'Part that needs updating (e.g. to replace the word "article", often "section")'
+					},
+					{
+						name: 'updateReason',
+						parameter: 'reason',
+						type: 'input',
+						label: 'Reason:',
+						tooltip: 'Explanation why the article is out of date'
+					}
+				]
+			}
 		],
 		'Neutrality, bias, and factual accuracy': [
 			{ tag: 'Autobiography', description: 'autobiography and may not be written neutrally' },
