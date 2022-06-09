@@ -1429,7 +1429,7 @@ Twinkle.protect.callbacks = {
 		var text = protectedPage.getPageText();
 		var tag, summary;
 
-		var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
+		var oldtag_re = /(?:\/\*)?\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*(?:\*\/)?/gi;
 		var re_result = oldtag_re.exec(text);
 		if (re_result) {
 			if (params.tag === 'none' || confirm('{{' + re_result[1] + '}} was found on the page. \nClick OK to remove it, or click Cancel to leave it there.')) {
@@ -1457,15 +1457,27 @@ Twinkle.protect.callbacks = {
 					return;
 				}
 			} else {
-				if (params.noinclude) {
-					tag = '<noinclude>{{' + tag + '}}</noinclude>';
-				} else {
-					tag = '{{' + tag + '}}\n';
-				}
+				var needsTagToBeCommentedOut = ['javascript', 'css', 'sanitized-css'].indexOf(protectedPage.getContentModel()) !== -1;
+				if (needsTagToBeCommentedOut) {
+					if (params.noinclude) {
+						tag = '/* <noinclude>{{' + tag + '}}</noinclude> */';
+					} else {
+						tag = '/* {{' + tag + '}} */\n';
+					}
 
-				// Insert tag after short description or any hatnotes
-				var wikipage = new Morebits.wikitext.page(text);
-				text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
+					// Prepend tag at very top
+					text = tag + text;
+				} else {
+					if (params.noinclude) {
+						tag = '<noinclude>{{' + tag + '}}</noinclude>';
+					} else {
+						tag = '{{' + tag + '}}\n';
+					}
+
+					// Insert tag after short description or any hatnotes
+					var wikipage = new Morebits.wikitext.page(text);
+					text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
+				}
 			}
 			summary = 'Adding {{' + params.tag + '}}';
 		}
