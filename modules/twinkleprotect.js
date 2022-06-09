@@ -528,7 +528,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					},
 					{
 						name: 'noinclude',
-						label: 'Wrap protection template with <noinclude>',
+						label: 'Wrap protection template with &lt;noinclude&gt;',
 						tooltip: 'Will wrap the protection template in &lt;noinclude&gt; tags, so that it won\'t transclude',
 						checked: mw.config.get('wgNamespaceNumber') === 10 || (mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project && mw.config.get('wgTitle').indexOf('Articles for deletion/') === 0)
 					}
