@@ -992,8 +992,8 @@ Twinkle.warn.messages = {
 			summary: 'Notice: Italicize books, films, albums, magazines, TV series, etc within articles'
 		},
 		'uw-islamhon': {
-			label: 'Use of islamic honorifics',
-			summary: 'Notice: Use of islamic honorifics'
+			label: 'Use of Islamic honorifics',
+			summary: 'Notice: Use of Islamic honorifics'
 		},
 		'uw-lang': {
 			label: 'Unnecessarily changing between British and American English',
