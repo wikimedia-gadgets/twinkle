@@ -731,6 +731,24 @@ Twinkle.warn.messages = {
 					summary: 'Final warning: Removing file deletion tags'
 				}
 			},
+			'uw-tfd': {
+				level1: {
+					label: 'Removing {{tfd}} templates',
+					summary: 'General note: Removing {{tfd}} templates'
+				},
+				level2: {
+					label: 'Removing {{tfd}} templates',
+					summary: 'Caution: Removing {{tfd}} templates'
+				},
+				level3: {
+					label: 'Removing {{tfd}} templates',
+					summary: 'Warning: Removing {{tfd}} templates'
+				},
+				level4: {
+					label: 'Removing {{tfd}} templates',
+					summary: 'Final warning: Removing {{tfd}} templates'
+				}
+			},
 			'uw-speedy': {
 				level1: {
 					label: 'Removing speedy deletion tags',
