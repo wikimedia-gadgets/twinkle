@@ -987,6 +987,10 @@ Twinkle.warn.messages = {
 			label: 'Hasty addition of speedy deletion tags',
 			summary: 'Notice: Allow creators time to improve their articles before tagging them for deletion'
 		},
+		'uw-islamhon': {
+			label: 'Use of Islamic honorifics',
+			summary: 'Notice: Use of Islamic honorifics'
+		},
 		'uw-italicize': {
 			label: 'Italicize books, films, albums, magazines, TV series, etc within articles',
 			summary: 'Notice: Italicize books, films, albums, magazines, TV series, etc within articles'
