@@ -1755,7 +1755,7 @@ Twinkle.tag.callbacks = {
 					oldPageTags += '\n' + pageTag;
 				});
 			}
-			pageText += '\n\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
+			pageText = pageText.trim() + '\n\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
 		}
 
 		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : ' ') : 'rcat shell') + ' to redirect';
