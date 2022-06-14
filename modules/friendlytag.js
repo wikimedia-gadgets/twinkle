@@ -898,6 +898,7 @@ Twinkle.tag.redirectList = {
 		'Spelling': [
 			{ tag: 'R from alternative spelling', description: 'redirect from a title with a different spelling' },
 			{ tag: 'R from ASCII-only', description: 'redirect from a title in only basic ASCII to the formal title, with differences that are not diacritical marks or ligatures' },
+			{ tag: 'R to ASCII-only', description: 'redirect to a title in only basic ASCII from the formal title, with differences that are not diacritical marks or ligatures' },
 			{ tag: 'R from diacritic', description: 'redirect from a page name that has diacritical marks (accents, umlauts, etc.)' },
 			{ tag: 'R to diacritic', description: 'redirect to the article title with diacritical marks (accents, umlauts, etc.)' },
 			{ tag: 'R from misspelling', description: 'redirect from a misspelling or typographical error' }
