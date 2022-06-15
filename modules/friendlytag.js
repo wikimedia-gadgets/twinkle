@@ -721,7 +721,8 @@ Twinkle.tag.article.tagList = {
 						parameter: 'reason',
 						type: 'input',
 						label: 'Reason:',
-						tooltip: 'Explanation why the article is out of date'
+						tooltip: 'Explanation why the article is out of date',
+						size: '60px'
 					}
 				]
 			}
