@@ -20,6 +20,8 @@
   - modules/twinklediff.js
 "Module: fluff":
   - modules/twinklefluff.js
+"Module: prod":
+  - modules/twinkleprod.js
 "Module: protect":
   - modules/twinkleprotect.js
 "Module: speedy":
