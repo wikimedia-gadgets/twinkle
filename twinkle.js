@@ -117,7 +117,7 @@ Twinkle.defaultConfig = {
 	unlinkNamespaces: [ '0', '10', '100', '118' ],
 
 	// Warn
-	defaultWarningGroup: '1',
+	defaultWarningGroup: '10',
 	combinedSingletMenus: false,
 	showSharedIPNotice: true,
 	watchWarnings: '1 month',
