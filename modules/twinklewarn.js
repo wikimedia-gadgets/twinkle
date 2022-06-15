@@ -1399,8 +1399,24 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 };
 
 Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
-	var main_group = e.target.form.main_group.value;
-	var value = e.target.form.sub_group.value;
+	var selected_main_group = e.target.form.main_group.value;
+	var selected_template = e.target.form.sub_group.value;
+
+	// If template shouldn't have a linked article, hide the linked article label and text box
+	if (selected_template === 'uw-editsummary2') {
+		e.target.form.article.value = '';
+		Morebits.quickForm.setElementVisibility(e.target.form.article.parentElement, false);
+	} else {
+		Morebits.quickForm.setElementVisibility(e.target.form.article.parentElement, true);
+	}
+
+	// If template shouldn't have an optional message, hide the optional message label and text box
+	if (selected_template === 'uw-editsummary2') {
+		e.target.form.reason.value = '';
+		Morebits.quickForm.setElementVisibility(e.target.form.reason.parentElement, false);
+	} else {
+		Morebits.quickForm.setElementVisibility(e.target.form.reason.parentElement, true);
+	}
 
 	// Tags that don't take a linked article, but something else (often a username).
 	// The value of each tag is the label next to the input field
@@ -1412,8 +1428,9 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		'uw-aiv': 'Optional username that was reported (without User:) '
 	};
 
-	if (['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].indexOf(main_group) !== -1) {
-		if (notLinkedArticle[value]) {
+	var hasLevel = ['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].indexOf(selected_main_group) !== -1;
+	if (hasLevel) {
+		if (notLinkedArticle[selected_template]) {
 			if (Twinkle.warn.prev_article === null) {
 				Twinkle.warn.prev_article = e.target.form.article.value;
 			}
@@ -1422,7 +1439,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 
 			// change form labels according to the warning selected
 			Morebits.quickForm.setElementTooltipVisibility(e.target.form.article, false);
-			Morebits.quickForm.overrideElementLabel(e.target.form.article, notLinkedArticle[value]);
+			Morebits.quickForm.overrideElementLabel(e.target.form.article, notLinkedArticle[selected_template]);
 		} else if (e.target.form.article.notArticle) {
 			if (Twinkle.warn.prev_article !== null) {
 				e.target.form.article.value = Twinkle.warn.prev_article;
@@ -1437,12 +1454,12 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	// add big red notice, warning users about how to use {{uw-[coi-]username}} appropriately
 	$('#tw-warn-red-notice').remove();
 	var $redWarning;
-	if (value === 'uw-username') {
+	if (selected_template === 'uw-username') {
 		$redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " +
 			"Blatant violations should be reported directly to UAA (via Twinkle's ARV tab). " +
 			'{{uw-username}} should only be used in edge cases in order to engage in discussion with the user.</div>');
 		$redWarning.insertAfter(Morebits.quickForm.getElementLabelObject(e.target.form.reasonGroup));
-	} else if (value === 'uw-coi-username') {
+	} else if (selected_template === 'uw-coi-username') {
 		$redWarning = $("<div style='color: red;' id='tw-warn-red-notice'>{{uw-coi-username}} should <b>not</b> be used for <b>blatant</b> username policy violations. " +
 			"Blatant violations should be reported directly to UAA (via Twinkle's ARV tab). " +
 			'{{uw-coi-username}} should only be used in edge cases in order to engage in discussion with the user.</div>');
