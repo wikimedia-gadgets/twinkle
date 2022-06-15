@@ -717,13 +717,6 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Update', description: 'needs additional up-to-date information added',
 				subgroup: [
 					{
-						name: 'updatePart',
-						parameter: 'part',
-						type: 'input',
-						label: 'Part that needs updating:',
-						tooltip: 'Part that needs updating (e.g. to replace the word "article", often "section")'
-					},
-					{
 						name: 'updateReason',
 						parameter: 'reason',
 						type: 'input',
