@@ -208,6 +208,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 //   label (required): A short description displayed in the dialog
 //   summary (required): The edit summary used. If an article name is entered, the summary is postfixed with "on [[article]]", and it is always postfixed with "."
 //   suppressArticleInSummary (optional): Set to true to suppress showing the article name in the edit summary. Useful if the warning relates to attack pages, or some such.
+//   hideLinkedPage (optional): Set to true to hide the "Linked article" text box. Some warning templates do not have a linked article parameter.
+//   hideReason (optional): Set to true to hide the "Reason" text box. Some warning templates do not have a reason parameter.
 Twinkle.warn.messages = {
 	levels: {
 		'Common warnings': {
@@ -973,7 +975,9 @@ Twinkle.warn.messages = {
 		},
 		'uw-editsummary2': {
 			label: 'Experienced user not using edit summary',
-			summary: 'Notice: Not using edit summary'
+			summary: 'Notice: Not using edit summary',
+			hideLinkedPage: true,
+			hideReason: true
 		},
 		'uw-elinbody': {
 			label: 'Adding external links to the body of an article',
@@ -1184,6 +1188,39 @@ Twinkle.warn.messages = {
 			summary: 'Warning: Userpage or subpage is against policy'
 		}
 	}
+};
+
+Twinkle.warn.getTemplateProperty = function(templateName, propertyName) {
+	var result;
+	var isNumberedTemplate = templateName.match(/(1|2|3|4|4im)$/);
+	if (isNumberedTemplate) {
+		var unNumberedTemplateName = templateName.replace(/(?:1|2|3|4|4im)$/, '');
+		var level = isNumberedTemplate[0];
+		var numberedWarnings = {};
+		$.each(Twinkle.warn.messages.levels, function(key, val) {
+			$.extend(numberedWarnings, val);
+		});
+		$.each(numberedWarnings, function(key) {
+			if (key === unNumberedTemplateName) {
+				result = numberedWarnings[key]['level' + level][propertyName];
+			}
+		});
+	}
+
+	// Non-level templates can also end in a number. So check this for all templates.
+	var otherWarnings = {};
+	$.each(Twinkle.warn.messages, function(key, val) {
+		if (key !== 'levels') {
+			$.extend(otherWarnings, val);
+		}
+	});
+	$.each(otherWarnings, function(key) {
+		if (key === templateName) {
+			result = otherWarnings[key][propertyName];
+		}
+	});
+
+	return result;
 };
 
 // Used repeatedly below across menu rebuilds
@@ -1403,7 +1440,8 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	var selected_template = e.target.form.sub_group.value;
 
 	// If template shouldn't have a linked article, hide the linked article label and text box
-	if (selected_template === 'uw-editsummary2') {
+	var hideLinkedPage = Twinkle.warn.getTemplateProperty(selected_template, 'hideLinkedPage');
+	if (hideLinkedPage) {
 		e.target.form.article.value = '';
 		Morebits.quickForm.setElementVisibility(e.target.form.article.parentElement, false);
 	} else {
@@ -1411,7 +1449,8 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	}
 
 	// If template shouldn't have an optional message, hide the optional message label and text box
-	if (selected_template === 'uw-editsummary2') {
+	var hideReason = Twinkle.warn.getTemplateProperty(selected_template, 'hideLinkedPage');
+	if (hideReason) {
 		e.target.form.reason.value = '';
 		Morebits.quickForm.setElementVisibility(e.target.form.reason.parentElement, false);
 	} else {
