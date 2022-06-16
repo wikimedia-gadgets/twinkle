@@ -45,6 +45,20 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	var form = new Morebits.quickForm(Twinkle.tag.callback.evaluate);
 
+	if (document.getElementsByClassName('patrollink').length) {
+		form.append({
+			type: 'checkbox',
+			list: [
+				{
+					label: 'Mark the page as patrolled/reviewed',
+					value: 'patrol',
+					name: 'patrol',
+					checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
+				}
+			]
+		});
+	}
+
 	form.append({
 		type: 'input',
 		label: 'Filter tag list:',
@@ -210,19 +224,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			break;
 	}
 
-	if (document.getElementsByClassName('patrollink').length) {
-		form.append({
-			type: 'checkbox',
-			list: [
-				{
-					label: 'Mark the page as patrolled/reviewed',
-					value: 'patrol',
-					name: 'patrol',
-					checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
-				}
-			]
-		});
-	}
 	form.append({ type: 'submit', className: 'tw-tag-submit' });
 
 	var result = form.render();
@@ -714,6 +715,7 @@ Twinkle.tag.article.tagList = {
 		],
 		'Timeliness': [
 			{ tag: 'Current', description: 'documents a current event', excludeMI: true }, // Works but not intended for use in MI
+			{ tag: 'Current related', description: 'documents a topic affected by a current event', excludeMI: true }, // Works but not intended for use in MI
 			{ tag: 'Update', description: 'needs additional up-to-date information added',
 				subgroup: [
 					{
@@ -907,6 +909,7 @@ Twinkle.tag.redirectList = {
 		'Spelling': [
 			{ tag: 'R from alternative spelling', description: 'redirect from a title with a different spelling' },
 			{ tag: 'R from ASCII-only', description: 'redirect from a title in only basic ASCII to the formal title, with differences that are not diacritical marks or ligatures' },
+			{ tag: 'R to ASCII-only', description: 'redirect to a title in only basic ASCII from the formal title, with differences that are not diacritical marks or ligatures' },
 			{ tag: 'R from diacritic', description: 'redirect from a page name that has diacritical marks (accents, umlauts, etc.)' },
 			{ tag: 'R to diacritic', description: 'redirect to the article title with diacritical marks (accents, umlauts, etc.)' },
 			{ tag: 'R from misspelling', description: 'redirect from a misspelling or typographical error' }
@@ -1768,7 +1771,7 @@ Twinkle.tag.callbacks = {
 					oldPageTags += '\n' + pageTag;
 				});
 			}
-			pageText += '\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
+			pageText = pageText.trim() + '\n\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
 		}
 
 		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : ' ') : 'rcat shell') + ' to redirect';

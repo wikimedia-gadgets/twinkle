@@ -731,6 +731,24 @@ Twinkle.warn.messages = {
 					summary: 'Final warning: Removing file deletion tags'
 				}
 			},
+			'uw-tfd': {
+				level1: {
+					label: 'Removing {{tfd}} templates',
+					summary: 'General note: Removing {{tfd}} templates'
+				},
+				level2: {
+					label: 'Removing {{tfd}} templates',
+					summary: 'Caution: Removing {{tfd}} templates'
+				},
+				level3: {
+					label: 'Removing {{tfd}} templates',
+					summary: 'Warning: Removing {{tfd}} templates'
+				},
+				level4: {
+					label: 'Removing {{tfd}} templates',
+					summary: 'Final warning: Removing {{tfd}} templates'
+				}
+			},
 			'uw-speedy': {
 				level1: {
 					label: 'Removing speedy deletion tags',
@@ -986,6 +1004,10 @@ Twinkle.warn.messages = {
 		'uw-hasty': {
 			label: 'Hasty addition of speedy deletion tags',
 			summary: 'Notice: Allow creators time to improve their articles before tagging them for deletion'
+		},
+		'uw-islamhon': {
+			label: 'Use of Islamic honorifics',
+			summary: 'Notice: Use of Islamic honorifics'
 		},
 		'uw-italicize': {
 			label: 'Italicize books, films, albums, magazines, TV series, etc within articles',

@@ -275,3 +275,25 @@ body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
 .ui-icon-inline {
 	display: inline-block;
 }
+
+/* For styling message/warning boxes. Cannot use MediaWiki ombox class because it will be deprecated soon. */
+table.morebits-ombox {
+    margin: 4px 10%;
+    border-collapse: collapse;
+    border: 1px solid #a2a9b1;
+    background: #f8f9fa;
+    box-sizing: border-box;
+}
+table.morebits-ombox-content {
+    border: 1px solid #f28500;
+}
+td.morebits-mbox-image {
+    border: none;
+    padding: 2px 0 2px 0.9em;
+    text-align: center;
+}
+th.morebits-mbox-text, td.morebits-mbox-text {
+    border: none;
+    padding: 0.25em 0.9em;
+    width: 100%;
+}
