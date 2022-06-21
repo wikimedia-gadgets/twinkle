@@ -1190,14 +1190,18 @@ Twinkle.warn.messages = {
 	}
 };
 
-Twinkle.warn.getTemplateProperty = function(templateName, propertyName) {
+/**
+  * Reads Twinkle.warn.messages and returns a specified template's property (such as label, summary,
+  * suppressArticleInSummary, hideLinkedPage, or hideReason)
+  */
+Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyName) {
 	var result;
 	var isNumberedTemplate = templateName.match(/(1|2|3|4|4im)$/);
 	if (isNumberedTemplate) {
 		var unNumberedTemplateName = templateName.replace(/(?:1|2|3|4|4im)$/, '');
 		var level = isNumberedTemplate[0];
 		var numberedWarnings = {};
-		$.each(Twinkle.warn.messages.levels, function(key, val) {
+		$.each(templates.levels, function(key, val) {
 			$.extend(numberedWarnings, val);
 		});
 		$.each(numberedWarnings, function(key) {
@@ -1209,7 +1213,7 @@ Twinkle.warn.getTemplateProperty = function(templateName, propertyName) {
 
 	// Non-level templates can also end in a number. So check this for all templates.
 	var otherWarnings = {};
-	$.each(Twinkle.warn.messages, function(key, val) {
+	$.each(templates, function(key, val) {
 		if (key !== 'levels') {
 			$.extend(otherWarnings, val);
 		}
@@ -1440,7 +1444,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	var selected_template = e.target.form.sub_group.value;
 
 	// If template shouldn't have a linked article, hide the linked article label and text box
-	var hideLinkedPage = Twinkle.warn.getTemplateProperty(selected_template, 'hideLinkedPage');
+	var hideLinkedPage = Twinkle.warn.getTemplateProperty(Twinkle.warn.messages, selected_template, 'hideLinkedPage');
 	if (hideLinkedPage) {
 		e.target.form.article.value = '';
 		Morebits.quickForm.setElementVisibility(e.target.form.article.parentElement, false);
@@ -1449,7 +1453,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	}
 
 	// If template shouldn't have an optional message, hide the optional message label and text box
-	var hideReason = Twinkle.warn.getTemplateProperty(selected_template, 'hideLinkedPage');
+	var hideReason = Twinkle.warn.getTemplateProperty(Twinkle.warn.messages, selected_template, 'hideLinkedPage');
 	if (hideReason) {
 		e.target.form.reason.value = '';
 		Morebits.quickForm.setElementVisibility(e.target.form.reason.parentElement, false);
