@@ -486,6 +486,8 @@ Twinkle.load = function () {
 	if (isVector && Twinkle.getPref('portletType') === 'menu' && $('#p-twinkle').length === 0) {
 		$('#p-cactions').css('margin-right', 'initial');
 	}
+
+	Twinkle.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Prefs', 'tw-prefs', 'Open Twinkle preferences page');
 };
 
 
