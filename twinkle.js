@@ -487,7 +487,7 @@ Twinkle.load = function () {
 		$('#p-cactions').css('margin-right', 'initial');
 	}
 
-	Twinkle.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Prefs', 'tw-prefs', 'Open Twinkle preferences page');
+	Twinkle.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Config', 'tw-config', 'Open Twinkle preferences page');
 };
 
 
