@@ -487,7 +487,9 @@ Twinkle.load = function () {
 		$('#p-cactions').css('margin-right', 'initial');
 	}
 
-	if (mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022' || mw.config.get('skin') === 'timeless') {
+	// If using a skin with space for lots of modules, display a link to Twinkle Preferences
+	var usingSkinWithDropDownMenu = mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022' || mw.config.get('skin') === 'timeless';
+	if (usingSkinWithDropDownMenu) {
 		Twinkle.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Config', 'tw-config', 'Open Twinkle preferences page');
 	}
 };
