@@ -156,13 +156,6 @@ describe('Morebits.wikitext', () => {
 				params: ['Fee.svg']
 			},
 			{
-				name: 'multiple',
-				method: 'commentOutImage',
-				input: `asd [[File:Nippon Ishin no Kai.png|200px]] asd\nasd [[File:Nippon Ishin no Kai.png|200px]] asd\nasd [[File:Nippon Ishin no Kai.png|200px]]\nasd [[File:Nippon Ishin no Kai.png|200px]] asd\n`,
-				expected: 'asd <!-- Commented out: [[File:Nippon Ishin no Kai.png|200px]] --> asd\nasd <!-- Commented out: [[File:Nippon Ishin no Kai.png|200px]] --> asd\nasd <!-- Commented out: [[File:Nippon Ishin no Kai.png|200px]] -->\nasd <!-- Commented out: [[File:Nippon Ishin no Kai.png|200px]] --> asd\n',
-				params: ['Nippon Ishin no Kai.png', 'Commented out']
-			},
-			{
 				name: 'multiple gallery',
 				method: 'commentOutImage',
 				input: '<gallery>\nFile:Fee.svg|1\nFile:Gvs.eef|2\nFile:Fee.svg    |\n</gallery>',
