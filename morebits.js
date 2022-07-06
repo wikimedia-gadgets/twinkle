@@ -4964,10 +4964,10 @@ Morebits.wikitext.page.prototype = {
 			if (links_re.test(allLinks[i])) {
 				var replacement = '<!-- ' + reason + allLinks[i] + ' -->';
 				unbinder.content = unbinder.content.replace(allLinks[i], replacement);
+				// unbind the newly created comments
+				unbinder.unbind('<!--', '-->');
 			}
 		}
-		// unbind the newly created comments
-		unbinder.unbind('<!--', '-->');
 
 		// Check for gallery images, i.e. instances that must start on a new line,
 		// eventually preceded with some space, and must include File: prefix

@@ -151,8 +151,8 @@ describe('Morebits.wikitext', () => {
 			{
 				name: 'multiple',
 				method: 'commentOutImage',
-				input: 'O, [[File:Fee.svg]] she [[File:Fee.svg|doth|teach]] the [[File:Fee.svg|torches]] to burn bright!',
-				expected: 'O, <!-- [[File:Fee.svg]] --> she <!-- [[File:Fee.svg|doth|teach]] --> the <!-- [[File:Fee.svg|torches]] --> to burn bright!',
+				input: 'O, [[File:Fee.svg]] she [[File:Fee.svg|doth|teach]] the [[File:Fee.svg|torches]] to burn bright! [[File:Fee.svg]]',
+				expected: 'O, <!-- [[File:Fee.svg]] --> she <!-- [[File:Fee.svg|doth|teach]] --> the <!-- [[File:Fee.svg|torches]] --> to burn bright! <!-- [[File:Fee.svg]] -->',
 				params: ['Fee.svg']
 			},
 			{
