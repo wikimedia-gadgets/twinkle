@@ -1443,9 +1443,6 @@ Twinkle.protect.callbacks = {
 			summary = 'Removing protection template';
 		} else {
 			tag = params.tag;
-			if (params.reason) {
-				tag += '|reason=' + params.reason;
-			}
 			if (params.small) {
 				tag += '|small=yes';
 			}
