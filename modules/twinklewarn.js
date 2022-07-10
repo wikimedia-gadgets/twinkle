@@ -1191,9 +1191,9 @@ Twinkle.warn.messages = {
 };
 
 /**
-  * Reads Twinkle.warn.messages and returns a specified template's property (such as label, summary,
-  * suppressArticleInSummary, hideLinkedPage, or hideReason)
-  */
+ * Reads Twinkle.warn.messages and returns a specified template's property (such as label, summary,
+ * suppressArticleInSummary, hideLinkedPage, or hideReason)
+ */
 Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyName) {
 	var result;
 	var isNumberedTemplate = templateName.match(/(1|2|3|4|4im)$/);
