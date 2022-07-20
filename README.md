@@ -18,7 +18,7 @@ If you'd like to start contributing, awesome!  Check out [CONTRIBUTING.md](CONTR
 * `twinkle.js`: General Twinkle-specific code, mostly related to preferences and exposing Twinkle in the UI. Significantly, it contains the default set of preferences of Twinkle.
 * `modules`: Contains the individual Twinkle modules. Descriptions for these can be found in header comments or in the [Twinkle documentation][]. The module `twinkleconfig.js` powers the [Twinkle preferences panel][WP:TWPREFS].
 
-[select2][] is added under the [MIT license][select2license].  The MediaWiki code used [for tests](./tests/mocking/mw_shim.js) is added under the [GPL2 license][mwlicense].
+[select2][] is added under the [MIT license][select2license]. 
 
 [Wikipedia:Twinkle]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle
 [AzaToth]: https://en.wikipedia.org/wiki/User:AzaToth
@@ -27,4 +27,3 @@ If you'd like to start contributing, awesome!  Check out [CONTRIBUTING.md](CONTR
 [WP:TWPREFS]: https://en.wikipedia.org/wiki/Wikipedia:Twinkle/Preferences
 [select2]: https://github.com/select2/select2
 [select2license]: https://github.com/select2/select2/blob/develop/LICENSE.md
-[mwlicense]: https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/master/COPYING
