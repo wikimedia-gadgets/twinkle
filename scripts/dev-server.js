@@ -17,7 +17,7 @@ const server = http.createServer(async (request, response) => {
 	const jsFiles = ['morebits.js', 'twinkle.js'].concat(moduleFiles.map(f => 'modules/' + f));
 	const cssFiles = ['morebits.css', 'twinkle.css'];
 
-	let jsCode = `mw.loader.load(['jquery.ui', 'ext.gadget.select2']);`;
+	let jsCode = `mw.loader.using(['jquery.ui', 'ext.gadget.select2']);`;
 
 	if (process.argv[2] !== '--no-sysop') {
 		// Pretend to be a sysop, if not one already - enables testing of sysop modules by non-sysops
