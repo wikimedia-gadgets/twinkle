@@ -63,7 +63,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		type: 'input',
 		label: 'Filter tag list:',
 		name: 'quickfilter',
-		size: '30px',
+		size: '30',
 		event: function twinkletagquickfilter() {
 			// flush the DOM of all existing underline spans
 			$allCheckboxDivs.find('.search-hit').each(function(i, e) {
@@ -175,7 +175,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				label: 'Reason',
 				name: 'reason',
 				tooltip: 'Optional reason to be appended in edit summary. Recommended when removing tags.',
-				size: '60px'
+				size: '60'
 			});
 
 			break;
