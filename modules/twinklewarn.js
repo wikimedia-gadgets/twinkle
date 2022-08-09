@@ -1171,6 +1171,10 @@ Twinkle.warn.messages = {
 			label: 'Usage of multiple IPs',
 			summary: 'Warning: Vandalism using multiple IPs'
 		},
+		'uw-paraphrase': {
+			label: 'Close paraphrasing',
+			summary: 'Warning: Close paraphrasing'
+		},
 		'uw-pinfo': {
 			label: 'Personal info (outing)',
 			summary: 'Warning: Personal info'
