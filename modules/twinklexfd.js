@@ -479,10 +479,10 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'checkbox',
 				list: [
 					{
-						label: 'Notify users of the template',
+						label: 'Notify talk pages of affected user scripts',
 						value: 'devpages',
 						name: 'devpages',
-						tooltip: 'A notification template will be sent to Twinkle, AWB, and Ultraviolet if this is true.',
+						tooltip: 'A notification will be sent to Twinkle, AWB, and Ultraviolet\'s talk pages if those user scripts are marked as using this template.',
 						checked: true
 					}
 				]
