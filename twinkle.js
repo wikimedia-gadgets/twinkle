@@ -301,7 +301,15 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	}
 
 	// Build the DOM elements.
-	var outerNav = document.createElement('nav');
+	var outerNav, heading;
+	if (skin === 'vector-2022') {
+		outerNav = document.createElement('div');
+		heading = document.createElement('label');
+	} else {
+		outerNav = document.createElement('nav');
+		heading = document.createElement('h3');
+	}
+
 	outerNav.setAttribute('aria-labelledby', id + '-label');
 	outerNav.className = outerNavClass + ' emptyPortlet';
 	outerNav.id = id;
@@ -311,13 +319,12 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		root.appendChild(outerNav);
 	}
 
-	var h3 = document.createElement('h3');
-	h3.id = id + '-label';
+	heading.id = id + '-label';
 	var ul = document.createElement('ul');
 
 	if (skin === 'vector' || skin === 'vector-2022') {
 		ul.className = 'vector-menu-content-list';
-		h3.className = 'vector-menu-heading';
+		heading.className = 'vector-menu-heading';
 
 		// add invisible checkbox to keep menu open when clicked
 		// similar to the p-cactions ("More") menu
@@ -332,7 +339,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 			// timeless have no title, and it has no span
 			var span = document.createElement('span');
 			span.appendChild(document.createTextNode(text));
-			h3.appendChild(span);
+			heading.appendChild(span);
 
 			var a = document.createElement('a');
 			a.href = '#';
@@ -341,14 +348,14 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 				e.preventDefault();
 			});
 
-			h3.appendChild(a);
+			heading.appendChild(a);
 		}
 	} else {
 		// Basically just Timeless
-		h3.appendChild(document.createTextNode(text));
+		heading.appendChild(document.createTextNode(text));
 	}
 
-	outerNav.appendChild(h3);
+	outerNav.appendChild(heading);
 
 	if (innerDivClass) {
 		var innerDiv = document.createElement('div');
@@ -359,11 +366,8 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		outerNav.appendChild(ul);
 	}
 
-
 	return outerNav;
-
 };
-
 
 /**
  * **************** Twinkle.addPortletLink() ****************
