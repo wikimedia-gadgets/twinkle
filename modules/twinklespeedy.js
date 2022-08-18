@@ -865,9 +865,9 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Moved by page mover',
+		label: 'G6: Redirect left over from a move by a page mover',
 		value: 'move',
-		tooltip: 'Redirect left over from a page move by a page mover',
+		tooltip: 'Redirect left over from a move by a page mover',
 		hideWhenMultiple: true
 	},
 	{
@@ -884,9 +884,9 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Copy-and-paste page move',
+		label: 'G6: Copy-and-paste move',
 		value: 'copypaste',
-		tooltip: 'This only applies for a copy-and-paste page move of another page that needs to be temporarily deleted to make room for a clean page move.',
+		tooltip: 'This only applies for a copy-and-paste move of another page that needs to be temporarily deleted to make room for a clean move.',
 		subgroup: {
 			name: 'copypaste_sourcepage',
 			type: 'input',
