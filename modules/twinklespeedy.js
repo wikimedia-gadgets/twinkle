@@ -846,7 +846,7 @@ Twinkle.speedy.generalList = [
 		}
 	},
 	{
-		label: 'G6: Move',
+		label: 'G6: To be moved',
 		value: 'move',
 		tooltip: 'Making way for an uncontroversial move like reversing a redirect',
 		subgroup: [
@@ -865,6 +865,12 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
+		label: 'G6: Redirect left over from a move by a page mover',
+		value: 'move',
+		tooltip: 'Redirect left over from a move by a page mover',
+		hideWhenMultiple: true
+	},
+	{
 		label: 'G6: XfD',
 		value: 'xfd',
 		tooltip: 'A deletion discussion (at AfD, FfD, RfD, TfD, CfD, or MfD) was closed as "delete", but the page wasn\'t actually deleted.',
@@ -878,9 +884,9 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
-		label: 'G6: Copy-and-paste page move',
+		label: 'G6: Copy-and-paste move',
 		value: 'copypaste',
-		tooltip: 'This only applies for a copy-and-paste page move of another page that needs to be temporarily deleted to make room for a clean page move.',
+		tooltip: 'This only applies for a copy-and-paste move of another page that needs to be temporarily deleted to make room for a clean move.',
 		subgroup: {
 			name: 'copypaste_sourcepage',
 			type: 'input',
@@ -1030,6 +1036,7 @@ Twinkle.speedy.normalizeHash = {
 	repost: 'g4',
 	banned: 'g5',
 	move: 'g6',
+	moved: 'g6',
 	xfd: 'g6',
 	movedab: 'g6',
 	copypaste: 'g6',
