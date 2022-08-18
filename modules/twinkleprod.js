@@ -279,17 +279,6 @@ Twinkle.prod.callbacks = {
 					}
 				}
 
-				// Alert if article is at least three days old, not in Category:Living people, and BLPPROD is selected
-				if (params.blp) {
-					var isMoreThan3DaysOld = new Morebits.date(params.creation).add(3, 'days').isAfter(new Date(pageobj.getLoadTime()));
-					var blpcheck_re = /\[\[Category:Living people\]\]/i;
-					if (!blpcheck_re.test(text) && isMoreThan3DaysOld) {
-						if (!confirm('Please note that the article is not in Category:Living people and hence may be ineligible for BLPPROD. Are you sure you want to continue? \n\nYou may wish to add the category if you proceed, unless the article is about a recently deceased person.')) {
-							return def.reject();
-						}
-					}
-				}
-
 				var tag;
 				if (params.blp) {
 					summaryText = 'Proposing article for deletion per [[WP:BLPPROD]].';

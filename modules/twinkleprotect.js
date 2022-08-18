@@ -528,7 +528,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					},
 					{
 						name: 'noinclude',
-						label: 'Wrap protection template with <noinclude>',
+						label: 'Wrap protection template with &lt;noinclude&gt;',
 						tooltip: 'Will wrap the protection template in &lt;noinclude&gt; tags, so that it won\'t transclude',
 						checked: mw.config.get('wgNamespaceNumber') === 10 || (mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project && mw.config.get('wgTitle').indexOf('Articles for deletion/') === 0)
 					}
@@ -1070,11 +1070,13 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			}
 			Twinkle.protect.formevents.tagtype({ target: form.tagtype });
 
-			// We only have one TE template at the moment, so this
-			// should be expanded if more are added (e.g. pp-semi-template)
-			if (form.category.value === 'pp-template') {
+			// Default settings for adding <noinclude> tags to protection templates
+			var isTemplateEditorProtection = form.category.value === 'pp-template';
+			var isAFD = mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project && mw.config.get('wgTitle').indexOf('Articles for deletion/') === 0;
+			var isNotTemplateNamespace = mw.config.get('wgNamespaceNumber') !== 10;
+			if (isTemplateEditorProtection || isAFD) {
 				form.noinclude.checked = true;
-			} else if (mw.config.get('wgNamespaceNumber') !== 10) {
+			} else if (isNotTemplateNamespace) {
 				form.noinclude.checked = false;
 			}
 		}
@@ -1429,7 +1431,7 @@ Twinkle.protect.callbacks = {
 		var text = protectedPage.getPageText();
 		var tag, summary;
 
-		var oldtag_re = /\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*/gi;
+		var oldtag_re = /(?:\/\*)?\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*(?:\*\/)?/gi;
 		var re_result = oldtag_re.exec(text);
 		if (re_result) {
 			if (params.tag === 'none' || confirm('{{' + re_result[1] + '}} was found on the page. \nClick OK to remove it, or click Cancel to leave it there.')) {
@@ -1457,15 +1459,27 @@ Twinkle.protect.callbacks = {
 					return;
 				}
 			} else {
-				if (params.noinclude) {
-					tag = '<noinclude>{{' + tag + '}}</noinclude>';
-				} else {
-					tag = '{{' + tag + '}}\n';
-				}
+				var needsTagToBeCommentedOut = ['javascript', 'css', 'sanitized-css'].indexOf(protectedPage.getContentModel()) !== -1;
+				if (needsTagToBeCommentedOut) {
+					if (params.noinclude) {
+						tag = '/* <noinclude>{{' + tag + '}}</noinclude> */';
+					} else {
+						tag = '/* {{' + tag + '}} */\n';
+					}
 
-				// Insert tag after short description or any hatnotes
-				var wikipage = new Morebits.wikitext.page(text);
-				text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
+					// Prepend tag at very top
+					text = tag + text;
+				} else {
+					if (params.noinclude) {
+						tag = '<noinclude>{{' + tag + '}}</noinclude>';
+					} else {
+						tag = '{{' + tag + '}}\n';
+					}
+
+					// Insert tag after short description or any hatnotes
+					var wikipage = new Morebits.wikitext.page(text);
+					text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
+				}
 			}
 			summary = 'Adding {{' + params.tag + '}}';
 		}
