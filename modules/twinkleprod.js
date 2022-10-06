@@ -251,12 +251,11 @@ Twinkle.prod.callbacks = {
 			var text = pageobj.getPageText();
 
 			// Check for already existing deletion tags
-			var tag_re = /{{(?:db-?|delete\b|article for deletion\/dated|AfDM|ffd\b)|#invoke:RfD/i;
+			var tag_re = /{{(?:article for deletion\/dated|AfDM|ffd\b)|#invoke:RfD/i;
 			if (tag_re.test(text)) {
 				statelem.warn('Page already tagged with a deletion template, aborting procedure');
 				return def.reject();
 			}
-
 
 			// Remove tags that become superfluous with this action
 			text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, '');
