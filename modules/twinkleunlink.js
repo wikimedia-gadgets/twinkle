@@ -50,11 +50,11 @@ Twinkle.unlink.callback = function(presetReason) {
 		type: 'div',
 		style: 'margin-bottom: 0.5em',
 		label: [
-			'This tool allows you to unlink all incoming links ("backlinks") that point to this page' +
+			'This tool allows you to unlink all incoming links ("backlinks") from the checked pages below that point to this page' +
 				(fileSpace ? ', and/or hide all inclusions of this file by wrapping them in <!-- --> comment markup' : '') +
 				'. For instance, ',
 			linkTextBefore, ' would become ', linkTextAfter, ' and ',
-			linkPlainBefore, ' would become ', linkPlainAfter, '. Use it with caution.'
+			linkPlainBefore, ' would become ', linkPlainAfter, '. This tool will not unlink redirects or links within this page ("selflinks") that point to this page. Use it with caution.'
 		]
 	});
 
