@@ -4064,6 +4064,9 @@ Morebits.wiki.page = function(pageName, status) {
 
 		// hard error, give up
 		} else {
+			var response = ctx.saveApi.getResponse();
+			var errorData = response.error || // bc error format
+				response.errors[0].data; // html/wikitext/plaintext error format
 
 			switch (errorCode) {
 
@@ -4073,18 +4076,18 @@ Morebits.wiki.page = function(pageName, status) {
 					break;
 
 				case 'abusefilter-disallowed':
-					ctx.statusElement.error('The edit was disallowed by the edit filter: "' + ctx.saveApi.getResponse().error.abusefilter.description + '".');
+					ctx.statusElement.error('The edit was disallowed by the edit filter: "' + errorData.abusefilter.description + '".');
 					break;
 
 				case 'abusefilter-warning':
-					ctx.statusElement.error([ 'A warning was returned by the edit filter: "', ctx.saveApi.getResponse().error.abusefilter.description, '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
+					ctx.statusElement.error([ 'A warning was returned by the edit filter: "', errorData.abusefilter.description, '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
 					// We should provide the user with a way to automatically retry the action if they so choose -
 					// I can't see how to do this without creating a UI dependency on Morebits.wiki.page though -- TTO
 					break;
 
 				case 'spamblacklist':
 					// If multiple items are blacklisted, we only return the first
-					var spam = ctx.saveApi.getResponse().error.spamblacklist.matches[0];
+					var spam = errorData.spamblacklist.matches[0];
 					ctx.statusElement.error('Could not save the page because the URL ' + spam + ' is on the spam blacklist');
 					break;
 
