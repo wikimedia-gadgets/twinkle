@@ -1782,7 +1782,7 @@ Twinkle.tag.callbacks = {
 			pageText = pageText.trim() + '\n\n{{Redirect category shell|' + tagText + oldPageTags + '\n}}';
 		}
 
-		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : ' ') : 'rcat shell') + ' to redirect';
+		summaryText += (tags.length > 0 ? ' tag' + (tags.length > 1 ? 's' : ' ') : ' {{[[Template:Redirect category shell|Redirect category shell]]}}') + ' to redirect';
 
 		// avoid truncated summaries
 		if (summaryText.length > 499) {
