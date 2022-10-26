@@ -8,7 +8,7 @@ Things to watch out for:
 
 - Items and processes laid out in [CONTRIBUTING.md](./CONTRIBUTING.md) are followed.
 - Twinkle is meant to run on the latest weekly version of MediaWiki as rolled out every Thursday on the English Wikipedia. Backwards compatibility is not guaranteed.
-- The goal is for Twinkle and Morebits to support the same [browsers that MediaWiki supports](https://www.mediawiki.org/wiki/Browser_compatibility). The Twinkle gadget on enwiki is configured so that we can use up to JavaScript version ES6. However, due to the MediaWiki minifier, we must not use keywords in ES2016 or later, such as async/await and RegEx /s flag. New functions in ES2016 or later, such as includes() and matchAll(), should be OK since these will not break the minifier.
+- The goal is for Twinkle and Morebits to support the same [browsers for which MediaWiki provides Grade A support](https://www.mediawiki.org/wiki/Browser_compatibility), except IE 11. The Twinkle gadget on enwiki is configured so that we can use up to JavaScript version ES6. However, due to the MediaWiki minifier, we must not use keywords from ES2016 or later, such as async/await and RegEx /s flag. New functions from ES2016 or later, such as Array#includes() should be okay since these will not break the minifier.
 - Certain positional jQuery selectors like `:first`, `:last`, and `:eq` were [deprecated in jQuery version 3.4.0](https://blog.jquery.com/2019/04/10/jquery-3-4-0-released/) and should probably not be reintroduced. Instead, use methods like `.first()`, `.last()`, or `.eq()`.
 
 ## Updating scripts on Wikipedia
