@@ -1,10 +1,13 @@
 {
-	"plugins": ["es5"],
-	"extends": ["eslint:recommended", "plugin:es5/no-es2015"],
+	"parserOptions": {
+		"emcaVersion": 6
+	},
+	"extends": ["eslint:recommended"],
 	"root": true,
 	"env": {
 		"browser": true,
-		"jquery": true
+		"jquery": true,
+		"es6": true
 	},
 	"globals": {
 		"mw": "readonly",
