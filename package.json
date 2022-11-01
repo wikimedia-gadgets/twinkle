@@ -4,7 +4,7 @@
 	"private": true,
 	"repository": "wikimedia-gadgets/twinkle",
 	"scripts": {
-	  	"start": "node scripts/dev-server.js",
+		"start": "node scripts/dev-server.js",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"patchtest": "node scripts/patch-test.js",
@@ -16,6 +16,7 @@
 	"devDependencies": {
 		"eslint": "^7.32.0",
 		"jest": "^29.2.2",
+		"jest-environment-jsdom": "^29.2.2",
 		"mock-mediawiki": "^1.2.2",
 		"mwn": "^0.11.1"
 	}
