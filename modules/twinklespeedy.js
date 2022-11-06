@@ -884,6 +884,19 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
+		label: 'G6: AfC move',
+		value: 'afcmove',
+		tooltip: 'Making way for acceptance of a draft submitted to AfC',
+		subgroup: [
+			{
+				name: 'draft_page',
+				type: 'input',
+				label: 'Draft to be moved here:'
+			}
+		],
+		hideWhenMultiple: true
+	},
+	{
 		label: 'G6: Copy-and-paste page move',
 		value: 'copypaste',
 		tooltip: 'This only applies for a copy-and-paste page move of another page that needs to be temporarily deleted to make room for a clean page move.',
@@ -1037,6 +1050,7 @@ Twinkle.speedy.normalizeHash = {
 	banned: 'g5',
 	error: 'g6',
 	move: 'g6',
+	afcmove: 'g6',
 	xfd: 'g6',
 	movedab: 'g6',
 	copypaste: 'g6',
@@ -1706,6 +1720,18 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 					if (xfd) {
 						currentParams.fullvotepage = xfd;
 					}
+				}
+				break;
+
+			case 'afcmove':  // G6
+				if (form['csd.draft_page']) {
+					var draftpage = form['csd.draft_page'].value;
+					if (!draftpage || !draftpage.trim()) {
+						alert('CSD G6 (AfC move):  Please specify the draft to be moved here.');
+						parameters = null;
+						return false;
+					}
+					currentParams.page = draftpage;
 				}
 				break;
 
