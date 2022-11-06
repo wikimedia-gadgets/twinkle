@@ -878,6 +878,19 @@ Twinkle.speedy.generalList = [
 		hideWhenMultiple: true
 	},
 	{
+		label: 'G6: AfC move',
+		value: 'afc-move',
+		tooltip: 'Making way for acceptance of a draft submitted to AfC',
+		subgroup: [
+			{
+				name: 'draft_page',
+				type: 'input',
+				label: 'Draft to be moved here:'
+			}
+		],
+		hideWhenMultiple: true
+	},
+	{
 		label: 'G6: Copy-and-paste page move',
 		value: 'copypaste',
 		tooltip: 'This only applies for a copy-and-paste page move of another page that needs to be temporarily deleted to make room for a clean page move.',
@@ -1022,69 +1035,70 @@ Twinkle.speedy.redirectList = [
 ];
 
 Twinkle.speedy.normalizeHash = {
-	reason: 'db',
-	nonsense: 'g1',
-	test: 'g2',
-	vandalism: 'g3',
-	hoax: 'g3',
-	repost: 'g4',
-	banned: 'g5',
-	move: 'g6',
-	xfd: 'g6',
-	movedab: 'g6',
-	copypaste: 'g6',
-	g6: 'g6',
-	author: 'g7',
-	g8: 'g8',
-	talk: 'g8',
-	subpage: 'g8',
-	redirnone: 'g8',
-	templatecat: 'g8',
-	imagepage: 'g8',
-	attack: 'g10',
-	negublp: 'g10',
-	spam: 'g11',
-	spamuser: 'g11',
-	copyvio: 'g12',
-	afc: 'g13',
-	disambig: 'g14',
-	nocontext: 'a1',
-	foreign: 'a2',
-	nocontent: 'a3',
-	transwiki: 'a5',
-	a7: 'a7',
-	person: 'a7',
-	corp: 'a7',
-	web: 'a7',
-	band: 'a7',
-	club: 'a7',
-	animal: 'a7',
-	event: 'a7',
-	a9: 'a9',
-	a10: 'a10',
-	madeup: 'a11',
-	rediruser: 'r2',
-	redirtypo: 'r3',
-	redircom: 'r4',
-	redundantimage: 'f1',
-	noimage: 'f2',
-	fpcfail: 'f2',
-	noncom: 'f3',
-	unksource: 'f4',
-	unfree: 'f5',
-	f5: 'f5',
-	norat: 'f6',
-	badfairuse: 'f7',
-	commons: 'f8',
-	imgcopyvio: 'f9',
-	badfiletype: 'f10',
-	nopermission: 'f11',
-	catempty: 'c1',
-	userreq: 'u1',
-	nouser: 'u2',
-	notwebhost: 'u5',
-	p1: 'p1',
-	emptyportal: 'p2'
+	'reason': 'db',
+	'nonsense': 'g1',
+	'test': 'g2',
+	'vandalism': 'g3',
+	'hoax': 'g3',
+	'repost': 'g4',
+	'banned': 'g5',
+	'move': 'g6',
+	'afc-move': 'g6',
+	'xfd': 'g6',
+	'movedab': 'g6',
+	'copypaste': 'g6',
+	'g6': 'g6',
+	'author': 'g7',
+	'g8': 'g8',
+	'talk': 'g8',
+	'subpage': 'g8',
+	'redirnone': 'g8',
+	'templatecat': 'g8',
+	'imagepage': 'g8',
+	'attack': 'g10',
+	'negublp': 'g10',
+	'spam': 'g11',
+	'spamuser': 'g11',
+	'copyvio': 'g12',
+	'afc': 'g13',
+	'disambig': 'g14',
+	'nocontext': 'a1',
+	'foreign': 'a2',
+	'nocontent': 'a3',
+	'transwiki': 'a5',
+	'a7': 'a7',
+	'person': 'a7',
+	'corp': 'a7',
+	'web': 'a7',
+	'band': 'a7',
+	'club': 'a7',
+	'animal': 'a7',
+	'event': 'a7',
+	'a9': 'a9',
+	'a10': 'a10',
+	'madeup': 'a11',
+	'rediruser': 'r2',
+	'redirtypo': 'r3',
+	'redircom': 'r4',
+	'redundantimage': 'f1',
+	'noimage': 'f2',
+	'fpcfail': 'f2',
+	'noncom': 'f3',
+	'unksource': 'f4',
+	'unfree': 'f5',
+	'f5': 'f5',
+	'norat': 'f6',
+	'badfairuse': 'f7',
+	'commons': 'f8',
+	'imgcopyvio': 'f9',
+	'badfiletype': 'f10',
+	'nopermission': 'f11',
+	'catempty': 'c1',
+	'userreq': 'u1',
+	'nouser': 'u2',
+	'notwebhost': 'u5',
+	'p1': 'p1',
+	'emptyportal': 'p2'
 };
 
 Twinkle.speedy.callbacks = {
@@ -1709,6 +1723,18 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						}
 						currentParams.fullvotepage = xfd;
 					}
+				}
+				break;
+
+			case 'afc-move':  // G6
+				if (form['csd.draft_page']) {
+					var draftpage = form['csd.draft_page'].value;
+					if (!draftpage || !draftpage.trim()) {
+						alert('CSD G6 (AfC move):  Please specify the draft to be moved here.');
+						parameters = null;
+						return false;
+					}
+					currentParams.page = draftpage;
 				}
 				break;
 
