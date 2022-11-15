@@ -59,7 +59,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		}
 
 		if (!isReviewed) {
-			form.append({
+			// Quickform is probably already rendered. Instead of using form.append(), we need to make an element and then append it using JQuery.
+			var checkbox = new Morebits.quickForm.element({
 				type: 'checkbox',
 				list: [
 					{
@@ -70,6 +71,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 					}
 				]
 			});
+			var html = checkbox.render();
+			$('.quickform').prepend(html);
 		}
 	});
 
