@@ -11,8 +11,8 @@
  * In skin vector-2022, open the TW menu when mouse hovers over it. Credit to
  * [[en:User:Nardog]] for this fix.
  */
-.vector-menu-checkbox:hover ~ .vector-menu-content,
-.vector-menu-content:hover {
+#p-twinkle > .vector-menu-checkbox:hover ~ .vector-menu-content,
+#p-twinkle > .vector-menu-content:hover {
 	opacity: 1;
 	visibility: visible;
 	height: auto;
