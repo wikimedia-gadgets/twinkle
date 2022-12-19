@@ -712,11 +712,11 @@ Twinkle.protect.protectionTypes = [
 	{
 		label: 'Extended confirmed protection',
 		list: [
-			{ label: 'Arbitration enforcement (ECP)', selected: true, value: 'pp-30-500-arb' },
-			{ label: 'Persistent vandalism (ECP)', value: 'pp-30-500-vandalism' },
-			{ label: 'Disruptive editing (ECP)', value: 'pp-30-500-disruptive' },
-			{ label: 'BLP policy violations (ECP)', value: 'pp-30-500-blp' },
-			{ label: 'Sockpuppetry (ECP)', value: 'pp-30-500-sock' }
+			{ label: 'Arbitration enforcement (ECP)', selected: true, value: 'pp-extended-arb' },
+			{ label: 'Persistent vandalism (ECP)', value: 'pp-extended-vandalism' },
+			{ label: 'Disruptive editing (ECP)', value: 'pp-extended-disruptive' },
+			{ label: 'BLP policy violations (ECP)', value: 'pp-extended-blp' },
+			{ label: 'Sockpuppetry (ECP)', value: 'pp-extended-sock' }
 		]
 	},
 	{
@@ -810,36 +810,36 @@ Twinkle.protect.protectionPresetsInfo = {
 		expiry: 'infinity',
 		reason: '[[WP:High-risk templates|Highly visible template]]'
 	},
-	'pp-30-500-arb': {
+	'pp-extended-arb': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		expiry: 'infinity',
 		reason: '[[WP:30/500|Arbitration enforcement]]',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
-	'pp-30-500-vandalism': {
+	'pp-extended-vandalism': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent [[WP:Vandalism|vandalism]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
-	'pp-30-500-disruptive': {
+	'pp-extended-disruptive': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
-	'pp-30-500-blp': {
+	'pp-extended-blp': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent violations of the [[WP:BLP|biographies of living persons policy]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
-	'pp-30-500-sock': {
+	'pp-extended-sock': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-semi-vandalism': {
 		edit: 'autoconfirmed',
@@ -969,7 +969,7 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' },
 			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' },
 			{ label: '{{pp-semi-indef}}: general long-term semi-protection', value: 'pp-semi-indef' },
-			{ label: '{{pp-30-500}}: extended confirmed protection', value: 'pp-30-500' }
+			{ label: '{{pp-extended}}: extended confirmed protection', value: 'pp-extended' }
 		]
 	},
 	{
@@ -1236,11 +1236,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-template':
 					typename = 'template protection';
 					break;
-				case 'pp-30-500-arb':
-				case 'pp-30-500-vandalism':
-				case 'pp-30-500-disruptive':
-				case 'pp-30-500-blp':
-				case 'pp-30-500-sock':
+				case 'pp-extended-arb':
+				case 'pp-extended-vandalism':
+				case 'pp-extended-disruptive':
+				case 'pp-extended-blp':
+				case 'pp-extended-sock':
 					typename = 'extended confirmed protection';
 					break;
 				case 'pp-semi-vandalism':
@@ -1292,12 +1292,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-vandalism':
 				case 'pp-semi-vandalism':
 				case 'pp-pc-vandalism':
-				case 'pp-30-500-vandalism':
+				case 'pp-extended-vandalism':
 					typereason = 'Persistent [[WP:VAND|vandalism]]';
 					break;
 				case 'pp-semi-disruptive':
 				case 'pp-pc-disruptive':
-				case 'pp-30-500-disruptive':
+				case 'pp-extended-disruptive':
 					typereason = 'Persistent [[Wikipedia:Disruptive editing|disruptive editing]]';
 					break;
 				case 'pp-semi-unsourced':
@@ -1307,7 +1307,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-template':
 					typereason = '[[WP:HIGHRISK|High-risk template]]';
 					break;
-				case 'pp-30-500-arb':
+				case 'pp-extended-arb':
 					typereason = '[[WP:30/500|Arbitration enforcement]]';
 					break;
 				case 'pp-usertalk':
@@ -1315,12 +1315,12 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typereason = 'Inappropriate use of user talk page while blocked';
 					break;
 				case 'pp-semi-sock':
-				case 'pp-30-500-sock':
+				case 'pp-extended-sock':
 					typereason = 'Persistent [[WP:SOCK|sockpuppetry]]';
 					break;
 				case 'pp-semi-blp':
 				case 'pp-pc-blp':
-				case 'pp-30-500-blp':
+				case 'pp-extended-blp':
 					typereason = '[[WP:BLP|BLP]] policy violations';
 					break;
 				case 'pp-move-dispute':
