@@ -508,6 +508,20 @@ Twinkle.summaryAd = ' ([[WP:TW|TW]])';
 // ensure MOS:ORDER
 Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|distinguish|for|further|selfref|year dab|similar names|highway detail hatnote|broader|about(?:-distinguish| other people)?|other\\s?(?:hurricane(?: use)?s|people|persons|places|ships|uses(?: of)?)|redirect(?:-(?:distinguish|synonym|multi))?|see\\s?(?:wiktionary|also(?: if exists)?)';
 
+// Prefills in ARV/Warn/Welcome set by fluff
+Twinkle.prefill = {};
+var search = location.search; // for efficiency
+[
+	'vanarticle',
+	'vanarticlerevid',
+	'vantimestamp',
+	'vanarticlegoodrevid',
+	'friendlywelcome',
+	'noautowarn'
+].forEach(function (key) {
+	Twinkle.prefill[key] = mw.util.getParamValue(key, search);
+});
+
 // Used in XFD and PROD
 Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
 	if (!$(divID).length) {
