@@ -751,8 +751,7 @@ Twinkle.fluff.callbacks = {
 			if (params.notifyUser && !params.userHidden) { // notifyUser only from main, not from toRevision
 				Morebits.status.info('Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode('strong', params.user) ]);
 
-				var windowQuery = {
-					title: 'User talk:' + params.user,
+				var url = mw.util.getUrl('User talk:' + params.user, {
 					action: 'edit',
 					preview: 'yes',
 					vanarticle: params.pagename.replace(/_/g, ' '),
@@ -761,26 +760,31 @@ Twinkle.fluff.callbacks = {
 					vanarticlegoodrevid: params.goodid,
 					type: params.type,
 					count: params.count
-				};
+				});
 
 				switch (Twinkle.getPref('userTalkPageMode')) {
 					case 'tab':
-						window.open(mw.util.getUrl('', windowQuery), '_blank');
+						window.open(url, '_blank');
 						break;
 					case 'blank':
-						window.open(mw.util.getUrl('', windowQuery), '_blank',
+						window.open(url, '_blank',
 							'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
 						break;
 					case 'window':
 					/* falls through */
 					default:
-						window.open(mw.util.getUrl('', windowQuery),
+						window.open(url,
 							window.name === 'twinklewarnwindow' ? '_blank' : 'twinklewarnwindow',
 							'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
 						break;
 				}
-			}
-
+			} else if (Twinkle.fluff.rollbackInPlace &&
+				mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
+				Twinkle.prefill.vanarticle = params.pagename.replace(/_/g, ' ');
+				Twinkle.prefill.vanarticlerevid = params.revid;
+				Twinkle.prefill.vantimestamp = params.vantimestamp;
+				Twinkle.prefill.vanarticlegoodrevid = params.goodid;
+		}
 
 			// review the revert, if needed
 			if (apiobj.params.reviewRevert) {
