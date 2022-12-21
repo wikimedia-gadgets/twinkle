@@ -120,11 +120,13 @@ Twinkle.fluff.linkBuilder = {
 		normLink.style.fontWeight = 'bold';
 		vandLink.style.fontWeight = 'bold';
 
-		$(normLink).click(function() {
+		$(normLink).click(function(e) {
+			e.preventDefault();
 			Twinkle.fluff.revert('norm', vandal, rev, page);
 			Twinkle.fluff.disableLinks(revNode);
 		});
-		$(vandLink).click(function() {
+		$(vandLink).click(function(e) {
+			e.preventDefault();
 			Twinkle.fluff.revert('vand', vandal, rev, page);
 			Twinkle.fluff.disableLinks(revNode);
 		});
@@ -141,7 +143,8 @@ Twinkle.fluff.linkBuilder = {
 		if (!inline) {
 			var agfNode = document.createElement('span');
 			var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
-			$(agfLink).click(function() {
+			$(agfLink).click(function(e) {
+				e.preventDefault();
 				Twinkle.fluff.revert('agf', vandal, rev, page);
 				// Twinkle.fluff.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
 			});
@@ -169,7 +172,8 @@ Twinkle.fluff.linkBuilder = {
 		revertToRevisionNode.style.fontWeight = 'bold';
 
 		var revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'restore this version');
-		$(revertToRevisionLink).click(function() {
+		$(revertToRevisionLink).click(function(e) {
+			e.preventDefault();
 			Twinkle.fluff.revertToRevision(revisionRef);
 		});
 
