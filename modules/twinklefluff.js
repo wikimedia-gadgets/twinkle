@@ -784,7 +784,7 @@ Twinkle.fluff.callbacks = {
 				Twinkle.prefill.vanarticlerevid = params.revid;
 				Twinkle.prefill.vantimestamp = params.vantimestamp;
 				Twinkle.prefill.vanarticlegoodrevid = params.goodid;
-		}
+			}
 
 			// review the revert, if needed
 			if (apiobj.params.reviewRevert) {
