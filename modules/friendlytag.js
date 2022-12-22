@@ -916,6 +916,7 @@ Twinkle.tag.redirectList = {
 		],
 		'Spelling': [
 			{ tag: 'R from alternative spelling', description: 'redirect from a title with a different spelling' },
+			{ tag: 'R from alternative transliteration', description: 'redirect from an alternative English transliteration to a more common variation' },
 			{ tag: 'R from ASCII-only', description: 'redirect from a title in only basic ASCII to the formal title, with differences that are not diacritical marks or ligatures' },
 			{ tag: 'R to ASCII-only', description: 'redirect to a title in only basic ASCII from the formal title, with differences that are not diacritical marks or ligatures' },
 			{ tag: 'R from diacritic', description: 'redirect from a page name that has diacritical marks (accents, umlauts, etc.)' },
@@ -1039,8 +1040,9 @@ Twinkle.tag.redirectList = {
 	},
 	'Media': {
 		General: [
-			{ tag: 'R from book', description: 'redirect from a book title to a more general, relevant article' },
 			{ tag: 'R from album', description: 'redirect from an album to a related topic such as the recording artist or a list of albums' },
+			{ tag: 'R from book', description: 'redirect from a book title to a more general, relevant article' },
+			{ tag: 'R from film', description: 'redirect from a film title that is a subtopic of the redirect target or a title in an alternative language that has been produced in that language' },
 			{ tag: 'R from song', description: 'redirect from a song title to a more general, relevant article' },
 			{ tag: 'R from television episode', description: 'redirect from a television episode title to a related work or lists of episodes' }
 		],
@@ -1048,7 +1050,6 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from fictional character', description: 'redirect from a fictional character to a related fictional work or list of characters' },
 			{ tag: 'R from fictional element', description: 'redirect from a fictional element (such as an object or concept) to a related fictional work or list of similar elements' },
 			{ tag: 'R from fictional location', description: 'redirect from a fictional location or setting to a related fictional work or list of places' }
-
 		]
 	},
 	'Miscellaneous': {
