@@ -1663,11 +1663,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.repost_xfd']) {
 					var deldisc = form['csd.repost_xfd'].value;
 					if (deldisc) {
-						if (!new RegExp('^:?' + Morebits.namespaceRegex(4) + ':', 'i').test(deldisc)) {
-							alert('CSD G4:  The deletion discussion page name, if provided, must start with "Wikipedia:".');
-							parameters = null;
-							return false;
-						}
 						currentParams.xfd = deldisc;
 					}
 				}
@@ -1702,11 +1697,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.xfd_fullvotepage']) {
 					var xfd = form['csd.xfd_fullvotepage'].value;
 					if (xfd) {
-						if (!new RegExp('^:?' + Morebits.namespaceRegex(4) + ':', 'i').test(xfd)) {
-							alert('CSD G6 (XFD):  The deletion discussion page name, if provided, must start with "Wikipedia:".');
-							parameters = null;
-							return false;
-						}
 						currentParams.fullvotepage = xfd;
 					}
 				}
