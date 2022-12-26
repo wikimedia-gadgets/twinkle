@@ -1234,7 +1234,7 @@ Twinkle.block.blockPresetsInfo = {
 		nocreate: true,
 		pageParam: true,
 		reason: '{{uw-vaublock}} <!-- Username violation, vandalism-only account -->',
-		summary: 'You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]] and your username is a blatant violation of the [[WP:U|username policy]]'
+		summary: 'You have been indefinitely blocked from editing because your account is being [[WP:DISRUPTONLY|used only for vandalism]] and your username is a blatant violation of the [[WP:U|username policy]]'
 	},
 	'uw-vblock': {
 		autoblock: true,
@@ -1250,8 +1250,8 @@ Twinkle.block.blockPresetsInfo = {
 		forRegisteredOnly: true,
 		nocreate: true,
 		pageParam: true,
-		reason: '[[WP:Vandalism-only account|Vandalism-only account]]',
-		summary: 'You have been indefinitely blocked from editing because your account is being [[WP:VOA|used only for vandalism]]'
+		reason: '[[WP:DISRUPTONLY|Vandalism-only account]]',
+		summary: 'You have been indefinitely blocked from editing because your account is being [[WP:DISRUPTONLY|used only for vandalism]]'
 	},
 	'zombie proxy': {
 		expiry: '1 month',
