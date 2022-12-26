@@ -490,6 +490,12 @@ Twinkle.load = function () {
 	if (isVector && Twinkle.getPref('portletType') === 'menu' && $('#p-twinkle').length === 0) {
 		$('#p-cactions').css('margin-right', 'initial');
 	}
+
+	// If using a skin with space for lots of modules, display a link to Twinkle Preferences
+	var usingSkinWithDropDownMenu = mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022' || mw.config.get('skin') === 'timeless';
+	if (usingSkinWithDropDownMenu) {
+		Twinkle.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Config', 'tw-config', 'Open Twinkle preferences page');
+	}
 };
 
 
