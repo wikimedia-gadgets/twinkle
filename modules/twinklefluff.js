@@ -244,15 +244,16 @@ Twinkle.fluff.addLinks = {
 			// On first page of results, so add revert/rollback
 			// links to the top revision
 			if (!$('a.mw-firstlink').length) {
-				var first = histList.shift();
-				var vandal = $(first).find('.mw-userlink:not(.history-deleted)').text();
+				var firstRow = histList.shift();
+				var firstUser = $(firstRow).find('.mw-userlink:not(.history-deleted)').text();
 
 				// Check for first username different than the top user,
 				// only apply rollback links if/when found
-				// for faster than every
+				// for() faster than every()
 				for (var i = 0; i < histList.length; i++) {
-					if ($(histList[i]).find('.mw-userlink').text() !== vandal) {
-						first.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(vandal, true));
+					var hasMoreThanOneUser = $(histList[i]).find('.mw-userlink').text() !== firstUser;
+					if (hasMoreThanOneUser) {
+						firstRow.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(firstUser, true));
 						break;
 					}
 				}
