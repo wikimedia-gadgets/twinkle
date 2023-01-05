@@ -281,7 +281,16 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
 				navigation = 'mw-panel';
 			}
-			outerNavClass = 'mw-portlet vector-menu vector-menu-' + (navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'dropdown vector-menu-dropdown-noicon' : 'tabs');
+
+			outerNavClass = 'mw-portlet vector-menu';
+			if (navigation === 'mw-panel') {
+				outerNavClass += ' vector-menu-portal';
+			} else if (type === 'menu') {
+				outerNavClass += ' vector-menu-dropdown vector-dropdown vector-menu-dropdown-noicon';
+			} else {
+				outerNavClass += ' vector-menu-tabs';
+			}
+
 			innerDivClass = 'vector-menu-content';
 			break;
 		case 'modern':
