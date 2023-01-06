@@ -5981,7 +5981,15 @@ Morebits.simpleWindow.prototype = {
 		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
 			value.style.display = 'none';
 			var button = document.createElement('button');
-			button.textContent = value.hasAttribute('value') ? value.getAttribute('value') : value.textContent ? value.textContent : msg('submit', 'Submit Query');
+
+			if (value.hasAttribute('value')) {
+				button.textContent = value.getAttribute('value');
+			} else if (value.textContent) {
+				button.textContent = value.textContent;
+			} else {
+				button.textContent = msg('submit', 'Submit Query');
+			}
+
 			button.className = value.className || 'submitButtonProxy';
 			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
 			button.addEventListener('click', function() {
