@@ -9,6 +9,7 @@ stash*.diff
 *.jsX
 .vscode/
 patch-test-loader.js
+coverage/
 
 # Windows
 Thumbs.db
