@@ -1481,7 +1481,16 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 			}
 
 			var blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
-			var registrationRestrict = blockSettings.forRegisteredOnly ? Twinkle.block.isRegistered : blockSettings.forAnonOnly ? !Twinkle.block.isRegistered : true;
+
+			var registrationRestrict;
+			if (blockSettings.forRegisteredOnly) {
+				registrationRestrict = Twinkle.block.isRegistered;
+			} else if (blockSettings.forAnonOnly) {
+				registrationRestrict = !Twinkle.block.isRegistered;
+			} else {
+				registrationRestrict = true;
+			}
+
 			if (!(blockSettings.templateName && show_template) && registrationRestrict) {
 				var templateName = blockSettings.templateName || blockPreset.value;
 				return {
