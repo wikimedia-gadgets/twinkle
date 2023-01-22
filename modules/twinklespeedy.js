@@ -846,6 +846,12 @@ Twinkle.speedy.generalList = [
 		}
 	},
 	{
+		label: 'G6: Error',
+		value: 'error',
+		tooltip: 'A page that was obviously created in error, or a redirect left over from moving a page that was obviously created at the wrong title.',
+		hideWhenMultiple: true
+	},
+	{
 		label: 'G6: Move',
 		value: 'move',
 		tooltip: 'Making way for an uncontroversial move like reversing a redirect',
@@ -1029,6 +1035,7 @@ Twinkle.speedy.normalizeHash = {
 	hoax: 'g3',
 	repost: 'g4',
 	banned: 'g5',
+	error: 'g6',
 	move: 'g6',
 	xfd: 'g6',
 	movedab: 'g6',
