@@ -2645,6 +2645,12 @@ Morebits.wiki.page = function(pageName, status) {
 		protectCreate: null,
 		protectCascade: null,
 
+		// - delete
+		deleteTalkPage: false,
+
+		// - undelete
+		undeleteTalkPage: false,
+
 		// - creation lookup
 		lookupNonRedirectCreator: false,
 
@@ -3292,6 +3298,18 @@ Morebits.wiki.page = function(pageName, status) {
 
 	this.suppressProtectWarning = function() {
 		ctx.suppressProtectWarning = true;
+	};
+
+	// Delete-related setter
+	/** @param {boolean} flag */
+	this.setDeleteTalkPage = function (flag) {
+		ctx.deleteTalkPage = !!flag;
+	};
+
+	// Undelete-related setter
+	/** @param {boolean} flag */
+	this.setUndeleteTalkPage = function (flag) {
+		ctx.undeleteTalkPage = !!flag;
 	};
 
 	// Revert-related getters/setters:
@@ -4439,6 +4457,9 @@ Morebits.wiki.page = function(pageName, status) {
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;
 		}
+		if (ctx.deleteTalkPage) {
+			query.deletetalk = 'true';
+		}
 
 		if (fnApplyWatchlistExpiry()) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
@@ -4503,6 +4524,9 @@ Morebits.wiki.page = function(pageName, status) {
 		};
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;
+		}
+		if (ctx.undeleteTalkPage) {
+			query.undeletetalk = 'true';
 		}
 
 		if (fnApplyWatchlistExpiry()) {
