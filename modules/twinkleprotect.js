@@ -534,7 +534,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						name: 'noinclude',
 						label: 'Wrap protection template with &lt;noinclude&gt;',
 						tooltip: 'Will wrap the protection template in &lt;noinclude&gt; tags, so that it won\'t transclude',
-						checked: (isTemplateNamespace || (isWikipediaNamespace && isArticlesForDeletion)) && !isCode
+						checked: (isTemplateNamespace || isAFD) && !isCode
 					}
 				]
 			});
