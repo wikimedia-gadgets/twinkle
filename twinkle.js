@@ -153,7 +153,7 @@ Twinkle.defaultConfig = {
 	watchTaggedPages: '1 month',
 	watchMergeDiscussions: '1 month',
 	markTaggedPagesAsMinor: false,
-	markTaggedPagesAsPatrolled: true,
+	markTaggedPagesAsPatrolled: false,
 	tagArticleSortOrder: 'cat',
 	customTagList: [],
 	customFileTagList: [],
