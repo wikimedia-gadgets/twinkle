@@ -519,8 +519,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			});
 
 			var isTemplateNamespace = mw.config.get('wgNamespaceNumber') === 10;
-			var isWikipediaNamespace = mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project;
-			var isArticlesForDeletion = mw.config.get('wgTitle').indexOf('Articles for deletion/') === 0;
+			var isAFD = mw.config.get('wgPageName').indexOf('Wikipedia:Articles for deletion/') === 0;
 			var isCode = ['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1;
 			field1.append({
 				type: 'checkbox',
