@@ -2138,12 +2138,9 @@ Morebits.date.prototype = {
 
 // Allow native Date.prototype methods to be used on Morebits.date objects
 Object.getOwnPropertyNames(Date.prototype).forEach(function(func) {
-	// Exclude methods that collide with PageTriage's Date.js external, which clobbers native Date: [[phab:T268513]]
-	if (['add', 'getDayName', 'getMonthName'].indexOf(func) === -1) {
-		Morebits.date.prototype[func] = function() {
-			return this._d[func].apply(this._d, Array.prototype.slice.call(arguments));
-		};
-	}
+	Morebits.date.prototype[func] = function() {
+		return this._d[func].apply(this._d, Array.prototype.slice.call(arguments));
+	};
 });
 
 
@@ -5984,7 +5981,15 @@ Morebits.simpleWindow.prototype = {
 		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
 			value.style.display = 'none';
 			var button = document.createElement('button');
-			button.textContent = value.hasAttribute('value') ? value.getAttribute('value') : value.textContent ? value.textContent : msg('submit', 'Submit Query');
+
+			if (value.hasAttribute('value')) {
+				button.textContent = value.getAttribute('value');
+			} else if (value.textContent) {
+				button.textContent = value.textContent;
+			} else {
+				button.textContent = msg('submit', 'Submit Query');
+			}
+
 			button.className = value.className || 'submitButtonProxy';
 			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
 			button.addEventListener('click', function() {

@@ -846,6 +846,12 @@ Twinkle.speedy.generalList = [
 		}
 	},
 	{
+		label: 'G6: Error',
+		value: 'error',
+		tooltip: 'A page that was obviously created in error, or a redirect left over from moving a page that was obviously created at the wrong title.',
+		hideWhenMultiple: true
+	},
+	{
 		label: 'G6: Move',
 		value: 'move',
 		tooltip: 'Making way for an uncontroversial move like reversing a redirect',
@@ -879,7 +885,7 @@ Twinkle.speedy.generalList = [
 	},
 	{
 		label: 'G6: AfC move',
-		value: 'afc-move',
+		value: 'afcmove',
 		tooltip: 'Making way for acceptance of a draft submitted to AfC',
 		subgroup: [
 			{
@@ -1035,70 +1041,71 @@ Twinkle.speedy.redirectList = [
 ];
 
 Twinkle.speedy.normalizeHash = {
-	'reason': 'db',
-	'nonsense': 'g1',
-	'test': 'g2',
-	'vandalism': 'g3',
-	'hoax': 'g3',
-	'repost': 'g4',
-	'banned': 'g5',
-	'move': 'g6',
-	'afc-move': 'g6',
-	'xfd': 'g6',
-	'movedab': 'g6',
-	'copypaste': 'g6',
-	'g6': 'g6',
-	'author': 'g7',
-	'g8': 'g8',
-	'talk': 'g8',
-	'subpage': 'g8',
-	'redirnone': 'g8',
-	'templatecat': 'g8',
-	'imagepage': 'g8',
-	'attack': 'g10',
-	'negublp': 'g10',
-	'spam': 'g11',
-	'spamuser': 'g11',
-	'copyvio': 'g12',
-	'afc': 'g13',
-	'disambig': 'g14',
-	'nocontext': 'a1',
-	'foreign': 'a2',
-	'nocontent': 'a3',
-	'transwiki': 'a5',
-	'a7': 'a7',
-	'person': 'a7',
-	'corp': 'a7',
-	'web': 'a7',
-	'band': 'a7',
-	'club': 'a7',
-	'animal': 'a7',
-	'event': 'a7',
-	'a9': 'a9',
-	'a10': 'a10',
-	'madeup': 'a11',
-	'rediruser': 'r2',
-	'redirtypo': 'r3',
-	'redircom': 'r4',
-	'redundantimage': 'f1',
-	'noimage': 'f2',
-	'fpcfail': 'f2',
-	'noncom': 'f3',
-	'unksource': 'f4',
-	'unfree': 'f5',
-	'f5': 'f5',
-	'norat': 'f6',
-	'badfairuse': 'f7',
-	'commons': 'f8',
-	'imgcopyvio': 'f9',
-	'badfiletype': 'f10',
-	'nopermission': 'f11',
-	'catempty': 'c1',
-	'userreq': 'u1',
-	'nouser': 'u2',
-	'notwebhost': 'u5',
-	'p1': 'p1',
-	'emptyportal': 'p2'
+	reason: 'db',
+	nonsense: 'g1',
+	test: 'g2',
+	vandalism: 'g3',
+	hoax: 'g3',
+	repost: 'g4',
+	banned: 'g5',
+	error: 'g6',
+	move: 'g6',
+  afcmove: 'g6',
+	xfd: 'g6',
+	movedab: 'g6',
+	copypaste: 'g6',
+	g6: 'g6',
+	author: 'g7',
+	g8: 'g8',
+	talk: 'g8',
+	subpage: 'g8',
+	redirnone: 'g8',
+	templatecat: 'g8',
+	imagepage: 'g8',
+	attack: 'g10',
+	negublp: 'g10',
+	spam: 'g11',
+	spamuser: 'g11',
+	copyvio: 'g12',
+	afc: 'g13',
+	disambig: 'g14',
+	nocontext: 'a1',
+	foreign: 'a2',
+	nocontent: 'a3',
+	transwiki: 'a5',
+	a7: 'a7',
+	person: 'a7',
+	corp: 'a7',
+	web: 'a7',
+	band: 'a7',
+	club: 'a7',
+	animal: 'a7',
+	event: 'a7',
+	a9: 'a9',
+	a10: 'a10',
+	madeup: 'a11',
+	rediruser: 'r2',
+	redirtypo: 'r3',
+	redircom: 'r4',
+	redundantimage: 'f1',
+	noimage: 'f2',
+	fpcfail: 'f2',
+	noncom: 'f3',
+	unksource: 'f4',
+	unfree: 'f5',
+	f5: 'f5',
+	norat: 'f6',
+	badfairuse: 'f7',
+	commons: 'f8',
+	imgcopyvio: 'f9',
+	badfiletype: 'f10',
+	nopermission: 'f11',
+	catempty: 'c1',
+	userreq: 'u1',
+	nouser: 'u2',
+	notwebhost: 'u5',
+	p1: 'p1',
+	emptyportal: 'p2'
 };
 
 Twinkle.speedy.callbacks = {
@@ -1677,11 +1684,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.repost_xfd']) {
 					var deldisc = form['csd.repost_xfd'].value;
 					if (deldisc) {
-						if (!new RegExp('^:?' + Morebits.namespaceRegex(4) + ':', 'i').test(deldisc)) {
-							alert('CSD G4:  The deletion discussion page name, if provided, must start with "Wikipedia:".');
-							parameters = null;
-							return false;
-						}
 						currentParams.xfd = deldisc;
 					}
 				}
@@ -1716,17 +1718,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.xfd_fullvotepage']) {
 					var xfd = form['csd.xfd_fullvotepage'].value;
 					if (xfd) {
-						if (!new RegExp('^:?' + Morebits.namespaceRegex(4) + ':', 'i').test(xfd)) {
-							alert('CSD G6 (XFD):  The deletion discussion page name, if provided, must start with "Wikipedia:".');
-							parameters = null;
-							return false;
-						}
 						currentParams.fullvotepage = xfd;
 					}
 				}
 				break;
 
-			case 'afc-move':  // G6
+			case 'afcmove':  // G6
 				if (form['csd.draft_page']) {
 					var draftpage = form['csd.draft_page'].value;
 					if (!draftpage || !draftpage.trim()) {

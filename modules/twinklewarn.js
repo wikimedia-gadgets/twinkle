@@ -1055,8 +1055,8 @@ Twinkle.warn.messages = {
 			summary: 'Notice: Be careful when removing redlinks'
 		},
 		'uw-selfrevert': {
-			label: 'Reverting self tests',
-			summary: 'Notice: Reverting self tests'
+			label: 'Self-reverted editing tests',
+			summary: 'Notice: Self-reverted editing tests'
 		},
 		'uw-socialnetwork': {
 			label: 'Wikipedia is not a social network',
