@@ -887,13 +887,11 @@ Twinkle.speedy.generalList = [
 		label: 'G6: AfC move',
 		value: 'afcmove',
 		tooltip: 'Making way for acceptance of a draft submitted to AfC',
-		subgroup: [
-			{
-				name: 'draft_page',
-				type: 'input',
-				label: 'Draft to be moved here:'
-			}
-		],
+		subgroup: {
+			name: 'draft_page',
+			type: 'input',
+			label: 'Draft to be moved here:'
+		},
 		hideWhenMultiple: true
 	},
 	{
