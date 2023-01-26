@@ -45,19 +45,36 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 	var form = new Morebits.quickForm(Twinkle.tag.callback.evaluate);
 
-	if (document.getElementsByClassName('patrollink').length) {
-		form.append({
-			type: 'checkbox',
-			list: [
-				{
-					label: 'Mark the page as patrolled/reviewed',
-					value: 'patrol',
-					name: 'patrol',
-					checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
-				}
-			]
-		});
-	}
+	// if page is unreviewed, add a checkbox to the form so that user can pick whether or not to review it
+	new mw.Api().get({
+		action: 'pagetriagelist',
+		format: 'json',
+		page_id: mw.config.get('wgArticleId')
+	}).done(function(response) {
+		var isReviewed = false;
+		var isOldPage = response.pagetriagelist.result !== 'success' || response.pagetriagelist.pages.length === 0;
+		var isMarkedAsReviewed = response.pagetriagelist.pages[0].patrol_status > 0;
+		if (isOldPage || isMarkedAsReviewed) {
+			isReviewed = true;
+		}
+
+		if (!isReviewed) {
+			// Quickform is probably already rendered. Instead of using form.append(), we need to make an element and then append it using JQuery.
+			var checkbox = new Morebits.quickForm.element({
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Mark the page as patrolled/reviewed',
+						value: 'patrol',
+						name: 'patrol',
+						checked: Twinkle.getPref('markTaggedPagesAsPatrolled')
+					}
+				]
+			});
+			var html = checkbox.render();
+			$('.quickform').prepend(html);
+		}
+	});
 
 	form.append({
 		type: 'input',
