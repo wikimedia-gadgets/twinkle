@@ -58,7 +58,18 @@
 		"space-unary-ops": "error",
 		"spaced-comment": ["error", "always", { "line": { "exceptions": ["-"] }, "block": { "balanced": true } }],
 		"switch-colon-spacing": "error",
-		"no-nested-ternary": "error"
+		"no-nested-ternary": "error",
+		"no-restricted-syntax": [
+			"warn",
+			{
+				"message": "Using .done() is discouraged. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
+				"selector": "MemberExpression > Identifier[name=\"done\"]"
+			},
+			{
+				"message": "Using .fail() is discouraged. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
+				"selector": "MemberExpression > Identifier[name=\"fail\"]"
+			}
+		]
 	},
 	"reportUnusedDisableDirectives": true
 }
