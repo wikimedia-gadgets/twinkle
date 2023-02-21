@@ -112,8 +112,6 @@ Twinkle.config.commonSets = {
 		15: 'Category talk',
 		100: 'Portal',
 		101: 'Portal talk',
-		108: 'Book',
-		109: 'Book talk',
 		118: 'Draft',
 		119: 'Draft talk',
 		710: 'TimedText',

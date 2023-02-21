@@ -46,7 +46,7 @@ Twinkle.deprod.callback = function() {
 		generator: 'categorymembers',
 		gcmtitle: mw.config.get('wgPageName'),
 		gcmlimit: Twinkle.getPref('batchMax'),
-		gcmnamespace: '0|108|2', // mostly to ignore categories and files
+		gcmnamespace: '0|2', // only display articles or user pages
 		prop: 'info|revisions',
 		rvprop: 'content',
 		inprop: 'protection',
@@ -143,7 +143,7 @@ var callback_commit = function(event) {
 			wikipedia_api.post();
 
 			var pageTitle = mw.Title.newFromText(pageName);
-			// Don't delete user talk pages, essentially limiting this to Talk: and Book talk:
+			// Don't delete user talk pages, limiting this to Talk: pages since only article and user pages appear in deprod 
 			if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
 				pageTitle.namespace++;  // now pageTitle is the talk page title!
 				query = {
