@@ -143,7 +143,7 @@ var callback_commit = function(event) {
 			wikipedia_api.post();
 
 			var pageTitle = mw.Title.newFromText(pageName);
-			// Don't delete user talk pages, limiting this to Talk: pages since only article and user pages appear in deprod 
+			// Don't delete user talk pages, limiting this to Talk: pages since only article and user pages appear in deprod
 			if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
 				pageTitle.namespace++;  // now pageTitle is the talk page title!
 				query = {
