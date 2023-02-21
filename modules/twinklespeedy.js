@@ -594,11 +594,6 @@ Twinkle.speedy.fileList = [
 		]
 	},
 	{
-		label: 'F10: Useless non-media file',
-		value: 'badfiletype',
-		tooltip: 'Files uploaded that are neither image, sound, nor video files (e.g. .doc, .pdf, or .xls files) which are not used in any article and have no foreseeable encyclopedic use'
-	},
-	{
 		label: 'F11: No evidence of permission',
 		value: 'nopermission',
 		tooltip: 'If an uploader has specified a license and has named a third party as the source/copyright holder without providing evidence that this third party has in fact agreed, the item may be deleted seven days after notification of the uploader',
@@ -1096,7 +1091,6 @@ Twinkle.speedy.normalizeHash = {
 	'badfairuse': 'f7',
 	'commons': 'f8',
 	'imgcopyvio': 'f9',
-	'badfiletype': 'f10',
 	'nopermission': 'f11',
 	'catempty': 'c1',
 	'userreq': 'u1',
