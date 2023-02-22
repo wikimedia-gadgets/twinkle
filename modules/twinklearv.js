@@ -524,7 +524,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				reason += ' ' + types;
 			}
 			if (comment !== '') {
-				reason += (reason === '' ? '' : '. ') + comment;
+				reason += (/([.?!;:]|^)$/.test(reason) ? '' : '.') + (reason === '' ? '' : ' ') + comment; // Ends sentence if needed, does nothing if empty string
 			}
 			reason = reason.trim();
 			if (!/[.?!;]$/.test(reason)) {
