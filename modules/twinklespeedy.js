@@ -624,17 +624,6 @@ Twinkle.speedy.articleList = [
 		tooltip: 'Any article consisting only of links elsewhere (including hyperlinks, category tags and "see also" sections), a rephrasing of the title, and/or attempts to correspond with the person or group named by its title. This does not include disambiguation pages'
 	},
 	{
-		label: 'A5: Transwikied articles',
-		value: 'transwiki',
-		tooltip: 'Any article that has been discussed at Articles for Deletion (et al), where the outcome was to transwiki, and where the transwikification has been properly performed and the author information recorded. Alternately, any article that consists of only a dictionary definition, where the transwikification has been properly performed and the author information recorded',
-		subgroup: {
-			name: 'transwiki_location',
-			type: 'input',
-			label: 'Link to where the page has been transwikied:',
-			tooltip: 'For example, https://en.wiktionary.org/wiki/twinkle or [[wikt:twinkle]]'
-		}
-	},
-	{
 		label: 'A7: No indication of importance (people, groups, companies, web content, individual animals, or organized events)',
 		value: 'a7',
 		tooltip: 'An article about a real person, group of people, band, club, company, web content, individual animal, tour, or party that does not assert the importance or significance of its subject. If controversial, or if a previous AfD has resulted in the article being kept, the article should be nominated for AfD instead',
@@ -1042,7 +1031,6 @@ Twinkle.speedy.normalizeHash = {
 	'nocontext': 'a1',
 	'foreign': 'a2',
 	'nocontent': 'a3',
-	'transwiki': 'a5',
 	'a7': 'a7',
 	'person': 'a7',
 	'corp': 'a7',
@@ -1814,12 +1802,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'transwiki':  // A5
-				if (form['csd.transwiki_location'] && form['csd.transwiki_location'].value) {
-					currentParams.location = form['csd.transwiki_location'].value;
-				}
-				break;
-
 			case 'a10':  // A10
 				if (form['csd.a10_article']) {
 					var duptitle = form['csd.a10_article'].value;
@@ -1869,9 +1851,6 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 				break;
 			case 'a2':
 				param = 'source';
-				break;
-			case 'a5':
-				param = 'location';
 				break;
 			case 'a10':
 				param = 'article';
