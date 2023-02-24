@@ -309,11 +309,6 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				appendList('Categories', Twinkle.speedy.categoryList);
 				break;
 
-			case 100:  // portal
-			case 101:  // portal talk
-				appendList('Portals', Twinkle.speedy.portalList);
-				break;
-
 			default:
 				break;
 		}
@@ -775,24 +770,6 @@ Twinkle.speedy.userList = [
 	}
 ];
 
-Twinkle.speedy.portalList = [
-	{
-		label: 'P1: Portal that would be subject to speedy deletion if it were an article',
-		value: 'p1',
-		tooltip: 'You must specify a single article criterion that applies in this case (A1, A3, A7, or A10).',
-		subgroup: {
-			name: 'p1_criterion',
-			type: 'input',
-			label: 'Article criterion that would apply:'
-		}
-	},
-	{
-		label: 'P2: Underpopulated portal (fewer than three non-stub articles)',
-		value: 'emptyportal',
-		tooltip: 'Any Portal based on a topic for which there is not a non-stub header article, and at least three non-stub articles detailing subject matter that would be appropriate to discuss under the title of that Portal'
-	}
-];
-
 Twinkle.speedy.generalList = [
 	{
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
@@ -1095,9 +1072,7 @@ Twinkle.speedy.normalizeHash = {
 	'catempty': 'c1',
 	'userreq': 'u1',
 	'nouser': 'u2',
-	'notwebhost': 'u5',
-	'p1': 'p1',
-	'emptyportal': 'p2'
+	'notwebhost': 'u5'
 };
 
 Twinkle.speedy.callbacks = {
@@ -1568,8 +1543,6 @@ Twinkle.speedy.callbacks = {
 					input = '[' + input + ' ' + input + ']';
 				} else if (normalize === 'F8' && csdparam === 'filename') {
 					input = '[[commons:' + input + ']]';
-				} else if (normalize === 'P1' && csdparam === 'criterion') {
-					input = '[[WP:CSD#' + input + ']]';
 				}
 				return ' {' + normalize + ' ' + csdparam + ': ' + input + '}';
 			};
@@ -1859,18 +1832,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'p1':  // P1
-				if (form['csd.p1_criterion']) {
-					var criterion = form['csd.p1_criterion'].value;
-					if (!criterion || !criterion.trim()) {
-						alert('CSD P1:  Please specify a single criterion.');
-						parameters = null;
-						return false;
-					}
-					currentParams.criterion = criterion;
-				}
-				break;
-
 			default:
 				break;
 		}
@@ -1917,9 +1878,6 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 				break;
 			case 'f9':
 				param = 'url';
-				break;
-			case 'p1':
-				param = 'criterion';
 				break;
 			default:
 				break;

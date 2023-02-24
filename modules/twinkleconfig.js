@@ -39,8 +39,7 @@ Twinkle.config.commonSets = {
 		u1: 'U1', u2: 'U2', u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9',
 		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4',
-		p1: 'P1', p2: 'P2'
+		r2: 'R2', r3: 'R3', r4: 'R4'
 	},
 	csdCriteriaDisplayOrder: [
 		'db',
@@ -49,8 +48,7 @@ Twinkle.config.commonSets = {
 		'u1', 'u2', 'u5',
 		'f1', 'f2', 'f3', 'f7', 'f8', 'f9',
 		'c1',
-		'r2', 'r3', 'r4',
-		'p1', 'p2'
+		'r2', 'r3', 'r4'
 	],
 	csdCriteriaNotification: {
 		db: 'Custom rationale ({{db}})',
@@ -60,8 +58,7 @@ Twinkle.config.commonSets = {
 		u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9',
 		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4',
-		p1: 'P1', p2: 'P2'
+		r2: 'R2', r3: 'R3', r4: 'R4'
 	},
 	csdCriteriaNotificationDisplayOrder: [
 		'db',
@@ -70,8 +67,7 @@ Twinkle.config.commonSets = {
 		'u5',
 		'f1', 'f2', 'f3', 'f7', 'f9',
 		'c1',
-		'r2', 'r3', 'r4',
-		'p1', 'p2'
+		'r2', 'r3', 'r4'
 	],
 	csdAndImageDeletionCriteria: {
 		db: 'Custom rationale ({{db}})',
@@ -80,8 +76,7 @@ Twinkle.config.commonSets = {
 		u1: 'U1', u2: 'U2', u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f11: 'F11',
 		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4',
-		p1: 'P1', p2: 'P2'
+		r2: 'R2', r3: 'R3', r4: 'R4'
 	},
 	csdAndImageDeletionCriteriaDisplayOrder: [
 		'db',
@@ -90,8 +85,7 @@ Twinkle.config.commonSets = {
 		'u1', 'u2', 'u5',
 		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f11',
 		'c1',
-		'r2', 'r3', 'r4',
-		'p1', 'p2'
+		'r2', 'r3', 'r4'
 	],
 	namespacesNoSpecial: {
 		0: 'Article',
