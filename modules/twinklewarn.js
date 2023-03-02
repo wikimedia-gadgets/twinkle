@@ -1103,10 +1103,9 @@
 				summary: 'Warning: Using inaccurate or inappropriate edit summaries'
 			},
 			'uw-translation': {
-				label: 'Adding translations without attribution',
-				summary: 'Notice:Attribution is required for translations'
+				label: 'Adding translation without proper attribution',
+				summary: 'Notice: Attribution required when translating an article'
 			}
-
 		},
 	
 		singlewarn: {
