@@ -1105,7 +1105,7 @@
 			'uw-translation': {
 				label: 'Translation without attribution',
 				summary: 'Notice: Please use attribution when translating pages. '
-				}
+			}
 		},
 		singlewarn: {
 			'uw-3rr': {
