@@ -1141,7 +1141,7 @@ Twinkle.tag.redirectList = {
 					label: 'Flag',
 					tooltip: 'Is the emoji a flag emoji?'
 				}]
-			}
+			},
 			{ tag: 'R from phrase', description: 'redirect from a phrase to a more general relevant article covering the topic' },
 			{ tag: 'R from list topic', description: 'redirect from the topic of a list to the equivalent list' },
 			{ tag: 'R from member', description: 'redirect from a member of a group to a related topic such as the group or organization' },
