@@ -1102,9 +1102,9 @@ Twinkle.warn.messages = {
 			label: 'Using inaccurate or inappropriate edit summaries',
 			summary: 'Warning: Using inaccurate or inappropriate edit summaries'
 			},
-		'uw-translation: {
-                label: 'Translation without attribution',
-                summary: 'Notice: Please use attribution when translating pages. See [[WP:CWW'
+		'uw-translation' : {
+                	label: 'Translation without attribution',
+                	summary: 'Notice: Please use attribution when translating pages. See [[WP:CWW'
             }
 	},
 
