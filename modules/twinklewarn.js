@@ -1101,12 +1101,13 @@
 			'uw-wrongsummary': {
 				label: 'Using inaccurate or inappropriate edit summaries',
 				summary: 'Warning: Using inaccurate or inappropriate edit summaries'
-				},
-			'uw-translation': {
+			}
+			'uw-translate': {
 				label: 'Translation without attribution',
-				summary: 'Notice: Please use attribution when translating pages. '
+				summary: 'Notice:Attributionis required for translations'
 			}
 		},
+	
 		singlewarn: {
 			'uw-3rr': {
 				label: 'Potential three-revert rule violation; see also uw-ew',
