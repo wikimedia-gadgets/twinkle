@@ -355,20 +355,20 @@ Twinkle.warn.messages = {
 					summary: 'Final warning: Introducing deliberate factual errors'
 				}
 			},
-			'uw-fringe':{
-				level1:{
+			'uw-fringe': {
+				level1: {
 					label: 'Introducing fringe theories',
 					summary: 'General note: Introducing fringe theories'
 				},
-				level2:{
+				level2: {
 					label: 'Introducing fringe theories',
 					summary: 'Caution: Introducing fringe theories'
 				},
-				level3:{
+				level3: {
 					label: 'Introducing fringe theories',
 					summary: 'Warning: Introducing fringe theories'
 				},
-				level4:{
+				level4: {
 					label: 'Introducing fringe theories',
 					summary: 'Final warning: Introducing fringe theories'
 				}
