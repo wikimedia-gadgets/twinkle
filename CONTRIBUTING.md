@@ -74,6 +74,8 @@ The usual rule of thumb is that a good subject line will complete the sentence "
 
 For quicker and easier reviewing, please consider splitting large pull requests into multiple smaller ones.
 
+If your pull request should close an issue in the issue tracker, don't forget to add text such as `Fixes #1682` to the body text of the pull request. This will tell GitHub to close that issue when the pull request is merged.
+
 ### Style guideline
 
 For consistency and to cut down on potential errors, we follow a coherent style throughout the code.  [eslint][eslint.org] can be used to check your code before submission and even repair many common issues.  To install via `npm`, just run `npm install` from the main Twinkle directory in your terminal.  You can then freely check your code by running `npm run lint`, and if you run `npm run lint:fix` then `eslint` will clean up some (but not all!) style differences.  More information on specific style rules can be seen in [issue #500][fivehundred] and in `.eslintrc.json`, but the best advice is to just follow the style of surrounding code!  Some specific examples and deviations are elucidated below.
