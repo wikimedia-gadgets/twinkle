@@ -575,7 +575,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					aivPage.getStatusElement().status('Adding new report...');
 					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
 					aivPage.setChangeTags(Twinkle.changeTags);
-					aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid, true) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
+					aivPage.setAppendText('\n*{{vandal|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
 					aivPage.append();
 				});
 			});
