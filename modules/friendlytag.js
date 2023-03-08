@@ -52,7 +52,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			action: 'pagetriagelist',
 			format: 'json',
 			page_id: mw.config.get('wgArticleId')
-		}).done(function(response) {
+		}).then(function(response) {
+			// figure out whether the article is marked as reviewed in PageTriage
 			var isReviewed = false;
 			var isOldPage = response.pagetriagelist.result !== 'success' || response.pagetriagelist.pages.length === 0;
 			var isMarkedAsReviewed = response.pagetriagelist.pages[0].patrol_status > 0;
@@ -60,6 +61,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 				isReviewed = true;
 			}
 
+			// if article is not marked as reviewed, show the "mark as reviewed" check box
 			if (!isReviewed) {
 				// Quickform is probably already rendered. Instead of using form.append(), we need to make an element and then append it using JQuery.
 				var checkbox = new Morebits.quickForm.element({
