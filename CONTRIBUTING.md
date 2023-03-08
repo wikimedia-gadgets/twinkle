@@ -39,7 +39,7 @@ First, familiarize yourself with the code; most likely, the changes you want are
 
 ### Testing your code
 
-Manually testing your patch (such as by running Twinkle on localhost using `npm start` , loading it in your testwiki common.js, then clicking around and testing the module that you modified) is required. Please do not submit untested code. Twinkle has 40,000 users, so it is important to keep bugs out of production.
+Manually testing your patch (such as by running Twinkle on localhost using `npm start`, loading it in your testwiki common.js, then clicking around and testing the module that you modified) is required. Please do not submit untested code. Twinkle has 40,000 users, so it is important to keep bugs out of production.
 
 Once you have made your changes, run `npm start`. This launches a webserver listening on `http://127.0.0.1:5500`. So, to load the local version of Twinkle on-wiki, you need to run `mw.loader.load('http://127.0.0.1:5500')` in your browser console. A more permanent solution would be to add that line in your [common.js page](https://en.wikipedia.org/wiki/Special:MyPage/common.js), since code entered in the console does not persist on page navigation.
 
