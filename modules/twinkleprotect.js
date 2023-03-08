@@ -815,31 +815,31 @@ Twinkle.protect.protectionPresetsInfo = {
 		move: 'extendedconfirmed',
 		expiry: 'infinity',
 		reason: '[[WP:30/500|Arbitration enforcement]]',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-30-500-vandalism': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent [[WP:Vandalism|vandalism]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-30-500-disruptive': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-30-500-blp': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent violations of the [[WP:BLP|biographies of living persons policy]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-30-500-sock': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-semi-vandalism': {
 		edit: 'autoconfirmed',
@@ -969,7 +969,7 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' },
 			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' },
 			{ label: '{{pp-semi-indef}}: general long-term semi-protection', value: 'pp-semi-indef' },
-			{ label: '{{pp-30-500}}: extended confirmed protection', value: 'pp-30-500' }
+			{ label: '{{pp-extended}}: extended confirmed protection', value: 'pp-extended' }
 		]
 	},
 	{
