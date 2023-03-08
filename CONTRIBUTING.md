@@ -64,13 +64,15 @@ As Twinkle is used many thousands of times a day, changes to how Twinkle works m
 
 ### Submitting your pull request
 
-When you are ready to submit, make sure you created a new branch, commit your changes, push your changes to your GitHub fork, then [initiate a pull request (PR)](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork) by visiting one of the GitHub repos and clicking "Compare & pull request" in the message that appears at the top. The title of your pull request should be the module you are proposing changes to, a colon and a space, followed by a brief but descriptive explanation of what the changes do, such as:
+When you are ready to submit, make sure you created a new branch, commit your changes, push your changes to your GitHub fork, then [initiate a pull request (PR)](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork) by visiting one of the GitHub repos and clicking "Compare & pull request" in the message that appears at the top.
+
+The title of your pull request should be the module you are proposing changes to, a colon and a space, followed by a brief but descriptive explanation of what the changes do, such as:
 
     xfd: Prevent sysops from deleting the main page
 
 The usual rule of thumb is that a good subject line will complete the sentence "*If applied, this commit will...*"  The full commit message is a good place to explain further details, both for reviewers and anyone in the future, specifically focusing on *why* the changes are being made, not *how*.  There are many guides to writing good commit messages, one particularly helpful one is by @cbeams: <https://chris.beams.io/posts/git-commit/>.
 
-If you made multiple commits while working on the same feature, it's a good idea to [squash and rebase your commits](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History) before submitting your PR. Separate ideas or enhancements should be different commits, and entirely separate concepts should be different pull requests.  For example, if you made three commits while changing the pulldown options in `twinkleprotect.js` and `twinklebatchprotect.js`, those should be squashed into one commit, but if you also disabled loading `twinklespeedy.js` and `twinklexfd.js` on the mainpage, that should be a separate pull request.  See also [how to file a bug report or feature request](README.md#how-to-file-a-bug-report-or-feature-request).
+For quicker and easier reviewing, please consider splitting large pull requests into multiple smaller ones.
 
 ### Style guideline
 
