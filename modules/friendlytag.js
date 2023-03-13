@@ -854,7 +854,7 @@ Twinkle.tag.article.tagList = {
 		'Referencing technique': [
 			{ tag: 'Citation style', description: 'unclear or inconsistent citation style' },
 			{ tag: 'Cleanup bare URLs', description: 'uses bare URLs for references, which are prone to link rot' },
-			{ tag: 'More footnotes', description: 'has some references, but insufficient inline citations' },
+			{ tag: 'More footnotes needed', description: 'has some references, but insufficient inline citations' },
 			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' }
 		],
 		'Categories': [
