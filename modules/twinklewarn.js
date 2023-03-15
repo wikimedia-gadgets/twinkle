@@ -1082,6 +1082,10 @@ Twinkle.warn.messages = {
 			label: 'Posting at the top of talk pages',
 			summary: 'Notice: Posting at the top of talk pages'
 		},
+		'uw-translation': {
+			label: 'Adding translations without proper attribution',
+			summary: 'Notice: Attribution required when translating articles'
+		},
 		'uw-unattribcc': {
 			label: 'Copying from compatibly-licensed sources without attribution',
 			summary: 'Notice: Copying from compatibly-licensed sources without attribution'
@@ -1101,10 +1105,6 @@ Twinkle.warn.messages = {
 		'uw-wrongsummary': {
 			label: 'Using inaccurate or inappropriate edit summaries',
 			summary: 'Warning: Using inaccurate or inappropriate edit summaries'
-		},
-		'uw-translation': {
-			label: 'Adding translations without proper translation',
-			summary: 'Notice: Attribution required when translating articles'
 		}
 	},
 
