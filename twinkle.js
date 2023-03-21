@@ -93,11 +93,11 @@ Twinkle.defaultConfig = {
 	// prodLogPageName: 'PROD log',
 
 	// CSD
-	// speedySelectionStyle: 'buttonClick',
-	// watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
-	// watchSpeedyExpiry: '1 month',
-	// markSpeedyPagesAsPatrolled: false,
-	// watchSpeedyUser: '1 month',
+	speedySelectionStyle: 'buttonClick',
+	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
+	watchSpeedyExpiry: '1 month',
+	markSpeedyPagesAsPatrolled: false,
+	watchSpeedyUser: '1 month',
 
 	// these next two should probably be identical by default
 	welcomeUserOnSpeedyDeletionNotification: [
