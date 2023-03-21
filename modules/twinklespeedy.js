@@ -313,7 +313,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			case 11:  // file talk
 				appendList('Template', Twinkle.speedy.templateList);
 				break;
-				
+
 			case 14:  // category
 			case 15:  // category talk
 				appendList('Categories', Twinkle.speedy.categoryList);
@@ -864,7 +864,7 @@ Twinkle.speedy.generalList = [
 			'Original author or uploader requests deletion of recently created (<7 days) unused content. For author/uploader requests for deletion of content that is older a deletion request should be filed instead. If the author blanks the page, this can also be taken as a deletion request.',
 		subgroup: {
 			name: 'author_rationale',
-			parameter: 'rationale',
+			parameter: '2',
 			type: 'input',
 			label: 'Optional explanation: ',
 			tooltip: 'Perhaps linking to where the author requested this deletion.',
@@ -879,7 +879,7 @@ Twinkle.speedy.generalList = [
 			'The page or file depends on content that was deleted or no longer existing, such as orphaned talk pages without useful content, subpages without parent page, and so on. The criterion only applies to content within Wikimedia, and does not apply to external content (i.e., deleted source).',
 		subgroup: {
 			name: 'g8_rationale',
-			parameter: 'rationale',
+			parameter: '2',
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60,
@@ -894,8 +894,8 @@ Twinkle.speedy.generalList = [
 		tooltip:
 			'This includes only content uploaded to promote goods and services when it is clearly not useful for any educational purpose (see Commons:Project scope). Files that illustrate contemporary or historical advertisements do not fall under this criterion.',
 		subgroup: {
-			name: 'g8_rationale',
-			parameter: 'rationale',
+			name: 'advert_rationale',
+			parameter: '2',
 			type: 'input',
 			label: 'Optional explanation: ',
 			size: 60,
@@ -1418,21 +1418,7 @@ Twinkle.speedy.callbacks = {
 				(Morebits.userIsSysop ? '\n\nThis log does not track outright speedy deletions made using Twinkle.' : '');
 
 			var formatParamLog = function(normalize, csdparam, input) {
-				if ((normalize === 'G4' && csdparam === 'xfd') ||
-					(normalize === 'G6' && csdparam === 'page') ||
-					(normalize === 'G6' && csdparam === 'fullvotepage') ||
-					(normalize === 'G6' && csdparam === 'sourcepage') ||
-					(normalize === 'A2' && csdparam === 'source') ||
-					(normalize === 'A10' && csdparam === 'article') ||
-					(normalize === 'F1' && csdparam === 'filename')) {
-					input = '[[:' + input + ']]';
-				} else if (normalize === 'G5' && csdparam === 'user') {
-					input = '[[:User:' + input + ']]';
-				} else if (normalize === 'G12' && csdparam.lastIndexOf('url', 0) === 0 && input.lastIndexOf('http', 0) === 0) {
-					input = '[' + input + ' ' + input + ']';
-				} else if (normalize === 'F8' && csdparam === 'filename') {
-					input = '[[commons:' + input + ']]';
-				}
+				input = '[[:' + input + ']]';
 				return ' {' + normalize + ' ' + csdparam + ': ' + input + '}';
 			};
 
@@ -1502,7 +1488,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 	$.each(values, function(index, value) {
 		var currentParams = [];
 		switch (value) {
-			case 'reason':
+			case 'reason': //db
 				if (form['csd.reason_1']) {
 					var dbrationale = form['csd.reason_1'].value;
 					if (!dbrationale || !dbrationale.trim()) {
@@ -1513,7 +1499,112 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 					currentParams['1'] = dbrationale;
 				}
 				break;
+			
+			case 'copyvio':
+				if (form['csd.imgcopyvio_url']) {
+					var url = form['csd.imgcopyvio_url'].value;
+					if (url) {
+						currentParams.source = url;
+					}
+				}
+				if (form['csd.imgcopyvio_rationale']) {
+					var rationale = form['csd.imgcopyvio_rationale'].value;
+					if (rationale) {
+						currentParams['1'] = rationale;
+					}
+				}
+				break;
+			
+			case 'fairuse':
+				if (form['csd.fairuse_rationale']) {
+					var rationale = form['csd.fairuse_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
 
+			case 'deriv':
+				if (form['csd.deriv_rationale']) {
+					var rationale = form['csd.deriv_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+
+			case 'lrfailed':
+				if (form['csd.lrfailed_rationale']) {
+					var rationale = form['csd.lrfailed_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+
+			case 'vrt':
+				if (form['csd.vrt_rationale']) {
+					var rationale = form['csd.vrt_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+
+			case 'noimage':
+				if (form['csd.noimage_rationale']) {
+					var rationale = form['csd.noimage_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+
+			case 'duplicate':
+				if (form['csd.duplicate_rationale']) {
+					var rationale = form['csd.duplicate_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+
+			case 'embeddeddata':
+				if (form['csd.embeddeddata_rationale']) {
+					var rationale = form['csd.embeddeddata_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+			
+			case 'selfie':
+				if (form['csd.selfie_rationale']) {
+					var rationale = form['csd.selfie_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+			
+			case 'catbadname':
+				if (form['csd.catbadname_name']) {
+					var correctName = form['csd.catbadname_name']
+					if (correctName) {
+						currentParams['2'] = correctName;
+					}
+				}
+				break;
+			
+			case 'catempty':
+				if (form['csd.catempty_rationale']) {
+					var rationale = form['csd.catempty_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+				
 			case 'userreq':  // U1
 				if (form['csd.userreq_rationale']) {
 					var u1rationale = form['csd.userreq_rationale'].value;
@@ -1523,188 +1614,103 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						parameters = null;
 						return false;
 					}
-					currentParams.rationale = u1rationale;
+					currentParams['2'] = u1rationale;
 				}
 				break;
 
+			case 'inappuserspace':
+				if (form['csd.inappuserspace_rationale']) {
+					var rationale = form['csd.inappuserspace_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+				
+			case 't1':
+				if (form['csd.t1_rationale']) {
+					var t1rationale = form['csd.t1_rationale'].value;
+					if (!t1rationale || !t1rationale.trim()) {
+						alert('CSD T1:  Please include the template that this duplicates here.');
+						parameters = null;
+						return false;
+					}
+					currentParams['2'] = t1rationale;
+				}
+				break;
+			
+			case 't2':
+				if (form['csd.t2_rationale']) {
+					var rationale = form['csd.t2_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+			
+			case 'vandalism':
+				if (form['csd.vandalism_rationale']) {
+					var rationale = form['csd.vandalism_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+			
 			case 'repost':  // G4
 				if (form['csd.repost_xfd']) {
 					var deldisc = form['csd.repost_xfd'].value;
 					if (deldisc) {
-						currentParams.xfd = deldisc;
+						currentParams['2'] = deldisc;
 					}
 				}
 				break;
 
-			case 'banned':  // G5
-				if (form['csd.banned_user'] && form['csd.banned_user'].value) {
-					currentParams.user = form['csd.banned_user'].value.replace(/^\s*User:/i, '');
+			case 'g6':
+				if (form['csd.g6_rationale']) {
+					var rationale = form['csd.g6_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
 				}
 				break;
 
-			case 'move':  // G6
-				if (form['csd.move_page'] && form['csd.move_reason']) {
-					var movepage = form['csd.move_page'].value,
-						movereason = form['csd.move_reason'].value;
-					if (!movepage || !movepage.trim()) {
-						alert('CSD G6 (move):  Please specify the page to be moved here.');
+			case 'author':
+				if (form['csd.author_rationale']) {
+					var rationale = form['csd.author_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+				
+			case 'g8':
+				if (form['csd.g8_rationale']) {
+					var rationale = form['csd.g8_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+
+			case 'advert':
+				if (form['csd.advert_rationale']) {
+					var rationale = form['csd.advert_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+
+			case 'textcopyvio':
+				if (form['csd.textcopyvio_rationale']) {
+					var rationale = form['csd.textcopyvio_rationale'].value;
+					if (!rationale || !rationale.trim()) {
+						alert('CSD G11:  Include the URL or source of the copyvio');
 						parameters = null;
 						return false;
 					}
-					if (!movereason || !movereason.trim()) {
-						alert('CSD G6 (move):  Please specify the reason for the move.');
-						parameters = null;
-						return false;
-					}
-					currentParams.page = movepage;
-					currentParams.reason = movereason;
-				}
-				break;
-
-			case 'xfd':  // G6
-				if (form['csd.xfd_fullvotepage']) {
-					var xfd = form['csd.xfd_fullvotepage'].value;
-					if (xfd) {
-						currentParams.fullvotepage = xfd;
-					}
-				}
-				break;
-
-			case 'afc-move':  // G6
-				if (form['csd.draft_page']) {
-					var draftpage = form['csd.draft_page'].value;
-					if (!draftpage || !draftpage.trim()) {
-						alert('CSD G6 (AfC move):  Please specify the draft to be moved here.');
-						parameters = null;
-						return false;
-					}
-					currentParams.page = draftpage;
-				}
-				break;
-
-			case 'copypaste':  // G6
-				if (form['csd.copypaste_sourcepage']) {
-					var copypaste = form['csd.copypaste_sourcepage'].value;
-					if (!copypaste || !copypaste.trim()) {
-						alert('CSD G6 (copypaste):  Please specify the source page name.');
-						parameters = null;
-						return false;
-					}
-					currentParams.sourcepage = copypaste;
-				}
-				break;
-
-			case 'g6':  // G6
-				if (form['csd.g6_rationale'] && form['csd.g6_rationale'].value) {
-					currentParams.rationale = form['csd.g6_rationale'].value;
-				}
-				break;
-
-			case 'author':  // G7
-				if (form['csd.author_rationale'] && form['csd.author_rationale'].value) {
-					currentParams.rationale = form['csd.author_rationale'].value;
-				}
-				break;
-
-			case 'g8':  // G8
-				if (form['csd.g8_rationale'] && form['csd.g8_rationale'].value) {
-					currentParams.rationale = form['csd.g8_rationale'].value;
-				}
-				break;
-
-			case 'templatecat':  // G8
-				if (form['csd.templatecat_rationale'] && form['csd.templatecat_rationale'].value) {
-					currentParams.rationale = form['csd.templatecat_rationale'].value;
-				}
-				break;
-
-			case 'attack':  // G10
-				currentParams.blanked = 'yes';
-				// it is actually blanked elsewhere in code, but setting the flag here
-				break;
-
-			case 'copyvio':  // G12
-				if (form['csd.copyvio_url'] && form['csd.copyvio_url'].value) {
-					currentParams.url = form['csd.copyvio_url'].value;
-				}
-				if (form['csd.copyvio_url2'] && form['csd.copyvio_url2'].value) {
-					currentParams.url2 = form['csd.copyvio_url2'].value;
-				}
-				if (form['csd.copyvio_url3'] && form['csd.copyvio_url3'].value) {
-					currentParams.url3 = form['csd.copyvio_url3'].value;
-				}
-				break;
-
-			case 'afc':  // G13
-				currentParams.ts = '$TIMESTAMP'; // to be replaced by the last revision timestamp when page is saved
-				break;
-
-			case 'redundantimage':  // F1
-				if (form['csd.redundantimage_filename']) {
-					var redimage = form['csd.redundantimage_filename'].value;
-					if (!redimage || !redimage.trim()) {
-						alert('CSD F1:  Please specify the filename of the other file.');
-						parameters = null;
-						return false;
-					}
-					currentParams.filename = new RegExp('^\\s*' + Morebits.namespaceRegex(6) + ':', 'i').test(redimage) ? redimage : 'File:' + redimage;
-				}
-				break;
-
-			case 'badfairuse':  // F7
-				if (form['csd.badfairuse_rationale'] && form['csd.badfairuse_rationale'].value) {
-					currentParams.rationale = form['csd.badfairuse_rationale'].value;
-				}
-				break;
-
-			case 'commons':  // F8
-				if (form['csd.commons_filename']) {
-					var filename = form['csd.commons_filename'].value;
-					if (filename && filename.trim() && filename !== Morebits.pageNameNorm) {
-						currentParams.filename = new RegExp('^\\s*' + Morebits.namespaceRegex(6) + ':', 'i').test(filename) ? filename : 'File:' + filename;
-					}
-				}
-				break;
-
-			case 'imgcopyvio':  // F9
-				if (form['csd.imgcopyvio_url'] && form['csd.imgcopyvio_rationale']) {
-					var f9url = form['csd.imgcopyvio_url'].value;
-					var f9rationale = form['csd.imgcopyvio_rationale'].value;
-					if ((!f9url || !f9url.trim()) && (!f9rationale || !f9rationale.trim())) {
-						alert('CSD F9: You must enter a url or reason (or both) when nominating a file under F9.');
-						parameters = null;
-						return false;
-					}
-					if (form['csd.imgcopyvio_url'].value) {
-						currentParams.url = f9url;
-					}
-					if (form['csd.imgcopyvio_rationale'].value) {
-						currentParams.rationale = f9rationale;
-					}
-				}
-				break;
-
-			case 'foreign':  // A2
-				if (form['csd.foreign_source']) {
-					var foreignlink = form['csd.foreign_source'].value;
-					if (!foreignlink || !foreignlink.trim()) {
-						alert('CSD A2:  Please specify an interwiki link to the article of which this is a copy.');
-						parameters = null;
-						return false;
-					}
-					currentParams.source = foreignlink;
-				}
-				break;
-
-			case 'a10':  // A10
-				if (form['csd.a10_article']) {
-					var duptitle = form['csd.a10_article'].value;
-					if (!duptitle || !duptitle.trim()) {
-						alert('CSD A10:  Please specify the name of the article which is duplicated.');
-						parameters = null;
-						return false;
-					}
-					currentParams.article = duptitle;
+					currentParams['2'] = rationale;
 				}
 				break;
 
@@ -1722,45 +1728,16 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParameters(normalized, parameters) {
 	var utparams = [];
 
-	// Special cases
-	if (normalized === 'db') {
-		utparams['2'] = parameters['1'];
-	} else if (normalized === 'g6') {
-		utparams.key1 = 'to';
-		utparams.value1 = Morebits.pageNameNorm;
-	} else if (normalized === 'g12') {
-		['url', 'url2', 'url3'].forEach(function(item, idx) {
-			if (parameters[item]) {
-				idx++;
-				utparams['key' + idx] = item;
-				utparams['value' + idx] = utparams[item] = parameters[item];
-			}
-		});
-	} else {
-		// Handle the rest
-		var param;
-		switch (normalized) {
-			case 'g4':
-				param = 'xfd';
-				break;
-			case 'a2':
-				param = 'source';
-				break;
-			case 'a10':
-				param = 'article';
-				break;
-			case 'f9':
-				param = 'url';
-				break;
-			default:
-				break;
-		}
-		// No harm in providing a usertalk template with the others' parameters
-		if (param && parameters[param]) {
-			utparams.key1 = param;
-			utparams.value1 = utparams[param] = parameters[param];
-		}
+	switch (normalized) {
+		case 'db': // Speedydelete and Speedynote
+			utparams['2'] = parameters['1'];
+		case 'f1': // Copyvio and Copyvionote
+			utparams['2'] = parameters['source'];
+			utparams['3'] = parameters['1'];
+		default: // SD and Speedynote
+			utparams['2'] = parameters['2'];
 	}
+	
 	return utparams;
 };
 
