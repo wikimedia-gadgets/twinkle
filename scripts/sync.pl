@@ -456,6 +456,7 @@ USAGE
 #   modules/twinkleblock.js
 #   modules/twinkledeprod.js
 #   modules/twinkleimage.js
+#   modules/twinkleprod.js
 #   modules/twinkleprotect.js
 #   modules/twinklewarn.js
 #   modules/twinklexfd.js
@@ -478,6 +479,5 @@ twinkle.js
   modules/twinklebatchundelete.js
   modules/twinklediff.js
   modules/twinklefluff.js
-  modules/twinkleprod.js
   modules/twinklespeedy.js
   modules/twinkleunlink.js
