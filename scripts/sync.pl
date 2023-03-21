@@ -28,10 +28,10 @@ my %conf = (
             username => q{},
             password => q{},
             mode => q{},
-            lang => 'en',
-            family => 'wikipedia',
+            lang => 'commons',
+            family => 'wikimedia',
             url => q{},
-            base => 'User:AzaToth/'
+            base => 'User:Mdaniels5757/'
            );
 
 my $rc = '.twinklerc';
@@ -417,12 +417,12 @@ Usage: $PROGRAM_NAME --mode=deploy|pull|push --username username --password pass
     --username, -s Username for account. Required.
     --password, -p Password for account. Required.
 
-    --lang, -l Target language, default 'en'
-    --family, -f Target family, default 'wikipedia'
+    --lang, -l Target language, default 'commons'
+    --family, -f Target family, default 'wikimedia'
 
     --all, -a Pass all available files, rather than just those on the commandline
 
-    --base, -b Base page prefix where on-wiki files exist, default 'User:AzaToth/'
+    --base, -b Base page prefix where on-wiki files exist, default 'User:Mdaniels5757/'
 
 Less common options:
 
@@ -451,6 +451,19 @@ USAGE
 ## The lines below do not represent Perl code, and are not examined by the
 ## compiler.  Rather, they are used by the --all option to simplify bulk
 ## updating all files.
+## Removed:
+#   modules/twinklearv.js
+#   modules/twinkleblock.js
+#   modules/twinkledeprod.js
+#   modules/twinkleimage.js
+#   modules/twinkleprotect.js
+#   modules/twinklewarn.js
+#   modules/twinklexfd.js
+#   modules/friendlyshared.js
+#   modules/friendlytag.js
+#   modules/friendlytalkback.js
+#   modules/friendlywelcome.js
+
 __DATA__
 twinkle.js
   twinkle.css
@@ -460,22 +473,11 @@ twinkle.js
   lib/select2.min.js
   lib/select2.min.css
   modules/twinkleconfig.js
-  modules/twinklearv.js
   modules/twinklebatchdelete.js
   modules/twinklebatchprotect.js
   modules/twinklebatchundelete.js
-  modules/twinkleblock.js
-  modules/twinkledeprod.js
   modules/twinklediff.js
   modules/twinklefluff.js
-  modules/twinkleimage.js
   modules/twinkleprod.js
-  modules/twinkleprotect.js
   modules/twinklespeedy.js
   modules/twinkleunlink.js
-  modules/twinklewarn.js
-  modules/twinklexfd.js
-  modules/friendlyshared.js
-  modules/friendlytag.js
-  modules/friendlytalkback.js
-  modules/friendlywelcome.js
