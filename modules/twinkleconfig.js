@@ -34,66 +34,71 @@ Twinkle.config.watchlistEnums = {
 Twinkle.config.commonSets = {
 	csdCriteria: {
 		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u1: 'U1', u2: 'U2', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9',
-		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4'
+		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11',
+		u1: 'U1', u2: 'U2', u3: 'U3',
+		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f7: 'F7', f8: 'F8', f9: 'F9', f10: 'F10',
+		c1: 'C1', c2: 'C2',
+		t1: 'T1', t2: 'T2',
+		ga1: 'GA1', ga2: 'GA2',
+		com1: 'COM1'
 	},
 	csdCriteriaDisplayOrder: [
 		'db',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'u1', 'u2', 'u5',
-		'f1', 'f2', 'f3', 'f7', 'f8', 'f9',
-		'c1',
-		'r2', 'r3', 'r4'
+		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11',
+		'u1', 'u2', 'u3',
+		'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10',
+		'c1', 'c2',
+		't1', 't2',
+		'ga1', 'ga2',
+		'com1'
 	],
 	csdCriteriaNotification: {
 		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g6: 'G6 ("copy-paste move" only)',
-		g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9',
-		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4'
+		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11',
+		u1: 'U1', u2: 'U2', u3: 'U3',
+		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f7: 'F7', f8: 'F8', f9: 'F9', f10: 'F10',
+		c1: 'C1', c2: 'C2',
+		t1: 'T1', t2: 'T2',
+		ga1: 'GA1', ga2: 'GA2',
+		com1: 'COM1'
 	},
 	csdCriteriaNotificationDisplayOrder: [
 		'db',
-		'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'u5',
-		'f1', 'f2', 'f3', 'f7', 'f9',
-		'c1',
-		'r2', 'r3', 'r4'
+		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11',
+		'u1', 'u2', 'u3',
+		'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10',
+		'c1', 'c2',
+		't1', 't2',
+		'ga1', 'ga2',
+		'com1'
 	],
 	csdAndImageDeletionCriteria: {
 		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u1: 'U1', u2: 'U2', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f11: 'F11',
-		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4'
+		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11',
+		u1: 'U1', u2: 'U2', u3: 'U3',
+		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f7: 'F7', f8: 'F8', f9: 'F9', f10: 'F10',
+		c1: 'C1', c2: 'C2',
+		t1: 'T1', t2: 'T2',
+		ga1: 'GA1', ga2: 'GA2',
+		com1: 'COM1'
 	},
 	csdAndImageDeletionCriteriaDisplayOrder: [
 		'db',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'u1', 'u2', 'u5',
-		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f11',
-		'c1',
-		'r2', 'r3', 'r4'
+		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11',
+		'u1', 'u2', 'u3',
+		'f1', 'f2', 'f3', 'f4', 'f5', 'f7', 'f8', 'f9', 'f10',
+		'c1', 'c2',
+		't1', 't2',
+		'ga1', 'ga2',
+		'com1'
 	],
 	namespacesNoSpecial: {
-		0: 'Article',
-		1: 'Talk (article)',
+		0: 'Gallery',
+		1: 'Talk (gallery)',
 		2: 'User',
 		3: 'User talk',
-		4: 'Wikipedia',
-		5: 'Wikipedia talk',
+		4: 'Commons',
+		5: 'Commons talk',
 		6: 'File',
 		7: 'File talk',
 		8: 'MediaWiki',
@@ -104,14 +109,24 @@ Twinkle.config.commonSets = {
 		13: 'Help talk',
 		14: 'Category',
 		15: 'Category talk',
-		100: 'Portal',
-		101: 'Portal talk',
-		118: 'Draft',
-		119: 'Draft talk',
-		710: 'TimedText',
-		711: 'TimedText talk',
+		100: 'Creator',
+		101: 'Creator talk',
+		102: 'TimedText',
+		103: 'TimedText talk',
+		104: 'Sequence',
+		105: 'Sequence talk',
+		106: 'Institution',
+		107: 'Institution talk',
+		460: 'Campaign',
+		461: 'Campaign talk',
+		486: 'Data',
+		487: 'Data talk',
+		490: 'GWToolset',
+		491: 'GWToolset talk',
 		828: 'Module',
-		829: 'Module talk'
+		829: 'Module talk',
+		1198: 'Translations',
+		1199: 'Translations talk'
 	}
 };
 
@@ -187,155 +202,155 @@ Twinkle.config.sections = [
 		]
 	},
 
-	{
-		title: 'ARV',
-		module: 'arv',
-		preferences: [
-			{
-				name: 'spiWatchReport',
-				label: 'Add sockpuppet report pages to watchlist',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			}
-		]
-	},
+	// {
+	// 	title: 'ARV',
+	// 	module: 'arv',
+	// 	preferences: [
+	// 		{
+	// 			name: 'spiWatchReport',
+	// 			label: 'Add sockpuppet report pages to watchlist',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		}
+	// 	]
+	// },
 
-	{
-		title: 'Block user',
-		module: 'block',
-		adminOnly: true,
-		preferences: [
-			// TwinkleConfig.defaultToBlock64 (boolean)
-			// Whether to default to just blocking the /64 on or off
-			{
-				name: 'defaultToBlock64',
-				label: 'For IPv6 addresses, select the option to block the /64 range by default',
-				type: 'boolean'
-			},
+	// {
+	// 	title: 'Block user',
+	// 	module: 'block',
+	// 	adminOnly: true,
+	// 	preferences: [
+	// 		// TwinkleConfig.defaultToBlock64 (boolean)
+	// 		// Whether to default to just blocking the /64 on or off
+	// 		{
+	// 			name: 'defaultToBlock64',
+	// 			label: 'For IPv6 addresses, select the option to block the /64 range by default',
+	// 			type: 'boolean'
+	// 		},
 
-			// TwinkleConfig.defaultToPartialBlocks (boolean)
-			// Whether to default partial blocks on or off
-			{
-				name: 'defaultToPartialBlocks',
-				label: 'Select partial blocks by default when opening the block menu',
-				helptip: 'If the user is already blocked, this will be overridden by in favor of defaulting to the current block type',
-				type: 'boolean'
-			},
+	// 		// TwinkleConfig.defaultToPartialBlocks (boolean)
+	// 		// Whether to default partial blocks on or off
+	// 		{
+	// 			name: 'defaultToPartialBlocks',
+	// 			label: 'Select partial blocks by default when opening the block menu',
+	// 			helptip: 'If the user is already blocked, this will be overridden by in favor of defaulting to the current block type',
+	// 			type: 'boolean'
+	// 		},
 
-			// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
-			// if true, blank the talk page when issuing an indef block notice (per [[WP:UWUL#Indefinitely blocked users]])
-			{
-				name: 'blankTalkpageOnIndefBlock',
-				label: 'Blank the talk page when indefinitely blocking users',
-				helptip: 'See <a href="' + mw.util.getUrl('Wikipedia:WikiProject_User_warnings/Usage_and_layout#Indefinitely_blocked_users') + '">WP:UWUL</a> for more information.',
-				type: 'boolean'
-			}
-		]
-	},
+	// 		// TwinkleConfig.blankTalkpageOnIndefBlock (boolean)
+	// 		// if true, blank the talk page when issuing an indef block notice (per [[WP:UWUL#Indefinitely blocked users]])
+	// 		{
+	// 			name: 'blankTalkpageOnIndefBlock',
+	// 			label: 'Blank the talk page when indefinitely blocking users',
+	// 			helptip: 'See <a href="' + mw.util.getUrl('Wikipedia:WikiProject_User_warnings/Usage_and_layout#Indefinitely_blocked_users') + '">WP:UWUL</a> for more information.',
+	// 			type: 'boolean'
+	// 		}
+	// 	]
+	// },
 
-	{
-		title: 'Image deletion (DI)',
-		module: 'image',
-		preferences: [
-			// TwinkleConfig.notifyUserOnDeli (boolean)
-			// If the user should be notified after placing a file deletion tag
-			{
-				name: 'notifyUserOnDeli',
-				label: 'Check the "notify initial uploader" box by default',
-				type: 'boolean'
-			},
+	// {
+	// 	title: 'Image deletion (DI)',
+	// 	module: 'image',
+	// 	preferences: [
+	// 		// TwinkleConfig.notifyUserOnDeli (boolean)
+	// 		// If the user should be notified after placing a file deletion tag
+	// 		{
+	// 			name: 'notifyUserOnDeli',
+	// 			label: 'Check the "notify initial uploader" box by default',
+	// 			type: 'boolean'
+	// 		},
 
-			// TwinkleConfig.deliWatchPage (string)
-			// The watchlist setting of the page tagged for deletion.
-			{
-				name: 'deliWatchPage',
-				label: 'Add image page to watchlist when tagging',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
+	// 		// TwinkleConfig.deliWatchPage (string)
+	// 		// The watchlist setting of the page tagged for deletion.
+	// 		{
+	// 			name: 'deliWatchPage',
+	// 			label: 'Add image page to watchlist when tagging',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
 
-			// TwinkleConfig.deliWatchUser (string)
-			// The watchlist setting of the user talk page if a notification is placed.
-			{
-				name: 'deliWatchUser',
-				label: 'Add user talk page of initial uploader to watchlist when notifying',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			}
-		]
-	},
+	// 		// TwinkleConfig.deliWatchUser (string)
+	// 		// The watchlist setting of the user talk page if a notification is placed.
+	// 		{
+	// 			name: 'deliWatchUser',
+	// 			label: 'Add user talk page of initial uploader to watchlist when notifying',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		}
+	// 	]
+	// },
 
-	{
-		title: 'Page protection ' + (Morebits.userIsSysop ? '(PP)' : '(RPP)'),
-		module: 'protect',
-		preferences: [
-			{
-				name: 'watchRequestedPages',
-				label: 'Add page to watchlist when requesting protection',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-			{
-				name: 'watchPPTaggedPages',
-				label: 'Add page to watchlist when tagging with protection template',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-			{
-				name: 'watchProtectedPages',
-				label: 'Add page to watchlist when protecting',
-				helptip: 'If also tagging the page after protection, that preference will be favored.',
-				adminOnly: true,
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			}
-		]
-	},
+	// {
+	// 	title: 'Page protection ' + (Morebits.userIsSysop ? '(PP)' : '(RPP)'),
+	// 	module: 'protect',
+	// 	preferences: [
+	// 		{
+	// 			name: 'watchRequestedPages',
+	// 			label: 'Add page to watchlist when requesting protection',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
+	// 		{
+	// 			name: 'watchPPTaggedPages',
+	// 			label: 'Add page to watchlist when tagging with protection template',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
+	// 		{
+	// 			name: 'watchProtectedPages',
+	// 			label: 'Add page to watchlist when protecting',
+	// 			helptip: 'If also tagging the page after protection, that preference will be favored.',
+	// 			adminOnly: true,
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		}
+	// 	]
+	// },
 
-	{
-		title: 'Proposed deletion (PROD)',
-		module: 'prod',
-		preferences: [
-			// TwinkleConfig.watchProdPages (string)
-			// Watchlist setting when applying prod template to page
-			{
-				name: 'watchProdPages',
-				label: 'Add article to watchlist when tagging',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
+	// {
+	// 	title: 'Proposed deletion (PROD)',
+	// 	module: 'prod',
+	// 	preferences: [
+	// 		// TwinkleConfig.watchProdPages (string)
+	// 		// Watchlist setting when applying prod template to page
+	// 		{
+	// 			name: 'watchProdPages',
+	// 			label: 'Add article to watchlist when tagging',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
 
-			// TwinkleConfig.markProdPagesAsPatrolled (boolean)
-			// If, when applying prod template to page, to mark the page as curated/patrolled (if the page was reached from NewPages)
-			{
-				name: 'markProdPagesAsPatrolled',
-				label: 'Mark page as patrolled/reviewed when tagging (if possible)',
-				helptip: 'This should probably not be checked as doing so is against best practice consensus',
-				type: 'boolean'
-			},
+	// 		// TwinkleConfig.markProdPagesAsPatrolled (boolean)
+	// 		// If, when applying prod template to page, to mark the page as curated/patrolled (if the page was reached from NewPages)
+	// 		{
+	// 			name: 'markProdPagesAsPatrolled',
+	// 			label: 'Mark page as patrolled/reviewed when tagging (if possible)',
+	// 			helptip: 'This should probably not be checked as doing so is against best practice consensus',
+	// 			type: 'boolean'
+	// 		},
 
-			// TwinkleConfig.prodReasonDefault (string)
-			// The prefilled PROD reason.
-			{
-				name: 'prodReasonDefault',
-				label: 'Prefilled PROD reason',
-				type: 'string'
-			},
+	// 		// TwinkleConfig.prodReasonDefault (string)
+	// 		// The prefilled PROD reason.
+	// 		{
+	// 			name: 'prodReasonDefault',
+	// 			label: 'Prefilled PROD reason',
+	// 			type: 'string'
+	// 		},
 
-			{
-				name: 'logProdPages',
-				label: 'Keep a log in userspace of all pages you tag for PROD',
-				helptip: 'Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you tag for PROD using Twinkle.',
-				type: 'boolean'
-			},
-			{
-				name: 'prodLogPageName',
-				label: 'Keep the PROD userspace log at this user subpage',
-				helptip: 'Enter a subpage name in this box. You will find your PROD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the PROD userspace log.',
-				type: 'string'
-			}
-		]
-	},
+	// 		{
+	// 			name: 'logProdPages',
+	// 			label: 'Keep a log in userspace of all pages you tag for PROD',
+	// 			helptip: 'Since non-admins do not have access to their deleted contributions, the userspace log offers a good way to keep track of all pages you tag for PROD using Twinkle.',
+	// 			type: 'boolean'
+	// 		},
+	// 		{
+	// 			name: 'prodLogPageName',
+	// 			label: 'Keep the PROD userspace log at this user subpage',
+	// 			helptip: 'Enter a subpage name in this box. You will find your PROD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the PROD userspace log.',
+	// 			type: 'string'
+	// 		}
+	// 	]
+	// },
 
 	{
 		title: 'Revert and rollback',  // twinklefluff module
@@ -439,17 +454,17 @@ Twinkle.config.sections = [
 		]
 	},
 
-	{
-		title: 'Shared IP tagging',
-		module: 'shared',
-		preferences: [
-			{
-				name: 'markSharedIPAsMinor',
-				label: 'Mark shared IP tagging as a minor edit',
-				type: 'boolean'
-			}
-		]
-	},
+	// {
+	// 	title: 'Shared IP tagging',
+	// 	module: 'shared',
+	// 	preferences: [
+	// 		{
+	// 			name: 'markSharedIPAsMinor',
+	// 			label: 'Mark shared IP tagging as a minor edit',
+	// 			type: 'boolean'
+	// 		}
+	// 	]
+	// },
 
 	{
 		title: 'Speedy deletion (CSD)',
@@ -608,104 +623,104 @@ Twinkle.config.sections = [
 		]
 	},
 
-	{
-		title: 'Tag',
-		module: 'tag',
-		preferences: [
-			{
-				name: 'watchTaggedVenues',
-				label: 'Add page to watchlist when tagging these type of pages',
-				type: 'set',
-				setValues: { articles: 'Articles', drafts: 'Drafts', redirects: 'Redirects', files: 'Files' }
-			},
-			{
-				name: 'watchTaggedPages',
-				label: 'When tagging a page, how long to watch it for',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-			{
-				name: 'watchMergeDiscussions',
-				label: 'Add talk pages to watchlist when starting merge discussions',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-			{
-				name: 'markTaggedPagesAsMinor',
-				label: 'Mark addition of tags as a minor edit',
-				type: 'boolean'
-			},
-			{
-				name: 'markTaggedPagesAsPatrolled',
-				label: 'Check the "mark page as patrolled/reviewed" box by default',
-				type: 'boolean'
-			},
-			{
-				name: 'groupByDefault',
-				label: 'Check the "group into {{multiple issues}}" box by default',
-				type: 'boolean'
-			},
-			{
-				name: 'tagArticleSortOrder',
-				label: 'Default view order for article tags',
-				type: 'enum',
-				enumValues: { cat: 'By categories', alpha: 'In alphabetical order' }
-			},
-			{
-				name: 'customTagList',
-				label: 'Custom article/draft maintenance tags to display',
-				helptip: "These appear as additional options at the bottom of the list of tags. For example, you could add new maintenance tags which have not yet been added to Twinkle's defaults.",
-				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in Tag dialog'
-			},
-			{
-				name: 'customFileTagList',
-				label: 'Custom file maintenance tags to display',
-				helptip: 'Additional tags that you wish to add for files.',
-				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in Tag dialog'
-			},
-			{
-				name: 'customRedirectTagList',
-				label: 'Custom redirect category tags to display',
-				helptip: 'Additional tags that you wish to add for redirects.',
-				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in Tag dialog'
-			}
-		]
-	},
+	// {
+	// 	title: 'Tag',
+	// 	module: 'tag',
+	// 	preferences: [
+	// 		{
+	// 			name: 'watchTaggedVenues',
+	// 			label: 'Add page to watchlist when tagging these type of pages',
+	// 			type: 'set',
+	// 			setValues: { articles: 'Articles', drafts: 'Drafts', redirects: 'Redirects', files: 'Files' }
+	// 		},
+	// 		{
+	// 			name: 'watchTaggedPages',
+	// 			label: 'When tagging a page, how long to watch it for',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
+	// 		{
+	// 			name: 'watchMergeDiscussions',
+	// 			label: 'Add talk pages to watchlist when starting merge discussions',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
+	// 		{
+	// 			name: 'markTaggedPagesAsMinor',
+	// 			label: 'Mark addition of tags as a minor edit',
+	// 			type: 'boolean'
+	// 		},
+	// 		{
+	// 			name: 'markTaggedPagesAsPatrolled',
+	// 			label: 'Check the "mark page as patrolled/reviewed" box by default',
+	// 			type: 'boolean'
+	// 		},
+	// 		{
+	// 			name: 'groupByDefault',
+	// 			label: 'Check the "group into {{multiple issues}}" box by default',
+	// 			type: 'boolean'
+	// 		},
+	// 		{
+	// 			name: 'tagArticleSortOrder',
+	// 			label: 'Default view order for article tags',
+	// 			type: 'enum',
+	// 			enumValues: { cat: 'By categories', alpha: 'In alphabetical order' }
+	// 		},
+	// 		{
+	// 			name: 'customTagList',
+	// 			label: 'Custom article/draft maintenance tags to display',
+	// 			helptip: "These appear as additional options at the bottom of the list of tags. For example, you could add new maintenance tags which have not yet been added to Twinkle's defaults.",
+	// 			type: 'customList',
+	// 			customListValueTitle: 'Template name (no curly brackets)',
+	// 			customListLabelTitle: 'Text to show in Tag dialog'
+	// 		},
+	// 		{
+	// 			name: 'customFileTagList',
+	// 			label: 'Custom file maintenance tags to display',
+	// 			helptip: 'Additional tags that you wish to add for files.',
+	// 			type: 'customList',
+	// 			customListValueTitle: 'Template name (no curly brackets)',
+	// 			customListLabelTitle: 'Text to show in Tag dialog'
+	// 		},
+	// 		{
+	// 			name: 'customRedirectTagList',
+	// 			label: 'Custom redirect category tags to display',
+	// 			helptip: 'Additional tags that you wish to add for redirects.',
+	// 			type: 'customList',
+	// 			customListValueTitle: 'Template name (no curly brackets)',
+	// 			customListLabelTitle: 'Text to show in Tag dialog'
+	// 		}
+	// 	]
+	// },
 
-	{
-		title: 'Talkback',
-		module: 'talkback',
-		preferences: [
-			{
-				name: 'markTalkbackAsMinor',
-				label: 'Mark talkbacks as minor edits',
-				type: 'boolean'
-			},
-			{
-				name: 'insertTalkbackSignature',
-				label: 'Insert signature within talkbacks',
-				type: 'boolean'
-			},
-			{
-				name: 'talkbackHeading',
-				label: 'Section heading to use for talkback and please see',
-				tooltip: 'Should NOT include the equals signs ("==") used for wikitext formatting',
-				type: 'string'
-			},
-			{
-				name: 'mailHeading',
-				label: "Section heading to use for \"you've got mail\" notices",
-				tooltip: 'Should NOT include the equals signs ("==") used for wikitext formatting',
-				type: 'string'
-			}
-		]
-	},
+	// {
+	// 	title: 'Talkback',
+	// 	module: 'talkback',
+	// 	preferences: [
+	// 		{
+	// 			name: 'markTalkbackAsMinor',
+	// 			label: 'Mark talkbacks as minor edits',
+	// 			type: 'boolean'
+	// 		},
+	// 		{
+	// 			name: 'insertTalkbackSignature',
+	// 			label: 'Insert signature within talkbacks',
+	// 			type: 'boolean'
+	// 		},
+	// 		{
+	// 			name: 'talkbackHeading',
+	// 			label: 'Section heading to use for talkback and please see',
+	// 			tooltip: 'Should NOT include the equals signs ("==") used for wikitext formatting',
+	// 			type: 'string'
+	// 		},
+	// 		{
+	// 			name: 'mailHeading',
+	// 			label: "Section heading to use for \"you've got mail\" notices",
+	// 			tooltip: 'Should NOT include the equals signs ("==") used for wikitext formatting',
+	// 			type: 'string'
+	// 		}
+	// 	]
+	// },
 
 	{
 		title: 'Unlink',
@@ -723,209 +738,209 @@ Twinkle.config.sections = [
 		]
 	},
 
-	{
-		title: 'Warn user',
-		module: 'warn',
-		preferences: [
-			// TwinkleConfig.defaultWarningGroup (int)
-			// Which level warning should be the default selected group, default is 1
-			{
-				name: 'defaultWarningGroup',
-				label: 'Default warning level',
-				type: 'enum',
-				enumValues: {
-					1: 'Level 1',
-					2: 'Level 2',
-					3: 'Level 3',
-					4: 'Level 4',
-					5: 'Level 4im',
-					6: 'Single-issue notices',
-					7: 'Single-issue warnings',
-					// 8 was used for block templates before #260
-					9: 'Custom warnings',
-					10: 'All warning templates',
-					11: 'Auto-select level (1-4)'
-				}
-			},
+	// {
+	// 	title: 'Warn user',
+	// 	module: 'warn',
+	// 	preferences: [
+	// 		// TwinkleConfig.defaultWarningGroup (int)
+	// 		// Which level warning should be the default selected group, default is 1
+	// 		{
+	// 			name: 'defaultWarningGroup',
+	// 			label: 'Default warning level',
+	// 			type: 'enum',
+	// 			enumValues: {
+	// 				1: 'Level 1',
+	// 				2: 'Level 2',
+	// 				3: 'Level 3',
+	// 				4: 'Level 4',
+	// 				5: 'Level 4im',
+	// 				6: 'Single-issue notices',
+	// 				7: 'Single-issue warnings',
+	// 				// 8 was used for block templates before #260
+	// 				9: 'Custom warnings',
+	// 				10: 'All warning templates',
+	// 				11: 'Auto-select level (1-4)'
+	// 			}
+	// 		},
 
-			// TwinkleConfig.combinedSingletMenus (boolean)
-			// if true, show one menu with both single-issue notices and warnings instead of two separately
-			{
-				name: 'combinedSingletMenus',
-				label: 'Replace the two separate single-issue menus into one combined menu',
-				helptip: 'Selecting either single-issue notices or single-issue warnings as your default will make this your default if enabled.',
-				type: 'boolean'
-			},
+	// 		// TwinkleConfig.combinedSingletMenus (boolean)
+	// 		// if true, show one menu with both single-issue notices and warnings instead of two separately
+	// 		{
+	// 			name: 'combinedSingletMenus',
+	// 			label: 'Replace the two separate single-issue menus into one combined menu',
+	// 			helptip: 'Selecting either single-issue notices or single-issue warnings as your default will make this your default if enabled.',
+	// 			type: 'boolean'
+	// 		},
 
-			// TwinkleConfig.showSharedIPNotice may take arguments:
-			// true: to show shared ip notice if an IP address
-			// false: to not print the notice
-			{
-				name: 'showSharedIPNotice',
-				label: 'Add extra notice on shared IP talk pages',
-				helptip: 'Notice used is {{Shared IP advice}}',
-				type: 'boolean'
-			},
+	// 		// TwinkleConfig.showSharedIPNotice may take arguments:
+	// 		// true: to show shared ip notice if an IP address
+	// 		// false: to not print the notice
+	// 		{
+	// 			name: 'showSharedIPNotice',
+	// 			label: 'Add extra notice on shared IP talk pages',
+	// 			helptip: 'Notice used is {{Shared IP advice}}',
+	// 			type: 'boolean'
+	// 		},
 
-			// TwinkleConfig.watchWarnings (string)
-			// Watchlist setting for the page which has been dispatched an warning or notice
-			{
-				name: 'watchWarnings',
-				label: 'Add user talk page to watchlist when notifying',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
+	// 		// TwinkleConfig.watchWarnings (string)
+	// 		// Watchlist setting for the page which has been dispatched an warning or notice
+	// 		{
+	// 			name: 'watchWarnings',
+	// 			label: 'Add user talk page to watchlist when notifying',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
 
-			// TwinkleConfig.oldSelect (boolean)
-			// if true, use the native select menu rather the select2-based one
-			{
-				name: 'oldSelect',
-				label: 'Use the non-searchable classic select menu',
-				type: 'boolean'
-			},
+	// 		// TwinkleConfig.oldSelect (boolean)
+	// 		// if true, use the native select menu rather the select2-based one
+	// 		{
+	// 			name: 'oldSelect',
+	// 			label: 'Use the non-searchable classic select menu',
+	// 			type: 'boolean'
+	// 		},
 
-			{
-				name: 'customWarningList',
-				label: 'Custom warning templates to display',
-				helptip: 'You can add individual templates or user subpages. Custom warnings appear in the "Custom warnings" category within the warning dialog box.',
-				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in warning list (also used as edit summary)'
-			}
-		]
-	},
+	// 		{
+	// 			name: 'customWarningList',
+	// 			label: 'Custom warning templates to display',
+	// 			helptip: 'You can add individual templates or user subpages. Custom warnings appear in the "Custom warnings" category within the warning dialog box.',
+	// 			type: 'customList',
+	// 			customListValueTitle: 'Template name (no curly brackets)',
+	// 			customListLabelTitle: 'Text to show in warning list (also used as edit summary)'
+	// 		}
+	// 	]
+	// },
 
-	{
-		title: 'Welcome user',
-		module: 'welcome',
-		preferences: [
-			{
-				name: 'topWelcomes',
-				label: 'Place welcomes above existing content on user talk pages',
-				type: 'boolean'
-			},
-			{
-				name: 'watchWelcomes',
-				label: 'Add user talk pages to watchlist when welcoming',
-				helptip: 'Doing so adds to the personal element of welcoming a user - you will be able to see how they are coping as a newbie, and possibly help them.',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
-			{
-				name: 'insertUsername',
-				label: 'Add your username to the template (where applicable)',
-				helptip: "Some welcome templates have an opening sentence like \"Hi, I'm &lt;username&gt;. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
-				type: 'boolean'
-			},
-			{
-				name: 'quickWelcomeMode',
-				label: 'Clicking the "welcome" link on a diff page will',
-				helptip: 'If you choose to welcome automatically, the template you specify below will be used.',
-				type: 'enum',
-				enumValues: { auto: 'welcome automatically', norm: 'prompt you to select a template' }
-			},
-			{
-				name: 'quickWelcomeTemplate',
-				label: 'Template to use when welcoming automatically',
-				helptip: 'Enter the name of a welcome template, without the curly brackets. A link to the given article will be added.',
-				type: 'string'
-			},
-			{
-				name: 'customWelcomeList',
-				label: 'Custom welcome templates to display',
-				helptip: "You can add other welcome templates, or user subpages that are welcome templates (prefixed with \"User:\"). Don't forget that these templates are substituted onto user talk pages.",
-				type: 'customList',
-				customListValueTitle: 'Template name (no curly brackets)',
-				customListLabelTitle: 'Text to show in Welcome dialog'
-			},
-			{
-				name: 'customWelcomeSignature',
-				label: 'Automatically sign custom welcome templates',
-				helptip: 'If your custom welcome templates contain a built-in signature within the template, turn off this option.',
-				type: 'boolean'
-			}
-		]
-	},
+	// {
+	// 	title: 'Welcome user',
+	// 	module: 'welcome',
+	// 	preferences: [
+	// 		{
+	// 			name: 'topWelcomes',
+	// 			label: 'Place welcomes above existing content on user talk pages',
+	// 			type: 'boolean'
+	// 		},
+	// 		{
+	// 			name: 'watchWelcomes',
+	// 			label: 'Add user talk pages to watchlist when welcoming',
+	// 			helptip: 'Doing so adds to the personal element of welcoming a user - you will be able to see how they are coping as a newbie, and possibly help them.',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
+	// 		{
+	// 			name: 'insertUsername',
+	// 			label: 'Add your username to the template (where applicable)',
+	// 			helptip: "Some welcome templates have an opening sentence like \"Hi, I'm &lt;username&gt;. Welcome\" etc. If you turn off this option, these templates will not display your username in that way.",
+	// 			type: 'boolean'
+	// 		},
+	// 		{
+	// 			name: 'quickWelcomeMode',
+	// 			label: 'Clicking the "welcome" link on a diff page will',
+	// 			helptip: 'If you choose to welcome automatically, the template you specify below will be used.',
+	// 			type: 'enum',
+	// 			enumValues: { auto: 'welcome automatically', norm: 'prompt you to select a template' }
+	// 		},
+	// 		{
+	// 			name: 'quickWelcomeTemplate',
+	// 			label: 'Template to use when welcoming automatically',
+	// 			helptip: 'Enter the name of a welcome template, without the curly brackets. A link to the given article will be added.',
+	// 			type: 'string'
+	// 		},
+	// 		{
+	// 			name: 'customWelcomeList',
+	// 			label: 'Custom welcome templates to display',
+	// 			helptip: "You can add other welcome templates, or user subpages that are welcome templates (prefixed with \"User:\"). Don't forget that these templates are substituted onto user talk pages.",
+	// 			type: 'customList',
+	// 			customListValueTitle: 'Template name (no curly brackets)',
+	// 			customListLabelTitle: 'Text to show in Welcome dialog'
+	// 		},
+	// 		{
+	// 			name: 'customWelcomeSignature',
+	// 			label: 'Automatically sign custom welcome templates',
+	// 			helptip: 'If your custom welcome templates contain a built-in signature within the template, turn off this option.',
+	// 			type: 'boolean'
+	// 		}
+	// 	]
+	// },
 
-	{
-		title: 'XFD (deletion discussions)',
-		module: 'xfd',
-		preferences: [
-			{
-				name: 'logXfdNominations',
-				label: 'Keep a log in userspace of all pages you nominate for a deletion discussion (XfD)',
-				helptip: 'The userspace log offers a good way to keep track of all pages you nominate for XfD using Twinkle.',
-				type: 'boolean'
-			},
-			{
-				name: 'xfdLogPageName',
-				label: 'Keep the deletion discussion userspace log at this user subpage',
-				helptip: 'Enter a subpage name in this box. You will find your XfD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the XfD userspace log.',
-				type: 'string'
-			},
-			{
-				name: 'noLogOnXfdNomination',
-				label: 'Do not create a userspace log entry when nominating at this venue',
-				type: 'set',
-				setValues: { afd: 'AfD', tfd: 'TfD', ffd: 'FfD', cfd: 'CfD', cfds: 'CfD/S', mfd: 'MfD', rfd: 'RfD', rm: 'RM' }
-			},
+	// {
+	// 	title: 'XFD (deletion discussions)',
+	// 	module: 'xfd',
+	// 	preferences: [
+	// 		{
+	// 			name: 'logXfdNominations',
+	// 			label: 'Keep a log in userspace of all pages you nominate for a deletion discussion (XfD)',
+	// 			helptip: 'The userspace log offers a good way to keep track of all pages you nominate for XfD using Twinkle.',
+	// 			type: 'boolean'
+	// 		},
+	// 		{
+	// 			name: 'xfdLogPageName',
+	// 			label: 'Keep the deletion discussion userspace log at this user subpage',
+	// 			helptip: 'Enter a subpage name in this box. You will find your XfD log at User:<i>username</i>/<i>subpage name</i>. Only works if you turn on the XfD userspace log.',
+	// 			type: 'string'
+	// 		},
+	// 		{
+	// 			name: 'noLogOnXfdNomination',
+	// 			label: 'Do not create a userspace log entry when nominating at this venue',
+	// 			type: 'set',
+	// 			setValues: { afd: 'AfD', tfd: 'TfD', ffd: 'FfD', cfd: 'CfD', cfds: 'CfD/S', mfd: 'MfD', rfd: 'RfD', rm: 'RM' }
+	// 		},
 
-			// TwinkleConfig.xfdWatchPage (string)
-			// The watchlist setting of the page being nominated for XfD.
-			{
-				name: 'xfdWatchPage',
-				label: 'Add the nominated page to watchlist',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
+	// 		// TwinkleConfig.xfdWatchPage (string)
+	// 		// The watchlist setting of the page being nominated for XfD.
+	// 		{
+	// 			name: 'xfdWatchPage',
+	// 			label: 'Add the nominated page to watchlist',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
 
-			// TwinkleConfig.xfdWatchDiscussion (string)
-			// The watchlist setting of the newly created XfD page (for those processes that create discussion pages for each nomination),
-			// or the list page for the other processes.
-			{
-				name: 'xfdWatchDiscussion',
-				label: 'Add the deletion discussion page to watchlist',
-				helptip: 'This refers to the discussion subpage (for AfD and MfD) or the daily log page (for TfD, CfD, RfD and FfD)',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
+	// 		// TwinkleConfig.xfdWatchDiscussion (string)
+	// 		// The watchlist setting of the newly created XfD page (for those processes that create discussion pages for each nomination),
+	// 		// or the list page for the other processes.
+	// 		{
+	// 			name: 'xfdWatchDiscussion',
+	// 			label: 'Add the deletion discussion page to watchlist',
+	// 			helptip: 'This refers to the discussion subpage (for AfD and MfD) or the daily log page (for TfD, CfD, RfD and FfD)',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
 
-			// TwinkleConfig.xfdWatchList (string)
-			// The watchlist setting of the XfD list page, *if* the discussion is on a separate page.
-			{
-				name: 'xfdWatchList',
-				label: 'Add the daily log/list page to the watchlist (AfD and MfD)',
-				helptip: 'This only applies for AfD and MfD, where the discussions are transcluded onto a daily log page (for AfD) or the main MfD page (for MfD).',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
+	// 		// TwinkleConfig.xfdWatchList (string)
+	// 		// The watchlist setting of the XfD list page, *if* the discussion is on a separate page.
+	// 		{
+	// 			name: 'xfdWatchList',
+	// 			label: 'Add the daily log/list page to the watchlist (AfD and MfD)',
+	// 			helptip: 'This only applies for AfD and MfD, where the discussions are transcluded onto a daily log page (for AfD) or the main MfD page (for MfD).',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
 
-			// TwinkleConfig.xfdWatchUser (string)
-			// The watchlist setting of the user talk page if they receive a notification.
-			{
-				name: 'xfdWatchUser',
-				label: 'Add user talk page of initial contributor to watchlist (when notifying)',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
+	// 		// TwinkleConfig.xfdWatchUser (string)
+	// 		// The watchlist setting of the user talk page if they receive a notification.
+	// 		{
+	// 			name: 'xfdWatchUser',
+	// 			label: 'Add user talk page of initial contributor to watchlist (when notifying)',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
 
-			// TwinkleConfig.xfdWatchRelated (string)
-			// The watchlist setting of the target of a redirect being nominated for RfD.
-			{
-				name: 'xfdWatchRelated',
-				label: "Add the redirect's target page to watchlist (when notifying)",
-				helptip: 'This only applies for RfD, when leaving a notification on the talk page of the target of the redirect',
-				type: 'enum',
-				enumValues: Twinkle.config.watchlistEnums
-			},
+	// 		// TwinkleConfig.xfdWatchRelated (string)
+	// 		// The watchlist setting of the target of a redirect being nominated for RfD.
+	// 		{
+	// 			name: 'xfdWatchRelated',
+	// 			label: "Add the redirect's target page to watchlist (when notifying)",
+	// 			helptip: 'This only applies for RfD, when leaving a notification on the talk page of the target of the redirect',
+	// 			type: 'enum',
+	// 			enumValues: Twinkle.config.watchlistEnums
+	// 		},
 
-			{
-				name: 'markXfdPagesAsPatrolled',
-				label: 'Mark page as patrolled/reviewed when nominating for AFD (if possible)',
-				type: 'boolean'
-			}
-		]
-	},
+	// 		{
+	// 			name: 'markXfdPagesAsPatrolled',
+	// 			label: 'Mark page as patrolled/reviewed when nominating for AFD (if possible)',
+	// 			type: 'boolean'
+	// 		}
+	// 	]
+	// },
 
 	{
 		title: 'Hidden',

@@ -28,9 +28,9 @@ Twinkle.unlink.callback = function(presetReason) {
 	var Window = new Morebits.simpleWindow(600, 440);
 	Window.setTitle('Unlink backlinks' + (fileSpace ? ' and file usages' : ''));
 	Window.setScriptName('Twinkle');
-	Window.addFooterLink('Unlink prefs', 'WP:TW/PREF#unlink');
-	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#unlink');
-	Window.addFooterLink('Give feedback', 'WT:TW');
+	Window.addFooterLink('Unlink prefs', 'Commons:Twinkle/Preferences#unlink');
+	Window.addFooterLink('Twinkle help', 'Commons:Twinkle/Documentation#unlink');
+	Window.addFooterLink('Give feedback', 'Commons talk:Twinkle');
 
 	var form = new Morebits.quickForm(Twinkle.unlink.callback.evaluate);
 
@@ -156,7 +156,7 @@ Twinkle.unlink.callbacks = {
 					apiobj.params.form.append({
 						type: 'div',
 						label: 'Selected namespaces: ' + namespaces.join(', '),
-						tooltip: 'You can change this with your Twinkle preferences, at [[WP:TWPREFS]]'
+						tooltip: 'You can change this with your Twinkle preferences, at [[Commons:Twinkle/Preferences]]'
 					});
 					if (response['query-continue'] && response['query-continue'].imageusage) {
 						apiobj.params.form.append({

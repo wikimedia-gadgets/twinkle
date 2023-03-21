@@ -648,7 +648,7 @@ Twinkle.fluff.callbacks = {
 				}
 				userHasAlreadyConfirmedAction = true;
 
-				summary = Twinkle.fluff.formatSummary('Reverted [[WP:AGF|good faith]] edits by $USER',
+				summary = Twinkle.fluff.formatSummary('Reverted [[COM:AGF|good faith]] edits by $USER',
 					params.userHidden ? null : params.user, extra_summary);
 				break;
 

@@ -5,13 +5,13 @@
  * |           Please discuss changes at [[WT:TW]] before editing.           |
  * +-------------------------------------------------------------------------+
  *
- * Imported from github [https://github.com/wikimedia-gadgets/twinkle].
+ * Imported from github [https://github.com/mdaniels5757/twinkle-for-commons].
  * All changes should be made in the repository, otherwise they will be lost.
  *
  * ----------
  *
  * This is AzaToth's Twinkle, the popular script sidekick for newbies, admins, and
- * every Wikipedian in between. Visit [[WP:TW]] for more information.
+ * every Wikipedian in between. Visit [[COM:TW]] for more information.
  */
 // <nowiki>
 
@@ -55,12 +55,12 @@ Twinkle.defaultConfig = {
 	disabledSysopModules: [],
 
 	// ARV
-	spiWatchReport: 'yes',
+	// spiWatchReport: 'yes',
 
 	// Block
-	defaultToBlock64: false,
-	defaultToPartialBlocks: false,
-	blankTalkpageOnIndefBlock: false,
+	// defaultToBlock64: false,
+	// defaultToPartialBlocks: false,
+	// blankTalkpageOnIndefBlock: false,
 
 	// Fluff (revert and rollback)
 	autoMenuAfterRollback: false,
@@ -76,33 +76,60 @@ Twinkle.defaultConfig = {
 	showRollbackLinks: [ 'diff', 'others' ],
 
 	// DI (twinkleimage)
-	notifyUserOnDeli: true,
-	deliWatchPage: '1 month',
-	deliWatchUser: '1 month',
+	// notifyUserOnDeli: true,
+	// deliWatchPage: '1 month',
+	// deliWatchUser: '1 month',
 
 	// Protect
-	watchRequestedPages: 'yes',
-	watchPPTaggedPages: 'default',
-	watchProtectedPages: 'default',
+	// watchRequestedPages: 'yes',
+	// watchPPTaggedPages: 'default',
+	// watchProtectedPages: 'default',
 
 	// PROD
-	watchProdPages: '1 month',
-	markProdPagesAsPatrolled: false,
-	prodReasonDefault: '',
-	logProdPages: false,
-	prodLogPageName: 'PROD log',
+	// watchProdPages: '1 month',
+	// markProdPagesAsPatrolled: false,
+	// prodReasonDefault: '',
+	// logProdPages: false,
+	// prodLogPageName: 'PROD log',
 
 	// CSD
-	speedySelectionStyle: 'buttonClick',
-	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
-	watchSpeedyExpiry: '1 month',
-	markSpeedyPagesAsPatrolled: false,
-	watchSpeedyUser: '1 month',
+	// speedySelectionStyle: 'buttonClick',
+	// watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
+	// watchSpeedyExpiry: '1 month',
+	// markSpeedyPagesAsPatrolled: false,
+	// watchSpeedyUser: '1 month',
 
 	// these next two should probably be identical by default
-	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u5' ],
-	notifyUserOnSpeedyDeletionNomination: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u5' ],
-	warnUserOnSpeedyDelete: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u5' ],
+	welcomeUserOnSpeedyDeletionNotification: [
+			'db',
+			'g1', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10', 'g11',
+			'u3',
+			'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10', 
+			'c1', 'c2',
+			't1', 't2',
+			'ga1', 'ga2',
+			'com1'
+		],
+	notifyUserOnSpeedyDeletionNomination: [
+			'db',
+			'g1', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10', 'g11',
+			'u3',
+			'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10', 
+			'c1', 'c2',
+			't1', 't2',
+			'ga1', 'ga2',
+			'com1'
+		],
+	warnUserOnSpeedyDelete: [
+			'db',
+			'g1', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10', 'g11',
+			'u3',
+			'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10', 
+			'c1', 'c2',
+			't1', 't2',
+			'ga1', 'ga2',
+			'com1'
+		],
 	promptForSpeedyDeletionSummary: [],
 	deleteTalkPageOnDelete: true,
 	deleteRedirectsOnDelete: true,
@@ -114,26 +141,26 @@ Twinkle.defaultConfig = {
 	noLogOnSpeedyNomination: [ 'u1' ],
 
 	// Unlink
-	unlinkNamespaces: [ '0', '10', '100', '118' ],
+	unlinkNamespaces: [ '0', '10'],
 
 	// Warn
-	defaultWarningGroup: '10',
-	combinedSingletMenus: false,
-	showSharedIPNotice: true,
-	watchWarnings: '1 month',
-	oldSelect: false,
-	customWarningList: [],
+	// defaultWarningGroup: '10',
+	// combinedSingletMenus: false,
+	// showSharedIPNotice: true,
+	// watchWarnings: '1 month',
+	// oldSelect: false,
+	// customWarningList: [],
 
 	// XfD
-	logXfdNominations: false,
-	xfdLogPageName: 'XfD log',
-	noLogOnXfdNomination: [],
-	xfdWatchDiscussion: 'default',
-	xfdWatchList: 'no',
-	xfdWatchPage: '1 month',
-	xfdWatchUser: '1 month',
-	xfdWatchRelated: '1 month',
-	markXfdPagesAsPatrolled: true,
+	// logXfdNominations: false,
+	// xfdLogPageName: 'XfD log',
+	// noLogOnXfdNomination: [],
+	// xfdWatchDiscussion: 'default',
+	// xfdWatchList: 'no',
+	// xfdWatchPage: '1 month',
+	// xfdWatchUser: '1 month',
+	// xfdWatchRelated: '1 month',
+	// markXfdPagesAsPatrolled: true,
 
 	// Hidden preferences
 	autolevelStaleDays: 3, // Huggle is 3, CBNG is 2
@@ -142,40 +169,40 @@ Twinkle.defaultConfig = {
 	batchChunks: 50,
 
 	// Deprecated options, as a fallback for add-on scripts/modules
-	summaryAd: ' ([[WP:TW|TW]])',
-	deletionSummaryAd: ' ([[WP:TW|TW]])',
-	protectionSummaryAd: ' ([[WP:TW|TW]])',
+	summaryAd: ' ([[COM:TW|TW]])',
+	deletionSummaryAd: ' ([[COM:TW|TW]])',
+	protectionSummaryAd: ' ([[COM:TW|TW]])',
 
 	// Formerly defaultConfig.friendly:
 	// Tag
-	groupByDefault: true,
-	watchTaggedVenues: ['articles', 'drafts', 'redirects', 'files'],
-	watchTaggedPages: '1 month',
-	watchMergeDiscussions: '1 month',
-	markTaggedPagesAsMinor: false,
-	markTaggedPagesAsPatrolled: false,
-	tagArticleSortOrder: 'cat',
-	customTagList: [],
-	customFileTagList: [],
-	customRedirectTagList: [],
+	// groupByDefault: true,
+	// watchTaggedVenues: ['articles', 'drafts', 'redirects', 'files'],
+	// watchTaggedPages: '1 month',
+	// watchMergeDiscussions: '1 month',
+	// markTaggedPagesAsMinor: false,
+	// markTaggedPagesAsPatrolled: false,
+	// tagArticleSortOrder: 'cat',
+	// customTagList: [],
+	// customFileTagList: [],
+	// customRedirectTagList: [],
 
 	// Welcome
-	topWelcomes: false,
-	watchWelcomes: '3 months',
-	insertUsername: true,
-	quickWelcomeMode: 'norm',
-	quickWelcomeTemplate: 'welcome',
-	customWelcomeList: [],
-	customWelcomeSignature: true,
+	// topWelcomes: false,
+	// watchWelcomes: '3 months',
+	// insertUsername: true,
+	// quickWelcomeMode: 'norm',
+	// quickWelcomeTemplate: 'welcome',
+	// customWelcomeList: [],
+	// customWelcomeSignature: true,
 
 	// Talkback
-	markTalkbackAsMinor: true,
-	insertTalkbackSignature: true,  // always sign talkback templates
-	talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
-	mailHeading: "You've got mail!",
+	// markTalkbackAsMinor: true,
+	// insertTalkbackSignature: true,  // always sign talkback templates
+	// talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
+	// mailHeading: "You've got mail!",
 
 	// Shared
-	markSharedIPAsMinor: true
+	// markSharedIPAsMinor: true
 };
 
 // now some skin dependent config.
@@ -517,7 +544,7 @@ Twinkle.load = function () {
 Twinkle.changeTags = 'twinkle';
 // Available for actions that don't (yet) support tags
 // currently: FlaggedRevs and PageTriage
-Twinkle.summaryAd = ' ([[WP:TW|TW]])';
+Twinkle.summaryAd = ' ([[COM:TW|TW]])';
 
 // Various hatnote templates, used when tagging (csd/xfd/tag/prod/protect) to
 // ensure MOS:ORDER
