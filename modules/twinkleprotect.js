@@ -712,6 +712,7 @@ Twinkle.protect.protectionTypes = [
 	{
 		label: 'Extended confirmed protection',
 		list: [
+			{ label: 'Generic (ECP)', value: 'pp-30-500' },
 			{ label: 'Arbitration enforcement (ECP)', selected: true, value: 'pp-30-500-arb' },
 			{ label: 'Persistent vandalism (ECP)', value: 'pp-30-500-vandalism' },
 			{ label: 'Disruptive editing (ECP)', value: 'pp-30-500-disruptive' },
@@ -839,6 +840,12 @@ Twinkle.protect.protectionPresetsInfo = {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
+		template: 'pp-extended'
+	},
+	'pp-30-500': {
+		edit: 'extendedconfirmed',
+		move: 'extendedconfirmed',
+		reason: null,
 		template: 'pp-extended'
 	},
 	'pp-semi-vandalism': {
@@ -1241,6 +1248,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-30-500-disruptive':
 				case 'pp-30-500-blp':
 				case 'pp-30-500-sock':
+				case 'pp-30-500':
 					typename = 'extended confirmed protection';
 					break;
 				case 'pp-semi-vandalism':
