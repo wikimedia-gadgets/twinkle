@@ -76,9 +76,9 @@ Twinkle.defaultConfig = {
 	showRollbackLinks: [ 'diff', 'others' ],
 
 	// DI (twinkleimage)
-	// notifyUserOnDeli: true,
-	// deliWatchPage: '1 month',
-	// deliWatchUser: '1 month',
+	notifyUserOnDeli: true,
+	deliWatchPage: '1 month',
+	deliWatchUser: '1 month',
 
 	// Protect
 	// watchRequestedPages: 'yes',
