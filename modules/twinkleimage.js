@@ -140,7 +140,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	var params = $.extend({
 		templatename: templatename,
-		derivative: derivative,
+		derivative: input.derivative,
 		normalized: csdcrit,
 		lognomination: lognomination
 	}, input);
