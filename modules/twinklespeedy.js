@@ -352,7 +352,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				customOption.click();
 				customOption.parentNode.appendChild(customOption.subgroup);
 			}
-			customOption.subgroup.querySelector('input').value = decodeURIComponent($('#delete-reason').text()).replace(/\+/g, ' ');
+			customOption.subgroup.querySelector('input').value = decodeURIComponent($('#delete-reason')/*.text()*/).replace(/\+/g, ' ');
 		}
 	}
 };
@@ -1013,7 +1013,7 @@ Twinkle.speedy.callbacks = {
 
 		var statusIndicator = new Morebits.status('Building deletion summary');
 		var api = new Morebits.wiki.api('Parsing deletion template', query, function(apiobj) {
-			var reason = decodeURIComponent($(apiobj.getResponse().parse.text).find('#delete-reason').text()).replace(/\+/g, ' ');
+			var reason = decodeURIComponent($(apiobj.getResponse().parse.text).find('#delete-reason')/*.text()*/).replace(/\+/g, ' ');
 			if (!reason) {
 				statusIndicator.warn('Unable to generate summary from deletion template');
 			} else {
