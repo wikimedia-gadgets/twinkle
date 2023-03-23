@@ -248,37 +248,37 @@ Twinkle.config.sections = [
 	// 	]
 	// },
 
-	// {
-	// 	title: 'Image deletion (DI)',
-	// 	module: 'image',
-	// 	preferences: [
-	// 		// TwinkleConfig.notifyUserOnDeli (boolean)
-	// 		// If the user should be notified after placing a file deletion tag
-	// 		{
-	// 			name: 'notifyUserOnDeli',
-	// 			label: 'Check the "notify initial uploader" box by default',
-	// 			type: 'boolean'
-	// 		},
+	{
+		title: 'Image deletion (DI)',
+		module: 'image',
+		preferences: [
+			// TwinkleConfig.notifyUserOnDeli (boolean)
+			// If the user should be notified after placing a file deletion tag
+			{
+				name: 'notifyUserOnDeli',
+				label: 'Check the "notify initial uploader" box by default',
+				type: 'boolean'
+			},
 
-	// 		// TwinkleConfig.deliWatchPage (string)
-	// 		// The watchlist setting of the page tagged for deletion.
-	// 		{
-	// 			name: 'deliWatchPage',
-	// 			label: 'Add image page to watchlist when tagging',
-	// 			type: 'enum',
-	// 			enumValues: Twinkle.config.watchlistEnums
-	// 		},
+			// TwinkleConfig.deliWatchPage (string)
+			// The watchlist setting of the page tagged for deletion.
+			{
+				name: 'deliWatchPage',
+				label: 'Add image page to watchlist when tagging',
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
+			},
 
-	// 		// TwinkleConfig.deliWatchUser (string)
-	// 		// The watchlist setting of the user talk page if a notification is placed.
-	// 		{
-	// 			name: 'deliWatchUser',
-	// 			label: 'Add user talk page of initial uploader to watchlist when notifying',
-	// 			type: 'enum',
-	// 			enumValues: Twinkle.config.watchlistEnums
-	// 		}
-	// 	]
-	// },
+			// TwinkleConfig.deliWatchUser (string)
+			// The watchlist setting of the user talk page if a notification is placed.
+			{
+				name: 'deliWatchUser',
+				label: 'Add user talk page of initial uploader to watchlist when notifying',
+				type: 'enum',
+				enumValues: Twinkle.config.watchlistEnums
+			}
+		]
+	},
 
 	// {
 	// 	title: 'Page protection ' + (Morebits.userIsSysop ? '(PP)' : '(RPP)'),
