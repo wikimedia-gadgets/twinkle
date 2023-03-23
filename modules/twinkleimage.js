@@ -22,10 +22,10 @@ Twinkle.image.callback = function twinkleimageCallback() {
 	var Window = new Morebits.simpleWindow(600, 330);
 	Window.setTitle('File for dated speedy deletion');
 	Window.setScriptName('Twinkle');
-	Window.addFooterLink('Speedy deletion policy', 'WP:CSD#Files');
-	Window.addFooterLink('Image prefs', 'WP:TW/PREF#image');
-	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#image');
-	Window.addFooterLink('Give feedback', 'WT:TW');
+	Window.addFooterLink('Speedy deletion policy', 'COM:CSD#Files');
+	Window.addFooterLink('Image prefs', 'COM:TW/PREF#image');
+	Window.addFooterLink('Twinkle help', 'COM:TW');
+	Window.addFooterLink('Give feedback', 'Commons talk:TW');
 
 	var form = new Morebits.quickForm(Twinkle.image.callback.evaluate);
 	form.append({
@@ -51,43 +51,18 @@ Twinkle.image.callback = function twinkleimageCallback() {
 		event: Twinkle.image.callback.choice,
 		list: [
 			{
-				label: 'No source (CSD F4)',
+				label: 'No source (CSD F5)',
 				value: 'no source',
 				checked: true,
 				tooltip: 'Image or media has no source information'
 			},
 			{
-				label: 'No license (CSD F4)',
+				label: 'No license (CSD F5)',
 				value: 'no license',
 				tooltip: 'Image or media does not have information on its copyright status'
 			},
 			{
-				label: 'No source and no license (CSD F4)',
-				value: 'no source no license',
-				tooltip: 'Image or media has neither information on source nor its copyright status'
-			},
-			{
-				label: 'Orphaned fair use (CSD F5)',
-				value: 'orphaned fair use',
-				tooltip: 'Image or media is unlicensed for use on Wikipedia and allowed only under a claim of fair use per Wikipedia:Non-free content, but it is not used in any articles'
-			},
-			{
-				label: 'No fair use rationale (CSD F6)',
-				value: 'no fair use rationale',
-				tooltip: 'Image or media is claimed to be used under Wikipedia\'s fair use policy but has no explanation as to why it is permitted under the policy'
-			},
-			{
-				label: 'Disputed fair use rationale (CSD F7)',
-				value: 'disputed fair use rationale',
-				tooltip: 'Image or media has a fair use rationale that is disputed or invalid, such as a {{Non-free logo}} tag on a photograph of a mascot'
-			},
-			{
-				label: 'Replaceable fair use (CSD F7)',
-				value: 'replaceable fair use',
-				tooltip: 'Image or media may fail Wikipedia\'s first non-free content criterion ([[WP:NFCC#1]]) in that it illustrates a subject for which a free image might reasonably be found or created that adequately provides the same information'
-			},
-			{
-				label: 'No evidence of permission (CSD F11)',
+				label: 'No evidence of permission (CSD F5)',
 				value: 'no permission',
 				tooltip: 'Image or media does not have proof that the author agreed to licence the file'
 			}
@@ -119,20 +94,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 	});
 
 	switch (value) {
-		case 'no source no license':
 		case 'no source':
-			work_area.append({
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Non-free',
-						name: 'non_free',
-						tooltip: 'File is licensed under a fair use claim'
-					}
-				]
-			});
-		/* falls through */
-		case 'no license':
 			work_area.append({
 				type: 'checkbox',
 				list: [
@@ -144,34 +106,9 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 				]
 			});
 			break;
+		case 'no license':
+			break;
 		case 'no permission':
-			work_area.append({
-				type: 'input',
-				name: 'source',
-				label: 'Source:'
-			});
-			break;
-		case 'disputed fair use rationale':
-			work_area.append({
-				type: 'textarea',
-				name: 'reason',
-				label: 'Concern:'
-			});
-			break;
-		case 'orphaned fair use':
-			work_area.append({
-				type: 'input',
-				name: 'replacement',
-				label: 'Replacement:',
-				tooltip: 'Optional file that replaces this one.  The "File:" prefix is optional.'
-			});
-			break;
-		case 'replaceable fair use':
-			work_area.append({
-				type: 'textarea',
-				name: 'reason',
-				label: 'Reason:'
-			});
 			break;
 		default:
 			break;
@@ -189,23 +126,10 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	var csdcrit;
 	switch (input.type) {
-		case 'no source no license':
 		case 'no source':
 		case 'no license':
-			csdcrit = 'F4';
-			break;
-		case 'orphaned fair use':
-			csdcrit = 'F5';
-			break;
-		case 'no fair use rationale':
-			csdcrit = 'F6';
-			break;
-		case 'disputed fair use rationale':
-		case 'replaceable fair use':
-			csdcrit = 'F7';
-			break;
 		case 'no permission':
-			csdcrit = 'F11';
+			csdcrit = 'F5';
 			break;
 		default:
 			throw new Error('Twinkle.image.callback.evaluate: unknown criterion');
@@ -216,6 +140,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
 	var params = $.extend({
 		templatename: templatename,
+		derivative: derivative,
 		normalized: csdcrit,
 		lognomination: lognomination
 	}, input);
@@ -251,26 +176,21 @@ Twinkle.image.callbacks = {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 
-		// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
-		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
-
-		var tag = '{{di-' + params.templatename + '|date={{subst:#time:j F Y}}';
+		var tag = '';
 		switch (params.type) {
-			case 'no source no license':
+			case 'no license':
+				tag = '{{subst:nld}}'
+				break;
 			case 'no source':
-				tag += params.non_free ? '|non-free=yes' : '';
+				if (params.derivative) {
+					tag = '{{subst:dw-nsd}}'
+				}
+				else {
+					tag = '{{subst:nsd}}';
+				}
 				break;
 			case 'no permission':
-				tag += params.source ? '|source=' + params.source : '';
-				break;
-			case 'disputed fair use rationale':
-				tag += params.reason ? '|concern=' + params.reason : '';
-				break;
-			case 'orphaned fair use':
-				tag += params.replacement ? '|replacement=' + params.replacement : '';
-				break;
-			case 'replaceable fair use':
-				tag += params.reason ? '|1=' + params.reason : '';
+				tag = '{{subst:npd}}';
 				break;
 			default:
 				break;  // doesn't matter
@@ -278,7 +198,7 @@ Twinkle.image.callbacks = {
 		tag += '|help=off}}\n';
 
 		pageobj.setPageText(tag + text);
-		pageobj.setEditSummary('This file is up for deletion, per [[WP:CSD#' + params.normalized + '|CSD ' + params.normalized + ']] (' + params.type + ').');
+		pageobj.setEditSummary('This file is up for deletion, per [[COM:CSD#' + params.normalized + '|CSD ' + params.normalized + ']] (' + params.type + ').');
 		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setWatchlist(Twinkle.getPref('deliWatchPage'));
 		pageobj.setCreateOption('nocreate');
@@ -294,9 +214,6 @@ Twinkle.image.callbacks = {
 		} else {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
 			var notifytext = '\n{{subst:di-' + params.templatename + '-notice|1=' + mw.config.get('wgTitle');
-			if (params.type === 'no permission') {
-				notifytext += params.source ? '|source=' + params.source : '';
-			}
 			notifytext += '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary('Notification: tagging for deletion of [[:' + Morebits.pageNameNorm + ']].');
