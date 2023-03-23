@@ -1730,10 +1730,10 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 
 	switch (normalized) {
 		case 'db': // Speedydelete and Speedynote
-			utparams['2'] = parameters['1'];
+			utparams.reason = parameters['1'];
 		case 'f1': // Copyvio and Copyvionote
-			utparams['2'] = parameters['source'];
-			utparams['3'] = parameters['1'];
+			utparams.source = parameters['source'];
+			utparams.reason = parameters['1'];
 		default: // SD and Speedynote
 			utparams['2'] = parameters['2'];
 	}

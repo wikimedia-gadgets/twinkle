@@ -85,13 +85,6 @@ Twinkle.defaultConfig = {
 	// watchPPTaggedPages: 'default',
 	// watchProtectedPages: 'default',
 
-	// PROD
-	// watchProdPages: '1 month',
-	// markProdPagesAsPatrolled: false,
-	// prodReasonDefault: '',
-	// logProdPages: false,
-	// prodLogPageName: 'PROD log',
-
 	// CSD
 	speedySelectionStyle: 'buttonClick',
 	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
@@ -185,15 +178,6 @@ Twinkle.defaultConfig = {
 	// customTagList: [],
 	// customFileTagList: [],
 	// customRedirectTagList: [],
-
-	// Welcome
-	// topWelcomes: false,
-	// watchWelcomes: '3 months',
-	// insertUsername: true,
-	// quickWelcomeMode: 'norm',
-	// quickWelcomeTemplate: 'welcome',
-	// customWelcomeList: [],
-	// customWelcomeSignature: true,
 
 	// Talkback
 	// markTalkbackAsMinor: true,
