@@ -30,13 +30,16 @@ If you'd like to help with Twinkle's development, wonderful!  Anyone can contrib
 
 - Download and install Node.js if you don't have it already (https://nodejs.org/en/download/).
 - Set up your code editor or IDE to work with JavaScript so that you get proper syntax highlightening and code completion.
-- Clone the repository: `git clone https://github.com/wikimedia-gadgets/twinkle`
+- Log in to GitHub, then fork this repository using the "Fork" button at the top right.
+- Clone your fork by typing this into the command line, changing YourGitHubUserName to the correct username: `git clone https://github.com/YourGitHubUserName/twinkle.git`
+- Create a new branch in git. This will make it easier to have multiple pull requests pending at the same time: `git branch your-branch-name`
 - Install eslint and other dependencies: `npm install` while inside Twinkle directory.
 
 First, familiarize yourself with the code; most likely, the changes you want are to one of the [modules](./modules); you can also check out the [individual Gadget pages][twinkle_gadget] onwiki.  If the changes are to the [Morebits library](./morebits.js), you can view the full docs at <http://wikimedia-gadgets.github.io/twinkle> or on the [GitHub Wiki](https://github.com/wikimedia-gadgets/twinkle/wiki/morebits).  If you want to propose changes yourself, [fork the repository](https://help.github.com/articles/fork-a-repo/) to make sure you always have the latest versions.  If you're new to GitHub or Git in general, you probably want to read [Getting started with GitHub](https://help.github.com/en/github/getting-started-with-github) first.
 
-
 ### Testing your code
+
+Manually testing your patch (such as by running Twinkle on localhost using `npm start`, loading it in your testwiki common.js, then clicking around and testing the module that you modified) is required. Please do not submit untested code. Twinkle has 40,000 users, so it is important to keep bugs out of production.
 
 Once you have made your changes, run `npm start`. This launches a webserver listening on `http://127.0.0.1:5500`. So, to load the local version of Twinkle on-wiki, you need to run `mw.loader.load('http://127.0.0.1:5500')` in your browser console. A more permanent solution would be to add that line in your [common.js page](https://en.wikipedia.org/wiki/Special:MyPage/common.js), since code entered in the console does not persist on page navigation.
 
@@ -61,13 +64,17 @@ As Twinkle is used many thousands of times a day, changes to how Twinkle works m
 
 ### Submitting your pull request
 
-When you are ready to submit, commit your changes on a new branch, then [initiate a pull request (PR)](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork).  The title of your pull request should be the module you are proposing changes to, followed by a brief but descriptive explanation of what the changes do, such as:
+When you are ready to submit, make sure you created a new branch, commit your changes, push your changes to your GitHub fork, then [initiate a pull request (PR)](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork) by visiting one of the GitHub repos and clicking "Compare & pull request" in the message that appears at the top.
+
+The title of your pull request should be the module you are proposing changes to, a colon and a space, followed by a brief but descriptive explanation of what the changes do, such as:
 
     xfd: Prevent sysops from deleting the main page
 
 The usual rule of thumb is that a good subject line will complete the sentence "*If applied, this commit will...*"  The full commit message is a good place to explain further details, both for reviewers and anyone in the future, specifically focusing on *why* the changes are being made, not *how*.  There are many guides to writing good commit messages, one particularly helpful one is by @cbeams: <https://chris.beams.io/posts/git-commit/>.
 
-If you made multiple commits while working on the same feature, it's a good idea to [squash and rebase your commits](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History) before submitting your PR. Separate ideas or enhancements should be different commits, and entirely separate concepts should be different pull requests.  For example, if you made three commits while changing the pulldown options in `twinkleprotect.js` and `twinklebatchprotect.js`, those should be squashed into one commit, but if you also disabled loading `twinklespeedy.js` and `twinklexfd.js` on the mainpage, that should be a separate pull request.  See also [how to file a bug report or feature request](README.md#how-to-file-a-bug-report-or-feature-request).
+For quicker and easier reviewing, please consider splitting large pull requests into multiple smaller ones.
+
+If your pull request should close an issue in the issue tracker, don't forget to add text such as `Fixes #1682` to the body text of the pull request. This will tell GitHub to close that issue when the pull request is merged.
 
 ### Style guideline
 
