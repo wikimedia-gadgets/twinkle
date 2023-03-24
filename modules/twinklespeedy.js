@@ -80,7 +80,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 						// enable multiple
 						cForm.multiple.checked = false;
 						// enable requesting creation protection
-						cForm.salting.checked = false;
+						// cForm.salting.checked = false;
 
 						Twinkle.speedy.callback.modeChanged(cForm);
 
@@ -179,15 +179,15 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					event.stopPropagation();
 				}
 			},
-			{
-				label: 'Tag for creation protection (salting) as well',
-				value: 'salting',
-				name: 'salting',
-				tooltip: 'When selected, the speedy deletion tag will be accompanied by a {{salt}} tag requesting that the deleting administrator apply creation protection. Only select if this page has been repeatedly recreated.',
-				event: function(event) {
-					event.stopPropagation();
-				}
-			},
+			// {
+			// 	label: 'Tag for creation protection (salting) as well',
+			// 	value: 'salting',
+			// 	name: 'salting',
+			// 	tooltip: 'When selected, the speedy deletion tag will be accompanied by a {{salt}} tag requesting that the deleting administrator apply creation protection. Only select if this page has been repeatedly recreated.',
+			// 	event: function(event) {
+			// 		event.stopPropagation();
+			// 	}
+			// },
 			{
 				label: 'Tag with multiple criteria',
 				value: 'multiple',
@@ -1080,11 +1080,12 @@ Twinkle.speedy.callbacks = {
 			notifytext += (params.welcomeuser ? '' : '|nowelcome=yes') + '}} ~~~~';
 
 			editsummary = 'Notification: speedy deletion' + (params.warnUser ? '' : ' nomination');
-			if (params.normalizeds.indexOf('g10') === -1) {  // no article name in summary for G10 taggings
-				editsummary += ' of [[:' + Morebits.pageNameNorm + ']].';
-			} else {
-				editsummary += ' of an attack page.';
-			}
+			editsummary += ' of [[:' + Morebits.pageNameNorm + ']].';
+			// if (params.normalizeds.indexOf('g10') === -1) {  // no article name in summary for G10 taggings
+			// 	editsummary += ' of [[:' + Morebits.pageNameNorm + ']].';
+			// } else {
+			// 	editsummary += ' of an attack page.';
+			// }
 
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary(editsummary);
@@ -1322,13 +1323,14 @@ Twinkle.speedy.callbacks = {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 				}
 
-				if (params.requestsalt) {
-					if (params.normalizeds.indexOf('g10') === -1) {
-						code += '\n{{salt}}';
-					} else {
-						code = '{{salt}}\n' + code;
-					}
-				}
+				// if (params.requestsalt) {
+				// 	code += '\n{{salt}}';
+				// 	// if (params.normalizeds.indexOf('g10') === -1) {
+				// 	// 	code += '\n{{salt}}';
+				// 	// } else {
+				// 	// 	code = '{{salt}}\n' + code;
+				// 	// }
+				// }
 
 				if (mw.config.get('wgPageContentModel') === 'Scribunto') {
 					// Scribunto isn't parsed like wikitext, so CSD templates on modules need special handling to work
@@ -1357,14 +1359,16 @@ Twinkle.speedy.callbacks = {
 					editsummary = 'Requesting speedy deletion ([[COM:CSD#' + params.normalizeds[0].toUpperCase() + '|CSD ' + params.normalizeds[0].toUpperCase() + ']]).';
 				}
 
+				var wikipage = new Morebits.wikitext.page(text);
+				text = wikipage.insertAfterTemplates(code + '\n', Twinkle.hatnoteRegex).getText();
 				// Blank attack pages
-				if (params.normalizeds.indexOf('g10') !== -1) {
-					text = code;
-				} else {
-					// Insert tag after short description or any hatnotes
-					var wikipage = new Morebits.wikitext.page(text);
-					text = wikipage.insertAfterTemplates(code + '\n', Twinkle.hatnoteRegex).getText();
-				}
+				// if (params.normalizeds.indexOf('g10') !== -1) {
+				// 	text = code;
+				// } else {
+				// 	// Insert tag after short description or any hatnotes
+				// 	var wikipage = new Morebits.wikitext.page(text);
+				// 	text = wikipage.insertAfterTemplates(code + '\n', Twinkle.hatnoteRegex).getText();
+				// }
 
 
 				pageobj.setPageText(text);
@@ -1374,9 +1378,9 @@ Twinkle.speedy.callbacks = {
 			} else { // Attempt to place on talk page
 				var talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
 				if (talkName !== pageobj.getPageName()) {
-					if (params.requestsalt) {
-						code += '\n{{salt}}';
-					}
+					// if (params.requestsalt) {
+					// 	code += '\n{{salt}}';
+					// }
 
 					pageobj.getStatusElement().warn('Unable to edit page, placing tag on talk page');
 
@@ -1464,9 +1468,9 @@ Twinkle.speedy.callbacks = {
 				}
 			}
 
-			if (params.requestsalt) {
-				appendText += '; requested creation protection ([[WP:SALT|salting]])';
-			}
+			// if (params.requestsalt) {
+			// 	appendText += '; requested creation protection ([[WP:SALT|salting]])';
+			// }
 			if (extraInfo) {
 				appendText += '; additional information:' + extraInfo;
 			}
@@ -1865,7 +1869,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		usertalk: notifyuser,
 		welcomeuser: welcomeuser,
 		lognomination: csdlog,
-		requestsalt: form.salting.checked,
+		// requestsalt: form.salting.checked,
 		templateParams: templateParams
 	};
 
