@@ -1013,7 +1013,7 @@ Twinkle.speedy.callbacks = {
 
 		var statusIndicator = new Morebits.status('Building deletion summary');
 		var api = new Morebits.wiki.api('Parsing deletion template', query, function(apiobj) {
-			var reason = decodeURIComponent($(apiobj.getResponse().parse.text).find('#delete-reason').text()).replace(/\+/g, ' ').replace(/CSD ([A-Z]{1,3}\d{1,2})/, '[[COM:CSD#$1|$1]]');
+			var reason = decodeURIComponent($(apiobj.getResponse().parse.text).find('#delete-reason').text()).replace(/\+/g, ' ').replace(/CSD ([A-Z]{1,3}\d{1,2})/, '[[COM:CSD#$1|CSD $1]]');
 			if (!reason) {
 				statusIndicator.warn('Unable to generate summary from deletion template');
 			} else {
