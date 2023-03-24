@@ -195,8 +195,9 @@ Twinkle.image.callbacks = {
 			default:
 				break;  // doesn't matter
 		}
-		tag += '|help=off}}\n';
-
+		// tag += '|help=off}}\n';
+		tag += '\n';
+		
 		pageobj.setPageText(tag + text);
 		pageobj.setEditSummary('This file is up for deletion, per [[COM:CSD#' + params.normalized + '|CSD ' + params.normalized + ']] (' + params.type + ').');
 		pageobj.setChangeTags(Twinkle.changeTags);
