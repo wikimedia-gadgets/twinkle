@@ -166,7 +166,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		}
 		// No auto-notification, display what was going to be added.
 		var noteData = document.createElement('pre');
-		noteData.appendChild(document.createTextNode('{{subst:di-' + templatename + '-notice|1=' + mw.config.get('wgTitle') + '}} ~~~~'));
+		noteData.appendChild(document.createTextNode('{{subst:di-' + templatename + '-notice|1=File:' + mw.config.get('wgTitle') + '}} ~~~~'));
 		Morebits.status.info('Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement('br'), noteData ]);
 	}
 };
@@ -213,7 +213,7 @@ Twinkle.image.callbacks = {
 			pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
 		} else {
 			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n{{subst:di-' + params.templatename + '-notice|1=' + mw.config.get('wgTitle');
+			var notifytext = '\n{{subst:di-' + params.templatename + '-notice|1=File:' + mw.config.get('wgTitle');
 			notifytext += '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary('Notification: tagging for deletion of [[:' + Morebits.pageNameNorm + ']].');
