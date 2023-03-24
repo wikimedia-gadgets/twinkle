@@ -1118,11 +1118,13 @@ Twinkle.speedy.callbacks = {
 				Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
 			} else {
 				var code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params)[0];
+				console.log("Reason: %s", reason)
+				console.log("Code: %s", code)
 				Twinkle.speedy.callbacks.parseWikitext(code, function(reason) {
-					if (params.promptForSummary) {
-						reason = prompt('Enter the deletion summary to use, or press OK to accept the automatically generated one.', reason);
-					}
-					Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
+				if (params.promptForSummary) {
+					reason = prompt('Enter the deletion summary to use, or press OK to accept the automatically generated one.', reason);
+				}
+				Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
 				});
 			}
 		},
