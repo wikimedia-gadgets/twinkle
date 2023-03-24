@@ -352,7 +352,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				customOption.click();
 				customOption.parentNode.appendChild(customOption.subgroup);
 			}
-			customOption.subgroup.querySelector('input').value = decodeURIComponent($('#delete-reason').text()).replace(/\+/g, ' ').replace(/CSD ([A-Z]{1,3}\d{1,2})/, '[[COM:CSD#$1|$1]]');
+			customOption.subgroup.querySelector('input').value = decodeURIComponent($('#delete-reason').text()).replace(/\+/g, ' ').replace(/CSD ([A-Z]{1,3}\d{1,2})/, '[[COM:CSD#$1|CSD $1]]');
 		}
 	}
 };
