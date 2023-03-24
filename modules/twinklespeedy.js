@@ -1667,7 +1667,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.repost_xfd']) {
 					var deldisc = form['csd.repost_xfd'].value;
 					if (deldisc) {
-						currentParams['2'] = deldisc;
+						currentParams['2'] = '[[' + deldisc + ']]';
 					}
 				}
 				break;
