@@ -704,9 +704,9 @@ Twinkle.speedy.categoryList = [
 		},
 	},
 	{
-		label: 'G8: Redirects to non-existent targets',
+		label: 'G2: Broken redirects',
 		value: 'redirnone',
-		code: 'g8',
+		code: 'g2',
 		tooltip:
 			'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 	}
@@ -809,7 +809,13 @@ Twinkle.speedy.generalList = [
 			"Page contains redundant content that was previously used for testing, was accidentally created, or contains content that is gibberish or of nothing meaningful. This may also include text placed in talk pages (which has no further history) that doesn't help or refer to the related page.",
 		hideInNamespaces: [2], // Not applicable in userspace, use U1 for that
 	},
-	// Skip G2: have that under redirects
+	{
+		label: 'G2: Unused and implausible, or broken redirect',
+		value: 'redir',
+		code: 'g2',
+		tooltip:
+			'Page is an unused AND implausible redirect, or a redirect that is dependent on deleted or non-existent content. Unused talk page redirects created as a result of a page move and cross-namespace redirects may also be deleted under this criterion.',
+	},
 	{
 		label: 'G3: Content intended as vandalism, threat, attack, or hoax',
 		value: 'vandalism',
@@ -919,13 +925,13 @@ Twinkle.speedy.generalList = [
 ];
 
 Twinkle.speedy.redirectList = [
-	{
-		label: 'G2: Unused and implausible, or broken redirect',
-		value: 'redir',
-		code: 'g2',
-		tooltip:
-			'Page is an unused AND implausible redirect, or a redirect that is dependent on deleted or non-existent content. Unused talk page redirects created as a result of a page move and cross-namespace redirects may also be deleted under this criterion.',
-	}
+	// {
+	// 	label: 'G2: Unused and implausible, or broken redirect',
+	// 	value: 'redir',
+	// 	code: 'g2',
+	// 	tooltip:
+	// 		'Page is an unused AND implausible redirect, or a redirect that is dependent on deleted or non-existent content. Unused talk page redirects created as a result of a page move and cross-namespace redirects may also be deleted under this criterion.',
+	// }
 ]
 
 Twinkle.speedy.normalizeHash = {
