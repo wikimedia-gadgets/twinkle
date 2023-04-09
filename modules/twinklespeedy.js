@@ -47,7 +47,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.setTitle('Choose criteria for speedy deletion');
 	dialog.setScriptName('Twinkle');
 	dialog.addFooterLink('Speedy deletion policy', 'COM:CSD');
-	dialog.addFooterLink('CSD prefs', 'Commons:Twinkle/Prefrences#speedy');
+	dialog.addFooterLink('CSD prefs', 'Commons:Twinkle/Preferences#speedy');
 	dialog.addFooterLink('Twinkle help', 'Commons:Twinkle/Documentation#speedy');
 	dialog.addFooterLink('Give feedback', 'Commons talk:Twinkle');
 
@@ -1440,7 +1440,7 @@ Twinkle.speedy.callbacks = {
 			var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
 
 			var editsummary = 'Logging speedy deletion nomination';
-			var appendText = '# [[:' + Morebits.pageNameNorm;
+			var appendText = '# [[:' + Morebits.pageNameNorm + "]]. ";
 
 			if (params.normalizeds.length > 1) {
 				appendText += 'multiple criteria (';
@@ -1743,11 +1743,14 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 	switch (normalized) {
 		case 'db': // Speedydelete and Speedynote
 			utparams.reason = parameters['1'];
+			break;
 		case 'f1': // Copyvio and Copyvionote
 			utparams.source = parameters['source'];
 			utparams.reason = parameters['1'];
+			break;
 		default: // SD and Speedynote
 			utparams['2'] = parameters['2'];
+			break;
 	}
 	
 	return utparams;
