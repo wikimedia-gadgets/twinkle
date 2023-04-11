@@ -597,7 +597,21 @@ Twinkle.speedy.fileList = [
 		}
 	},
 	// Skip F5: this should be under DI module
-	// Skip F6: this is just another type of copyvio
+	{
+		label: 'F6: License laundering',
+		value: 'll',
+		code: 'f6',
+		tooltip:
+			'Content uploaded via license laundering techniques is a copyright violation. Users uploading in such techniques may be subjected to their account being temporarily or permanently blocked.',
+		subgroup: {
+			name: 'll_rationale',
+			parameter: '2',
+			utparam: '2',
+			type: 'input',
+			label: 'Optional explanation: ',
+			size: 60,
+		},
+	},
 	{
 		label: 'F7: Corrupt, missing, or empty file',
 		value: 'noimage',
@@ -953,6 +967,7 @@ Twinkle.speedy.normalizeHash = {
 	'deriv': 'f3',
 	'lrfailed': 'f4',
 	'vrt': 'f4',
+	'll': 'f6',
 	'noimage': 'f7',
 	'duplicate': 'f8',
 	'embeddeddata': 'f9',
@@ -1557,6 +1572,15 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 			case 'vrt':
 				if (form['csd.vrt_rationale']) {
 					var rationale = form['csd.vrt_rationale'].value;
+					if (rationale) {
+						currentParams['2'] = rationale;
+					}
+				}
+				break;
+
+			case 'll':
+				if (form['csd.ll_rationale']) {
+					var rationale = form['csd.ll_rationale'].value;
 					if (rationale) {
 						currentParams['2'] = rationale;
 					}
