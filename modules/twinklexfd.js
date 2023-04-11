@@ -965,7 +965,12 @@ Twinkle.xfd.callbacks = {
 			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
 			(Morebits.userIsSysop ? '\n\nThis log does not track XfD-related deletions made using Twinkle.' : '');
 
-		var editsummary = 'Logging [[' + params.discussionpage + '|' + utils.toTLACase(params.venue) + ' nomination]] of [[:' + Morebits.pageNameNorm + ']].';
+		var editsummary;
+		if (params.discussionpage) {
+			editsummary = 'Logging [[' + params.discussionpage + '|' + utils.toTLACase(params.venue) + ' nomination]] of [[:' + Morebits.pageNameNorm + ']].';
+		} else {
+			editsummary = 'Logging ' + utils.toTLACase(params.venue) + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
+		}
 
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 		var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
@@ -1796,6 +1801,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 
 			params.tagText = '{{subst:cfr-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n';
+			params.discussionpage = ''; // CFDS is just a bullet in a bulleted list. There's no section to link to, so we set this to blank. Blank will be recognized by both the generate userspace log code and the generate userspace log edit summary code as "don't wikilink to a section".
 			if (pageobj.canEdit()) {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].');
