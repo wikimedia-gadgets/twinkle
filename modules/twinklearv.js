@@ -247,11 +247,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 						tooltip: 'Promotional usernames are advertisements for a company, website or group. Please do not report these names to UAA unless the user has also made promotional edits related to the name.'
 					},
 					{
-						label: 'Username that implies shared use',
-						value: 'shared',
-						tooltip: 'Usernames that imply the likelihood of shared use (names of companies or groups, or the names of posts within organizations) are not permitted. Usernames are acceptable if they contain a company or group name but are clearly intended to denote an individual person, such as "Mark at WidgetsUSA", "Jack Smith at the XY Foundation", "WidgetFan87", etc.'
-					},
-					{
 						label: 'Offensive username',
 						value: 'offensive',
 						tooltip: 'Offensive usernames make harmonious editing difficult or impossible.'
@@ -580,7 +575,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					aivPage.getStatusElement().status('Adding new report...');
 					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
 					aivPage.setChangeTags(Twinkle.changeTags);
-					aivPage.setAppendText('\n*{{' + (mw.util.isIPAddress(uid, true) ? 'IPvandal' : 'vandal') + '|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
+					aivPage.setAppendText('\n*{{vandal|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
 					aivPage.append();
 				});
 			});
@@ -590,27 +585,31 @@ Twinkle.arv.callback.evaluate = function(e) {
 		case 'username':
 			types = form.getChecked('arvtype').map(Morebits.string.toLowerCaseFirstChar);
 
-			var hasShared = types.indexOf('shared') > -1;
-			if (hasShared) {
-				types.splice(types.indexOf('shared'), 1);
-			}
-
+			// generate human-readable string, e.g. "misleading and promotional username"
 			if (types.length <= 2) {
 				types = types.join(' and ');
 			} else {
 				types = [ types.slice(0, -1).join(', '), types.slice(-1) ].join(' and ');
 			}
-			var article = 'a';
+
+			// a or an?
+			var adjective = 'a';
 			if (/[aeiouwyh]/.test(types[0] || '')) { // non 100% correct, but whatever, including 'h' for Cockney
-				article = 'an';
+				adjective = 'an';
 			}
+
+			// generate wikicode to place on [[WP:UAA]] page
 			reason = '*{{user-uaa|1=' + uid + '}} &ndash; ';
-			if (types.length || hasShared) {
-				reason += 'Violation of the username policy as ' + article + ' ' + types + ' username' +
-					(hasShared ? ' that implies shared use. ' : '. ');
+			if (types.length) {
+				reason += 'Violation of the username policy as ' + adjective + ' ' + types + ' username. ';
 			}
 			if (comment !== '') {
-				reason += Morebits.string.toUpperCaseFirstChar(comment) + '. ';
+				reason += Morebits.string.toUpperCaseFirstChar(comment);
+				var endsInPeriod = /\.$/.test(comment);
+				if (!endsInPeriod) {
+					reason += '.';
+				}
+				reason += ' ';
 			}
 			reason += '~~~~';
 			reason = reason.replace(/\r?\n/g, '\n*:');  // indent newlines

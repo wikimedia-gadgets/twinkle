@@ -309,11 +309,6 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				appendList('Categories', Twinkle.speedy.categoryList);
 				break;
 
-			case 100:  // portal
-			case 101:  // portal talk
-				appendList('Portals', Twinkle.speedy.portalList);
-				break;
-
 			default:
 				break;
 		}
@@ -594,11 +589,6 @@ Twinkle.speedy.fileList = [
 		]
 	},
 	{
-		label: 'F10: Useless non-media file',
-		value: 'badfiletype',
-		tooltip: 'Files uploaded that are neither image, sound, nor video files (e.g. .doc, .pdf, or .xls files) which are not used in any article and have no foreseeable encyclopedic use'
-	},
-	{
 		label: 'F11: No evidence of permission',
 		value: 'nopermission',
 		tooltip: 'If an uploader has specified a license and has named a third party as the source/copyright holder without providing evidence that this third party has in fact agreed, the item may be deleted seven days after notification of the uploader',
@@ -632,17 +622,6 @@ Twinkle.speedy.articleList = [
 		label: 'A3: No content whatsoever',
 		value: 'nocontent',
 		tooltip: 'Any article consisting only of links elsewhere (including hyperlinks, category tags and "see also" sections), a rephrasing of the title, and/or attempts to correspond with the person or group named by its title. This does not include disambiguation pages'
-	},
-	{
-		label: 'A5: Transwikied articles',
-		value: 'transwiki',
-		tooltip: 'Any article that has been discussed at Articles for Deletion (et al), where the outcome was to transwiki, and where the transwikification has been properly performed and the author information recorded. Alternately, any article that consists of only a dictionary definition, where the transwikification has been properly performed and the author information recorded',
-		subgroup: {
-			name: 'transwiki_location',
-			type: 'input',
-			label: 'Link to where the page has been transwikied:',
-			tooltip: 'For example, https://en.wiktionary.org/wiki/twinkle or [[wikt:twinkle]]'
-		}
 	},
 	{
 		label: 'A7: No indication of importance (people, groups, companies, web content, individual animals, or organized events)',
@@ -780,24 +759,6 @@ Twinkle.speedy.userList = [
 	}
 ];
 
-Twinkle.speedy.portalList = [
-	{
-		label: 'P1: Portal that would be subject to speedy deletion if it were an article',
-		value: 'p1',
-		tooltip: 'You must specify a single article criterion that applies in this case (A1, A3, A7, or A10).',
-		subgroup: {
-			name: 'p1_criterion',
-			type: 'input',
-			label: 'Article criterion that would apply:'
-		}
-	},
-	{
-		label: 'P2: Underpopulated portal (fewer than three non-stub articles)',
-		value: 'emptyportal',
-		tooltip: 'Any Portal based on a topic for which there is not a non-stub header article, and at least three non-stub articles detailing subject matter that would be appropriate to discuss under the title of that Portal'
-	}
-];
-
 Twinkle.speedy.generalList = [
 	{
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
@@ -846,6 +807,12 @@ Twinkle.speedy.generalList = [
 		}
 	},
 	{
+		label: 'G6: Error',
+		value: 'error',
+		tooltip: 'A page that was obviously created in error, or a redirect left over from moving a page that was obviously created at the wrong title.',
+		hideWhenMultiple: true
+	},
+	{
 		label: 'G6: Move',
 		value: 'move',
 		tooltip: 'Making way for an uncontroversial move like reversing a redirect',
@@ -874,6 +841,17 @@ Twinkle.speedy.generalList = [
 			label: 'Page where the deletion discussion was held:',
 			tooltip: 'Must start with "Wikipedia:"',
 			size: 40
+		},
+		hideWhenMultiple: true
+	},
+	{
+		label: 'G6: AfC move',
+		value: 'afc-move',
+		tooltip: 'Making way for acceptance of a draft submitted to AfC',
+		subgroup: {
+			name: 'draft_page',
+			type: 'input',
+			label: 'Draft to be moved here:'
 		},
 		hideWhenMultiple: true
 	},
@@ -1022,69 +1000,67 @@ Twinkle.speedy.redirectList = [
 ];
 
 Twinkle.speedy.normalizeHash = {
-	reason: 'db',
-	nonsense: 'g1',
-	test: 'g2',
-	vandalism: 'g3',
-	hoax: 'g3',
-	repost: 'g4',
-	banned: 'g5',
-	move: 'g6',
-	xfd: 'g6',
-	movedab: 'g6',
-	copypaste: 'g6',
-	g6: 'g6',
-	author: 'g7',
-	g8: 'g8',
-	talk: 'g8',
-	subpage: 'g8',
-	redirnone: 'g8',
-	templatecat: 'g8',
-	imagepage: 'g8',
-	attack: 'g10',
-	negublp: 'g10',
-	spam: 'g11',
-	spamuser: 'g11',
-	copyvio: 'g12',
-	afc: 'g13',
-	disambig: 'g14',
-	nocontext: 'a1',
-	foreign: 'a2',
-	nocontent: 'a3',
-	transwiki: 'a5',
-	a7: 'a7',
-	person: 'a7',
-	corp: 'a7',
-	web: 'a7',
-	band: 'a7',
-	club: 'a7',
-	animal: 'a7',
-	event: 'a7',
-	a9: 'a9',
-	a10: 'a10',
-	madeup: 'a11',
-	rediruser: 'r2',
-	redirtypo: 'r3',
-	redircom: 'r4',
-	redundantimage: 'f1',
-	noimage: 'f2',
-	fpcfail: 'f2',
-	noncom: 'f3',
-	unksource: 'f4',
-	unfree: 'f5',
-	f5: 'f5',
-	norat: 'f6',
-	badfairuse: 'f7',
-	commons: 'f8',
-	imgcopyvio: 'f9',
-	badfiletype: 'f10',
-	nopermission: 'f11',
-	catempty: 'c1',
-	userreq: 'u1',
-	nouser: 'u2',
-	notwebhost: 'u5',
-	p1: 'p1',
-	emptyportal: 'p2'
+	'reason': 'db',
+	'nonsense': 'g1',
+	'test': 'g2',
+	'vandalism': 'g3',
+	'hoax': 'g3',
+	'repost': 'g4',
+	'banned': 'g5',
+	'error': 'g6',
+	'move': 'g6',
+	'afc-move': 'g6',
+	'xfd': 'g6',
+	'movedab': 'g6',
+	'copypaste': 'g6',
+	'g6': 'g6',
+	'author': 'g7',
+	'g8': 'g8',
+	'talk': 'g8',
+	'subpage': 'g8',
+	'redirnone': 'g8',
+	'templatecat': 'g8',
+	'imagepage': 'g8',
+	'attack': 'g10',
+	'negublp': 'g10',
+	'spam': 'g11',
+	'spamuser': 'g11',
+	'copyvio': 'g12',
+	'afc': 'g13',
+	'disambig': 'g14',
+	'nocontext': 'a1',
+	'foreign': 'a2',
+	'nocontent': 'a3',
+	'a7': 'a7',
+	'person': 'a7',
+	'corp': 'a7',
+	'web': 'a7',
+	'band': 'a7',
+	'club': 'a7',
+	'animal': 'a7',
+	'event': 'a7',
+	'a9': 'a9',
+	'a10': 'a10',
+	'madeup': 'a11',
+	'rediruser': 'r2',
+	'redirtypo': 'r3',
+	'redircom': 'r4',
+	'redundantimage': 'f1',
+	'noimage': 'f2',
+	'fpcfail': 'f2',
+	'noncom': 'f3',
+	'unksource': 'f4',
+	'unfree': 'f5',
+	'f5': 'f5',
+	'norat': 'f6',
+	'badfairuse': 'f7',
+	'commons': 'f8',
+	'imgcopyvio': 'f9',
+	'nopermission': 'f11',
+	'catempty': 'c1',
+	'userreq': 'u1',
+	'nouser': 'u2',
+	'notwebhost': 'u5'
 };
 
 Twinkle.speedy.callbacks = {
@@ -1555,8 +1531,6 @@ Twinkle.speedy.callbacks = {
 					input = '[' + input + ' ' + input + ']';
 				} else if (normalize === 'F8' && csdparam === 'filename') {
 					input = '[[commons:' + input + ']]';
-				} else if (normalize === 'P1' && csdparam === 'criterion') {
-					input = '[[WP:CSD#' + input + ']]';
 				}
 				return ' {' + normalize + ' ' + csdparam + ': ' + input + '}';
 			};
@@ -1663,11 +1637,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.repost_xfd']) {
 					var deldisc = form['csd.repost_xfd'].value;
 					if (deldisc) {
-						if (!new RegExp('^:?' + Morebits.namespaceRegex(4) + ':', 'i').test(deldisc)) {
-							alert('CSD G4:  The deletion discussion page name, if provided, must start with "Wikipedia:".');
-							parameters = null;
-							return false;
-						}
 						currentParams.xfd = deldisc;
 					}
 				}
@@ -1702,13 +1671,20 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.xfd_fullvotepage']) {
 					var xfd = form['csd.xfd_fullvotepage'].value;
 					if (xfd) {
-						if (!new RegExp('^:?' + Morebits.namespaceRegex(4) + ':', 'i').test(xfd)) {
-							alert('CSD G6 (XFD):  The deletion discussion page name, if provided, must start with "Wikipedia:".');
-							parameters = null;
-							return false;
-						}
 						currentParams.fullvotepage = xfd;
 					}
+				}
+				break;
+
+			case 'afc-move':  // G6
+				if (form['csd.draft_page']) {
+					var draftpage = form['csd.draft_page'].value;
+					if (!draftpage || !draftpage.trim()) {
+						alert('CSD G6 (AfC move):  Please specify the draft to be moved here.');
+						parameters = null;
+						return false;
+					}
+					currentParams.page = draftpage;
 				}
 				break;
 
@@ -1826,12 +1802,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'transwiki':  // A5
-				if (form['csd.transwiki_location'] && form['csd.transwiki_location'].value) {
-					currentParams.location = form['csd.transwiki_location'].value;
-				}
-				break;
-
 			case 'a10':  // A10
 				if (form['csd.a10_article']) {
 					var duptitle = form['csd.a10_article'].value;
@@ -1841,18 +1811,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						return false;
 					}
 					currentParams.article = duptitle;
-				}
-				break;
-
-			case 'p1':  // P1
-				if (form['csd.p1_criterion']) {
-					var criterion = form['csd.p1_criterion'].value;
-					if (!criterion || !criterion.trim()) {
-						alert('CSD P1:  Please specify a single criterion.');
-						parameters = null;
-						return false;
-					}
-					currentParams.criterion = criterion;
 				}
 				break;
 
@@ -1894,17 +1852,11 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 			case 'a2':
 				param = 'source';
 				break;
-			case 'a5':
-				param = 'location';
-				break;
 			case 'a10':
 				param = 'article';
 				break;
 			case 'f9':
 				param = 'url';
-				break;
-			case 'p1':
-				param = 'criterion';
 				break;
 			default:
 				break;

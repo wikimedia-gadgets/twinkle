@@ -419,20 +419,20 @@ Twinkle.warn.messages = {
 			},
 			'uw-nor': {
 				level1: {
-					label: 'Adding original research, including unpublished syntheses of sources',
-					summary: 'General note: Adding original research, including unpublished syntheses of sources'
+					label: 'Adding original research',
+					summary: 'General note: Adding original research'
 				},
 				level2: {
-					label: 'Adding original research, including unpublished syntheses of sources',
-					summary: 'Caution: Adding original research, including unpublished syntheses of sources'
+					label: 'Adding original research',
+					summary: 'Caution: Adding original research'
 				},
 				level3: {
-					label: 'Adding original research, including unpublished syntheses of sources',
-					summary: 'Warning: Adding original research, including unpublished syntheses of sources'
+					label: 'Adding original research',
+					summary: 'Warning: Adding original research'
 				},
 				level4: {
-					label: 'Adding original research, including unpublished syntheses of sources',
-					summary: 'Final warning: Adding original research, including unpublished syntheses of sources'
+					label: 'Adding original research',
+					summary: 'Final warning: Adding original research'
 				}
 			},
 			'uw-notcensored': {

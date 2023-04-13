@@ -965,7 +965,7 @@ Twinkle.xfd.callbacks = {
 			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
 			(Morebits.userIsSysop ? '\n\nThis log does not track XfD-related deletions made using Twinkle.' : '');
 
-		var editsummary = 'Logging ' + utils.toTLACase(params.venue) + ' nomination of [[:' + Morebits.pageNameNorm + ']].';
+		var editsummary = 'Logging [[' + params.discussionpage + '|' + utils.toTLACase(params.venue) + ' nomination]] of [[:' + Morebits.pageNameNorm + ']].';
 
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 		var fileLogLink = mw.config.get('wgNamespaceNumber') === 6 ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])' : '';
@@ -1439,7 +1439,7 @@ Twinkle.xfd.callbacks = {
 			}
 
 			pageobj.setPageText(text);
-			pageobj.setEditSummary('Adding ' + (params.xfdcat === 'tfd' ? 'deletion nomination' : 'merge listing') + ' of [[:' + Morebits.pageNameNorm + ']].');
+			pageobj.setEditSummary('/* ' + Morebits.pageNameNorm + ' */ Adding ' + (params.xfdcat === 'tfd' ? 'deletion nomination' : 'merge listing') + ' of [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
@@ -2016,7 +2016,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var hiddenCommentRE = /---- and enter on a new line.* -->/;
+			var hiddenCommentRE = /==== ?Uncontroversial technical requests ?====(?:.|\n)*? -->/i;
 			var newtext = text.replace(hiddenCommentRE, '$&\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
 			if (text === newtext) {
 				statelem.error('failed to find target spot for the entry');

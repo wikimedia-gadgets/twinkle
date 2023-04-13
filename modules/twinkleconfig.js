@@ -35,63 +35,57 @@ Twinkle.config.commonSets = {
 	csdCriteria: {
 		db: 'Custom rationale ({{db}})',
 		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a5: 'A5', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
+		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
 		u1: 'U1', u2: 'U2', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9', f10: 'F10',
+		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9',
 		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4',
-		p1: 'P1', p2: 'P2'
+		r2: 'R2', r3: 'R3', r4: 'R4'
 	},
 	csdCriteriaDisplayOrder: [
 		'db',
 		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11',
+		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
 		'u1', 'u2', 'u5',
-		'f1', 'f2', 'f3', 'f7', 'f8', 'f9', 'f10',
+		'f1', 'f2', 'f3', 'f7', 'f8', 'f9',
 		'c1',
-		'r2', 'r3', 'r4',
-		'p1', 'p2'
+		'r2', 'r3', 'r4'
 	],
 	csdCriteriaNotification: {
 		db: 'Custom rationale ({{db}})',
 		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g6: 'G6 ("copy-paste move" only)',
 		g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a5: 'A5', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
+		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
 		u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9', f10: 'F10',
+		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9',
 		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4',
-		p1: 'P1', p2: 'P2'
+		r2: 'R2', r3: 'R3', r4: 'R4'
 	},
 	csdCriteriaNotificationDisplayOrder: [
 		'db',
 		'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11',
+		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
 		'u5',
-		'f1', 'f2', 'f3', 'f7', 'f9', 'f10',
+		'f1', 'f2', 'f3', 'f7', 'f9',
 		'c1',
-		'r2', 'r3', 'r4',
-		'p1', 'p2'
+		'r2', 'r3', 'r4'
 	],
-	csdAndDICriteria: {
+	csdAndImageDeletionCriteria: {
 		db: 'Custom rationale ({{db}})',
 		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
-		a1: 'A1', a2: 'A2', a3: 'A3', a5: 'A5', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
+		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
 		u1: 'U1', u2: 'U2', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f10: 'F10', f11: 'F11',
+		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f11: 'F11',
 		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4',
-		p1: 'P1', p2: 'P2'
+		r2: 'R2', r3: 'R3', r4: 'R4'
 	},
-	csdAndDICriteriaDisplayOrder: [
+	csdAndImageDeletionCriteriaDisplayOrder: [
 		'db',
 		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a5', 'a7', 'a9', 'a10', 'a11',
+		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
 		'u1', 'u2', 'u5',
-		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11',
+		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f11',
 		'c1',
-		'r2', 'r3', 'r4',
-		'p1', 'p2'
+		'r2', 'r3', 'r4'
 	],
 	namespacesNoSpecial: {
 		0: 'Article',
@@ -112,8 +106,6 @@ Twinkle.config.commonSets = {
 		15: 'Category talk',
 		100: 'Portal',
 		101: 'Portal talk',
-		108: 'Book',
-		109: 'Book talk',
 		118: 'Draft',
 		119: 'Draft talk',
 		710: 'TimedText',
@@ -547,8 +539,8 @@ Twinkle.config.sections = [
 				label: 'Allow editing of deletion summary when deleting under these criteria',
 				adminOnly: true,
 				type: 'set',
-				setValues: Twinkle.config.commonSets.csdAndDICriteria,
-				setDisplayOrder: Twinkle.config.commonSets.csdAndDICriteriaDisplayOrder
+				setValues: Twinkle.config.commonSets.csdAndImageDeletionCriteria,
+				setDisplayOrder: Twinkle.config.commonSets.csdAndImageDeletionCriteriaDisplayOrder
 			},
 
 			// TwinkleConfig.deleteTalkPageOnDelete (boolean)
@@ -610,8 +602,8 @@ Twinkle.config.sections = [
 				name: 'noLogOnSpeedyNomination',
 				label: 'Do not create a userspace log entry when tagging with these criteria',
 				type: 'set',
-				setValues: Twinkle.config.commonSets.csdAndDICriteria,
-				setDisplayOrder: Twinkle.config.commonSets.csdAndDICriteriaDisplayOrder
+				setValues: Twinkle.config.commonSets.csdAndImageDeletionCriteria,
+				setDisplayOrder: Twinkle.config.commonSets.csdAndImageDeletionCriteriaDisplayOrder
 			}
 		]
 	},

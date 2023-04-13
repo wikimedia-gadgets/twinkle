@@ -356,7 +356,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'editlevel',
-					label: 'Edit protection:',
+					label: 'Who can edit:',
 					event: Twinkle.protect.formevents.editlevel,
 					list: Twinkle.protect.protectionLevels.filter(function(level) {
 						// Filter TE outside of templates and modules
@@ -390,7 +390,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				field2.append({
 					type: 'select',
 					name: 'movelevel',
-					label: 'Move protection:',
+					label: 'Who can move:',
 					event: Twinkle.protect.formevents.movelevel,
 					list: Twinkle.protect.protectionLevels.filter(function(level) {
 						// Autoconfirmed is required for a move, redundant
@@ -815,31 +815,31 @@ Twinkle.protect.protectionPresetsInfo = {
 		move: 'extendedconfirmed',
 		expiry: 'infinity',
 		reason: '[[WP:30/500|Arbitration enforcement]]',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-30-500-vandalism': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent [[WP:Vandalism|vandalism]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-30-500-disruptive': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent [[WP:Disruptive editing|disruptive editing]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-30-500-blp': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent violations of the [[WP:BLP|biographies of living persons policy]] from (auto)confirmed accounts',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-30-500-sock': {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
-		template: 'pp-30-500'
+		template: 'pp-extended'
 	},
 	'pp-semi-vandalism': {
 		edit: 'autoconfirmed',
@@ -969,7 +969,7 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-usertalk}}: blocked user talk', value: 'pp-usertalk' },
 			{ label: '{{pp-protected}}: general protection', value: 'pp-protected' },
 			{ label: '{{pp-semi-indef}}: general long-term semi-protection', value: 'pp-semi-indef' },
-			{ label: '{{pp-30-500}}: extended confirmed protection', value: 'pp-30-500' }
+			{ label: '{{pp-extended}}: extended confirmed protection', value: 'pp-extended' }
 		]
 	},
 	{
@@ -1100,7 +1100,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	if (input.actiontype === 'tag' || (input.actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
 		tagparams = {
 			tag: input.tagtype,
-			reason: (input.tagtype === 'pp-protected' || input.tagtype === 'pp-semi-protected' || input.tagtype === 'pp-move') && input.protectReason,
+			reason: false,
 			small: input.small,
 			noinclude: input.noinclude
 		};
@@ -1431,7 +1431,7 @@ Twinkle.protect.callbacks = {
 		var text = protectedPage.getPageText();
 		var tag, summary;
 
-		var oldtag_re = /(?:\/\*)?\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*(?:\*\/)?/gi;
+		var oldtag_re = /(?:\/\*)?\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*(?:\*\/)?\s*/gi;
 		var re_result = oldtag_re.exec(text);
 		if (re_result) {
 			if (params.tag === 'none' || confirm('{{' + re_result[1] + '}} was found on the page. \nClick OK to remove it, or click Cancel to leave it there.')) {

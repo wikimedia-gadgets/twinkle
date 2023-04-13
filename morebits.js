@@ -2645,6 +2645,12 @@ Morebits.wiki.page = function(pageName, status) {
 		protectCreate: null,
 		protectCascade: null,
 
+		// - delete
+		deleteTalkPage: false,
+
+		// - undelete
+		undeleteTalkPage: false,
+
 		// - creation lookup
 		lookupNonRedirectCreator: false,
 
@@ -3292,6 +3298,18 @@ Morebits.wiki.page = function(pageName, status) {
 
 	this.suppressProtectWarning = function() {
 		ctx.suppressProtectWarning = true;
+	};
+
+	// Delete-related setter
+	/** @param {boolean} flag */
+	this.setDeleteTalkPage = function (flag) {
+		ctx.deleteTalkPage = !!flag;
+	};
+
+	// Undelete-related setter
+	/** @param {boolean} flag */
+	this.setUndeleteTalkPage = function (flag) {
+		ctx.undeleteTalkPage = !!flag;
 	};
 
 	// Revert-related getters/setters:
@@ -4439,6 +4457,9 @@ Morebits.wiki.page = function(pageName, status) {
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;
 		}
+		if (ctx.deleteTalkPage) {
+			query.deletetalk = 'true';
+		}
 
 		if (fnApplyWatchlistExpiry()) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
@@ -4503,6 +4524,9 @@ Morebits.wiki.page = function(pageName, status) {
 		};
 		if (ctx.changeTags) {
 			query.tags = ctx.changeTags;
+		}
+		if (ctx.undeleteTalkPage) {
+			query.undeletetalk = 'true';
 		}
 
 		if (fnApplyWatchlistExpiry()) {
@@ -5387,7 +5411,7 @@ Morebits.status.printUserText = function(comments, message) {
 	var p = document.createElement('p');
 	p.innerHTML = message;
 	var div = document.createElement('div');
-	div.className = 'toccolours';
+	div.className = 'morebits-usertext';
 	div.style.marginTop = '0';
 	div.style.whiteSpace = 'pre-wrap';
 	div.textContent = comments;
@@ -5981,7 +6005,15 @@ Morebits.simpleWindow.prototype = {
 		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
 			value.style.display = 'none';
 			var button = document.createElement('button');
-			button.textContent = value.hasAttribute('value') ? value.getAttribute('value') : value.textContent ? value.textContent : msg('submit', 'Submit Query');
+
+			if (value.hasAttribute('value')) {
+				button.textContent = value.getAttribute('value');
+			} else if (value.textContent) {
+				button.textContent = value.textContent;
+			} else {
+				button.textContent = msg('submit', 'Submit Query');
+			}
+
 			button.className = value.className || 'submitButtonProxy';
 			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
 			button.addEventListener('click', function() {

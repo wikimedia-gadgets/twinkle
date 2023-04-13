@@ -120,11 +120,13 @@ Twinkle.fluff.linkBuilder = {
 		normLink.style.fontWeight = 'bold';
 		vandLink.style.fontWeight = 'bold';
 
-		$(normLink).click(function() {
+		$(normLink).click(function(e) {
+			e.preventDefault();
 			Twinkle.fluff.revert('norm', vandal, rev, page);
 			Twinkle.fluff.disableLinks(revNode);
 		});
-		$(vandLink).click(function() {
+		$(vandLink).click(function(e) {
+			e.preventDefault();
 			Twinkle.fluff.revert('vand', vandal, rev, page);
 			Twinkle.fluff.disableLinks(revNode);
 		});
@@ -141,7 +143,8 @@ Twinkle.fluff.linkBuilder = {
 		if (!inline) {
 			var agfNode = document.createElement('span');
 			var agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
-			$(agfLink).click(function() {
+			$(agfLink).click(function(e) {
+				e.preventDefault();
 				Twinkle.fluff.revert('agf', vandal, rev, page);
 				// Twinkle.fluff.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
 			});
@@ -169,7 +172,8 @@ Twinkle.fluff.linkBuilder = {
 		revertToRevisionNode.style.fontWeight = 'bold';
 
 		var revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'restore this version');
-		$(revertToRevisionLink).click(function() {
+		$(revertToRevisionLink).click(function(e) {
+			e.preventDefault();
 			Twinkle.fluff.revertToRevision(revisionRef);
 		});
 
@@ -244,15 +248,16 @@ Twinkle.fluff.addLinks = {
 			// On first page of results, so add revert/rollback
 			// links to the top revision
 			if (!$('a.mw-firstlink').length) {
-				var first = histList.shift();
-				var vandal = $(first).find('.mw-userlink:not(.history-deleted)').text();
+				var firstRow = histList.shift();
+				var firstUser = $(firstRow).find('.mw-userlink:not(.history-deleted)').text();
 
 				// Check for first username different than the top user,
 				// only apply rollback links if/when found
-				// for faster than every
+				// for() faster than every()
 				for (var i = 0; i < histList.length; i++) {
-					if ($(histList[i]).find('.mw-userlink').text() !== vandal) {
-						first.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(vandal, true));
+					var hasMoreThanOneUser = $(histList[i]).find('.mw-userlink').text() !== firstUser;
+					if (hasMoreThanOneUser) {
+						firstRow.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(firstUser, true));
 						break;
 					}
 				}
