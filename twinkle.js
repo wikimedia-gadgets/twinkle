@@ -528,7 +528,7 @@ Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|dis
 // Used e.g. when "Automatically open the Twinkle warn menu on a user talk page after Twinkle rollback" is on
 Twinkle.getPrefill = function (key) {
 	Twinkle.prefill = Twinkle.prefill || {};
-	if (Twinkle.prefill.hasOwnProperty(key)) {
+	if (Object.prototype.hasOwnProperty.call(Twinkle.prefill, key)) {
 		return Twinkle.prefill[key];
 	}
 	Twinkle.prefill[key] = mw.util.getParamValue(key);
