@@ -20,9 +20,9 @@ Twinkle.warn = function twinklewarn() {
 		Twinkle.addPortletLink(Twinkle.warn.callback, 'Warn', 'tw-warn', 'Warn/notify user');
 		if (Twinkle.getPref('autoMenuAfterRollback') &&
 			mw.config.get('wgNamespaceNumber') === 3 &&
-			Twinkle.prefill.vanarticle &&
-			!Twinkle.prefill.friendlywelcome &&
-			!Twinkle.prefill.noautowarn) {
+			Twinkle.getPrefill('vanarticle') &&
+			!Twinkle.getPrefill('friendlywelcome') &&
+			!Twinkle.getPrefill('noautowarn')) {
 			Twinkle.warn.callback();
 		}
 	}
@@ -104,7 +104,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		type: 'input',
 		name: 'article',
 		label: 'Linked page',
-		value: Twinkle.prefill.vanarticle || '',
+		value: Twinkle.getPrefill('vanarticle') || '',
 		tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
 	});
 
@@ -137,16 +137,16 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklewarn-previewbox').last()[0]);
 
 	// Potential notices for staleness and missed reverts
-	var vanrevid = Twinkle.prefill.vanarticlerevid;
+	var vanrevid = Twinkle.getPrefill('vanarticlerevid');
 	if (vanrevid) {
 		var message = '';
 		var query = {};
 
 		// If you tried reverting, check if *you* actually reverted
-		if (!Twinkle.prefill.noautowarn && Twinkle.prefill.vanarticle) { // Via fluff link
+		if (!Twinkle.getPrefill('noautowarn') && Twinkle.getPrefill('vanarticle')) { // Via fluff link
 			query = {
 				action: 'query',
-				titles: Twinkle.prefill.vanarticle,
+				titles: Twinkle.getPrefill('vanarticle'),
 				prop: 'revisions',
 				rvstartid: vanrevid,
 				rvlimit: 2,
@@ -176,7 +176,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			}
 		};
 
-		var vantimestamp = Twinkle.prefill.vantimestamp;
+		var vantimestamp = Twinkle.getPrefill('vantimestamp');
 		// Provided from a fluff module-based revert, no API lookup necessary
 		if (vantimestamp) {
 			checkStale(vantimestamp);

@@ -785,10 +785,10 @@ Twinkle.fluff.callbacks = {
 				}
 			} else if (Twinkle.fluff.rollbackInPlace &&
 				mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
-				Twinkle.prefill.vanarticle = params.pagename.replace(/_/g, ' ');
-				Twinkle.prefill.vanarticlerevid = params.revid;
-				Twinkle.prefill.vantimestamp = params.vantimestamp;
-				Twinkle.prefill.vanarticlegoodrevid = params.goodid;
+				Twinkle.setPrefill('vanarticle', params.pagename.replace(/_/g, ' '));
+				Twinkle.setPrefill('vanarticlerevid', params.revid);
+				Twinkle.setPrefill('vantimestamp', params.vantimestamp);
+				Twinkle.setPrefill('vanarticlegoodrevid', params.goodid);
 			}
 
 			// review the revert, if needed

@@ -152,7 +152,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'page',
 				label: 'Primary linked page:',
 				tooltip: 'Leave blank to not link to the page in the report',
-				value: Twinkle.prefill.vanarticle || '',
+				value: Twinkle.getPrefill('vanarticle') || '',
 				event: function(e) {
 					var value = e.target.value;
 					var root = e.target.form;
@@ -169,8 +169,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'badid',
 				label: 'Revision ID for target page when vandalised:',
 				tooltip: 'Leave blank for no diff link',
-				value: Twinkle.prefill.vanarticlerevid || '',
-				disabled: !Twinkle.prefill.vanarticle,
+				value: Twinkle.getPrefill('vanarticlerevid') || '',
+				disabled: !Twinkle.getPrefill('vanarticle'),
 				event: function(e) {
 					var value = e.target.value;
 					var root = e.target.form;
@@ -182,8 +182,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'goodid',
 				label: 'Last good revision ID before vandalism of target page:',
 				tooltip: 'Leave blank for diff link to previous revision',
-				value: Twinkle.prefill.vanarticlegoodrevid || '',
-				disabled: !Twinkle.prefill.vanarticle || Twinkle.prefill.vanarticlerevid
+				value: Twinkle.getPrefill('vanarticlegoodrevid') || '',
+				disabled: !Twinkle.getPrefill('vanarticle') || Twinkle.getPrefill('vanarticlerevid')
 			});
 			work_area.append({
 				type: 'checkbox',

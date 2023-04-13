@@ -523,20 +523,23 @@ Twinkle.summaryAd = ' ([[WP:TW|TW]])';
 // ensure MOS:ORDER
 Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|distinguish|for|further|selfref|year dab|similar names|highway detail hatnote|broader|about(?:-distinguish| other people)?|other\\s?(?:hurricane(?: use)?s|people|persons|places|ships|uses(?: of)?)|redirect(?:-(?:distinguish|synonym|multi))?|see\\s?(?:wiktionary|also(?: if exists)?)';
 
-// Prefills in ARV/Warn/Welcome set by fluff
+// Returns a prefill value set in the URL or by setPrefill(), used in ARV/Warn/Welcome
+// Null if not found
 // Used e.g. when "Automatically open the Twinkle warn menu on a user talk page after Twinkle rollback" is on
-Twinkle.prefill = {};
-var search = location.search; // for efficiency
-[
-	'vanarticle',
-	'vanarticlerevid',
-	'vantimestamp',
-	'vanarticlegoodrevid',
-	'friendlywelcome',
-	'noautowarn'
-].forEach(function (key) {
-	Twinkle.prefill[key] = mw.util.getParamValue(key, search);
-});
+Twinkle.getPrefill = function (key) {
+	Twinkle.prefill = Twinkle.prefill || {};
+	if (Twinkle.prefill.hasOwnProperty(key)) {
+		return Twinkle.prefill[key];
+	}
+	Twinkle.prefill[key] = mw.util.getParamValue(key);
+	return Twinkle.prefill[key];
+};
+
+// Sets a prefill value after page load, used by fluff
+Twinkle.setPrefill = function (key, value) {
+	Twinkle.prefill = Twinkle.prefill || {};
+	Twinkle.prefill[key] = value;
+};
 
 // Used in XFD and PROD
 Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
