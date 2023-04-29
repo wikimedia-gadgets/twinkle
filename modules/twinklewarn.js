@@ -368,10 +368,6 @@ Twinkle.warn.messages = {
 					label: 'Introducing fringe theories',
 					summary: 'Warning: Introducing fringe theories'
 				},
-				level4: {
-					label: 'Introducing fringe theories',
-					summary: 'Final warning: Introducing fringe theories'
-				}
 			},
 			'uw-genre': {
 				level1: {
