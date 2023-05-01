@@ -1023,7 +1023,7 @@ Twinkle.block.blockPresetsInfo = {
 		forRegisteredOnly: true,
 		nocreate: true,
 		reason: '{{uw-botuhblock}} <!-- Username implies a bot, hard block -->',
-		summary: 'You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]].'
+		summary: 'You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]'
 	},
 	'uw-causeblock': {
 		expiry: 'infinity',
