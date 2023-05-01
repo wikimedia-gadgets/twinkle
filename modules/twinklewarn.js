@@ -1104,7 +1104,7 @@ Twinkle.warn.messages = {
 		},
 		'uw-wrongsummary': {
 			label: 'Using inaccurate or inappropriate edit summaries',
-			summary: 'Warning: Using inaccurate or inappropriate edit summaries'
+			summary: 'Notice: Using inaccurate or inappropriate edit summaries'
 		}
 	},
 
