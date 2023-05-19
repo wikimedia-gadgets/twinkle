@@ -331,7 +331,7 @@ Twinkle.welcome.templates = {
 			'welcome-copyright': {
 				description: 'for someone who has been adding copyright violations to articles',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-copyright|$USERNAME$|art=$ARTICLE$}}'
+				syntax: '{{subst:welcome-copyright|$ARTICLE$|$USERNAME$}} ~~~~'
 			}
 		}
 	},
