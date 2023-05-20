@@ -133,3 +133,13 @@ The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 [App::cpanminus]: https://metacpan.org/pod/App::cpanminus
 [intadmin]: https://en.wikipedia.org/wiki/Wikipedia:Interface_administrators
 [special_botpass]: https://en.wikipedia.org/wiki/Special:BotPasswords
+
+### Dependencies
+
+All the dependencies that Twinkle uses are JavaScript **dev** dependencies. They are not used at all on-wiki and are just used during development. Here's what they are and what they do. This may help with evaluating dependabot patches (dependabot is a GitHub bot that helps keep libraries up to date by submitting pull requests).
+
+- eslint - Used by continuous integration for enforcing code linting rules.
+- jest - Used by continuous integration for unit testing.
+- mock-mediawiki - Used by continuous integration for unit testing.
+- mwn - Used when you run `npm start`. `npm start` is what enables localhost testing.
+- Everything else - Dependabot will not usually try to update these unless one of the 4 above dependencies gets out of date. It is probably best to update the above dependencies instead.
