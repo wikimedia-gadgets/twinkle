@@ -90,7 +90,7 @@ exports[`quickform getElements 1`] = `
 
 exports[`quickform getInputData 1`] = `
 {
-  "checkboxlist1": Array [
+  "checkboxlist1": [
     "checkval2",
   ],
   "checkname1": true,
