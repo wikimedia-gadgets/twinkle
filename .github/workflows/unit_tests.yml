@@ -1,18 +1,6 @@
 name: Unit tests
 
-on:
-  push:
-    paths:
-    - 'morebits.js'
-    - 'tests/**'
-    - 'package.json'
-    - 'package-lock.json'
-  pull_request:
-    paths:
-    - 'morebits.js'
-    - 'tests/**'
-    - 'package.json'
-    - 'package-lock.json'
+on: [push, pull_request]
 
 jobs:
   lint:
