@@ -71,7 +71,7 @@ exports[`quickform checkbox elements 1`] = `
 `;
 
 exports[`quickform getElements 1`] = `
-Array [
+[
   <input
     id="node_20_0"
     name="checkboxlist1"
@@ -89,7 +89,7 @@ Array [
 `;
 
 exports[`quickform getInputData 1`] = `
-Object {
+{
   "checkboxlist1": Array [
     "checkval2",
   ],
