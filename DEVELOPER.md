@@ -140,6 +140,7 @@ All the dependencies that Twinkle uses are JavaScript **dev** dependencies. They
 
 - eslint - Used by continuous integration for enforcing code linting rules.
 - jest - Used by continuous integration for unit testing.
+- jest-environment-jsdom - Needed for Jest to work.
 - mock-mediawiki - Used by continuous integration for unit testing.
 - mwn - Used when you run `npm start`. `npm start` is what enables localhost testing.
-- Everything else - Dependabot will not usually try to update these unless one of the 4 above dependencies gets out of date. It is probably best to update the above dependencies instead.
+- Everything else - Dependabot will not usually try to update these unless one of the 5 above dependencies gets out of date. It is probably best to update the above dependencies instead.
