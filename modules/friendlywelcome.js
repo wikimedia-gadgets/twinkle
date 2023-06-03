@@ -327,11 +327,6 @@ Twinkle.welcome.templates = {
 				description: 'welcome with additional information about images (policy and procedure)',
 				linkedArticle: true,
 				syntax: '{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}'
-			},
-			'welcome-copyright': {
-				description: 'for someone who has been adding copyright violations to articles',
-				linkedArticle: true,
-				syntax: '{{subst:welcome-copyright|$ARTICLE$|$USERNAME$}} ~~~~'
 			}
 		}
 	},
@@ -483,6 +478,10 @@ Twinkle.welcome.templates = {
 			'TWA invite': {
 				description: 'invite the user to The Wikipedia Adventure (not a welcome template)',
 				syntax: '{{subst:WP:TWA/InviteTW|signature=~~~~}}'
+			},
+			'Woman in Red invite': {
+				description: 'welcome for users with an intrest in writing about women',
+				syntax: '{{subst:WikiProject Women in Red invite|1=~~~~}}'
 			}
 		}
 	},
