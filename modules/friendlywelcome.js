@@ -295,45 +295,45 @@ Twinkle.welcome.templates = {
 				syntax: '{{subst:welcome-copyright|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			'welcome-delete': {
-			description: 'for someone who has been removing information from articles',
-			linkedArticle: true,
-			syntax: '{{subst:welcome-delete|$ARTICLE$|$USERNAME$}} ~~~~'
+				description: 'for someone who has been removing information from articles',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-delete|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			'welcome-image': {
-			description: 'welcome with additional information about images (policy and procedure)',
-			linkedArticle: true,
-			syntax: '{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}'
+				description: 'welcome with additional information about images (policy and procedure)',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}'
 			},
 			'welcomelaws': {
-			description: 'welcome with information about copyrights, NPOV, the sandbox, and vandalism',
-			syntax: '{{subst:welcomelaws|$USERNAME$}} ~~~~'
+				description: 'welcome with information about copyrights, NPOV, the sandbox, and vandalism',
+				syntax: '{{subst:welcomelaws|$USERNAME$}} ~~~~'
 			},
 			'welcomenpov': {
-			description: 'for someone whose initial efforts do not adhere to the neutral point of view policy',
-			linkedArticle: true,
-			syntax: '{{subst:welcomenpov|$ARTICLE$|$USERNAME$}} ~~~~'
+				description: 'for someone whose initial efforts do not adhere to the neutral point of view policy',
+				linkedArticle: true,
+				syntax: '{{subst:welcomenpov|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			'welcomeunsourced': {
-			description: 'for someone whose initial efforts are unsourced',
-			linkedArticle: true,
-			syntax: '{{subst:welcomeunsourced|$ARTICLE$|$USERNAME$}} ~~~~'
+				description: 'for someone whose initial efforts are unsourced',
+				linkedArticle: true,
+				syntax: '{{subst:welcomeunsourced|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			'welcomevandal': {
-			description: 'for someone whose initial efforts appear to be vandalism',
-			linkedArticle: true,
-			syntax: '{{subst:welcomevandal|$ARTICLE$|$USERNAME$}}'
+				description: 'for someone whose initial efforts appear to be vandalism',
+				linkedArticle: true,
+				syntax: '{{subst:welcomevandal|$ARTICLE$|$USERNAME$}}'
 			},
 			'welcomespam': {
-			description: 'welcome with additional discussion of anti-spamming policies',
-			linkedArticle: true,
-			syntax: '{{subst:welcomespam|$ARTICLE$|$USERNAME$}} ~~~~'
+				description: 'welcome with additional discussion of anti-spamming policies',
+				linkedArticle: true,
+				syntax: '{{subst:welcomespam|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			'welcometest': {
-			description: 'for someone whose initial efforts appear to be tests',
-			linkedArticle: true,
-			syntax: '{{subst:welcometest|$ARTICLE$|$USERNAME$}} ~~~~'
+				description: 'for someone whose initial efforts appear to be tests',
+				linkedArticle: true,
+				syntax: '{{subst:welcometest|$ARTICLE$|$USERNAME$}} ~~~~'
 			}
-		},
+		}
 	},
 
 	anonymous: {
