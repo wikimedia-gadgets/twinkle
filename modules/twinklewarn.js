@@ -1068,7 +1068,7 @@ Twinkle.warn.messages = {
 			label: 'Indiscriminate removal of redlinks',
 			summary: 'Notice: Be careful when removing redlinks'
 		},
-		'uw-refspam' : {
+		'uw-refspam': {
 
 		},
 		'uw-selfrevert': {
