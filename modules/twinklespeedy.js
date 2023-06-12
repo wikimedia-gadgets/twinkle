@@ -539,6 +539,13 @@ Twinkle.speedy.fileList = [
 		],
 	},
 	{
+		label: 'F1: Logo clearly above Threshold of Originality',
+		value: 'logo',
+		code: 'f1',
+		tooltip:
+			'Content is a logo clearly above Threshold of Originality, either in the United States or its source country. If plausibly under the threshold of originality, file a Deletion Request instead.',
+	},
+	{
 		label: 'F2: Fair use content',
 		value: 'fairuse',
 		code: 'f2',
@@ -963,6 +970,7 @@ Twinkle.speedy.normalizeHash = {
 	'advert': 'g10',
 	'textcopyvio': 'g11',
 	'copyvio': 'f1',
+	'logo': 'f1',
 	'fairuse': 'f2',
 	'deriv': 'f3',
 	'lrfailed': 'f4',
@@ -1542,6 +1550,9 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 			
+			case 'logo':
+				break;
+		
 			case 'fairuse':
 				if (form['csd.fairuse_rationale']) {
 					var rationale = form['csd.fairuse_rationale'].value;
