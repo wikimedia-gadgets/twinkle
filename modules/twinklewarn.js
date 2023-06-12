@@ -1226,7 +1226,9 @@ Twinkle.warn.messages = {
 		'uw-userpage': {
 			label: 'Userpage or subpage is against policy',
 			summary: 'Warning: Userpage or subpage is against policy'
-		}
+		},
+		'uw-blar':{},
+		'uw-articletodraft':{}
 	}
 };
 
