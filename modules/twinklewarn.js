@@ -1068,6 +1068,9 @@ Twinkle.warn.messages = {
 			label: 'Indiscriminate removal of redlinks',
 			summary: 'Notice: Be careful when removing redlinks'
 		},
+		'uw-refspam' : {
+
+		},
 		'uw-selfrevert': {
 			label: 'Self-reverted editing tests',
 			summary: 'Notice: Self-reverted editing tests'
@@ -1227,8 +1230,6 @@ Twinkle.warn.messages = {
 			label: 'Userpage or subpage is against policy',
 			summary: 'Warning: Userpage or subpage is against policy'
 		},
-		'uw-blar': {},
-		'uw-articletodraft': {}
 	}
 };
 
