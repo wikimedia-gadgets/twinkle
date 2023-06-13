@@ -160,7 +160,7 @@ Twinkle.batchundelete.callback.evaluate = function(event) {
 		wikipedia_page.setEditSummary(input.reason);
 		wikipedia_page.setChangeTags(Twinkle.changeTags);
 		wikipedia_page.suppressProtectWarning();
-		wikipedia_page.setMaxRetries(3); // temporary increase from 2 to make batchundelete more likely to succeed [[phab:T222402]] #613
+		wikipedia_page.setMaxRetries(6); // temporary increase from 2 to make batchundelete more likely to succeed [[phab:T222402]] #613
 		wikipedia_page.undeletePage(Twinkle.batchundelete.callbacks.doExtras, pageUndeleter.workerFailure);
 	});
 };
