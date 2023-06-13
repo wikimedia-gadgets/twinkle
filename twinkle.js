@@ -94,35 +94,35 @@ Twinkle.defaultConfig = {
 
 	// these next two should probably be identical by default
 	welcomeUserOnSpeedyDeletionNotification: [
-			'db',
-			'g1', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10', 'g11',
-			'u3',
-			'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10', 
-			'c1', 'c2',
-			't1', 't2',
-			'ga1', 'ga2',
-			'com1'
-		],
+		'db',
+		'g1', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10', 'g11',
+		'u3',
+		'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10',
+		'c1', 'c2',
+		't1', 't2',
+		'ga1', 'ga2',
+		'com1'
+	],
 	notifyUserOnSpeedyDeletionNomination: [
-			'db',
-			'g1', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10', 'g11',
-			'u3',
-			'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10', 
-			'c1', 'c2',
-			't1', 't2',
-			'ga1', 'ga2',
-			'com1'
-		],
+		'db',
+		'g1', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10', 'g11',
+		'u3',
+		'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10',
+		'c1', 'c2',
+		't1', 't2',
+		'ga1', 'ga2',
+		'com1'
+	],
 	warnUserOnSpeedyDelete: [
-			'db',
-			'g1', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10', 'g11',
-			'u3',
-			'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10', 
-			'c1', 'c2',
-			't1', 't2',
-			'ga1', 'ga2',
-			'com1'
-		],
+		'db',
+		'g1', 'g3', 'g4', 'g5', 'g6', 'g8', 'g9', 'g10', 'g11',
+		'u3',
+		'f1', 'f2', 'f3', 'f4', 'f7', 'f8', 'f9', 'f10',
+		'c1', 'c2',
+		't1', 't2',
+		'ga1', 'ga2',
+		'com1'
+	],
 	promptForSpeedyDeletionSummary: [],
 	deleteTalkPageOnDelete: true,
 	deleteRedirectsOnDelete: true,
@@ -164,7 +164,7 @@ Twinkle.defaultConfig = {
 	// Deprecated options, as a fallback for add-on scripts/modules
 	summaryAd: ' ([[COM:TW|TW]])',
 	deletionSummaryAd: ' ([[COM:TW|TW]])',
-	protectionSummaryAd: ' ([[COM:TW|TW]])',
+	protectionSummaryAd: ' ([[COM:TW|TW]])'
 
 	// Formerly defaultConfig.friendly:
 	// Tag

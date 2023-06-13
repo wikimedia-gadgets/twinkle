@@ -179,13 +179,12 @@ Twinkle.image.callbacks = {
 		var tag = '';
 		switch (params.type) {
 			case 'no license':
-				tag = '{{subst:nld}}'
+				tag = '{{subst:nld}}';
 				break;
 			case 'no source':
 				if (params.derivative) {
-					tag = '{{subst:dw-nsd}}'
-				}
-				else {
+					tag = '{{subst:dw-nsd}}';
+				} else {
 					tag = '{{subst:nsd}}';
 				}
 				break;
@@ -197,7 +196,7 @@ Twinkle.image.callbacks = {
 		}
 		// tag += '|help=off}}\n';
 		tag += '\n';
-		
+
 		pageobj.setPageText(tag + text);
 		pageobj.setEditSummary('This file is up for deletion, per [[COM:CSD#' + params.normalized + '|CSD ' + params.normalized + ']] (' + params.type + ').');
 		pageobj.setChangeTags(Twinkle.changeTags);
