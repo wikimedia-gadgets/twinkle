@@ -355,6 +355,20 @@ Twinkle.warn.messages = {
 					summary: 'Final warning: Introducing deliberate factual errors'
 				}
 			},
+			'uw-fringe': {
+				level1: {
+					label: 'Introducing fringe theories',
+					summary: 'General note: Introducing fringe theories'
+				},
+				level2: {
+					label: 'Introducing fringe theories',
+					summary: 'Caution: Introducing fringe theories'
+				},
+				level3: {
+					label: 'Introducing fringe theories',
+					summary: 'Warning: Introducing fringe theories'
+				}
+			},
 			'uw-genre': {
 				level1: {
 					label: 'Frequent or mass changes to genres without consensus or references',
@@ -1082,6 +1096,10 @@ Twinkle.warn.messages = {
 			label: 'Posting at the top of talk pages',
 			summary: 'Notice: Posting at the top of talk pages'
 		},
+		'uw-translation': {
+			label: 'Adding translations without proper attribution',
+			summary: 'Notice: Attribution required when translating articles'
+		},
 		'uw-unattribcc': {
 			label: 'Copying from compatibly-licensed sources without attribution',
 			summary: 'Notice: Copying from compatibly-licensed sources without attribution'
@@ -1100,7 +1118,7 @@ Twinkle.warn.messages = {
 		},
 		'uw-wrongsummary': {
 			label: 'Using inaccurate or inappropriate edit summaries',
-			summary: 'Warning: Using inaccurate or inappropriate edit summaries'
+			summary: 'Notice: Using inaccurate or inappropriate edit summaries'
 		}
 	},
 
