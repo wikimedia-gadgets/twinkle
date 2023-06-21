@@ -819,10 +819,10 @@ Twinkle.config.sections = [
 			},
 			{
 				name: 'quickWelcomeMode',
-				label: 'Clicking the "welcome" link on a diff page will',
+				label: 'Clicking the "welcome" link on a diff page (which only appears if the editor\'s user talk page has not been created yet) will',
 				helptip: 'If you choose to welcome automatically, the template you specify below will be used.',
 				type: 'enum',
-				enumValues: { auto: 'welcome automatically', norm: 'prompt you to select a template' }
+				enumValues: { auto: 'immediately post the welcome template specified below', norm: 'prompt you to select a template' }
 			},
 			{
 				name: 'quickWelcomeTemplate',
