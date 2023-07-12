@@ -105,7 +105,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		name: 'article',
 		label: 'Linked page',
 		value: mw.util.getParamValue('vanarticle') || '',
-		tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.'
+		tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.',
+		event: Twinkle.warn.callback.set_edit_summary
 	});
 
 	form.append({
@@ -117,6 +118,14 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 
 
 	var more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
+	more.append({
+		type: 'input',
+		label: 'Edit summary:',
+		name: 'summary',
+		size: 60, tooltip:
+		'Customize the warning edit\'s edit summary. This will be reset to the default when any warning options are changed.'
+	});
+
 	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
 
 	var previewlink = document.createElement('a');
@@ -1479,6 +1488,79 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 	}
 };
 
+// Build the expected edit summary to allow user to make edits through a text box
+Twinkle.warn.callback.set_edit_summary = function twinkleWarnCallbackSetEditSummary(e) {
+	var selected_main_group = e.target.form.main_group.value;
+	var selected_template = e.target.form.sub_group.value;
+	var messageData = $(e.target.form.sub_group).find('option[value="' + $(e.target.form.sub_group).val() + '"]').data('messageData');
+	var article = e.target.form.article.value;
+
+	// Function to handle generation of summary prefix for custom templates
+	var customProcess = function(template) {
+		template = template.split('|')[0];
+		var prefix;
+		switch (template.substr(-1)) {
+			case '1':
+				prefix = 'General note';
+				break;
+			case '2':
+				prefix = 'Caution';
+				break;
+			case '3':
+				prefix = 'Warning';
+				break;
+			case '4':
+				prefix = 'Final warning';
+				break;
+			case 'm':
+				if (template.substr(-3) === '4im') {
+					prefix = 'Only warning';
+					break;
+				}
+				// falls through
+			default:
+				prefix = 'Notice';
+				break;
+		}
+		return prefix + ': ' + Morebits.string.toUpperCaseFirstChar(messageData.label);
+	};
+
+	var summary;
+	if (selected_main_group === 'custom') {
+		summary = customProcess(selected_template);
+	} else {
+		// Normalize kitchensink to the 1-4im style
+		if (selected_main_group === 'kitchensink' && !/^D+$/.test(selected_template)) {
+			var sub = selected_template.substr(-1);
+			if (sub === 'm') {
+				sub = selected_template.substr(-3);
+			}
+			// Don't overwrite uw-3rr, technically unnecessary
+			if (/\d/.test(sub)) {
+				selected_main_group = 'level' + sub;
+			}
+		}
+		// singlet || level1-4im, no need to /^\D+$/.test(params.main_group)
+		summary = messageData.summary || (messageData[selected_main_group] && messageData[selected_main_group].summary);
+		// Not in Twinkle.warn.messages, assume custom template
+		if (!summary) {
+			summary = customProcess(selected_template);
+		}
+		if (messageData.suppressArticleInSummary !== true && article) {
+			if (selected_template === 'uw-agf-sock' ||
+					selected_template === 'uw-socksuspect' ||
+					selected_template === 'uw-aiv') {  // these templates require a username
+				summary += ' of [[:User:' + article + ']]';
+			} else {
+				summary += ' on [[:' + article + ']]';
+			}
+		}
+	}
+
+	// Set edit summary in input box
+	e.target.form.summary.value = summary + '.';
+};
+
 Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
 	var selected_main_group = e.target.form.main_group.value;
 	var selected_template = e.target.form.sub_group.value;
@@ -1548,6 +1630,8 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 			'{{uw-coi-username}} should only be used in edge cases in order to engage in discussion with the user.</div>');
 		$redWarning.insertAfter(Morebits.quickForm.getElementLabelObject(e.target.form.reasonGroup));
 	}
+
+	Twinkle.warn.callback.set_edit_summary(e);
 };
 
 Twinkle.warn.callbacks = {
@@ -1795,70 +1879,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		// build the edit summary
-		// Function to handle generation of summary prefix for custom templates
-		var customProcess = function(template) {
-			template = template.split('|')[0];
-			var prefix;
-			switch (template.substr(-1)) {
-				case '1':
-					prefix = 'General note';
-					break;
-				case '2':
-					prefix = 'Caution';
-					break;
-				case '3':
-					prefix = 'Warning';
-					break;
-				case '4':
-					prefix = 'Final warning';
-					break;
-				case 'm':
-					if (template.substr(-3) === '4im') {
-						prefix = 'Only warning';
-						break;
-					}
-					// falls through
-				default:
-					prefix = 'Notice';
-					break;
-			}
-			return prefix + ': ' + Morebits.string.toUpperCaseFirstChar(messageData.label);
-		};
-
-		var summary;
-		if (params.main_group === 'custom') {
-			summary = customProcess(params.sub_group);
-		} else {
-			// Normalize kitchensink to the 1-4im style
-			if (params.main_group === 'kitchensink' && !/^D+$/.test(params.sub_group)) {
-				var sub = params.sub_group.substr(-1);
-				if (sub === 'm') {
-					sub = params.sub_group.substr(-3);
-				}
-				// Don't overwrite uw-3rr, technically unnecessary
-				if (/\d/.test(sub)) {
-					params.main_group = 'level' + sub;
-				}
-			}
-			// singlet || level1-4im, no need to /^\D+$/.test(params.main_group)
-			summary = messageData.summary || (messageData[params.main_group] && messageData[params.main_group].summary);
-			// Not in Twinkle.warn.messages, assume custom template
-			if (!summary) {
-				summary = customProcess(params.sub_group);
-			}
-			if (messageData.suppressArticleInSummary !== true && params.article) {
-				if (params.sub_group === 'uw-agf-sock' ||
-						params.sub_group === 'uw-socksuspect' ||
-						params.sub_group === 'uw-aiv') {  // these templates require a username
-					summary += ' of [[:User:' + params.article + ']]';
-				} else {
-					summary += ' on [[:' + params.article + ']]';
-				}
-			}
-		}
-
-		pageobj.setEditSummary(summary + '.');
+		pageobj.setEditSummary(params.summary);
 		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setWatchlist(Twinkle.getPref('watchWarnings'));
 
@@ -1907,7 +1928,7 @@ Twinkle.warn.callbacks = {
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	var userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
-	// reason, main_group, sub_group, article
+	// reason, main_group, sub_group, article, summary
 	var params = Morebits.quickForm.getInputData(e.target);
 
 	// Check that a reason was filled in if uw-username was selected
