@@ -106,7 +106,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		label: 'Linked page',
 		value: mw.util.getParamValue('vanarticle') || '',
 		tooltip: 'A page can be linked within the notice, perhaps because it was a revert to said page that dispatched this notice. Leave empty for no page to be linked.',
-		event: Twinkle.warn.callback.set_edit_summary
+		event: Twinkle.warn.callback.set_tentative_edit_summary
 	});
 
 	form.append({
@@ -122,8 +122,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		type: 'input',
 		label: 'Edit summary:',
 		name: 'summary',
-		size: 60, tooltip:
-		'Customize the warning edit\'s edit summary. This will be reset to the default when any warning options are changed.'
+		size: 60,
+		tooltip: 'Customize the warning edit\'s edit summary. This will be reset to the default when any warning options are changed.'
 	});
 
 	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
@@ -1489,7 +1489,7 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 };
 
 // Build the expected edit summary to allow user to make edits through a text box
-Twinkle.warn.callback.set_edit_summary = function twinkleWarnCallbackSetEditSummary(e) {
+Twinkle.warn.callback.set_tentative_edit_summary = function twinkleWarnCallbackSetTentativeEditSummary(e) {
 	var selected_main_group = e.target.form.main_group.value;
 	var selected_template = e.target.form.sub_group.value;
 	var messageData = $(e.target.form.sub_group).find('option[value="' + $(e.target.form.sub_group).val() + '"]').data('messageData');
@@ -1631,7 +1631,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		$redWarning.insertAfter(Morebits.quickForm.getElementLabelObject(e.target.form.reasonGroup));
 	}
 
-	Twinkle.warn.callback.set_edit_summary(e);
+	Twinkle.warn.callback.set_tentative_edit_summary(e);
 };
 
 Twinkle.warn.callbacks = {
