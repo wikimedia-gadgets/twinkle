@@ -230,6 +230,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 //   - $USERNAME$  - replaced by the welcomer's username, depending on user's preferences
 //   - $ARTICLE$   - replaced by an article name, if "linkedArticle" is true
 //   - $HEADER$    - adds a level 2 header (most templates already include this)
+//   - $EXTRA$     - custom message to be added at the end of the template. not implemented yet.
 
 Twinkle.welcome.templates = {
 	standard: {
@@ -246,7 +247,7 @@ Twinkle.welcome.templates = {
 			},
 			'welcome-short': {
 				description: 'a shorter welcome message',
-				syntax: '{{subst:w-short|heading=true|$EXTRA$}}'
+				syntax: '{{subst:W-short|$EXTRA$}}'
 			},
 			'welcome-cookie': {
 				description: 'a welcome message with some helpful links and a plate of cookies',
