@@ -219,8 +219,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
 
-			// Utility function
-			// https://stackoverflow.com/a/2548133/3480193
+			// https://stackoverflow.com/questions/280634/endswith-in-javascript/2548133#2548133
+			// Author chakrit, CC BY-SA 4.0
 			var endsWith = function(str, suffix) {
 				return str.indexOf(suffix, str.length - suffix.length) !== -1;
 			};
