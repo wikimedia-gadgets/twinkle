@@ -219,12 +219,6 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'redirect':
 			Window.setTitle('Redirect tagging');
 
-			// https://stackoverflow.com/questions/280634/endswith-in-javascript/2548133#2548133
-			// Author chakrit, CC BY-SA 4.0
-			var endsWith = function(str, suffix) {
-				return str.indexOf(suffix, str.length - suffix.length) !== -1;
-			};
-
 			// If a tag has a restriction for this namespace or title, return true, so that we know not to display it in the list of check boxes.
 			var isRestricted = function(item) {
 				if (typeof item.restriction === 'undefined') {
@@ -248,7 +242,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 						}
 						break;
 					case 'disambiguationPagesOnly':
-						if (!endsWith(mw.config.get('wgPageName'), '_(disambiguation)')) {
+						if (!mw.config.get('wgPageName').endsWith('_(disambiguation)')) {
 							return true;
 						}
 						break;
