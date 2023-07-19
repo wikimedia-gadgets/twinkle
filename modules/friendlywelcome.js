@@ -39,12 +39,16 @@ Twinkle.welcome.semiauto = function() {
 };
 
 Twinkle.welcome.normal = function() {
-	if (mw.util.getParamValue('diff')) {
+	var isDiff = mw.util.getParamValue('diff');
+	if (isDiff) {
 		// check whether the contributors' talk pages exist yet
-		var $oList = $('#mw-diff-otitle2').find('span.mw-usertoollinks a.new:contains(talk)').first();
-		var $nList = $('#mw-diff-ntitle2').find('span.mw-usertoollinks a.new:contains(talk)').first();
+		var $oldDiffUsernameLine = $('#mw-diff-otitle2');
+		var $newDiffUsernameLine = $('#mw-diff-ntitle2');
+		var $oldDiffHasRedlinkedTalkPage = $oldDiffUsernameLine.find('span.mw-usertoollinks a.new:contains(talk)').first();
+		var $newDiffHasRedlinkedTalkPage = $newDiffUsernameLine.find('span.mw-usertoollinks a.new:contains(talk)').first();
 
-		if ($oList.length > 0 || $nList.length > 0) {
+		var diffHasRedlinkedTalkPage = $oldDiffHasRedlinkedTalkPage.length > 0 || $newDiffHasRedlinkedTalkPage.length > 0;
+		if (diffHasRedlinkedTalkPage) {
 			var spanTag = function(color, content) {
 				var span = document.createElement('span');
 				span.style.color = color;
@@ -59,28 +63,28 @@ Twinkle.welcome.normal = function() {
 			welcomeLink.appendChild(spanTag('Black', ']'));
 			welcomeNode.appendChild(welcomeLink);
 
-			if ($oList.length > 0) {
-				var oHref = $oList.attr('href');
+			if ($oldDiffHasRedlinkedTalkPage.length > 0) {
+				var oHref = $oldDiffHasRedlinkedTalkPage.attr('href');
 
 				var oWelcomeNode = welcomeNode.cloneNode(true);
 				oWelcomeNode.firstChild.setAttribute('href', oHref + '&' + $.param({
 					friendlywelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 					vanarticle: Morebits.pageNameNorm
 				}));
-				$oList[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
-				$oList[0].parentNode.parentNode.appendChild(oWelcomeNode);
+				$oldDiffHasRedlinkedTalkPage[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
+				$oldDiffHasRedlinkedTalkPage[0].parentNode.parentNode.appendChild(oWelcomeNode);
 			}
 
-			if ($nList.length > 0) {
-				var nHref = $nList.attr('href');
+			if ($newDiffHasRedlinkedTalkPage.length > 0) {
+				var nHref = $newDiffHasRedlinkedTalkPage.attr('href');
 
 				var nWelcomeNode = welcomeNode.cloneNode(true);
 				nWelcomeNode.firstChild.setAttribute('href', nHref + '&' + $.param({
 					friendlywelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 					vanarticle: Morebits.pageNameNorm
 				}));
-				$nList[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
-				$nList[0].parentNode.parentNode.appendChild(nWelcomeNode);
+				$newDiffHasRedlinkedTalkPage[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
+				$newDiffHasRedlinkedTalkPage[0].parentNode.parentNode.appendChild(nWelcomeNode);
 			}
 		}
 	}
@@ -226,6 +230,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 //   - $USERNAME$  - replaced by the welcomer's username, depending on user's preferences
 //   - $ARTICLE$   - replaced by an article name, if "linkedArticle" is true
 //   - $HEADER$    - adds a level 2 header (most templates already include this)
+//   - $EXTRA$     - custom message to be added at the end of the template. not implemented yet.
 
 Twinkle.welcome.templates = {
 	standard: {
@@ -242,7 +247,7 @@ Twinkle.welcome.templates = {
 			},
 			'welcome-short': {
 				description: 'a shorter welcome message',
-				syntax: '{{subst:w-short|heading=true|$EXTRA$}}'
+				syntax: '{{subst:W-short|$EXTRA$}}'
 			},
 			'welcome-cookie': {
 				description: 'a welcome message with some helpful links and a plate of cookies',
