@@ -520,7 +520,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 			var isTemplateNamespace = mw.config.get('wgNamespaceNumber') === 10;
 			var isAFD = Morebits.pageNameNorm.startsWith('Wikipedia:Articles for deletion/');
-			var isCode = ['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1;
+			var isCode = ['javascript', 'css', 'sanitized-css'].includes(mw.config.get('wgPageContentModel'));
 			field1.append({
 				type: 'checkbox',
 				list: [
@@ -1078,7 +1078,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			var isTemplateEditorProtection = form.category.value === 'pp-template';
 			var isAFD = Morebits.pageNameNorm.startsWith('Wikipedia:Articles for deletion/');
 			var isNotTemplateNamespace = mw.config.get('wgNamespaceNumber') !== 10;
-			var isCode = ['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1;
+			var isCode = ['javascript', 'css', 'sanitized-css'].includes(mw.config.get('wgPageContentModel'));
 			if ((isTemplateEditorProtection || isAFD) && !isCode) {
 				form.noinclude.checked = true;
 			} else if (isCode || isNotTemplateNamespace) {
