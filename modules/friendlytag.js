@@ -1126,25 +1126,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R to article without mention', description: 'redirect to an article without any mention of the redirected word or phrase', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R to decade', description: 'redirect from a year to the decade article', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from domain name', description: 'redirect from a domain name to an article about a website', restriction: 'insideMainspaceOnly' },
-			{
-				tag: 'R from emoji',
-				description: 'redirect from an emoji to an article describing the depicted concept or the emoji itself',
-				subgroup: [{
-					name: 'emojiName',
-					type: 'input',
-					label: 'Emoji name',
-					tooltip: 'Enter the name of the emoji'
-				}, {
-					type: 'checkbox',
-					list: [
-						{
-							name: 'emojiIsFlag',
-							label: 'Flag',
-							tooltip: 'Is the emoji a flag emoji?'
-						}
-					]
-				}]
-			},
+			{ tag: 'R from emoji', description: 'redirect from an emoji to an article describing the depicted concept or the emoji itself' },
 			{ tag: 'R from phrase', description: 'redirect from a phrase to a more general relevant article covering the topic' },
 			{ tag: 'R from list topic', description: 'redirect from the topic of a list to the equivalent list' },
 			{ tag: 'R from member', description: 'redirect from a member of a group to a related topic such as the group or organization' },
