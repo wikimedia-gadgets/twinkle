@@ -1076,7 +1076,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 			// Default settings for adding <noinclude> tags to protection templates
 			var isTemplateEditorProtection = form.category.value === 'pp-template';
-			var isAFD = mw.config.get('wgNamespaceNumber') === mw.config.get('wgNamespaceIds').project && mw.config.get('wgTitle').indexOf('Articles for deletion/') === 0;
+			var isAFD = Morebits.pageNameNorm.startsWith('Wikipedia:Articles for deletion/');
 			var isNotTemplateNamespace = mw.config.get('wgNamespaceNumber') !== 10;
 			var isCode = ['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1;
 			if ((isTemplateEditorProtection || isAFD) && !isCode) {
