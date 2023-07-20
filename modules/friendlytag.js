@@ -1135,11 +1135,14 @@ Twinkle.tag.redirectList = {
 					label: 'Emoji name',
 					tooltip: 'Enter the name of the emoji'
 				}, {
-					name: 'emojiIsFlag',
-					parameter: 'flag',
 					type: 'checkbox',
-					label: 'Flag',
-					tooltip: 'Is the emoji a flag emoji?'
+					list: [
+						{
+							name: 'emojiIsFlag',
+							label: 'Flag',
+							tooltip: 'Is the emoji a flag emoji?'
+						}
+					]
 				}]
 			},
 			{ tag: 'R from phrase', description: 'redirect from a phrase to a more general relevant article covering the topic' },
