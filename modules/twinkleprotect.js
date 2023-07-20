@@ -519,7 +519,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			});
 
 			var isTemplateNamespace = mw.config.get('wgNamespaceNumber') === 10;
-			var isAFD = mw.config.get('wgPageName').indexOf('Wikipedia:Articles for deletion/') === 0;
+			var isAFD = Morebits.pageNameNorm.startsWith('Wikipedia:Articles for deletion/');
 			var isCode = ['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1;
 			field1.append({
 				type: 'checkbox',
