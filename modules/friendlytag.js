@@ -1102,10 +1102,18 @@ Twinkle.tag.redirectList = {
 	'Media': {
 		General: [
 			{ tag: 'R from album', description: 'redirect from an album to a related topic such as the recording artist or a list of albums', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from band name', description: 'redirect from a musical band or musical group name that redirects an article on a single person, i.e. the band or group leader' },
 			{ tag: 'R from book', description: 'redirect from a book title to a more general, relevant article', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from cover song', description: 'redirect from a cover version of a song to the article about the original song this version covers' },
 			{ tag: 'R from film', description: 'redirect from a film title that is a subtopic of the redirect target or a title in an alternative language that has been produced in that language', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from journal', description: 'redirect from a trade or professional journal article a more general, relevant Wikipedia article, such as the author or publisher of the article or to the title in an alternative language' },
+			{ tag: 'R from lyric', description: 'redirect from a lyric to a song or other source that describes the lyric' },
+			{ tag: 'R from meme', description: 'redirect from a name of an internet meme or other pop culture phenomenon that is a subtopic of the redirect target' },
 			{ tag: 'R from song', description: 'redirect from a song title to a more general, relevant article' },
-			{ tag: 'R from television episode', description: 'redirect from a television episode title to a related work or lists of episodes', restriction: 'insideMainspaceOnly' }
+			{ tag: 'R from television episode', description: 'redirect from a television episode title to a related work or lists of episodes', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from television program', description: 'redirect from a title of television program, television series or web series that is a subtopic of the redirect target' },
+			{ tag: 'R from upcoming film', description: 'redirect from a title that potentially could be expanded into a new article or other type of associated page such as a new template.' },
+			{ tag: 'R from work', description: 'redirect from a creative work a related topic such as the author/artist, publisher, or a subject related to the work' }
 		],
 		Fiction: [
 			{ tag: 'R from fictional character', description: 'redirect from a fictional character to a related fictional work or list of characters', restriction: 'insideMainspaceOnly' },
@@ -1118,6 +1126,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R to article without mention', description: 'redirect to an article without any mention of the redirected word or phrase', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R to decade', description: 'redirect from a year to the decade article', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from domain name', description: 'redirect from a domain name to an article about a website', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from emoji', description: 'redirect from an emoji to an article describing the depicted concept or the emoji itself' },
 			{ tag: 'R from phrase', description: 'redirect from a phrase to a more general relevant article covering the topic' },
 			{ tag: 'R from list topic', description: 'redirect from the topic of a list to the equivalent list' },
 			{ tag: 'R from member', description: 'redirect from a member of a group to a related topic such as the group or organization' },
