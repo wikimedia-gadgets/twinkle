@@ -509,11 +509,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 				}
 			}).join('; ');
 
-
 			if (form.page.value !== '') {
 				// Allow links to redirects, files, and categories
 				reason = 'On {{No redirect|:' + form.page.value + '}}';
-
 				if (form.badid.value !== '') {
 					reason += ' ({{diff|' + form.page.value + '|' + form.badid.value + '|' + form.goodid.value + '|diff}})';
 				}
@@ -523,13 +521,21 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if (types) {
 				reason += ' ' + types;
 			}
+
 			if (comment !== '') {
-				reason += (reason === '' ? '' : '. ') + comment;
+				var reasonEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(reason);
+				reason += reasonEndsInPunctuationOrBlank ? '' : '.';
+				var reasonIsBlank = reason === '';
+				reason += reasonIsBlank ? '' : ' ';
+				reason += comment;
 			}
+
 			reason = reason.trim();
-			if (!/[.?!;]$/.test(reason)) {
+			var reasonEndsInPunctuation = /[.?!;]$/.test(reason);
+			if (!reasonEndsInPunctuation) {
 				reason += '.';
 			}
+
 			reason += ' ~~~~';
 			reason = reason.replace(/\r?\n/g, '\n*:');  // indent newlines
 
