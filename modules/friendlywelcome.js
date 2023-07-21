@@ -14,8 +14,8 @@
  */
 
 Twinkle.welcome = function friendlywelcome() {
-	if (mw.util.getParamValue('friendlywelcome')) {
-		if (mw.util.getParamValue('friendlywelcome') === 'auto') {
+	if (Twinkle.getPrefill('friendlywelcome')) {
+		if (Twinkle.getPrefill('friendlywelcome') === 'auto') {
 			Twinkle.welcome.auto();
 		} else {
 			Twinkle.welcome.semiauto();
@@ -102,7 +102,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 
 	var params = {
 		template: Twinkle.getPref('quickWelcomeTemplate'),
-		article: mw.util.getParamValue('vanarticle') || '',
+		article: Twinkle.getPrefill('vanarticle') || '',
 		mode: 'auto'
 	};
 
@@ -154,7 +154,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 		type: 'input',
 		name: 'article',
 		label: '* Linked article (if supported by template):',
-		value: mw.util.getParamValue('vanarticle') || '',
+		value: Twinkle.getPrefill('vanarticle') || '',
 		tooltip: 'An article might be linked from within the welcome if the template supports it. Leave empty for no article to be linked.  Templates that support a linked article are marked with an asterisk.'
 	});
 
