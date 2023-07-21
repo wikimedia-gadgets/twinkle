@@ -783,6 +783,7 @@ Twinkle.fluff.callbacks = {
 							'location=no,toolbar=no,status=no,directories=no,scrollbars=yes,width=1200,height=800');
 						break;
 				}
+			// prefill Wel/ARV/Warn when rollback used on Special:Contributions page
 			} else if (Twinkle.fluff.rollbackInPlace &&
 				mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
 				Twinkle.setPrefill('vanarticle', params.pagename.replace(/_/g, ' '));

@@ -523,9 +523,9 @@ Twinkle.summaryAd = ' ([[WP:TW|TW]])';
 // ensure MOS:ORDER
 Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|distinguish|for|further|selfref|year dab|similar names|highway detail hatnote|broader|about(?:-distinguish| other people)?|other\\s?(?:hurricane(?: use)?s|people|persons|places|ships|uses(?: of)?)|redirect(?:-(?:distinguish|synonym|multi))?|see\\s?(?:wiktionary|also(?: if exists)?)';
 
-// Returns a prefill value set in the URL or by setPrefill(), used in ARV/Warn/Welcome
-// Null if not found
-// Used e.g. when "Automatically open the Twinkle warn menu on a user talk page after Twinkle rollback" is on
+/**
+ * When performing rollbacks with fluff [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method gets a prefill, either from URL parameters (e.g. &vanarticle=Test) or from data previously stored using Twinkle.setPrefill()
+ */
 Twinkle.getPrefill = function (key) {
 	Twinkle.prefill = Twinkle.prefill || {};
 	if (!Object.prototype.hasOwnProperty.call(Twinkle.prefill, key)) {
@@ -534,7 +534,9 @@ Twinkle.getPrefill = function (key) {
 	return Twinkle.prefill[key];
 };
 
-// Sets a prefill value after page load, used by fluff
+/**
+ * When performing rollbacks with fluff [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method sets a prefill. This data will be lost if the page is refreshed, unless it is added to the URL as a parameter.
+ */
 Twinkle.setPrefill = function (key, value) {
 	Twinkle.prefill = Twinkle.prefill || {};
 	Twinkle.prefill[key] = value;
