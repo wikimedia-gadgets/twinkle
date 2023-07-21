@@ -524,7 +524,11 @@ Twinkle.arv.callback.evaluate = function(e) {
 				reason += ' ' + types;
 			}
 			if (comment !== '') {
-				reason += (/([.?!;:]|^)$/.test(reason) ? '' : '.') + (reason === '' ? '' : ' ') + comment; // Ends sentence if needed, does nothing if empty string
+				var reasonNeedsPunctuation = /([.?!;:]|^)$/.test(reason);
+				reason += reasonNeedsPunctuation ? '' : '.';
+				var reasonIsBlank = reason === '';
+				reason += reasonIsBlank ? '' : ' ';
+				reason += comment;
 			}
 			reason = reason.trim();
 			if (!/[.?!;]$/.test(reason)) {
