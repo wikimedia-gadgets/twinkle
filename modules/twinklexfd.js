@@ -2016,7 +2016,7 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var placementRE = /\n\n?(===== ?Requests to revert undiscussed moves ?=====)/i;
+			var placementRE = /\n\n?(==== ?Requests to revert undiscussed moves ?====)/i;
 			var newtext = text.replace(placementRE, Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params) + '\n$1');
 			if (text === newtext) {
 				statelem.error('failed to find target spot for the entry');
