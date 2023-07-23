@@ -2038,7 +2038,7 @@ Twinkle.xfd.callbacks = {
  * Given the wikitext of the WP:RM/TR page and the wikitext to insert, insert it at the bottom of the ==== Uncontroversial technical requests ==== section.
  * @param {String} pageWikitext
  * @param {String} wikitextToInsert Will typically be `{{subst:RMassist|1=From|2=To|reason=Reason}}`, which expands out to `* {{RMassist/core | 1 = From | 2 = To | discuss = yes | reason = Reason | sig = Signature | requester = YourUserName}}`
- * @return {String}
+ * @return {String} pageWikitext
  */
 Twinkle.xfd.insertRMTR = function(pageWikitext, wikitextToInsert) {
 	var placementRE = /\n{1,}(==== ?Requests to revert undiscussed moves ?====)/i;
