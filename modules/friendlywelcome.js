@@ -489,7 +489,7 @@ Twinkle.welcome.templates = {
 				description: 'invite the user to The Wikipedia Adventure (not a welcome template)',
 				syntax: '{{subst:WP:TWA/InviteTW|signature=~~~~}}'
 			},
-			'Woman in Red invite': {
+			'WikiProject Women in Red invite': {
 				description: 'welcome for users with an intrest in writing about women',
 				syntax: '{{subst:WikiProject Women in Red invite|1=~~~~}}'
 			}
