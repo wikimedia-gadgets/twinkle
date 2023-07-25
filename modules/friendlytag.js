@@ -53,7 +53,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			format: 'json',
 			page_id: mw.config.get('wgArticleId')
 		}).then(function(response) {
-			// figure out whether the article is marked as reviewed in PageTriage
+			// Figure out whether the article is marked as reviewed in PageTriage.
 			// Recent articles will have a patrol_status that we can read.
 			// For articles that have been out of the new pages feed for awhile, pages[0] will be undefined.
 			var isReviewed = response.pagetriagelist.pages[0] ?
