@@ -956,6 +956,8 @@ Twinkle.tag.redirectList = {
 	'Grammar, punctuation, and spelling': {
 		'Abbreviation': [
 			{ tag: 'R from acronym', description: 'redirect from an acronym (e.g. POTUS) to its expanded form', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from airport code', description: 'redirect from an airport\'s IATA or ICAO code to that airport\'s article', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from airline code', description: 'redirect from an airline\'s IATA or ICAO code to that airline\'s article', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from initialism', description: 'redirect from an initialism (e.g. AGF) to its expanded form', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from MathSciNet abbreviation', description: 'redirect from MathSciNet publication title abbreviation to the unabbreviated title', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from NLM abbreviation', description: 'redirect from a NLM publication title abbreviation to the unabbreviated title', restriction: 'insideMainspaceOnly' }
