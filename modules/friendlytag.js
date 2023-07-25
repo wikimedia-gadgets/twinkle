@@ -53,13 +53,12 @@ Twinkle.tag.callback = function friendlytagCallback() {
 			format: 'json',
 			page_id: mw.config.get('wgArticleId')
 		}).then(function(response) {
-			// figure out whether the article is marked as reviewed in PageTriage
-			var isReviewed = false;
-			var isOldPage = response.pagetriagelist.result !== 'success' || response.pagetriagelist.pages.length === 0;
-			var isMarkedAsReviewed = response.pagetriagelist.pages[0].patrol_status > 0;
-			if (isOldPage || isMarkedAsReviewed) {
-				isReviewed = true;
-			}
+			// Figure out whether the article is marked as reviewed in PageTriage.
+			// Recent articles will have a patrol_status that we can read.
+			// For articles that have been out of the new pages feed for awhile, pages[0] will be undefined.
+			var isReviewed = response.pagetriagelist.pages[0] ?
+				response.pagetriagelist.pages[0].patrol_status > 0 :
+				true;
 
 			// if article is not marked as reviewed, show the "mark as reviewed" check box
 			if (!isReviewed) {
