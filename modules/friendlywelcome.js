@@ -378,6 +378,10 @@ Twinkle.welcome.templates = {
 
 	wikiProject: {
 		'WikiProject-specific welcome templates': {
+			'TWA invite': {
+				description: 'invite the user to The Wikipedia Adventure (not a welcome template)',
+				syntax: '{{subst:WP:TWA/InviteTW|signature=~~~~}}'
+			},
 			'welcome-anatomy': {
 				description: 'welcome for users with an apparent interest in anatomy topics',
 				syntax: '{{subst:welcome-anatomy}} ~~~~'
@@ -484,10 +488,6 @@ Twinkle.welcome.templates = {
 			'welcome-videogames': {
 				description: 'welcome for users with an apparent interest in video game topics',
 				syntax: '{{subst:welcome-videogames}}'
-			},
-			'TWA invite': {
-				description: 'invite the user to The Wikipedia Adventure (not a welcome template)',
-				syntax: '{{subst:WP:TWA/InviteTW|signature=~~~~}}'
 			},
 			'WikiProject Women in Red invite': {
 				description: 'welcome for users with an intrest in writing about women',
