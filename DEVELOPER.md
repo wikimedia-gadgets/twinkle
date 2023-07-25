@@ -161,6 +161,9 @@ base     = MediaWiki:Gadget-
 - go to GitHub and sync your Twinkle fork
 - `git pull`
 - `perl sync.pl --mode=deploy --all`
+- it'll ask yes/no. type y
+- if it prompts you for any edit summaries, just hit enter to skip
+- there will be lots of "Warning: unable to close filehandle" messages, and some other problems such as displaying ←[0m←[96m for line breaks. you can ignore these. shouldn't be a problem.
 ```
 
 ### Dependencies
