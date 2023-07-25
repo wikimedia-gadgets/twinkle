@@ -332,6 +332,11 @@ Twinkle.welcome.templates = {
 				description: 'welcome with additional information about images (policy and procedure)',
 				linkedArticle: true,
 				syntax: '{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}'
+			},
+			'welcome-copyright': {
+				description: 'for someone who has been adding copyright violations to articles',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-copyright|$ARTICLE$|$USERNAME$}} ~~~~'
 			}
 		}
 	},
