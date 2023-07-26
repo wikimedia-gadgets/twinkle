@@ -255,7 +255,7 @@ class TwinkleHTMLGenerator {
 	*  "mw_contentwrapper" (top nav), outer nav class "portlet", inner div class "pBody". Existing portlets or elements: "p-cactions", "mw_content"
 	*  "mw_portlets" (sidebar), outer nav class "portlet", inner div class "pBody". Existing portlets: "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
 	*
-	* @return Node -- the DOM node of the new item (a DIV element) or null
+	* @return {Node} -- the DOM node of the new item (a DIV element) or null
 	*/
 	addPortlet() {
 		if (this.navigation === null) {
