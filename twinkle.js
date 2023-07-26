@@ -196,19 +196,19 @@ class TwinkleHTMLGenerator {
 	constructor(skin) {
 		this.skin = skin;
 
-		/** @param {String} navigation id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel") */
+		/** @type {String} navigation id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel") */
 		this.navigation = '';
 
-		/** @param {String} id id of the portlet menu to create, preferably start with "p-". */
+		/** @type {String} id id of the portlet menu to create, preferably start with "p-". */
 		this.id = '';
 
-		/** @param {String} text name of the portlet menu to create. Visibility depends on the class used. */
+		/** @type {String} text name of the portlet menu to create. Visibility depends on the class used. */
 		this.text = '';
 
-		/** @param {String} type type of portlet. Currently only used for the vector non-sidebar portlets, pass "menu" to make this portlet a drop down menu. */
+		/** @type {String} type type of portlet. Currently only used for the vector non-sidebar portlets, pass "menu" to make this portlet a drop down menu. */
 		this.type = '';
 
-		/** @param {Node} nextnodeid the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end. */
+		/** @type {Node} nextnodeid the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end. */
 		this.nextnodeid = {};
 
 		switch (this.skin) {
