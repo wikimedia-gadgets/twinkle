@@ -192,231 +192,236 @@ Twinkle.getPref = function twinkleGetPref(name) {
 	return Twinkle.defaultConfig[name];
 };
 
-/**
- * **************** Twinkle.addPortlet() ****************
- *
- * Adds a portlet menu to one of the navigation areas on the page.
- * This is necessarily quite a hack since skins, navigation areas, and
- * portlet menu types all work slightly different.
- *
- * Available navigation areas depend on the skin used.
- * Vector:
- *  For each option, the outer nav class contains "vector-menu", the inner div class is "vector-menu-content", and the ul is "vector-menu-content-list"
- *  "mw-panel", outer nav class contains "vector-menu-portal". Existing portlets/elements: "p-logo", "p-navigation", "p-interaction", "p-tb", "p-coll-print_export"
- *  "left-navigation", outer nav class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-namespaces", "p-variants" (menu)
- *  "right-navigation", outer nav class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-views", "p-cactions" (menu), "p-search"
- *  Special layout of p-personal portlet (part of "head") through specialized styles.
- * Monobook:
- *  "column-one", outer nav class "portlet", inner div class "pBody". Existing portlets: "p-cactions", "p-personal", "p-logo", "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
- *  Special layout of p-cactions and p-personal through specialized styles.
- * Modern:
- *  "mw_contentwrapper" (top nav), outer nav class "portlet", inner div class "pBody". Existing portlets or elements: "p-cactions", "mw_content"
- *  "mw_portlets" (sidebar), outer nav class "portlet", inner div class "pBody". Existing portlets: "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
- *
- * @return Node -- the DOM node of the new item (a DIV element) or null
- */
-Twinkle.addPortlet = function(skin) {
-	/** @param {String} navigation id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel") */
-	var navigation = '';
+class TwinkleHTMLGenerator {
+	constructor(skin) {
+		this.skin = skin;
 
-	/** @param {String} id id of the portlet menu to create, preferably start with "p-". */
-	var id = '';
+		/** @param {String} navigation id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel") */
+		this.navigation = '';
 
-	/** @param {String} text name of the portlet menu to create. Visibility depends on the class used. */
-	var text = '';
+		/** @param {String} id id of the portlet menu to create, preferably start with "p-". */
+		this.id = '';
 
-	/** @param {String} type type of portlet. Currently only used for the vector non-sidebar portlets, pass "menu" to make this portlet a drop down menu. */
-	var type = '';
+		/** @param {String} text name of the portlet menu to create. Visibility depends on the class used. */
+		this.text = '';
 
-	/** @param {Node} nextnodeid the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end. */
-	var nextnodeid = {};
+		/** @param {String} type type of portlet. Currently only used for the vector non-sidebar portlets, pass "menu" to make this portlet a drop down menu. */
+		this.type = '';
 
-	switch (skin) {
-		case 'vector':
-		case 'vector-2022':
-			navigation = 'right-navigation';
-			id = 'p-twinkle';
-			text = 'TW';
-			type = 'menu';
-			nextnodeid = 'p-search';
-			break;
-		case 'timeless':
-			navigation = '#page-tools .sidebar-inner';
-			id = 'p-twinkle';
-			text = 'Twinkle';
-			type = null;
-			nextnodeid = 'p-userpagetools';
-			break;
-		default:
-			navigation = null;
-			id = 'p-cactions';
-			text = null;
-			type = null;
-			nextnodeid = null;
-	}
+		/** @param {Node} nextnodeid the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end. */
+		this.nextnodeid = {};
 
-	if (navigation === null) {
-		return;
-	}
-
-	// sanity checks, and get required DOM nodes
-	var root = document.getElementById(navigation) || document.querySelector(navigation);
-	if (!root) {
-		return null;
-	}
-
-	var item = document.getElementById(id);
-	if (item) {
-		if (item.parentNode && item.parentNode === root) {
-			return item;
+		switch (this.skin) {
+			case 'vector':
+			case 'vector-2022':
+				this.navigation = 'right-navigation';
+				this.id = 'p-twinkle';
+				this.text = 'TW';
+				this.type = 'menu';
+				this.nextnodeid = 'p-search';
+				break;
+			case 'timeless':
+				this.navigation = '#page-tools .sidebar-inner';
+				this.id = 'p-twinkle';
+				this.text = 'Twinkle';
+				this.type = null;
+				this.nextnodeid = 'p-userpagetools';
+				break;
+			default:
+				this.navigation = null;
+				this.id = 'p-cactions';
+				this.text = null;
+				this.type = null;
+				this.nextnodeid = null;
 		}
-		return null;
 	}
 
-	var nextnode;
-	if (nextnodeid) {
-		nextnode = document.getElementById(nextnodeid);
-	}
+	/**
+	* Adds a portlet menu to one of the navigation areas on the page.
+	* This is necessarily quite a hack since skins, navigation areas, and
+	* portlet menu types all work slightly different.
+	*
+	* Available navigation areas depend on the skin used.
+	* Vector:
+	*  For each option, the outer nav class contains "vector-menu", the inner div class is "vector-menu-content", and the ul is "vector-menu-content-list"
+	*  "mw-panel", outer nav class contains "vector-menu-portal". Existing portlets/elements: "p-logo", "p-navigation", "p-interaction", "p-tb", "p-coll-print_export"
+	*  "left-navigation", outer nav class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-namespaces", "p-variants" (menu)
+	*  "right-navigation", outer nav class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-views", "p-cactions" (menu), "p-search"
+	*  Special layout of p-personal portlet (part of "head") through specialized styles.
+	* Monobook:
+	*  "column-one", outer nav class "portlet", inner div class "pBody". Existing portlets: "p-cactions", "p-personal", "p-logo", "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
+	*  Special layout of p-cactions and p-personal through specialized styles.
+	* Modern:
+	*  "mw_contentwrapper" (top nav), outer nav class "portlet", inner div class "pBody". Existing portlets or elements: "p-cactions", "mw_content"
+	*  "mw_portlets" (sidebar), outer nav class "portlet", inner div class "pBody". Existing portlets: "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
+	*
+	* @return Node -- the DOM node of the new item (a DIV element) or null
+	*/
+	addPortlet() {
+		if (this.navigation === null) {
+			return;
+		}
 
-	// verify/normalize input
-	if ((skin !== 'vector' && skin !== 'vector-2022') || (navigation !== 'left-navigation' && navigation !== 'right-navigation')) {
-		type = null; // menu supported only in vector's #left-navigation & #right-navigation
-	}
-	var outerNavClass, innerDivClass;
-	switch (skin) {
-		case 'vector':
-		case 'vector-2022':
-			// XXX: portal doesn't work
-			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
-				navigation = 'mw-panel';
+		// sanity checks, and get required DOM nodes
+		var root = document.getElementById(this.navigation) || document.querySelector(this.navigation);
+		if (!root) {
+			return null;
+		}
+
+		var item = document.getElementById(this.id);
+		if (item) {
+			if (item.parentNode && item.parentNode === root) {
+				return item;
 			}
+			return null;
+		}
 
-			outerNavClass = 'mw-portlet vector-menu';
-			if (navigation === 'mw-panel') {
-				outerNavClass += ' vector-menu-portal';
-			} else if (type === 'menu') {
-				outerNavClass += ' vector-menu-dropdown vector-dropdown vector-menu-dropdown-noicon';
-			} else {
-				outerNavClass += ' vector-menu-tabs';
+		var nextnode;
+		if (this.nextnodeid) {
+			nextnode = document.getElementById(this.nextnodeid);
+		}
+
+		// verify/normalize input
+		if ((this.skin !== 'vector' && this.skin !== 'vector-2022') || (this.navigation !== 'left-navigation' && this.navigation !== 'right-navigation')) {
+			this.type = null; // menu supported only in vector's #left-navigation & #right-navigation
+		}
+		var outerNavClass, innerDivClass;
+		switch (this.skin) {
+			case 'vector':
+			case 'vector-2022':
+				var panel = false;
+
+				// XXX: portal doesn't work
+				if (
+					this.navigation !== 'portal' &&
+					this.navigation !== 'left-navigation' &&
+					this.navigation !== 'right-navigation'
+				) {
+					panel = true;
+				}
+
+				outerNavClass = 'mw-portlet vector-menu';
+				if (panel) {
+					outerNavClass += ' vector-menu-portal';
+				} else if (this.type === 'menu') {
+					outerNavClass += ' vector-menu-dropdown vector-dropdown vector-menu-dropdown-noicon';
+				} else {
+					outerNavClass += ' vector-menu-tabs';
+				}
+
+				innerDivClass = 'vector-menu-content vector-dropdown-content';
+				break;
+			case 'modern':
+				outerNavClass = 'portlet';
+				break;
+			case 'timeless':
+				outerNavClass = 'mw-portlet';
+				innerDivClass = 'mw-portlet-body';
+				break;
+			default:
+				outerNavClass = 'portlet';
+				break;
+		}
+
+		// Build the DOM elements.
+		var outerNav, heading;
+		if (this.skin === 'vector-2022') {
+			outerNav = document.createElement('div');
+			heading = document.createElement('label');
+		} else {
+			outerNav = document.createElement('nav');
+			heading = document.createElement('h3');
+		}
+
+		outerNav.setAttribute('aria-labelledby', this.id + '-label');
+		outerNav.className = outerNavClass + ' emptyPortlet';
+		outerNav.id = this.id;
+		if (nextnode && nextnode.parentNode === root) {
+			root.insertBefore(outerNav, nextnode);
+		} else {
+			root.appendChild(outerNav);
+		}
+
+		heading.id = this.id + '-label';
+		var ul = document.createElement('ul');
+
+		if (this.skin === 'vector' || this.skin === 'vector-2022') {
+			heading.setAttribute('for', this.id + '-dropdown-checkbox');
+			ul.className = 'vector-menu-content-list';
+			heading.className = 'vector-menu-heading vector-dropdown-label';
+
+			// add invisible checkbox to keep menu open when clicked
+			// similar to the p-cactions ("More") menu
+			if (outerNavClass.indexOf('vector-menu-dropdown') !== -1) {
+				var chkbox = document.createElement('input');
+				chkbox.id = this.id + '-dropdown-checkbox';
+				chkbox.className = 'vector-menu-checkbox vector-dropdown-checkbox';
+				chkbox.setAttribute('type', 'checkbox');
+				chkbox.setAttribute('aria-labelledby', this.id + '-label');
+				outerNav.appendChild(chkbox);
+
+				// Vector gets its title in a span; all others except
+				// timeless have no title, and it has no span
+				var span = document.createElement('span');
+				span.appendChild(document.createTextNode(this.text));
+				heading.appendChild(span);
+
+				var a = document.createElement('a');
+				a.href = '#';
+
+				$(a).click(function(e) {
+					e.preventDefault();
+				});
+
+				heading.appendChild(a);
 			}
+		} else {
+			// Basically just Timeless
+			heading.appendChild(document.createTextNode(this.text));
+		}
 
-			innerDivClass = 'vector-menu-content vector-dropdown-content';
-			break;
-		case 'modern':
-			if (navigation !== 'mw_portlets' && navigation !== 'mw_contentwrapper') {
-				navigation = 'mw_portlets';
-			}
-			outerNavClass = 'portlet';
-			break;
-		case 'timeless':
-			outerNavClass = 'mw-portlet';
-			innerDivClass = 'mw-portlet-body';
-			break;
-		default:
-			navigation = 'column-one';
-			outerNavClass = 'portlet';
-			break;
+		outerNav.appendChild(heading);
+
+		if (innerDivClass) {
+			var innerDiv = document.createElement('div');
+			innerDiv.className = innerDivClass;
+			innerDiv.appendChild(ul);
+			outerNav.appendChild(innerDiv);
+		} else {
+			outerNav.appendChild(ul);
+		}
+
+		return outerNav;
 	}
 
-	// Build the DOM elements.
-	var outerNav, heading;
-	if (skin === 'vector-2022') {
-		outerNav = document.createElement('div');
-		heading = document.createElement('label');
-	} else {
-		outerNav = document.createElement('nav');
-		heading = document.createElement('h3');
-	}
-
-	outerNav.setAttribute('aria-labelledby', id + '-label');
-	outerNav.className = outerNavClass + ' emptyPortlet';
-	outerNav.id = id;
-	if (nextnode && nextnode.parentNode === root) {
-		root.insertBefore(outerNav, nextnode);
-	} else {
-		root.appendChild(outerNav);
-	}
-
-	heading.id = id + '-label';
-	var ul = document.createElement('ul');
-
-	if (skin === 'vector' || skin === 'vector-2022') {
-		heading.setAttribute('for', id + '-dropdown-checkbox');
-		ul.className = 'vector-menu-content-list';
-		heading.className = 'vector-menu-heading vector-dropdown-label';
-
-		// add invisible checkbox to keep menu open when clicked
-		// similar to the p-cactions ("More") menu
-		if (outerNavClass.indexOf('vector-menu-dropdown') !== -1) {
-			var chkbox = document.createElement('input');
-			chkbox.id = id + '-dropdown-checkbox';
-			chkbox.className = 'vector-menu-checkbox vector-dropdown-checkbox';
-			chkbox.setAttribute('type', 'checkbox');
-			chkbox.setAttribute('aria-labelledby', id + '-label');
-			outerNav.appendChild(chkbox);
-
-			// Vector gets its title in a span; all others except
-			// timeless have no title, and it has no span
-			var span = document.createElement('span');
-			span.appendChild(document.createTextNode(text));
-			heading.appendChild(span);
-
-			var a = document.createElement('a');
-			a.href = '#';
-
-			$(a).click(function(e) {
-				e.preventDefault();
+	/**
+	* Builds a portlet menu if it doesn't exist yet, and add the portlet link.
+	* @param task: Either a URL for the portlet link or a function to execute.
+	*/
+	addPortletLink(task, text, id, tooltip) {
+		this.addPortlet(mw.config.get('skin'));
+		var link = mw.util.addPortletLink(
+			this.id,
+			typeof task === 'string' ? task : '#',
+			text,
+			id,
+			tooltip
+		);
+		$('.client-js .skin-vector #p-cactions').css('margin-right', 'initial');
+		if (typeof task === 'function') {
+			$(link).click(function (ev) {
+				task();
+				ev.preventDefault();
 			});
-
-			heading.appendChild(a);
 		}
-	} else {
-		// Basically just Timeless
-		heading.appendChild(document.createTextNode(text));
+		if ($.collapsibleTabs) {
+			$.collapsibleTabs.handleResize();
+		}
+		return link;
 	}
+}
 
-	outerNav.appendChild(heading);
-
-	if (innerDivClass) {
-		var innerDiv = document.createElement('div');
-		innerDiv.className = innerDivClass;
-		innerDiv.appendChild(ul);
-		outerNav.appendChild(innerDiv);
-	} else {
-		outerNav.appendChild(ul);
-	}
-
-	return outerNav;
-};
-
-/**
- * **************** Twinkle.addPortletLink() ****************
- * Builds a portlet menu if it doesn't exist yet, and add the portlet link.
- * @param task: Either a URL for the portlet link or a function to execute.
- */
-Twinkle.addPortletLink = function(task, text, id, tooltip) {
-	Twinkle.addPortlet(mw.config.get('skin'));
-	var link = mw.util.addPortletLink(
-		// TODO: broken because of this, going to change my approach, see branch addPortlet-refactor-2
-		Twinkle.getPref('portletId'),
-		typeof task === 'string' ? task : '#',
-		text,
-		id,
-		tooltip
-	);
-	$('.client-js .skin-vector #p-cactions').css('margin-right', 'initial');
-	if (typeof task === 'function') {
-		$(link).click(function (ev) {
-			task();
-			ev.preventDefault();
-		});
-	}
-	if ($.collapsibleTabs) {
-		$.collapsibleTabs.handleResize();
-	}
-	return link;
-};
-
+Twinkle.HTMLGenerator = new TwinkleHTMLGenerator(mw.config.get('skin'));
 
 /**
  * **************** General initialization code ****************
@@ -519,7 +524,7 @@ Twinkle.load = function () {
 	// If using a skin with space for lots of modules, display a link to Twinkle Preferences
 	var usingSkinWithDropDownMenu = mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022' || mw.config.get('skin') === 'timeless';
 	if (usingSkinWithDropDownMenu) {
-		Twinkle.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Config', 'tw-config', 'Open Twinkle preferences page');
+		Twinkle.HTMLGenerator.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Config', 'tw-config', 'Open Twinkle preferences page');
 	}
 };
 

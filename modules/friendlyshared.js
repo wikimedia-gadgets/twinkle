@@ -15,7 +15,7 @@
 Twinkle.shared = function friendlyshared() {
 	if (mw.config.get('wgNamespaceNumber') === 3 && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
 		var username = mw.config.get('wgRelevantUserName');
-		Twinkle.addPortletLink(function() {
+		Twinkle.HTMLGenerator.addPortletLink(function() {
 			Twinkle.shared.callback(username);
 		}, 'Shared IP', 'friendly-shared', 'Shared IP tagging');
 	}

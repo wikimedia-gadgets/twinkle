@@ -18,7 +18,7 @@ Twinkle.batchprotect = function twinklebatchprotect() {
 	if (Morebits.userIsSysop && ((mw.config.get('wgArticleId') > 0 && (mw.config.get('wgNamespaceNumber') === 2 ||
 		mw.config.get('wgNamespaceNumber') === 4)) || mw.config.get('wgNamespaceNumber') === 14 ||
 		mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex')) {
-		Twinkle.addPortletLink(Twinkle.batchprotect.callback, 'P-batch', 'tw-pbatch', 'Protect pages linked from this page');
+		Twinkle.HTMLGenerator.addPortletLink(Twinkle.batchprotect.callback, 'P-batch', 'tw-pbatch', 'Protect pages linked from this page');
 	}
 };
 

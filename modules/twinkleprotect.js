@@ -19,7 +19,7 @@ Twinkle.protect = function twinkleprotect() {
 		return;
 	}
 
-	Twinkle.addPortletLink(Twinkle.protect.callback, Morebits.userIsSysop ? 'PP' : 'RPP', 'tw-rpp',
+	Twinkle.HTMLGenerator.addPortletLink(Twinkle.protect.callback, Morebits.userIsSysop ? 'PP' : 'RPP', 'tw-rpp',
 		Morebits.userIsSysop ? 'Protect page' : 'Request page protection');
 };
 

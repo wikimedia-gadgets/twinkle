@@ -26,7 +26,7 @@ Twinkle.speedy = function twinklespeedy() {
 		return;
 	}
 
-	Twinkle.addPortletLink(Twinkle.speedy.callback, 'CSD', 'tw-csd', Morebits.userIsSysop ? 'Delete page according to WP:CSD' : 'Request speedy deletion according to WP:CSD');
+	Twinkle.HTMLGenerator.addPortletLink(Twinkle.speedy.callback, 'CSD', 'tw-csd', Morebits.userIsSysop ? 'Delete page according to WP:CSD' : 'Request speedy deletion according to WP:CSD');
 };
 
 // This function is run when the CSD tab/header link is clicked

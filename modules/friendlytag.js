@@ -16,11 +16,11 @@ Twinkle.tag = function friendlytag() {
 	// redirect tagging
 	if (Morebits.isPageRedirect()) {
 		Twinkle.tag.mode = 'redirect';
-		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Tag redirect');
+		Twinkle.HTMLGenerator.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Tag redirect');
 	// file tagging
 	} else if (mw.config.get('wgNamespaceNumber') === 6 && !document.getElementById('mw-sharedupload') && document.getElementById('mw-imagepage-section-filehistory')) {
 		Twinkle.tag.mode = 'file';
-		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Add maintenance tags to file');
+		Twinkle.HTMLGenerator.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Add maintenance tags to file');
 	// article/draft article tagging
 	} else if ([0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 && mw.config.get('wgCurRevisionId')) {
 		Twinkle.tag.mode = 'article';
@@ -29,7 +29,7 @@ Twinkle.tag = function friendlytag() {
 			// Disabled on latest diff because the diff slider could be used to slide
 			// away from the latest diff without causing the script to reload
 			!mw.config.get('wgDiffNewId');
-		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Add or remove article maintenance tags');
+		Twinkle.HTMLGenerator.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Add or remove article maintenance tags');
 	}
 };
 

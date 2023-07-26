@@ -25,7 +25,7 @@ Twinkle.arv = function twinklearv() {
 	}
 	var userType = isIP ? 'IP' + (Morebits.ip.isRange(username) ? ' range' : '') : 'user';
 
-	Twinkle.addPortletLink(function() {
+	Twinkle.HTMLGenerator.addPortletLink(function() {
 		Twinkle.arv.callback(username, isIP);
 	}, 'ARV', 'tw-arv', 'Report ' + userType + ' to administrators');
 };

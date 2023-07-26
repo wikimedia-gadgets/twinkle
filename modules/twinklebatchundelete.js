@@ -19,7 +19,7 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 		mw.config.get('wgNamespaceNumber') !== mw.config.get('wgNamespaceIds').project)) {
 		return;
 	}
-	Twinkle.addPortletLink(Twinkle.batchundelete.callback, 'Und-batch', 'tw-batch-undel', "Undelete 'em all");
+	Twinkle.HTMLGenerator.addPortletLink(Twinkle.batchundelete.callback, 'Und-batch', 'tw-batch-undel', "Undelete 'em all");
 };
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {

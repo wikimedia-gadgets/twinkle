@@ -90,7 +90,7 @@ Twinkle.welcome.normal = function() {
 	}
 	// Users and IPs but not IP ranges
 	if (mw.config.exists('wgRelevantUserName') && !Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
-		Twinkle.addPortletLink(function() {
+		Twinkle.HTMLGenerator.addPortletLink(function() {
 			Twinkle.welcome.callback(mw.config.get('wgRelevantUserName'));
 		}, 'Wel', 'friendly-welcome', 'Welcome user');
 	}
