@@ -1611,7 +1611,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.duplicate_filename']) {
 					var rationale = form['csd.duplicate_filename'].value;
 					if (rationale) {
-						currentParams['2'] = rationale;
+						currentParams['1'] = rationale;
 					}
 				}
 				break;
