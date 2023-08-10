@@ -1507,7 +1507,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	}
 
 	// If template shouldn't have an optional message, hide the optional message label and text box
-	var hideReason = Twinkle.warn.getTemplateProperty(Twinkle.warn.messages, selected_template, 'hideLinkedPage');
+	var hideReason = Twinkle.warn.getTemplateProperty(Twinkle.warn.messages, selected_template, 'hideReason');
 	if (hideReason) {
 		e.target.form.reason.value = '';
 		Morebits.quickForm.setElementVisibility(e.target.form.reason.parentElement, false);
