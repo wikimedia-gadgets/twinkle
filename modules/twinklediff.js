@@ -16,18 +16,18 @@ Twinkle.diff = function twinklediff() {
 	if (mw.config.get('wgNamespaceNumber') < 0 || !mw.config.get('wgArticleId')) {
 		return;
 	}
-	Twinkle.HTMLGenerator.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: 'prev'}), 'Last', 'tw-lastdiff', 'Show most recent diff');
+	Twinkle.MenuBuilder.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: 'prev'}), 'Last', 'tw-lastdiff', 'Show most recent diff');
 
 	// Show additional tabs only on diff pages
 	if (mw.config.get('wgDiffNewId')) {
-		Twinkle.HTMLGenerator.addPortletLink(function() {
+		Twinkle.MenuBuilder.addPortletLink(function() {
 			Twinkle.diff.evaluate(false);
 		}, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user');
-		Twinkle.HTMLGenerator.addPortletLink(function() {
+		Twinkle.MenuBuilder.addPortletLink(function() {
 			Twinkle.diff.evaluate(true);
 		}, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision');
 
-		Twinkle.HTMLGenerator.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: mw.config.get('wgDiffNewId')}), 'Current', 'tw-curdiff', 'Show difference to current revision');
+		Twinkle.MenuBuilder.addPortletLink(mw.util.getUrl(mw.config.get('wgPageName'), {diff: 'cur', oldid: mw.config.get('wgDiffNewId')}), 'Current', 'tw-curdiff', 'Show difference to current revision');
 	}
 };
 

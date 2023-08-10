@@ -19,7 +19,7 @@ Twinkle.batchdelete = function twinklebatchdelete() {
 			mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex'
 		)
 	) {
-		Twinkle.HTMLGenerator.addPortletLink(Twinkle.batchdelete.callback, 'D-batch', 'tw-batch', 'Delete pages found in this category/on this page');
+		Twinkle.MenuBuilder.addPortletLink(Twinkle.batchdelete.callback, 'D-batch', 'tw-batch', 'Delete pages found in this category/on this page');
 	}
 };
 

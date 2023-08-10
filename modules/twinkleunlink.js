@@ -18,7 +18,7 @@ Twinkle.unlink = function twinkleunlink() {
 		(!Morebits.userIsInGroup('extendedconfirmed') && !Morebits.userIsSysop)) {
 		return;
 	}
-	Twinkle.HTMLGenerator.addPortletLink(Twinkle.unlink.callback, 'Unlink', 'tw-unlink', 'Unlink backlinks');
+	Twinkle.MenuBuilder.addPortletLink(Twinkle.unlink.callback, 'Unlink', 'tw-unlink', 'Unlink backlinks');
 };
 
 // the parameter is used when invoking unlink from admin speedy

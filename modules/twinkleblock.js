@@ -20,7 +20,7 @@ Twinkle.block = function twinkleblock() {
 	// should show on Contributions or Block pages, anywhere there's a relevant user
 	// Ignore ranges wider than the CIDR limit
 	if (Morebits.userIsSysop && relevantUserName && (!Morebits.ip.isRange(relevantUserName) || Morebits.ip.validCIDR(relevantUserName))) {
-		Twinkle.HTMLGenerator.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
+		Twinkle.MenuBuilder.addPortletLink(Twinkle.block.callback, 'Block', 'tw-block', 'Block relevant user');
 	}
 };
 

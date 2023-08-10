@@ -17,7 +17,7 @@ Twinkle.talkback = function() {
 	if (!mw.config.exists('wgRelevantUserName') || Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
 		return;
 	}
-	Twinkle.HTMLGenerator.addPortletLink(Twinkle.talkback.callback, 'TB', 'friendly-talkback', 'Easy talkback');
+	Twinkle.MenuBuilder.addPortletLink(Twinkle.talkback.callback, 'TB', 'friendly-talkback', 'Easy talkback');
 };
 
 Twinkle.talkback.callback = function() {

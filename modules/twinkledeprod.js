@@ -20,7 +20,7 @@ Twinkle.deprod = function() {
 	) {
 		return;
 	}
-	Twinkle.HTMLGenerator.addPortletLink(Twinkle.deprod.callback, 'Deprod', 'tw-deprod', 'Delete prod pages found in this category');
+	Twinkle.MenuBuilder.addPortletLink(Twinkle.deprod.callback, 'Deprod', 'tw-deprod', 'Delete prod pages found in this category');
 };
 
 var concerns = {};

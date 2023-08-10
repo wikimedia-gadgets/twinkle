@@ -46,7 +46,7 @@ Twinkle.xfd = function twinklexfd() {
 				break;
 		}
 	}
-	Twinkle.HTMLGenerator.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', tooltip);
+	Twinkle.MenuBuilder.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', tooltip);
 };
 
 

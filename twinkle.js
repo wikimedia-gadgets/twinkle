@@ -192,7 +192,7 @@ Twinkle.getPref = function twinkleGetPref(name) {
 	return Twinkle.defaultConfig[name];
 };
 
-class TwinkleHTMLGenerator {
+class TwinkleMenuBuilder {
 	/**
 	 * @param {String} skin MediaWiki skin name, e.g. vector, vector-2022, monobook, etc.
 	 * @param {Object} document DOM
@@ -437,7 +437,7 @@ class TwinkleHTMLGenerator {
 	}
 }
 
-Twinkle.HTMLGenerator = new TwinkleHTMLGenerator(mw.config.get('skin'), document, $, $.collapsibleTabs);
+Twinkle.MenuBuilder = new TwinkleMenuBuilder(mw.config.get('skin'), document, $, $.collapsibleTabs);
 
 /**
  * **************** General initialization code ****************
@@ -540,7 +540,7 @@ Twinkle.load = function () {
 	// If using a skin with space for lots of modules, display a link to Twinkle Preferences
 	var usingSkinWithDropDownMenu = mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022' || mw.config.get('skin') === 'timeless';
 	if (usingSkinWithDropDownMenu) {
-		Twinkle.HTMLGenerator.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Config', 'tw-config', 'Open Twinkle preferences page');
+		Twinkle.MenuBuilder.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Config', 'tw-config', 'Open Twinkle preferences page');
 	}
 };
 
