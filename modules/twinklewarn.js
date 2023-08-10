@@ -1069,8 +1069,8 @@ Twinkle.warn.messages = {
 			summary: 'Notice: Be careful when removing redlinks'
 		},
 		'uw-refspam': {
-			label: 'Adding reference spam',
-			summary: 'Notice: Adding reference spam'
+			label: 'Adding citations to research published by a small group of researchers',
+			summary: 'Notice: Adding citations to research published by a small group of researchers'
 		},
 		'uw-selfrevert': {
 			label: 'Self-reverted editing tests',
