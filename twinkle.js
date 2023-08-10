@@ -193,8 +193,24 @@ Twinkle.getPref = function twinkleGetPref(name) {
 };
 
 class TwinkleHTMLGenerator {
-	constructor(skin) {
+	/**
+	 * @param {String} skin MediaWiki skin name, e.g. vector, vector-2022, monobook, etc.
+	 * @param {Object} document DOM
+	 * @param {function} $ JQuery
+	 * @param {Object} collapsibleTabs A global related to something in the Vector Legacy skin
+	 */
+	constructor(skin, document, $, collapsibleTabs) {
+		/** @type {String} MediaWiki skin name, e.g. vector, vector-2022, monobook, etc. */
 		this.skin = skin;
+
+		/** @type {Object} DOM */
+		this.document = document;
+
+		/** @type {function} JQuery */
+		this.$ = $;
+
+		/** @type {Object} collapsibleTabs A global related to something in the Vector Legacy skin */
+		this.collapsibleTabs = collapsibleTabs;
 
 		/** @type {String} id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel") */
 		this.navigation = '';
@@ -263,12 +279,12 @@ class TwinkleHTMLGenerator {
 		}
 
 		// sanity checks, and get required DOM nodes
-		var root = document.getElementById(this.navigation) || document.querySelector(this.navigation);
+		var root = this.document.getElementById(this.navigation) || this.document.querySelector(this.navigation);
 		if (!root) {
 			return null;
 		}
 
-		var item = document.getElementById(this.id);
+		var item = this.document.getElementById(this.id);
 		if (item) {
 			if (item.parentNode && item.parentNode === root) {
 				return item;
@@ -278,7 +294,7 @@ class TwinkleHTMLGenerator {
 
 		var nextnode;
 		if (this.nextnodeid) {
-			nextnode = document.getElementById(this.nextnodeid);
+			nextnode = this.document.getElementById(this.nextnodeid);
 		}
 
 		// verify/normalize input
@@ -326,11 +342,11 @@ class TwinkleHTMLGenerator {
 		// Build the DOM elements.
 		var outerNav, heading;
 		if (this.skin === 'vector-2022') {
-			outerNav = document.createElement('div');
-			heading = document.createElement('label');
+			outerNav = this.document.createElement('div');
+			heading = this.document.createElement('label');
 		} else {
-			outerNav = document.createElement('nav');
-			heading = document.createElement('h3');
+			outerNav = this.document.createElement('nav');
+			heading = this.document.createElement('h3');
 		}
 
 		outerNav.setAttribute('aria-labelledby', this.id + '-label');
@@ -343,7 +359,7 @@ class TwinkleHTMLGenerator {
 		}
 
 		heading.id = this.id + '-label';
-		var ul = document.createElement('ul');
+		var ul = this.document.createElement('ul');
 
 		if (this.skin === 'vector' || this.skin === 'vector-2022') {
 			heading.setAttribute('for', this.id + '-dropdown-checkbox');
@@ -353,7 +369,7 @@ class TwinkleHTMLGenerator {
 			// add invisible checkbox to keep menu open when clicked
 			// similar to the p-cactions ("More") menu
 			if (outerNavClass.indexOf('vector-menu-dropdown') !== -1) {
-				var chkbox = document.createElement('input');
+				var chkbox = this.document.createElement('input');
 				chkbox.id = this.id + '-dropdown-checkbox';
 				chkbox.className = 'vector-menu-checkbox vector-dropdown-checkbox';
 				chkbox.setAttribute('type', 'checkbox');
@@ -362,14 +378,14 @@ class TwinkleHTMLGenerator {
 
 				// Vector gets its title in a span; all others except
 				// timeless have no title, and it has no span
-				var span = document.createElement('span');
-				span.appendChild(document.createTextNode(this.text));
+				var span = this.document.createElement('span');
+				span.appendChild(this.document.createTextNode(this.text));
 				heading.appendChild(span);
 
-				var a = document.createElement('a');
+				var a = this.document.createElement('a');
 				a.href = '#';
 
-				$(a).click(function(e) {
+				this.$(a).click(function(e) {
 					e.preventDefault();
 				});
 
@@ -377,13 +393,13 @@ class TwinkleHTMLGenerator {
 			}
 		} else {
 			// Basically just Timeless
-			heading.appendChild(document.createTextNode(this.text));
+			heading.appendChild(this.document.createTextNode(this.text));
 		}
 
 		outerNav.appendChild(heading);
 
 		if (innerDivClass) {
-			var innerDiv = document.createElement('div');
+			var innerDiv = this.document.createElement('div');
 			innerDiv.className = innerDivClass;
 			innerDiv.appendChild(ul);
 			outerNav.appendChild(innerDiv);
@@ -407,21 +423,21 @@ class TwinkleHTMLGenerator {
 			id,
 			tooltip
 		);
-		$('.client-js .skin-vector #p-cactions').css('margin-right', 'initial');
+		this.$('.client-js .skin-vector #p-cactions').css('margin-right', 'initial');
 		if (typeof task === 'function') {
-			$(link).click(function (ev) {
+			this.$(link).click(function (ev) {
 				task();
 				ev.preventDefault();
 			});
 		}
-		if ($.collapsibleTabs) {
-			$.collapsibleTabs.handleResize();
+		if (this.collapsibleTabs) {
+			this.collapsibleTabs.handleResize();
 		}
 		return link;
 	}
 }
 
-Twinkle.HTMLGenerator = new TwinkleHTMLGenerator(mw.config.get('skin'));
+Twinkle.HTMLGenerator = new TwinkleHTMLGenerator(mw.config.get('skin'), document, $, $.collapsibleTabs);
 
 /**
  * **************** General initialization code ****************
