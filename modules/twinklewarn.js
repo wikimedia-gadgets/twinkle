@@ -1070,7 +1070,9 @@ Twinkle.warn.messages = {
 		},
 		'uw-refspam': {
 			label: 'Adding citations to research published by a small group of researchers',
-			summary: 'Notice: Adding citations to research published by a small group of researchers'
+			summary: 'Notice: Adding citations to research published by a small group of researchers',
+			hideLinkedPage: true,
+			hideReason: true
 		},
 		'uw-selfrevert': {
 			label: 'Self-reverted editing tests',
