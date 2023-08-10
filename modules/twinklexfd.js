@@ -2022,8 +2022,8 @@ Twinkle.xfd.callbacks = {
 			var params = pageobj.getCallbackParameters();
 			var statelem = pageobj.getStatusElement();
 
-			var hiddenCommentRE = /==== ?Uncontroversial technical requests ?====(?:.|\n)*? -->/i;
-			var newtext = text.replace(hiddenCommentRE, '$&\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
+			var discussionWikitext = Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params);
+			var newtext = Twinkle.xfd.insertRMTR(text, discussionWikitext);
 			if (text === newtext) {
 				statelem.error('failed to find target spot for the entry');
 				return;
@@ -2040,7 +2040,16 @@ Twinkle.xfd.callbacks = {
 	}
 };
 
-
+/**
+ * Given the wikitext of the WP:RM/TR page and the wikitext to insert, insert it at the bottom of the ==== Uncontroversial technical requests ==== section.
+ * @param {String} pageWikitext
+ * @param {String} wikitextToInsert Will typically be `{{subst:RMassist|1=From|2=To|reason=Reason}}`, which expands out to `* {{RMassist/core | 1 = From | 2 = To | discuss = yes | reason = Reason | sig = Signature | requester = YourUserName}}`
+ * @return {String} pageWikitext
+ */
+Twinkle.xfd.insertRMTR = function(pageWikitext, wikitextToInsert) {
+	var placementRE = /\n{1,}(==== ?Requests to revert undiscussed moves ?====)/i;
+	return pageWikitext.replace(placementRE, '\n' + wikitextToInsert + '\n\n$1');
+};
 
 Twinkle.xfd.callback.evaluate = function(e) {
 	var form = e.target;
