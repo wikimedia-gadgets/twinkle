@@ -198,8 +198,9 @@ class TwinkleMenuBuilder {
 	 * @param {Object} document DOM
 	 * @param {function} $ JQuery
 	 * @param {Object} collapsibleTabs A global related to something in the Vector Legacy skin
+	 * @param {Object} mwUtil The mw.util global
 	 */
-	constructor(skin, document, $, collapsibleTabs) {
+	constructor(skin, document, $, collapsibleTabs, mwUtil) {
 		/** @type {String} MediaWiki skin name, e.g. vector, vector-2022, monobook, etc. */
 		this.skin = skin;
 
@@ -211,6 +212,9 @@ class TwinkleMenuBuilder {
 
 		/** @type {Object} collapsibleTabs A global related to something in the Vector Legacy skin */
 		this.collapsibleTabs = collapsibleTabs;
+
+		/** @type {Object} The mw.util global */
+		this.mwUtil = mwUtil;
 
 		/** @type {String} id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel") */
 		this.navigation = '';
@@ -416,7 +420,7 @@ class TwinkleMenuBuilder {
 	*/
 	addPortletLink(task, text, id, tooltip) {
 		this.addPortlet(mw.config.get('skin'));
-		var link = mw.util.addPortletLink(
+		var link = this.mwUtil.addPortletLink(
 			this.id,
 			typeof task === 'string' ? task : '#',
 			text,
@@ -437,7 +441,7 @@ class TwinkleMenuBuilder {
 	}
 }
 
-Twinkle.MenuBuilder = new TwinkleMenuBuilder(mw.config.get('skin'), document, $, $.collapsibleTabs);
+Twinkle.MenuBuilder = new TwinkleMenuBuilder(mw.config.get('skin'), document, $, $.collapsibleTabs, mw.util);
 
 /**
  * **************** General initialization code ****************
