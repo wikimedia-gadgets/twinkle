@@ -2205,7 +2205,6 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			wikipedia_page.setCallbackParameters(params);
 
 			if (params.rmtr) {
-				wikipedia_page.setPageSection(2);
 				wikipedia_page.load(Twinkle.xfd.callbacks.rm.listAtRMTR);
 			} else {
 				// listAtTalk uses .append(), so no need to load the page
