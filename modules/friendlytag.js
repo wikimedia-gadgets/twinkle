@@ -1439,14 +1439,17 @@ Twinkle.tag.callbacks = {
 						var lang = params.translationLanguage;
 						var reason = params.translationComments;
 
-						var templateText = '{{subst:needtrans|pg=' + Morebits.pageNameNorm + '|Language=' +
-							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
+						var templateText;
 
 						var text, summary;
 						if (params.tags.indexOf('Rough translation') !== -1) {
+							templateText = '{{subst:duflu|pg=' + Morebits.pageNameNorm + '|Language=' +
+							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 							text = old_text + '\n\n' + templateText;
 							summary = 'Translation cleanup requested on ';
 						} else {
+							templateText = '{{subst:needtrans|pg=' + Morebits.pageNameNorm + '|Language=' +
+							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
 								'\n\n' + templateText + '\n\n$1');
 							summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';

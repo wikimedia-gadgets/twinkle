@@ -943,6 +943,10 @@ Twinkle.warn.messages = {
 			label: 'Bad AIV report',
 			summary: 'Notice: Bad AIV report'
 		},
+		'uw-articletodraft': {
+			label: 'Article moved to draftspace',
+			summary: 'Notice: Article moved to draftspace'
+		},
 		'uw-autobiography': {
 			label: 'Creating autobiographies',
 			summary: 'Notice: Creating autobiographies'
@@ -959,6 +963,10 @@ Twinkle.warn.messages = {
 			label: '"Biting" newcomers',
 			summary: 'Notice: "Biting" newcomers',
 			suppressArticleInSummary: true  // non-standard (user name, not article), and not necessary
+		},
+		'uw-blar': {
+			label: 'Article blanked and redirected',
+			summary: 'Notice: Article blanked and redirected'
 		},
 		'uw-coi': {
 			label: 'Conflict of interest',
@@ -1067,6 +1075,12 @@ Twinkle.warn.messages = {
 		'uw-redlink': {
 			label: 'Indiscriminate removal of redlinks',
 			summary: 'Notice: Be careful when removing redlinks'
+		},
+		'uw-refspam': {
+			label: 'Adding citations to research published by a small group of researchers',
+			summary: 'Notice: Adding citations to research published by a small group of researchers',
+			hideLinkedPage: true,
+			hideReason: true
 		},
 		'uw-selfrevert': {
 			label: 'Self-reverted editing tests',

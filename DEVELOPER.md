@@ -134,6 +134,38 @@ The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 [intadmin]: https://en.wikipedia.org/wiki/Wikipedia:Interface_administrators
 [special_botpass]: https://en.wikipedia.org/wiki/Special:BotPasswords
 
+#### Work instruction
+
+If you are an interface admin on English Wikipedia and you want to deploy Twinkle's master branch, and you aren't interested in sync.pl's fancy options, here's a simple work instruction. Don't forget to change the username and password.
+
+```
+Microsoft Windows:
+- download and install strawberry perl. https://strawberryperl.com/
+- open powershell
+- `cd` to your twinkle/scripts directory
+- `cpanm install MediaWiki::API File::Slurper Config::General`
+- `cpanm install Git::Repository --force`
+- create a bot password at [[Special:BotPasswords]] with the following permissions: edit existing pages; edit the mediawiki namespace and sitewide/user json; edit sitewide and user css/js; create, edit and move pages
+- create a file called .twinklerc in the root directory. populate it with the following data
+
+username = yourUsernameHere (as provided by Special:BotPasswords, should have @ in it)
+password = yourPasswordHere
+mode     = deploy
+lang     = en
+family   = wikipedia
+url      =
+base     = MediaWiki:Gadget-
+
+- (local files are used for the deploy I think, so get everything up to date in the next 3 steps)
+- `git checkout master`
+- go to GitHub and sync your Twinkle fork
+- `git pull`
+- `perl sync.pl --mode=deploy --all`
+- it'll ask yes/no. type y
+- if it prompts you for any edit summaries, just hit enter to skip
+- there will be lots of "Warning: unable to close filehandle" messages, and some other problems such as displaying ←[0m←[96m for line breaks. you can ignore these. shouldn't be a problem.
+```
+
 ### Dependencies
 
 All the dependencies that Twinkle uses are JavaScript **dev** dependencies. They are not used at all on-wiki and are just used during development. Here's what they are and what they do. This may help with evaluating dependabot patches (dependabot is a GitHub bot that helps keep libraries up to date by submitting pull requests).
