@@ -263,6 +263,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		return null;
 	}
 	if (type === 'menu') {
+		// In order to get mw.util.addPortlet to generate a dropdown menu in vector and vector-2022, the nextnodeid must be p-cactions. Any other nextnodeid will generate a non-dropdown portlet instead.
 		nextnodeid = 'p-cactions';
 	}
 	return mw.util.addPortlet(id, text, '#' + nextnodeid);
