@@ -262,11 +262,24 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		}
 		return null;
 	}
+
 	if (type === 'menu') {
 		// In order to get mw.util.addPortlet to generate a dropdown menu in vector and vector-2022, the nextnodeid must be p-cactions. Any other nextnodeid will generate a non-dropdown portlet instead.
 		nextnodeid = 'p-cactions';
 	}
-	return mw.util.addPortlet(id, text, '#' + nextnodeid);
+
+	let portlet = mw.util.addPortlet(id, text, '#' + nextnodeid);
+
+	if (mw.config.get('skin') === 'vector') {
+		$('#p-twinkle').insertAfter('#p-cactions');
+	} else if (mw.config.get('skin') === 'vector-2022') {
+		$('#p-twinkle-dropdown').insertAfter('.vector-page-tools-landmark');
+		// this creates two #p-twinkle-dropdowns for some reason, in different spots on the DOM. maybe some JS in vector 2022? delete the bad one:
+		$('.vector-column-end > #p-twinkle-dropdown').remove();
+		portlet = $('#p-twinkle-dropdown');
+	}
+
+	return portlet;
 };
 
 /**
