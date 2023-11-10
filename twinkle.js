@@ -271,6 +271,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	var portlet = mw.util.addPortlet(id, text, '#' + nextnodeid);
 
 	if (mw.config.get('skin') === 'vector') {
+		// The Twinkle dropdown menu has been added to the left of p-cactions. Move it to the right.
 		$('#p-twinkle').insertAfter('#p-cactions');
 	} else if (mw.config.get('skin') === 'vector-2022') {
 		$('#p-twinkle-dropdown').insertAfter('.vector-page-tools-landmark');
