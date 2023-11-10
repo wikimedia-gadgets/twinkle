@@ -270,11 +270,16 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 
 	var portlet = mw.util.addPortlet(id, text, '#' + nextnodeid);
 
+	// The Twinkle dropdown menu has been added to the left of p-cactions. Move it to the right.
 	if (mw.config.get('skin') === 'vector') {
-		// The Twinkle dropdown menu has been added to the left of p-cactions. Move it to the right.
 		$('#p-twinkle').insertAfter('#p-cactions');
 	} else if (mw.config.get('skin') === 'vector-2022') {
-		return $('#p-twinkle-dropdown').detach().insertAfter('.vector-page-tools-landmark');
+		$('#p-twinkle-dropdown').appendTo('.vector-page-tools-landmark');
+
+		// .vector-page-tools-landmark is unstable and could change. If so, log it to console, to hopefully get someone's attention.
+		if (!document.querySelector('.vector-page-tools-landmark')) {
+			mw.log.warn('Unexpected change in DOM');
+		}
 	}
 
 	return portlet;
