@@ -268,7 +268,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		nextnodeid = 'p-cactions';
 	}
 
-	let portlet = mw.util.addPortlet(id, text, '#' + nextnodeid);
+	var portlet = mw.util.addPortlet(id, text, '#' + nextnodeid);
 
 	if (mw.config.get('skin') === 'vector') {
 		$('#p-twinkle').insertAfter('#p-cactions');
