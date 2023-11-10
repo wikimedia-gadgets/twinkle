@@ -274,10 +274,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		// The Twinkle dropdown menu has been added to the left of p-cactions. Move it to the right.
 		$('#p-twinkle').insertAfter('#p-cactions');
 	} else if (mw.config.get('skin') === 'vector-2022') {
-		$('#p-twinkle-dropdown').insertAfter('.vector-page-tools-landmark');
-		// this creates two #p-twinkle-dropdowns for some reason, in different spots on the DOM. maybe some JS in vector 2022? delete the bad one:
-		$('.vector-column-end > #p-twinkle-dropdown').remove();
-		portlet = $('#p-twinkle-dropdown');
+		return $('#p-twinkle-dropdown').detach().insertAfter('.vector-page-tools-landmark');
 	}
 
 	return portlet;
