@@ -756,7 +756,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			moreButton.max = max - min;
 			moreButton.counter = 0;
 			break;
-		case '_dyninput_row': // Private, similar to normal input
+		case '_dyninput_row': // Private
 			node = document.createElement('div');
 
 			data.inputs.forEach(function(subdata) {
