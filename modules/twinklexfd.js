@@ -782,13 +782,12 @@ Twinkle.xfd.callbacks = {
 				return params.currentname
 					.map((currentname, i) => `{{subst:RMassist|1=${currentname}|2=${params.newname[i]}${rmtrDiscuss}|reason=${params.reason}}}`)
 					.join('\n');
-			} else {
-				return `{{subst:Requested move${
-					params.currentname
-						.map((currentname, i) => `|current${i + 1}=${currentname}|new${i + 1}=${params.newname[i]}`)
-						.join('')
-				}|reason=${params.reason}}}`;
 			}
+			return `{{subst:Requested move${
+				params.currentname
+					.map((currentname, i) => `|current${i + 1}=${currentname}|new${i + 1}=${params.newname[i]}`)
+					.join('')
+			}|reason=${params.reason}}}`;
 		}
 
 		var text = '{{subst:' + venue + '2';
