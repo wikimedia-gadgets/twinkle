@@ -686,7 +686,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						checked: false,
 						event: function() {
 							$('input[name="newname"]', form).prop('required', this.checked);
-							$('input[type="button"][value="more"]')[0].sublist.inputs[1].required = this.checked;
+							$('input[type="button"][value="more"]', form)[0].sublist.inputs[1].required = this.checked;
 						},
 						subgroup: {
 							type: 'checkbox',
