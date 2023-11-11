@@ -791,11 +791,12 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			if (data.label) {
 				label = node.appendChild(document.createElement('label'));
 				label.appendChild(document.createTextNode(data.label));
-				label.setAttribute('for', id);
+				label.setAttribute('for', id + '_input');
 				label.style.marginRight = '3px';
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
+			subnode.setAttribute('id', id + '_input');
 			if (data.value) {
 				subnode.setAttribute('value', data.value);
 			}
