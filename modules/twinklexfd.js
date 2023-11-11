@@ -781,7 +781,6 @@ Twinkle.xfd.callbacks = {
 				var rmtrDiscuss = params['rmtr-discuss'] ? '|discuss=no' : '';
 				return params.currentname
 					.map((currentname, i) => `{{subst:RMassist|1=${currentname}|2=${params.newname[i] || ''}${rmtrDiscuss}|reason=${params.reason}}}`)
-					.filter(Boolean)
 					.join('\n');
 			} else {
 				return `{{subst:Requested move${
