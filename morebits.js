@@ -353,7 +353,7 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  *  - `number`: A number input box.
  *      - Attributes: Everything the text `input` has, as well as: min, max, step, list
  *  - `dyninput`: A set of text boxes with "Remove" buttons and an "Add" button.
- *      - Attributes: name, label, min, max, sublabel, value, size, maxlength, event
+ *      - Attributes: name, label, min, max, inputs, sublabel, value, size, maxlength, event
  *  - `hidden`: An invisible form field.
  *      - Attributes: name, value
  *  - `header`: A level 5 header.
@@ -371,7 +371,7 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  * There is some difference on how types handle the `label` attribute:
  * - `div`, `select`, `field`, `checkbox`/`radio`, `input`, `textarea`, `header`, and `dyninput` can accept an array of items,
  * and the label item(s) can be `Element`s.
- * - `option`, `optgroup`, `_dyninput_element`, `submit`, and `button` accept only a single string.
+ * - `option`, `optgroup`, `_dyninput_cell`, `submit`, and `button` accept only a single string.
  *
  * @memberof Morebits.quickForm
  * @class
@@ -730,14 +730,17 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			var moreButton = more[1];
 
 			var sublist = {
-				type: '_dyninput_element',
-				label: data.sublabel || data.label,
-				name: data.name,
-				value: data.value,
-				size: data.size,
+				type: '_dyninput_row',
 				remove: false,
 				maxlength: data.maxlength,
-				event: data.event
+				event: data.event,
+				inputs: data.inputs || [{
+					// compatibility
+					label: data.sublabel || data.label,
+					name: data.name,
+					value: data.value,
+					size: data.size
+				}]
 			};
 
 			for (i = 0; i < min; ++i) {
@@ -753,31 +756,13 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			moreButton.max = max - min;
 			moreButton.counter = 0;
 			break;
-		case '_dyninput_element': // Private, similar to normal input
+		case '_dyninput_row': // Private, similar to normal input
 			node = document.createElement('div');
 
-			if (data.label) {
-				label = node.appendChild(document.createElement('label'));
-				label.appendChild(document.createTextNode(data.label));
-				label.setAttribute('for', id);
-				label.style.marginRight = '3px';
-			}
-
-			subnode = node.appendChild(document.createElement('input'));
-			if (data.value) {
-				subnode.setAttribute('value', data.value);
-			}
-			subnode.setAttribute('name', data.name);
-			subnode.setAttribute('type', 'text');
-			if (data.size) {
-				subnode.setAttribute('size', data.size);
-			}
-			if (data.maxlength) {
-				subnode.setAttribute('maxlength', data.maxlength);
-			}
-			if (data.event) {
-				subnode.addEventListener('keyup', data.event, false);
-			}
+			data.inputs.forEach(function(subdata) {
+				var cell = new Morebits.quickForm.element($.extend(subdata, { type: '_dyninput_cell' }));
+				node.appendChild(cell.render());
+			});
 			if (data.remove) {
 				var remove = this.compute({
 					type: 'button',
@@ -799,6 +784,40 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				removeButton.listnode = data.listnode;
 				removeButton.morebutton = data.morebutton;
 			}
+			break;
+		case '_dyninput_cell': // Private, similar to normal input
+			node = document.createElement('span');
+
+			if (data.label) {
+				label = node.appendChild(document.createElement('label'));
+				label.appendChild(document.createTextNode(data.label));
+				label.setAttribute('for', id);
+				label.style.marginRight = '3px';
+			}
+
+			subnode = node.appendChild(document.createElement('input'));
+			if (data.value) {
+				subnode.setAttribute('value', data.value);
+			}
+			subnode.setAttribute('name', data.name);
+			subnode.setAttribute('type', 'text');
+			subnode.setAttribute('data-dyninput', 'data-dyninput');
+			if (data.size) {
+				subnode.setAttribute('size', data.size);
+			}
+			if (data.maxlength) {
+				subnode.setAttribute('maxlength', data.maxlength);
+			}
+			if (data.required) {
+				subnode.setAttribute('required', 'required');
+			}
+			if (data.disabled) {
+				subnode.setAttribute('required', 'disabled');
+			}
+			if (data.event) {
+				subnode.addEventListener('keyup', data.event, false);
+			}
+			node.style.marginRight = '3px';
 			break;
 		case 'hidden':
 			node = document.createElement('input');
@@ -979,7 +998,12 @@ Morebits.quickForm.getInputData = function(form) {
 				break;
 			case 'text': // falls through
 			case 'textarea':
-				result[fieldNameNorm] = field.value.trim();
+				if (field.dataset.dyninput) {
+					result[fieldNameNorm] = result[fieldNameNorm] || [];
+					result[fieldNameNorm].push(field.value.trim());
+				} else {
+					result[fieldNameNorm] = field.value.trim();
+				}
 				break;
 			default: // could be select-one, date, number, email, etc
 				if (field.value) {
