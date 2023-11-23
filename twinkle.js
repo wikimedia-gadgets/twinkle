@@ -274,10 +274,11 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	if (mw.config.get('skin') === 'vector') {
 		$('#p-twinkle').insertAfter('#p-cactions');
 	} else if (mw.config.get('skin') === 'vector-2022') {
-		$('#p-twinkle-dropdown').insertAfter('#right-navigation > .vector-page-tools-landmark');
+		var $landmark = $('#right-navigation > .vector-page-tools-landmark');
+		$('#p-twinkle-dropdown').insertAfter($landmark);
 
 		// .vector-page-tools-landmark is unstable and could change. If so, log it to console, to hopefully get someone's attention.
-		if (!document.querySelector('.vector-page-tools-landmark')) {
+		if (!$landmark) {
 			mw.log.warn('Unexpected change in DOM');
 		}
 	}
