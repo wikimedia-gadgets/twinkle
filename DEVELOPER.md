@@ -138,8 +138,9 @@ The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 
 If you are an interface admin on English Wikipedia and you want to deploy Twinkle's master branch, and you aren't interested in sync.pl's fancy options, here's a simple work instruction. Don't forget to change the username and password.
 
-```
 Microsoft Windows:
+```
+First time:
 - download and install strawberry perl. https://strawberryperl.com/
 - open powershell
 - `cd` to your twinkle/scripts directory
@@ -156,10 +157,12 @@ family   = wikipedia
 url      =
 base     = MediaWiki:Gadget-
 
-- (local files are used for the deploy I think, so get everything up to date in the next 3 steps)
+Every time:
+- `cd` to your twinkle directory
 - `git checkout master`
-- go to GitHub and sync your Twinkle fork
+- In your browser, go to GitHub, go to your Twinkle fork, and check if it says it is out of date. If so, click "Sync fork"
 - `git pull`
+- `cd` to your twinkle/scripts directory
 - `perl sync.pl --mode=deploy --all`
 - it'll ask yes/no. type y
 - if it prompts you for any edit summaries, just hit enter to skip
