@@ -1309,8 +1309,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 	var selected = false;
 	// worker function to create the combo box entries
-	var createEntries = function(contents, container, wrapInOptgroup, val) {
-		val = typeof val !== 'undefined' ? val : value; // IE doesn't support default parameters
+	var createEntries = function(contents, container, wrapInOptgroup, val = value) {
 		// level2->2, singlewarn->''; also used to distinguish the
 		// scaled levels from singlenotice, singlewarn, and custom
 		var level = val.replace(/^\D+/g, '');
@@ -1773,10 +1772,7 @@ Twinkle.warn.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var messageData = params.messageData;
 
-		// JS somehow didn't get destructured assignment until ES6 so of course IE doesn't support it
-		var warningHistory = Twinkle.warn.callbacks.dateProcessing(text);
-		var latest = warningHistory[0];
-		var history = warningHistory[1];
+		var [latest, history] = Twinkle.warn.callbacks.dateProcessing(text);
 
 		var now = new Morebits.date(pageobj.getLoadTime());
 
