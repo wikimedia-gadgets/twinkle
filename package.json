@@ -14,7 +14,7 @@
 		"deployall": "perl scripts/sync.pl --mode=deploy --all"
 	},
 	"devDependencies": {
-		"eslint": "^8.52.0",
+		"eslint": "^8.54.0",
 		"jest": "^29.7.0",
 		"jest-environment-jsdom": "^29.7.0",
 		"mock-mediawiki": "^1.4.0",
