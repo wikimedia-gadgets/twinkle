@@ -806,6 +806,10 @@ Twinkle.xfd.callbacks = {
 
 		text += '}}';
 
+		if (venue === 'rfd' || venue === 'tfd' || venue === 'cfd') {
+			text += '\n';
+		}
+
 		// Don't delsort if delsortCats is undefined (TFD, FFD, etc.)
 		// Don't delsort if delsortCats is an empty array (AFD where user chose no categories)
 		if (Array.isArray(params.delsortCats) && params.delsortCats.length) {
