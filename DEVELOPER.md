@@ -162,7 +162,7 @@ Every time:
 - `git checkout master`
 - In your browser, go to GitHub, go to your Twinkle fork, and check if it says it is out of date. If so, click "Sync fork"
 - `git pull`
-- `cd` to your twinkle/scripts directory
+- `cd scripts`
 - `perl sync.pl --mode=deploy --all`
 - it'll ask yes/no. type y
 - if it prompts you for any edit summaries, just hit enter to skip
