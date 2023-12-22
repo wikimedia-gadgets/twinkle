@@ -832,8 +832,9 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Weasel', description: 'neutrality or verifiability is compromised by the use of weasel words' }
 		],
 		'Verifiability and sources': [
-			{ tag: 'BLP sources', description: 'BLP that needs additional sources for verification' },
-			{ tag: 'BLP unreferenced', description: 'BLP that has no sources at all (use BLP PROD instead for new articles)' },
+			{ tag: 'BLP one source', description: 'BLP that relies largely or entirely on a single source' },
+			{ tag: 'BLP sources', description: 'BLP that needs additional references or sources for verification' },
+			{ tag: 'BLP unreferenced', description: 'BLP does not cite any sources at all (use BLP PROD instead for new articles)' },
 			{ tag: 'More citations needed', description: 'needs additional references or sources for verification' },
 			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
 			{ tag: 'Original research', description: 'contains original research' },
