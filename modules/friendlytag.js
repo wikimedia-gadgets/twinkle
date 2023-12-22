@@ -725,7 +725,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
 			{ tag: 'Like resume', description: 'written like a resume' },
 			{ tag: 'Manual', description: 'written like a manual or guidebook' },
-			{ tag: 'Cleanup-PR', description: 'reads like a press release or news article',
+			{ tag: 'Cleanup press release', description: 'reads like a press release or news article',
 				subgroup: {
 					type: 'hidden',
 					name: 'cleanupPR1',
