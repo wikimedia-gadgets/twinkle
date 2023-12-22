@@ -833,7 +833,7 @@ Twinkle.tag.article.tagList = {
 		],
 		'Verifiability and sources': [
 			{ tag: 'BLP sources', description: 'BLP that needs additional sources for verification' },
-			{ tag: 'BLP unsourced', description: 'BLP that has no sources at all (use BLP PROD instead for new articles)' },
+			{ tag: 'BLP unreferenced', description: 'BLP that has no sources at all (use BLP PROD instead for new articles)' },
 			{ tag: 'More citations needed', description: 'needs additional references or sources for verification' },
 			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
 			{ tag: 'Original research', description: 'contains original research' },
