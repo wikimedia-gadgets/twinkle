@@ -1054,6 +1054,10 @@ Twinkle.warn.messages = {
 			label: 'Incorrect use of minor edits check box',
 			summary: 'Notice: Incorrect use of minor edits check box'
 		},
+		'uw-longsd': {
+				label: 'Insertion of long short description',
+				summary: 'Notice: Insertion of long short description'
+			},
 		'uw-notenglish': {
 			label: 'Creating non-English articles',
 			summary: 'Notice: Creating non-English articles'
