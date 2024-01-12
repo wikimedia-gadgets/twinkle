@@ -42,12 +42,3 @@
 #twinkle-config-content input[type=checkbox] {
 	margin-right: 2px;
 }
-
-/* Hotfix for T337893 */
-.vector-feature-zebra-design-enabled #p-twinkle .vector-menu-content-list {
-    background: white;
-    border: 1px solid #a2a9b1;
-}
-.vector-feature-zebra-design-enabled #p-twinkle .mw-list-item {
-    padding: 8px;
-}

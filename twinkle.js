@@ -262,11 +262,28 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		}
 		return null;
 	}
+
 	if (type === 'menu') {
 		// In order to get mw.util.addPortlet to generate a dropdown menu in vector and vector-2022, the nextnodeid must be p-cactions. Any other nextnodeid will generate a non-dropdown portlet instead.
 		nextnodeid = 'p-cactions';
 	}
-	return mw.util.addPortlet(id, text, '#' + nextnodeid);
+
+	var portlet = mw.util.addPortlet(id, text, '#' + nextnodeid);
+
+	// The Twinkle dropdown menu has been added to the left of p-cactions, since that is the only spot that will create a dropdown menu. But we want it on the right. Move it to the right.
+	if (mw.config.get('skin') === 'vector') {
+		$('#p-twinkle').insertAfter('#p-cactions');
+	} else if (mw.config.get('skin') === 'vector-2022') {
+		var $landmark = $('#right-navigation > .vector-page-tools-landmark');
+		$('#p-twinkle-dropdown').insertAfter($landmark);
+
+		// .vector-page-tools-landmark is unstable and could change. If so, log it to console, to hopefully get someone's attention.
+		if (!$landmark) {
+			mw.log.warn('Unexpected change in DOM');
+		}
+	}
+
+	return portlet;
 };
 
 /**
