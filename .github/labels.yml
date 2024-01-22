@@ -1,52 +1,95 @@
 "Module: twinkle":
-  - twinkle.js
-  - twinkle.css
-  - twinkle-pagestyles.css
+- changed-files:
+  - any-glob-to-any-file:
+    - twinkle.js
+    - twinkle.css
+    - twinkle-pagestyles.css
 "Module: morebits":
-  - morebits.js
-  - morebits.css
+- changed-files:
+  - any-glob-to-any-file:
+    - morebits.js
+    - morebits.css
 "Module: arv":
-  - modules/twinklearv.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinklearv.js
 "Module: batch":
-  - modules/twinklebatchdelete.js
-  - modules/twinklebatchundelete.js
-  - modules/twinklebatchprotect.js
-  - modules/twinkledeprod.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinklebatchdelete.js
+    - modules/twinklebatchundelete.js
+    - modules/twinklebatchprotect.js
+    - modules/twinkledeprod.js
 "Module: block":
-  - modules/twinkleblock.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinkleblock.js
 "Module: config":
-  - modules/twinkleconfig.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinkleconfig.js
 "Module: diff":
-  - modules/twinklediff.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinklediff.js
 "Module: fluff":
-  - modules/twinklefluff.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinklefluff.js
 "Module: prod":
-  - modules/twinkleprod.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinkleprod.js
 "Module: protect":
-  - modules/twinkleprotect.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinkleprotect.js
 "Module: speedy":
-  - modules/twinklespeedy.js
-  - modules/twinkleimage.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinklespeedy.js
+    - modules/twinkleimage.js
 "Module: tag":
-  - modules/friendlytag.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/friendlytag.js
 "Module: talkback":
-  - modules/friendlytalkback.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/friendlytalkback.js
 "Module: unlink":
-  - modules/twinkleunlink.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinkleunlink.js
 "Module: warn":
-  - modules/twinklewarn.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinklewarn.js
 "Module: welcome":
-  - modules/friendlywelcome.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/friendlywelcome.js
 "Module: xfd":
-  - modules/twinklexfd.js
+- changed-files:
+  - any-glob-to-any-file:
+    - modules/twinklexfd.js
 Tests:
-  - tests/*
-  - scripts/patch-test.js
-  - scripts/server.js
+- changed-files:
+  - any-glob-to-any-file:
+    - tests/*
+    - scripts/patch-test.js
+    - scripts/server.js
+    - ".github/*"
 Docs:
-  - "*.md"
+- changed-files:
+  - any-glob-to-any-file:
+    - "*.md"
 Gadget:
-  - gadget.txt
+- changed-files:
+  - any-glob-to-any-file:
+    - gadget.txt
 dependencies:
-  - package.json
-  - package-lock.json
+- changed-files:
+  - any-glob-to-any-file:
+    - package.json
+    - package-lock.json
