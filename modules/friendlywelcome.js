@@ -490,7 +490,7 @@ Twinkle.welcome.templates = {
 				syntax: '{{subst:welcome-videogames}}'
 			},
 			'WikiProject Women in Red invite': {
-				description: 'welcome for users with an intrest in writing about women',
+				description: 'welcome for users with an interest in writing about women',
 				syntax: '{{subst:WikiProject Women in Red invite|1=~~~~}}'
 			}
 		}
