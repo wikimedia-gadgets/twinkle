@@ -1042,8 +1042,28 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from gene symbol', description: 'redirect from a Human Genome Organisation (HUGO) symbol for a gene to an article about the gene', restriction: 'insideMainspaceOnly' }
 		],
 		Organisms: [
-			{ tag: 'R to scientific name', description: 'redirect from the common name to the scientific name', restriction: 'insideMainspaceOnly' },
-			{ tag: 'R from scientific name', description: 'redirect from the scientific name to the common name', restriction: 'insideMainspaceOnly' },
+			{
+				tag: 'R to scientific name',
+				description: 'redirect from the common name to the scientific name',
+				subgroup: {
+					name: 'toScientificName',
+					type: 'input',
+					label: 'Type of organism',
+					tooltip: 'Specify more precisely the type of organism involved, to put the article in the appropriate subcategory. For example, fungus'
+				},
+				restriction: 'insideMainspaceOnly'
+			},
+			{
+				tag: 'R from scientific name',
+				description: 'redirect from the scientific name to the common name',
+				subgroup: {
+					name: 'fromScientificName',
+					type: 'input',
+					label: 'Type of organism',
+					tooltip: 'Specify more precisely the type of organism involved, to put the article in the appropriate subcategory. For example, fungus'
+				},
+				restriction: 'insideMainspaceOnly'
+			},
 			{ tag: 'R from alternative scientific name', description: 'redirect from an alternative scientific name to the accepted scientific name', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from scientific abbreviation', description: 'redirect from a scientific abbreviation', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R to monotypic taxon', description: 'redirect from the only lower-ranking member of a monotypic taxon to its monotypic taxon', restriction: 'insideMainspaceOnly' },
@@ -1816,6 +1836,10 @@ Twinkle.tag.callbacks = {
 				}
 			} else if (tagName === 'R avoided double redirect' && params.doubleRedirectTarget) {
 				tagText += '|1=' + params.doubleRedirectTarget;
+			} else if (tagName === 'R to scientific name' && params.toScientificName) {
+				tagText += '|1=' + params.toScientificName;
+			} else if (tagName === 'R from scientific name' && params.fromScientificName) {
+				tagText += '|1=' + params.fromScientificName;
 			}
 			tagText += '}}';
 
