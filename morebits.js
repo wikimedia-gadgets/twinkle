@@ -6011,7 +6011,7 @@ Morebits.simpleWindow.prototype = {
 			} else if (value.textContent) {
 				button.textContent = value.textContent;
 			} else {
-				button.textContent = msg('submit', 'Submit Query');
+				button.textContent = msg('submit', 'Submit');
 			}
 
 			button.className = value.className || 'submitButtonProxy';
