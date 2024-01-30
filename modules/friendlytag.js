@@ -903,6 +903,10 @@ Twinkle.tag.article.tagList = {
 		'Categories': [
 			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
 			{ tag: 'Uncategorized', description: 'not added to any categories', excludeMI: true }
+		],
+		'Colors': [
+			{ tag: 'Cleanup colors', description: 'uses color as only way to convey information' },
+			{ tag: 'Overcoloured', description: 'overuses color'}
 		]
 	},
 	'Merging': [
