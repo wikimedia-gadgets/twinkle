@@ -275,6 +275,10 @@ Twinkle.welcome.templates = {
 			'welcome non-latin': {
 				description: 'welcome for users with a username containing non-Latin characters',
 				syntax: '{{subst:welcome non-latin|$USERNAME$}} ~~~~'
+			},
+			'welcome mentor': {
+				description: 'welcome for mentor users to give to their mentees',
+				syntax: '{{subst:mentor welcome|$USERNAME$}} ~~~~'
 			}
 		},
 
