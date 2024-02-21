@@ -641,7 +641,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					return;
 				}
 				uaaPage.getStatusElement().status('Adding new report...');
-				uaaPage.setEditSummary('Reporting ' + (censorUsername ? ' an offensive username.' : '[[Special:Contributions/' + uid + '|' + uid + ']].'));
+				uaaPage.setEditSummary('Reporting ' + (censorUsername ? 'an offensive username.' : '[[Special:Contributions/' + uid + '|' + uid + ']].'));
 				uaaPage.setChangeTags(Twinkle.changeTags);
 
 				// Blank newline per [[Special:Permalink/996949310#Spacing]]; see also [[WP:LISTGAP]] and [[WP:INDENTGAP]]
