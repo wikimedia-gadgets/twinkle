@@ -590,8 +590,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 		// Report inappropriate username
 		case 'username':
 			types = form.getChecked('arvtype').map(Morebits.string.toLowerCaseFirstChar);
-			var censorUsername = types.includes('offensive'); //check if the username is marked offensive
-			
+			var censorUsername = types.includes('offensive'); // check if the username is marked offensive
+
 			// generate human-readable string, e.g. "misleading and promotional username"
 			if (types.length <= 2) {
 				types = types.join(' and ');
@@ -641,7 +641,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					return;
 				}
 				uaaPage.getStatusElement().status('Adding new report...');
-				uaaPage.setEditSummary('Reporting ' + (censorUsername ?' an offensive username.' : '[[Special:Contributions/' + uid + '|' + uid + ']].'));
+				uaaPage.setEditSummary('Reporting ' + (censorUsername ? ' an offensive username.' : '[[Special:Contributions/' + uid + '|' + uid + ']].'));
 				uaaPage.setChangeTags(Twinkle.changeTags);
 
 				// Blank newline per [[Special:Permalink/996949310#Spacing]]; see also [[WP:LISTGAP]] and [[WP:INDENTGAP]]
