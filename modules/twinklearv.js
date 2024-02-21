@@ -591,6 +591,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 		case 'username':
 			types = form.getChecked('arvtype').map(Morebits.string.toLowerCaseFirstChar);
 			var censorUsername = types.includes('offensive'); //check if the username is marked offensive
+			
 			// generate human-readable string, e.g. "misleading and promotional username"
 			if (types.length <= 2) {
 				types = types.join(' and ');
