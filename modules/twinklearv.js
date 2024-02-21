@@ -631,7 +631,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 			uaaPage.load(function() {
 				var text = uaaPage.getPageText();
-				 
+
 				// check if user has already been reported
 				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + Morebits.string.escapeRegExp(uid) + '\\s*(\\||\\})').test(text)) {
 					uaaPage.getStatusElement().error('User is already listed.');
