@@ -1440,14 +1440,22 @@ Twinkle.tag.callbacks = {
 						var templateText;
 
 						var text, summary;
+						// {{Rough translation}}
+						// Use {{subst:Duflu}}
+						// Place in section == Translated pages that could still use some cleanup ==
 						if (params.tags.indexOf('Rough translation') !== -1) {
 							templateText = '{{subst:duflu|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
+							// Append to end of page
 							text = old_text + '\n\n' + templateText;
 							summary = 'Translation cleanup requested on ';
+						// {{Not English}}
+						// Use {{subst:Needtrans}}
+						// Place in section == Pages for consideration ==
 						} else {
 							templateText = '{{subst:needtrans|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
+							// Place above section "Translated pages that could still use some cleanup"
 							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
 								'\n\n' + templateText + '\n\n$1');
 							summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';
