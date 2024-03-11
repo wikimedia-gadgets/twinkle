@@ -1441,12 +1441,12 @@ Twinkle.tag.callbacks = {
 
 						var text, summary;
 						if (params.tags.indexOf('Rough translation') !== -1) {
-							templateText = '{{subst:duflu|pg=' + Morebits.pageNameNorm + '|Language=' +
+							templateText = '{{subst:Dual fluency request|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 							text = old_text + '\n\n' + templateText;
 							summary = 'Translation cleanup requested on ';
 						} else {
-							templateText = '{{subst:needtrans|pg=' + Morebits.pageNameNorm + '|Language=' +
+							templateText = '{{subst:Translation request|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
 								'\n\n' + templateText + '\n\n$1');
