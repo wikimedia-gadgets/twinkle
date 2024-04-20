@@ -372,6 +372,11 @@ Twinkle.welcome.templates = {
 				description: 'for anonymous users who have removed content from pages',
 				linkedArticle: true,
 				syntax: '{{subst:welcome-anon-delete|$ARTICLE$|$USERNAME$}} ~~~~'
+			},
+			'welcome-anon-unsourced': {
+				description: 'for anonymous users who have added unsourced content',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-anon-unsourced|$ARTICLE$|$USERNAME$}} ~~~~'
 			}
 		}
 	},
@@ -577,6 +582,18 @@ Twinkle.welcome.templates = {
 			'welcomeen-uk': {
 				description: 'welcome for users whose first language appears to be Ukrainian',
 				syntax: '{{subst:welcomeen-uk}}'
+			},
+			'welcomeen-it': {
+				description: 'welcome for users whose first language appears to be Italian',
+				syntax: '{{subst:welcomeen-it}}'
+			},
+			'welcomeen-hi': {
+				description: 'welcome for users whose first language appears to be Hindi',
+				syntax: '{{subst:welcomeen-hi}}'
+			},
+			'welcomeen-id': {
+				description: 'welcome for users whose first language appears to be Indonesian',
+				syntax: '{{subst:welcomeen-id}}'
 			}
 		}
 	}
