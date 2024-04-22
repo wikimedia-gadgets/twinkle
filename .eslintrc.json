@@ -17,8 +17,10 @@
 		"computed-property-spacing": "off",
 		"es-x/no-array-prototype-includes": "warn",
 		"es-x/no-object-values": "warn",
+		"es-x/no-resizable-and-growable-arraybuffers": "off",
 		"indent": "off",
 		"max-len": "off",
+		"mediawiki/class-doc": "warn",
 		"new-cap": "off",
 		"no-alert": "off",
 		"no-jquery/no-class-state": "warn",
@@ -31,6 +33,7 @@
 		"no-jquery/no-parse-html-literal": "warn",
 		"no-jquery/no-sizzle": "warn",
 		"no-jquery/variable-pattern": "warn",
+		"no-loop-func": "warn",
 		"no-nested-ternary": "error",
 		"no-new": "warn",
 		"no-restricted-syntax": [
@@ -48,6 +51,7 @@
 		"no-script-url": "warn",
 		"no-sequences": "warn",
 		"no-shadow": "warn",
+		"no-throw-literal": "warn",
 		"no-underscore-dangle": "warn",
 		"no-unused-expressions": "warn",
 		"no-use-before-define": "warn",
@@ -56,6 +60,7 @@
 		"object-curly-spacing": "off",
 		"prefer-const": "warn",
 		"space-before-function-paren": "off",
-		"space-in-parens": "off"
+		"space-in-parens": "off",
+		"unicorn/prefer-string-slice": "warn"
 	}
 }
