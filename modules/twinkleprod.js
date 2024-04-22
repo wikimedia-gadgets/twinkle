@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -23,7 +21,7 @@ Twinkle.prod = function twinkleprod() {
 };
 
 // Used in edit summaries, for comparisons, etc.
-var namespace;
+let namespace;
 
 Twinkle.prod.callback = function twinkleprodCallback() {
 	Twinkle.prod.defaultReason = Twinkle.getPref('prodReasonDefault');
@@ -38,11 +36,11 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		// no default
 	}
 
-	var Window = new Morebits.simpleWindow(800, 410);
+	const Window = new Morebits.simpleWindow(800, 410);
 	Window.setTitle('Proposed deletion (PROD)');
 	Window.setScriptName('Twinkle');
 
-	var form = new Morebits.quickForm(Twinkle.prod.callback.evaluate);
+	const form = new Morebits.quickForm(Twinkle.prod.callback.evaluate);
 
 	if (namespace === 'article') {
 		Window.addFooterLink('Proposed deletion policy', 'WP:PROD');
@@ -51,7 +49,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		Window.addFooterLink('Proposed deletion policy', 'WP:PROD');
 	}
 
-	var field = form.append({
+	const field = form.append({
 		type: 'field',
 		label: 'PROD type',
 		id: 'prodtype_fieldset'
@@ -95,7 +93,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 
 	form.append({ type: 'submit', label: 'Propose deletion' });
 
-	var result = form.render();
+	const result = form.render();
 	Window.setContent(result);
 	Window.display();
 
@@ -105,16 +103,15 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	}
 
 	// Fake a change event on the first prod type radio, to initialize the type-dependent controls
-	var evt = document.createEvent('Event');
+	const evt = document.createEvent('Event');
 	evt.initEvent('change', true, true);
 	result.prodtype[0].dispatchEvent(evt);
 
 };
 
-
 Twinkle.prod.callback.prodtypechanged = function(event) {
 	// prepare frame for prod type dependant controls
-	var field = new Morebits.quickForm.element({
+	const field = new Morebits.quickForm.element({
 		type: 'field',
 		label: 'Parameters',
 		name: 'parameters'
@@ -181,17 +178,17 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 
 // global params object, initially set in evaluate(), and
 // modified in various callback functions
-var params = {};
+let params = {};
 
 Twinkle.prod.callbacks = {
 	checkPriors: function twinkleprodcheckPriors() {
-		var talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
+		const talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 		// Talk page templates for PROD-able discussions
-		var blocking_templates = 'Template:Old XfD multi|Template:Old MfD|Template:Oldffdfull|' + // Common prior XfD talk page templates
+		const blocking_templates = 'Template:Old XfD multi|Template:Old MfD|Template:Oldffdfull|' + // Common prior XfD talk page templates
 			'Template:Oldpuffull|' + // Legacy prior XfD template
 			'Template:Olddelrev|' + // Prior DRV template
 			'Template:Old prod';
-		var query = {
+		const query = {
 			action: 'query',
 			titles: talk_title,
 			prop: 'templates',
@@ -199,15 +196,15 @@ Twinkle.prod.callbacks = {
 			format: 'json'
 		};
 
-		var wikipedia_api = new Morebits.wiki.api('Checking talk page for prior nominations', query);
+		const wikipedia_api = new Morebits.wiki.api('Checking talk page for prior nominations', query);
 		return wikipedia_api.post().then(function(apiobj) {
-			var statelem = apiobj.statelem;
+			const statelem = apiobj.statelem;
 
 			// Check talk page for templates indicating prior XfD or PROD
-			var templates = apiobj.getResponse().query.pages[0].templates;
-			var numTemplates = templates && templates.length;
+			const templates = apiobj.getResponse().query.pages[0].templates;
+			const numTemplates = templates && templates.length;
 			if (numTemplates) {
-				var template = templates[0].title;
+				const template = templates[0].title;
 				if (numTemplates === 1 && template === 'Template:Old prod') {
 					params.oldProdPresent = true; // Mark for reference later, when deciding if to endorse
 				// if there are multiple templates, at least one of them would be a prior xfd template
@@ -220,9 +217,9 @@ Twinkle.prod.callbacks = {
 	},
 
 	fetchCreationInfo: function twinkleprodFetchCreationInfo() {
-		var def = $.Deferred();
-		var ts = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Looking up page creator');
-		ts.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
+		const def = $.Deferred();
+		const ts = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Looking up page creator');
+		ts.setFollowRedirect(true); // for NPP, and also because redirects are ineligible for PROD
 		ts.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
 		ts.lookupCreation(function(pageobj) {
 			params.initialContrib = pageobj.getCreator();
@@ -234,12 +231,12 @@ Twinkle.prod.callbacks = {
 	},
 
 	taggingPage: function twinkleprodTaggingPage() {
-		var def = $.Deferred();
+		const def = $.Deferred();
 
-		var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
-		wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
+		const wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
+		wikipedia_page.setFollowRedirect(true); // for NPP, and also because redirects are ineligible for PROD
 		wikipedia_page.load(function(pageobj) {
-			var statelem = pageobj.getStatusElement();
+			const statelem = pageobj.getStatusElement();
 
 			if (!pageobj.exists()) {
 				statelem.error("It seems that the page doesn't exist. Perhaps it has already been deleted.");
@@ -248,10 +245,10 @@ Twinkle.prod.callbacks = {
 				return def.reject();
 			}
 
-			var text = pageobj.getPageText();
+			let text = pageobj.getPageText();
 
 			// Check for already existing deletion tags
-			var tag_re = /{{(?:article for deletion\/dated|AfDM|ffd\b)|#invoke:RfD/i;
+			const tag_re = /{{(?:article for deletion\/dated|AfDM|ffd\b)|#invoke:RfD/i;
 			if (tag_re.test(text)) {
 				statelem.warn('Page already tagged with a deletion template, aborting procedure');
 				return def.reject();
@@ -259,8 +256,8 @@ Twinkle.prod.callbacks = {
 
 			// Remove tags that become superfluous with this action
 			text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, '');
-			var prod_re = /{{\s*(?:Prod blp|Proposed deletion)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
-			var summaryText;
+			const prod_re = /{{\s*(?:Prod blp|Proposed deletion)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
+			let summaryText;
 
 			if (!prod_re.test(text)) {
 
@@ -278,7 +275,7 @@ Twinkle.prod.callbacks = {
 					}
 				}
 
-				var tag;
+				let tag;
 				if (params.blp) {
 					summaryText = 'Proposing article for deletion per [[WP:BLPPROD]].';
 					tag = '{{subst:prod blp' + (params.usertalk ? '|help=off' : '') + '}}';
@@ -288,16 +285,16 @@ Twinkle.prod.callbacks = {
 				}
 
 				// Insert tag after short description or any hatnotes
-				var wikipage = new Morebits.wikitext.page(text);
+				const wikipage = new Morebits.wikitext.page(text);
 				text = wikipage.insertAfterTemplates(tag + '\n', Twinkle.hatnoteRegex).getText();
 
-			} else {  // already tagged for PROD, so try endorsing it
-				var prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/i;
+			} else { // already tagged for PROD, so try endorsing it
+				const prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/i;
 				if (prod2_re.test(text)) {
 					statelem.warn('Page already tagged with {{proposed deletion}} and {{proposed deletion endorsed}} templates, aborting procedure');
 					return def.reject();
 				}
-				var confirmtext = 'A {{proposed deletion}} tag was already found on this page. \nWould you like to add a {{proposed deletion endorsed}} tag with your explanation?';
+				let confirmtext = 'A {{proposed deletion}} tag was already found on this page. \nWould you like to add a {{proposed deletion endorsed}} tag with your explanation?';
 				if (params.blp && !/{{\s*Prod blp\/dated/.test(text)) {
 					confirmtext = 'A non-BLP {{proposed deletion}} tag was found on this article.\nWould you like to add a {{proposed deletion endorsed}} tag with explanation "article is a biography of a living person with no sources"?';
 				}
@@ -331,27 +328,27 @@ Twinkle.prod.callbacks = {
 	},
 
 	addOldProd: function twinkleprodAddOldProd() {
-		var def = $.Deferred();
+		const def = $.Deferred();
 
 		if (params.oldProdPresent || params.blp) {
 			return def.resolve();
 		}
 
 		// Add {{Old prod}} to the talk page
-		var oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}}}\n';
-		var talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
-		var talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
+		const oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}}}\n';
+		const talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
+		const talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
 		talkpage.setPrependText(oldprodfull);
 		talkpage.setEditSummary('Adding {{Old prod}}');
 		talkpage.setChangeTags(Twinkle.changeTags);
-		talkpage.setFollowRedirect(true);  // match behavior for page tagging
+		talkpage.setFollowRedirect(true); // match behavior for page tagging
 		talkpage.setCreateOption('recreate');
 		talkpage.prepend(def.resolve, def.reject);
 		return def;
 	},
 
 	notifyAuthor: function twinkleprodNotifyAuthor() {
-		var def = $.Deferred();
+		const def = $.Deferred();
 
 		if (!params.blp && !params.usertalk) {
 			return def.resolve();
@@ -363,15 +360,15 @@ Twinkle.prod.callbacks = {
 			return def.resolve();
 		}
 		// [[Template:Proposed deletion notify]] supports File namespace
-		var notifyTemplate;
+		let notifyTemplate;
 		if (params.blp) {
 			notifyTemplate = 'prodwarningBLP';
 		} else {
 			notifyTemplate = 'proposed deletion notify';
 		}
-		var notifytext = '\n{{subst:' + notifyTemplate + '|1=' + Morebits.pageNameNorm + '|concern=' + params.reason + '}} ~~~~';
+		const notifytext = '\n{{subst:' + notifyTemplate + '|1=' + Morebits.pageNameNorm + '|concern=' + params.reason + '}} ~~~~';
 
-		var usertalkpage = new Morebits.wiki.page('User talk:' + params.initialContrib, 'Notifying initial contributor (' + params.initialContrib + ')');
+		const usertalkpage = new Morebits.wiki.page('User talk:' + params.initialContrib, 'Notifying initial contributor (' + params.initialContrib + ')');
 		usertalkpage.setAppendText(notifytext);
 		usertalkpage.setEditSummary('Notification: proposed deletion of [[:' + Morebits.pageNameNorm + ']].');
 		usertalkpage.setChangeTags(Twinkle.changeTags);
@@ -390,14 +387,14 @@ Twinkle.prod.callbacks = {
 		if (!Twinkle.getPref('logProdPages')) {
 			return $.Deferred().resolve();
 		}
-		var usl = new Morebits.userspaceLogger(Twinkle.getPref('prodLogPageName'));
+		const usl = new Morebits.userspaceLogger(Twinkle.getPref('prodLogPageName'));
 		usl.initialText =
 			"This is a log of all [[WP:PROD|proposed deletion]] tags applied or endorsed by this user using [[WP:TW|Twinkle]]'s PROD module.\n\n" +
 			'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
 			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].';
 
-		var logText = '# [[:' + Morebits.pageNameNorm + ']]';
-		var summaryText;
+		let logText = '# [[:' + Morebits.pageNameNorm + ']]';
+		let summaryText;
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 		logText += namespace === 'file' ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log]): ' : ': ';
 		if (params.logEndorsing) {
@@ -425,8 +422,8 @@ Twinkle.prod.callbacks = {
 };
 
 Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
-	var form = e.target;
-	var input = Morebits.quickForm.getInputData(form);
+	const form = e.target;
+	const input = Morebits.quickForm.getInputData(form);
 
 	params = {
 		usertalk: input.notify || input.prodtype === 'prodblp',
@@ -443,8 +440,8 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
-	var tm = new Morebits.taskManager();
-	var cbs = Twinkle.prod.callbacks; // shortcut reference, cbs for `callbacks`
+	const tm = new Morebits.taskManager();
+	const cbs = Twinkle.prod.callbacks; // shortcut reference, cbs for `callbacks`
 
 	// Disable Morebits.wiki.numberOfActionsLeft system
 	Morebits.wiki.numberOfActionsLeft = 1000;
@@ -475,7 +472,6 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.prod, 'prod');
-})(jQuery);
-
+}(jQuery));
 
 // </nowiki>

@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -18,13 +16,12 @@
  point you in the right direction.)  -- TTO
  */
 
-
 Twinkle.config = {};
 
 Twinkle.config.watchlistEnums = {
-	'yes': 'Add to watchlist (indefinitely)',
-	'no': "Don't add to watchlist",
-	'default': 'Follow your site preferences',
+	yes: 'Add to watchlist (indefinitely)',
+	no: "Don't add to watchlist",
+	default: 'Follow your site preferences',
 	'1 week': 'Watch for 1 week',
 	'1 month': 'Watch for 1 month',
 	'3 months': 'Watch for 3 months',
@@ -338,7 +335,7 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Revert and rollback',  // twinklefluff module
+		title: 'Revert and rollback', // twinklefluff module
 		module: 'fluff',
 		preferences: [
 			// TwinkleConfig.autoMenuAfterRollback (bool)
@@ -981,7 +978,6 @@ Twinkle.config.sections = [
 
 ]; // end of Twinkle.config.sections
 
-
 Twinkle.config.init = function twinkleconfigInit() {
 
 	// create the config page at Wikipedia:Twinkle/Preferences
@@ -989,19 +985,19 @@ Twinkle.config.init = function twinkleconfigInit() {
 			mw.config.get('wgAction') === 'view') {
 
 		if (!document.getElementById('twinkle-config')) {
-			return;  // maybe the page is misconfigured, or something - but any attempt to modify it will be pointless
+			return; // maybe the page is misconfigured, or something - but any attempt to modify it will be pointless
 		}
 
 		// set style (the url() CSS function doesn't seem to work from wikicode - ?!)
 		document.getElementById('twinkle-config-titlebar').style.backgroundImage = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC)';
 
-		var contentdiv = document.getElementById('twinkle-config-content');
-		contentdiv.textContent = '';  // clear children
+		const contentdiv = document.getElementById('twinkle-config-content');
+		contentdiv.textContent = ''; // clear children
 
 		// let user know about possible conflict with skin js/common.js file
 		// (settings in that file will still work, but they will be overwritten by twinkleoptions.js settings)
 		if (window.TwinkleConfig || window.FriendlyConfig) {
-			var contentnotice = document.createElement('p');
+			const contentnotice = document.createElement('p');
 			contentnotice.innerHTML = '<table class="plainlinks morebits-ombox morebits-ombox-content"><tr><td class="morebits-mbox-image">' +
 				'<img alt="" src="https://upload.wikimedia.org/wikipedia/commons/3/38/Imbox_content.png" /></td>' +
 				'<td class="morebits-mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
@@ -1013,20 +1009,20 @@ Twinkle.config.init = function twinkleconfigInit() {
 		}
 
 		// start a table of contents
-		var toctable = document.createElement('div');
+		const toctable = document.createElement('div');
 		toctable.className = 'toc';
 		toctable.style.marginLeft = '0.4em';
 		// create TOC title
-		var toctitle = document.createElement('div');
+		const toctitle = document.createElement('div');
 		toctitle.id = 'toctitle';
-		var toch2 = document.createElement('h2');
+		const toch2 = document.createElement('h2');
 		toch2.textContent = 'Contents ';
 		toctitle.appendChild(toch2);
 		// add TOC show/hide link
-		var toctoggle = document.createElement('span');
+		const toctoggle = document.createElement('span');
 		toctoggle.className = 'toctoggle';
 		toctoggle.appendChild(document.createTextNode('['));
-		var toctogglelink = document.createElement('a');
+		const toctogglelink = document.createElement('a');
 		toctogglelink.className = 'internal';
 		toctogglelink.setAttribute('href', '#tw-tocshowhide');
 		toctogglelink.textContent = 'hide';
@@ -1035,9 +1031,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 		toctitle.appendChild(toctoggle);
 		toctable.appendChild(toctitle);
 		// create item container: this is what we add stuff to
-		var tocul = document.createElement('ul');
+		const tocul = document.createElement('ul');
 		toctogglelink.addEventListener('click', function twinkleconfigTocToggle() {
-			var $tocul = $(tocul);
+			const $tocul = $(tocul);
 			$tocul.toggle();
 			if ($tocul.find(':visible').length) {
 				toctogglelink.textContent = 'hide';
@@ -1048,33 +1044,33 @@ Twinkle.config.init = function twinkleconfigInit() {
 		toctable.appendChild(tocul);
 		contentdiv.appendChild(toctable);
 
-		var contentform = document.createElement('form');
-		contentform.setAttribute('action', 'javascript:void(0)');  // was #tw-save - changed to void(0) to work around Chrome issue
+		const contentform = document.createElement('form');
+		contentform.setAttribute('action', 'javascript:void(0)'); // was #tw-save - changed to void(0) to work around Chrome issue
 		contentform.addEventListener('submit', Twinkle.config.save, true);
 		contentdiv.appendChild(contentform);
 
-		var container = document.createElement('table');
+		const container = document.createElement('table');
 		container.style.width = '100%';
 		contentform.appendChild(container);
 
 		$(Twinkle.config.sections).each(function(sectionkey, section) {
 			if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
-				return true;  // i.e. "continue" in this context
+				return true; // i.e. "continue" in this context
 			}
 
 			// add to TOC
-			var tocli = document.createElement('li');
+			const tocli = document.createElement('li');
 			tocli.className = 'toclevel-1';
-			var toca = document.createElement('a');
+			const toca = document.createElement('a');
 			toca.setAttribute('href', '#' + section.module);
 			toca.appendChild(document.createTextNode(section.title));
 			tocli.appendChild(toca);
 			tocul.appendChild(tocli);
 
-			var row = document.createElement('tr');
-			var cell = document.createElement('td');
+			let row = document.createElement('tr');
+			let cell = document.createElement('td');
 			cell.setAttribute('colspan', '3');
-			var heading = document.createElement('h4');
+			const heading = document.createElement('h4');
 			heading.style.borderBottom = '1px solid gray';
 			heading.style.marginTop = '0.2em';
 			heading.id = section.module;
@@ -1083,12 +1079,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 			row.appendChild(cell);
 			container.appendChild(row);
 
-			var rowcount = 1;  // for row banding
+			let rowcount = 1; // for row banding
 
 			// add each of the preferences to the form
 			$(section.preferences).each(function(prefkey, pref) {
 				if (pref.adminOnly && !Morebits.userIsSysop) {
-					return true;  // i.e. "continue" in this context
+					return true; // i.e. "continue" in this context
 				}
 
 				row = document.createElement('tr');
@@ -1099,10 +1095,10 @@ Twinkle.config.init = function twinkleconfigInit() {
 				}
 				cell = document.createElement('td');
 
-				var label, input, gotPref = Twinkle.getPref(pref.name);
+				let label, input, gotPref = Twinkle.getPref(pref.name);
 				switch (pref.type) {
 
-					case 'boolean':  // create a checkbox
+					case 'boolean': // create a checkbox
 						cell.setAttribute('colspan', '2');
 
 						label = document.createElement('label');
@@ -1118,7 +1114,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell.appendChild(label);
 						break;
 
-					case 'string':  // create an input box
+					case 'string': // create an input box
 					case 'integer':
 						// add label to first column
 						cell.style.textAlign = 'right';
@@ -1139,7 +1135,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						if (pref.type === 'integer') {
 							input.setAttribute('size', 6);
 							input.setAttribute('type', 'number');
-							input.setAttribute('step', '1');  // integers only
+							input.setAttribute('step', '1'); // integers only
 						}
 						if (gotPref) {
 							input.setAttribute('value', gotPref);
@@ -1147,7 +1143,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell.appendChild(input);
 						break;
 
-					case 'enum':  // create a combo box
+					case 'enum': // create a combo box
 						// add label to first column
 						// note: duplicates the code above, under string/integer
 						cell.style.textAlign = 'right';
@@ -1165,7 +1161,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						input.setAttribute('id', pref.name);
 						input.setAttribute('name', pref.name);
 						$.each(pref.enumValues, function(enumvalue, enumdisplay) {
-							var option = document.createElement('option');
+							const option = document.createElement('option');
 							option.setAttribute('value', enumvalue);
 							if ((gotPref === enumvalue) ||
 								// Hack to convert old boolean watchlist prefs
@@ -1181,20 +1177,20 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell.appendChild(input);
 						break;
 
-					case 'set':  // create a set of check boxes
+					case 'set': // create a set of check boxes
 						// add label first of all
 						cell.setAttribute('colspan', '2');
-						label = document.createElement('label');  // not really necessary to use a label element here, but we do it for consistency of styling
+						label = document.createElement('label'); // not really necessary to use a label element here, but we do it for consistency of styling
 						label.appendChild(document.createTextNode(pref.label + ':'));
 						cell.appendChild(label);
 
 						var checkdiv = document.createElement('div');
 						checkdiv.style.paddingLeft = '1em';
 						var worker = function(itemkey, itemvalue) {
-							var checklabel = document.createElement('label');
+							const checklabel = document.createElement('label');
 							checklabel.style.marginRight = '0.7em';
 							checklabel.style.display = 'inline-block';
-							var check = document.createElement('input');
+							const check = document.createElement('input');
 							check.setAttribute('type', 'checkbox');
 							check.setAttribute('id', pref.name + '_' + itemkey);
 							check.setAttribute('name', pref.name + '_' + itemkey);
@@ -1268,7 +1264,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				}
 				// add reset link (custom lists don't need this, as their config value isn't displayed on the form)
 				if (pref.type !== 'customList') {
-					var resetlink = document.createElement('a');
+					const resetlink = document.createElement('a');
 					resetlink.setAttribute('href', '#tw-reset');
 					resetlink.setAttribute('id', 'twinkle-config-reset-' + pref.name);
 					resetlink.addEventListener('click', Twinkle.config.resetPrefLink, false);
@@ -1285,20 +1281,20 @@ Twinkle.config.init = function twinkleconfigInit() {
 			return true;
 		});
 
-		var footerbox = document.createElement('div');
+		const footerbox = document.createElement('div');
 		footerbox.setAttribute('id', 'twinkle-config-buttonpane');
 		footerbox.style.backgroundColor = '#BCCADF';
 		footerbox.style.padding = '0.5em';
-		var button = document.createElement('button');
+		const button = document.createElement('button');
 		button.setAttribute('id', 'twinkle-config-submit');
 		button.setAttribute('type', 'submit');
 		button.appendChild(document.createTextNode('Save changes'));
 		footerbox.appendChild(button);
-		var footerspan = document.createElement('span');
+		const footerspan = document.createElement('span');
 		footerspan.className = 'plainlinks';
 		footerspan.style.marginLeft = '2.4em';
 		footerspan.style.fontSize = '90%';
-		var footera = document.createElement('a');
+		const footera = document.createElement('a');
 		footera.setAttribute('href', '#tw-reset-all');
 		footera.setAttribute('id', 'twinkle-config-resetall');
 		footera.addEventListener('click', Twinkle.config.resetAllPrefs, false);
@@ -1309,7 +1305,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 		// since all the section headers exist now, we can try going to the requested anchor
 		if (window.location.hash) {
-			var loc = window.location.hash;
+			const loc = window.location.hash;
 			window.location.hash = '';
 			window.location.hash = loc;
 		}
@@ -1318,11 +1314,11 @@ Twinkle.config.init = function twinkleconfigInit() {
 			mw.config.get('wgTitle').indexOf(mw.config.get('wgUserName')) === 0 &&
 			mw.config.get('wgPageName').slice(-3) === '.js') {
 
-		var box = document.createElement('div');
+		const box = document.createElement('div');
 		// Styled in twinkle.css
 		box.setAttribute('id', 'twinkle-config-headerbox');
 
-		var link,
+		let link,
 			scriptPageName = mw.config.get('wgPageName').slice(mw.config.get('wgPageName').lastIndexOf('/') + 1,
 				mw.config.get('wgPageName').lastIndexOf('.js'));
 
@@ -1330,9 +1326,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 			// place "why not try the preference panel" notice
 			box.setAttribute('class', 'config-twopt-box');
 
-			if (mw.config.get('wgArticleId') > 0) {  // page exists
+			if (mw.config.get('wgArticleId') > 0) { // page exists
 				box.appendChild(document.createTextNode('This page contains your Twinkle preferences. You can change them using the '));
-			} else {  // page does not exist
+			} else { // page does not exist
 				box.appendChild(document.createTextNode('You can customize Twinkle to suit your preferences by using the '));
 			}
 			link = document.createElement('a');
@@ -1362,7 +1358,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 Twinkle.config.listDialog = {};
 
 Twinkle.config.listDialog.addRow = function twinkleconfigListDialogAddRow($dlgtable, value, label) {
-	var $contenttr, $valueInput, $labelInput;
+	let $contenttr, $valueInput, $labelInput;
 
 	$dlgtable.append(
 		$contenttr = $('<tr>').append(
@@ -1399,15 +1395,15 @@ Twinkle.config.listDialog.addRow = function twinkleconfigListDialogAddRow($dlgta
 };
 
 Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
-	var $prefbutton = $(e.target);
-	var curvalue = $prefbutton.data('value');
-	var curpref = $prefbutton.data('pref');
+	const $prefbutton = $(e.target);
+	const curvalue = $prefbutton.data('value');
+	const curpref = $prefbutton.data('pref');
 
-	var dialog = new Morebits.simpleWindow(720, 400);
+	const dialog = new Morebits.simpleWindow(720, 400);
 	dialog.setTitle(curpref.label);
 	dialog.setScriptName('Twinkle preferences');
 
-	var $dlgtbody;
+	let $dlgtbody;
 
 	dialog.setContent(
 		$('<div>').append(
@@ -1470,7 +1466,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 	);
 
 	// content rows
-	var gotRow = false;
+	let gotRow = false;
 	$.each(curvalue, function(k, v) {
 		gotRow = true;
 		Twinkle.config.listDialog.addRow($dlgtbody, v.value, v.label);
@@ -1487,14 +1483,14 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 // old data value again (less surprising behaviour)
 Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset($button, $tbody) {
 	// reset value on button
-	var curpref = $button.data('pref');
-	var oldvalue = $button.data('value');
+	const curpref = $button.data('pref');
+	const oldvalue = $button.data('value');
 	Twinkle.config.resetPref(curpref);
 
 	// reset form
-	$tbody.find('tr').slice(1).remove();  // all rows except the first (header) row
+	$tbody.find('tr').slice(1).remove(); // all rows except the first (header) row
 	// add the new values
-	var curvalue = $button.data('value');
+	const curvalue = $button.data('value');
 	$.each(curvalue, function(k, v) {
 		Twinkle.config.listDialog.addRow($tbody, v.value, v.label);
 	});
@@ -1504,8 +1500,8 @@ Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset($button,
 };
 
 Twinkle.config.listDialog.save = function twinkleconfigListDialogSave($button, $tbody) {
-	var result = [];
-	var current = {};
+	const result = [];
+	let current = {};
 	$tbody.find('input[type="text"]').each(function(inputkey, input) {
 		if ($(input).hasClass('twinkle-config-customlist-value')) {
 			current = { value: input.value };
@@ -1523,30 +1519,30 @@ Twinkle.config.listDialog.save = function twinkleconfigListDialogSave($button, $
 // reset/restore defaults
 
 Twinkle.config.resetPrefLink = function twinkleconfigResetPrefLink(e) {
-	var wantedpref = e.target.id.substring(21); // "twinkle-config-reset-" prefix is stripped
+	const wantedpref = e.target.id.slice(21); // "twinkle-config-reset-" prefix is stripped
 
 	// search tactics
 	$(Twinkle.config.sections).each(function(sectionkey, section) {
 		if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
-			return true;  // continue: skip impossibilities
+			return true; // continue: skip impossibilities
 		}
 
-		var foundit = false;
+		let foundit = false;
 
 		$(section.preferences).each(function(prefkey, pref) {
 			if (pref.name !== wantedpref) {
-				return true;  // continue
+				return true; // continue
 			}
 			Twinkle.config.resetPref(pref);
 			foundit = true;
-			return false;  // break
+			return false; // break
 		});
 
 		if (foundit) {
-			return false;  // break
+			return false; // break
 		}
 	});
-	return false;  // stop link from scrolling page
+	return false; // stop link from scrolling page
 };
 
 Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
@@ -1584,7 +1580,7 @@ Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 	// no confirmation message - the user can just refresh/close the page to abort
 	$(Twinkle.config.sections).each(function(sectionkey, section) {
 		if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
-			return true;  // continue: skip impossibilities
+			return true; // continue: skip impossibilities
 		}
 		$(section.preferences).each(function(prefkey, pref) {
 			if (!pref.adminOnly || Morebits.userIsSysop) {
@@ -1593,14 +1589,14 @@ Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 		});
 		return true;
 	});
-	return false;  // stop link from scrolling page
+	return false; // stop link from scrolling page
 };
 
 Twinkle.config.save = function twinkleconfigSave(e) {
 	Morebits.status.init(document.getElementById('twinkle-config-content'));
 
-	var userjs = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user] + ':' + mw.config.get('wgUserName') + '/twinkleoptions.js';
-	var wikipedia_page = new Morebits.wiki.page(userjs, 'Saving preferences to ' + userjs);
+	const userjs = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user] + ':' + mw.config.get('wgUserName') + '/twinkleoptions.js';
+	const wikipedia_page = new Morebits.wiki.page(userjs, 'Saving preferences to ' + userjs);
 	wikipedia_page.setCallbackParameters(e.target);
 	wikipedia_page.load(Twinkle.config.writePrefs);
 
@@ -1608,24 +1604,24 @@ Twinkle.config.save = function twinkleconfigSave(e) {
 };
 
 Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
-	var form = pageobj.getCallbackParameters();
+	const form = pageobj.getCallbackParameters();
 
 	// this is the object which gets serialized into JSON; only
 	// preferences that this script knows about are kept
-	var newConfig = {optionsVersion: 2.1};
+	const newConfig = {optionsVersion: 2.1};
 
 	// a comparison function is needed later on
 	// it is just enough for our purposes (i.e. comparing strings, numbers, booleans,
 	// arrays of strings, and arrays of { value, label })
 	// and it is not very robust: e.g. compare([2], ["2"]) === true, and
 	// compare({}, {}) === false, but it's good enough for our purposes here
-	var compare = function(a, b) {
+	const compare = function(a, b) {
 		if (Array.isArray(a)) {
 			if (a.length !== b.length) {
 				return false;
 			}
-			var asort = a.sort(), bsort = b.sort();
-			for (var i = 0; asort[i]; ++i) {
+			const asort = a.sort(), bsort = b.sort();
+			for (let i = 0; asort[i]; ++i) {
 				// comparison of the two properties of custom lists
 				if ((typeof asort[i] === 'object') && (asort[i].label !== bsort[i].label ||
 					asort[i].value !== bsort[i].value)) {
@@ -1642,27 +1638,27 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 
 	$(Twinkle.config.sections).each(function(sectionkey, section) {
 		if (section.adminOnly && !Morebits.userIsSysop) {
-			return;  // i.e. "continue" in this context
+			return; // i.e. "continue" in this context
 		}
 
 		// reach each of the preferences from the form
 		$(section.preferences).each(function(prefkey, pref) {
-			var userValue;  // = undefined
+			let userValue; // = undefined
 
 			// only read form values for those prefs that have them
 			if (!pref.adminOnly || Morebits.userIsSysop) {
 				if (!section.hidden) {
 					switch (pref.type) {
-						case 'boolean':  // read from the checkbox
+						case 'boolean': // read from the checkbox
 							userValue = form[pref.name].checked;
 							break;
 
-						case 'string':  // read from the input box or combo box
+						case 'string': // read from the input box or combo box
 						case 'enum':
 							userValue = form[pref.name].value;
 							break;
 
-						case 'integer':  // read from the input box
+						case 'integer': // read from the input box
 							userValue = parseInt(form[pref.name].value, 10);
 							if (isNaN(userValue)) {
 								Morebits.status.warn('Saving', 'The value you specified for ' + pref.name + ' (' + pref.value + ') was invalid.  The save will continue, but the invalid data value will be skipped.');
@@ -1670,7 +1666,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 							}
 							break;
 
-						case 'set':  // read from the set of check boxes
+						case 'set': // read from the set of check boxes
 							userValue = [];
 							if (pref.setDisplayOrder) {
 							// read only those keys specified in the display order
@@ -1689,7 +1685,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 							}
 							break;
 
-						case 'customList':  // read from the jQuery data stored on the button object
+						case 'customList': // read from the jQuery data stored on the button object
 							userValue = $(form[pref.name]).data('value');
 							break;
 
@@ -1711,7 +1707,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		});
 	});
 
-	var text =
+	let text =
 		'// twinkleoptions.js: personal Twinkle preferences file\n' +
 		'//\n' +
 		'// NOTE: The easiest way to change your Twinkle preferences is by using the\n' +
@@ -1741,19 +1737,18 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	pageobj.getStatusElement().info('successful');
 
-	var noticebox = document.createElement('div');
+	const noticebox = document.createElement('div');
 	noticebox.className = 'mw-message-box mw-message-box-success';
 	noticebox.style.fontSize = '100%';
 	noticebox.style.marginTop = '2em';
 	noticebox.innerHTML = '<p><b>Your Twinkle preferences have been saved.</b></p><p>To see the changes, you will need to <b>clear your browser cache entirely</b> (see <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> for instructions).</p>';
 	Morebits.status.root.appendChild(noticebox);
-	var noticeclear = document.createElement('br');
+	const noticeclear = document.createElement('br');
 	noticeclear.style.clear = 'both';
 	Morebits.status.root.appendChild(noticeclear);
 };
 
 Twinkle.addInitCallback(Twinkle.config.init);
-})(jQuery);
-
+}(jQuery));
 
 // </nowiki>
