@@ -467,6 +467,58 @@ Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
 	}
 };
 
+Twinkle.notifyOnChanges = function notifyOnChanges() {
+	let checkIfChanges = function (response) {
+		if (response.query.pages[0].missing) {
+			mw.notify('This page has just been deleted!', {
+				title: 'Twinkle',
+				autoHide: false,
+				type: 'error'
+			});
+			return true;
+		}
+		if (response.query.pages[0].revisions) {
+			mw.notify('Page has been edited in the meantime. Reload to see latest changes.', {
+				title: 'Twinkle',
+				autoHide: false,
+				type: 'warn'
+			});
+			return true;
+		}
+		return false;
+	};
+	let api = new mw.Api();
+	api.get({
+		action: 'query',
+		format: 'json',
+		prop: 'revisions',
+		revids: mw.config.get('wgRevisionId'),
+		formatversion: '2',
+		rvprop: 'ids|timestamp',
+		rvslots: 'main'
+	}).then(function (response) {
+		if (!checkIfChanges(response)) {
+			let timestamp = response.query.pages[0].revisions[0].timestamp;
+			let interval = setInterval(function () {
+				api.get({
+					action: 'query',
+					prop: 'revisions',
+					titles: Morebits.pageNameNorm,
+					formatversion: '2',
+					rvprop: 'ids',
+					rvslots: 'main',
+					rvstart: new Date(new Date(timestamp).getTime() + 1000).toISOString(),
+					rvdir: 'newer'
+				}).then(function (response) {
+					if (checkIfChanges(response)) {
+						clearInterval(interval);
+					}
+				});
+			}, 5000);
+		}
+	});
+};
+
 /** Twinkle-specific utility functions shared by multiple modules */
 // Used in batch, unlink, and deprod to sort pages by namespace, as
 // json formatversion=2 sorts by pageid instead (#1251)

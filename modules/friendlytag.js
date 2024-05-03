@@ -370,6 +370,8 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		// Redirects and files: Add a link to each template's description page
 		Morebits.quickForm.getElements(result, 'tags').forEach(generateLinks);
 	}
+
+	Twinkle.notifyOnChanges();
 };
 
 
