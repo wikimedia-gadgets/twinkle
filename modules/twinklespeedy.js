@@ -225,6 +225,8 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 
 	// Check for prior deletions.  Just once, upon init
 	Twinkle.speedy.callback.priorDeletionCount();
+
+	Twinkle.notifyOnChanges();
 };
 
 Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {

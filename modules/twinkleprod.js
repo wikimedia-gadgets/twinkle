@@ -109,6 +109,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	evt.initEvent('change', true, true);
 	result.prodtype[0].dispatchEvent(evt);
 
+	Twinkle.notifyOnChanges();
 };
 
 
