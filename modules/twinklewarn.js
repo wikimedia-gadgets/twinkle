@@ -1128,6 +1128,10 @@ Twinkle.warn.messages = {
 			label: 'Stale userspace draft',
 			summary: 'Notice: Stale userspace draft'
 		},
+		'uw-usertalk': {
+			label: 'Misuse of user talk page',
+			summary: 'Notice: Misuse of user talk page'
+		},
 		'uw-vgscope': {
 			label: 'Adding video game walkthroughs, cheats or instructions',
 			summary: 'Notice: Adding video game walkthroughs, cheats or instructions'
