@@ -45,7 +45,7 @@ Each Twinkle module and dependency lives on the wiki as a separate file. The lis
 - `modules/twinklebatchdelete.js` &rarr; [MediaWiki:Gadget-twinklebatchdelete.js][]
 - `modules/twinklebatchprotect.js` &rarr; [MediaWiki:Gadget-twinklebatchprotect.js][]
 - `modules/twinkleconfig.js` &rarr; [MediaWiki:Gadget-twinkleconfig.js][]
-- `modules/twinklefluff.js` &rarr; [MediaWiki:Gadget-twinklefluff.js][]
+- `modules/twinklerollback.js` &rarr; [MediaWiki:Gadget-twinklerollback.js][]
 - `modules/twinkleprotect.js` &rarr; [MediaWiki:Gadget-twinkleprotect.js][]
 - `modules/twinklearv.js` &rarr; [MediaWiki:Gadget-twinklearv.js][]
 - `modules/friendlytalkback.js` &rarr; [MediaWiki:Gadget-friendlytalkback.js][]
@@ -120,7 +120,7 @@ The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 [MediaWiki:Gadget-twinklebatchdelete.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklebatchdelete.js
 [MediaWiki:Gadget-twinklebatchprotect.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklebatchprotect.js
 [MediaWiki:Gadget-twinkleconfig.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleconfig.js
-[MediaWiki:Gadget-twinklefluff.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklefluff.js
+[MediaWiki:Gadget-twinklerollback.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklerollback.js
 [MediaWiki:Gadget-twinkleprotect.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleprotect.js
 [MediaWiki:Gadget-twinklearv.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklearv.js
 [MediaWiki:Gadget-friendlytalkback.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-friendlytalkback.js

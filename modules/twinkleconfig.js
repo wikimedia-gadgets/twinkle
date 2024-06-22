@@ -172,7 +172,7 @@ Twinkle.config.sections = [
 				label: 'Turn off the selected Twinkle modules',
 				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
 				type: 'set',
-				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', shared: 'Shared IP', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', fluff: 'Revert and rollback' }
+				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', shared: 'Shared IP', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', rollback: 'Revert and rollback' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
@@ -338,8 +338,8 @@ Twinkle.config.sections = [
 	},
 
 	{
-		title: 'Revert and rollback',  // twinklefluff module
-		module: 'fluff',
+		title: 'Revert and rollback',  // twinklerollback module
+		module: 'rollback',
 		preferences: [
 			// TwinkleConfig.autoMenuAfterRollback (bool)
 			// Option to automatically open the warning menu if the user talk page is opened post-reversion
@@ -952,7 +952,7 @@ Twinkle.config.sections = [
 				name: 'portletNext',
 				type: 'string'
 			},
-			// twinklefluff.js: defines how many revision to query maximum, maximum possible is 50, default is 50
+			// twinklerollback.js: defines how many revision to query maximum, maximum possible is 50, default is 50
 			{
 				name: 'revertMaxRevisions',
 				type: 'integer'
