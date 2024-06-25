@@ -94,7 +94,7 @@ for item in "${log[@]}"; do
 		# Remove likely repetitive file prefix
 		message="${message/$files: }"
 		# Rename some confusing modules
-		files="${files/fluff/revert and rollback}"
+		files="${files/rollback/revert and rollback}"
 		files="${files/config/prefs}"
 	fi
 
