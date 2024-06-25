@@ -723,9 +723,9 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
 			{ tag: 'Fanpov', description: "written from a fan's point of view" },
 			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
-			{ tag: 'Like resume', description: 'written like a resume' },
+			{ tag: 'Resume-like', description: 'written like a resume' },
 			{ tag: 'Manual', description: 'written like a manual or guidebook' },
-			{ tag: 'Cleanup-PR', description: 'reads like a press release or news article',
+			{ tag: 'Cleanup press release', description: 'reads like a press release or news article',
 				subgroup: {
 					type: 'hidden',
 					name: 'cleanupPR1',
@@ -832,8 +832,9 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Weasel', description: 'neutrality or verifiability is compromised by the use of weasel words' }
 		],
 		'Verifiability and sources': [
-			{ tag: 'BLP sources', description: 'BLP that needs additional sources for verification' },
-			{ tag: 'BLP unsourced', description: 'BLP that has no sources at all (use BLP PROD instead for new articles)' },
+			{ tag: 'BLP one source', description: 'BLP that relies largely or entirely on a single source' },
+			{ tag: 'BLP sources', description: 'BLP that needs additional references or sources for verification' },
+			{ tag: 'BLP unreferenced', description: 'BLP does not cite any sources at all (use BLP PROD instead for new articles)' },
 			{ tag: 'More citations needed', description: 'needs additional references or sources for verification' },
 			{ tag: 'No significant coverage', description: 'does not cite any sources containing significant coverage' },
 			{ tag: 'No significant coverage (sports)', descirption: 'sports biography that does not cite any sources containing significant coverage' },
