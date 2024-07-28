@@ -138,7 +138,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 		event: Twinkle.welcome.populateWelcomeList,
 		list: [
 			{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
-			{ type: 'option', value: 'anonymous', label: 'IP user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
+			{ type: 'option', value: 'unregistered', label: 'IP user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
 			{ type: 'option', value: 'wikiProject', label: 'WikiProject welcomes' },
 			{ type: 'option', value: 'nonEnglish', label: 'Non-English welcomes' }
 		]
@@ -183,7 +183,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 	var container = new Morebits.quickForm.element({ type: 'fragment' });
 
-	if ((type === 'standard' || type === 'anonymous') && Twinkle.getPref('customWelcomeList').length) {
+	if ((type === 'standard' || type === 'unregistered') && Twinkle.getPref('customWelcomeList').length) {
 		container.append({ type: 'header', label: 'Custom welcome templates' });
 		container.append({
 			type: 'radio',
@@ -341,37 +341,37 @@ Twinkle.welcome.templates = {
 		}
 	},
 
-	anonymous: {
-		'Anonymous user welcome templates': {
-			'welcome-anon': {
-				description: 'for anonymous users; encourages creating an account',
+	unregistered: {
+		'Unregistered user welcome templates': {
+			'welcome-unregistered': {
+				description: 'for unregistered users; encourages creating an account',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-anon|art=$ARTICLE$}} ~~~~'
+				syntax: '{{subst:welcome-unregistered|art=$ARTICLE$}} ~~~~'
 			},
 			'thanks': {
-				description: 'for anonymous users; short; encourages creating an account',
+				description: 'for unregistered users; short; encourages creating an account',
 				linkedArticle: true,
 				syntax: '== Welcome! ==\n{{subst:thanks|page=$ARTICLE$}} ~~~~'
 			},
-			'welcome-anon-test': {
-				description: 'for anonymous users who have performed test edits',
+			'welcome-unregistered-test': {
+				description: 'for unregistered users who have performed test edits',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-anon-test|$ARTICLE$|$USERNAME$}} ~~~~'
+				syntax: '{{subst:welcome-unregistered-test|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
-			'welcome-anon-unconstructive': {
-				description: 'for anonymous users who have vandalized or made unhelpful edits',
+			'welcome-unregistered-unconstructive': {
+				description: 'for unregistered users who have vandalized or made unhelpful edits',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-anon-unconstructive|$ARTICLE$|$USERNAME$}}'
+				syntax: '{{subst:welcome-unregistered-unconstructive|$ARTICLE$|$USERNAME$}}'
 			},
-			'welcome-anon-constructive': {
-				description: 'for anonymous users who fight vandalism or edit constructively',
+			'welcome-unregistered-constructive': {
+				description: 'for unregistered users who fight vandalism or edit constructively',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-anon-constructive|art=$ARTICLE$}}'
+				syntax: '{{subst:welcome-unregistered-constructive|art=$ARTICLE$}}'
 			},
-			'welcome-anon-delete': {
-				description: 'for anonymous users who have removed content from pages',
+			'welcome-unregistered-delete': {
+				description: 'for unregistered users who have removed content from pages',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-anon-delete|$ARTICLE$|$USERNAME$}} ~~~~'
+				syntax: '{{subst:welcome-unregistered-delete|$ARTICLE$|$USERNAME$}} ~~~~'
 			}
 		}
 	},
