@@ -218,7 +218,7 @@ Twinkle.config.sections = [
 			{
 				name: 'defaultToPartialBlocks',
 				label: 'Select partial blocks by default when opening the block menu',
-				helptip: 'If the user is already blocked, this will be overridden by in favor of defaulting to the current block type',
+				helptip: 'If the user is already blocked, this will be overridden in favor of defaulting to the current block type',
 				type: 'boolean'
 			},
 
