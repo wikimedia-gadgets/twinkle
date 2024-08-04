@@ -459,6 +459,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createDocumentFragment();
 			// fragments can't have any attributes, so just return it straight away
 			return [ node, node ];
+		// Sometimes Twinkle uses fancy searchable "select" elements. This is powered by the third party library "select2". Activate it by creating a Morebits "select" element, then call `$('select[name=sub_group]').select2({});` or similar towards the end of your main code.
 		case 'select':
 			node = document.createElement('div');
 
@@ -470,6 +471,8 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label.style.marginRight = '3px';
 			}
 			var select = node.appendChild(document.createElement('select'));
+			// opt out of dark mode for now
+			select.classList.add('notheme');
 			if (data.event) {
 				select.addEventListener('change', data.event, false);
 			}
@@ -672,6 +675,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
+			// opt out of dark mode for now
+			subnode.classList.add('notheme');
+
 			subnode.setAttribute('name', data.name);
 
 			if (data.type === 'input') {
@@ -861,6 +867,8 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label.appendChild(labelElement);
 			}
 			subnode = node.appendChild(document.createElement('textarea'));
+			// opt out of dark mode for now
+			subnode.classList.add('notheme');
 			subnode.setAttribute('name', data.name);
 			if (data.cols) {
 				subnode.setAttribute('cols', data.cols);
