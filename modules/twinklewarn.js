@@ -509,11 +509,11 @@ Twinkle.warn.messages = {
 					summary: 'General note: Adding commentary to an article'
 				},
 				level2: {
-					label: 'Subtle vandalism',
+					label: 'Adding commentary to an article',
 					summary: 'Caution: Adding commentary to an article'
 				},
 				level3: {
-					label: 'Subtle vandalism',
+					label: 'Adding commentary to an article',
 					summary: 'Warning: Adding commentary to an article'
 				}
 			},
