@@ -293,6 +293,20 @@ Twinkle.warn.messages = {
 			}
 		},
 		'Behavior in articles': {
+			'uw-ai': {
+				level1: {
+					label: 'Using a large language model',
+					summary: 'General note: Using a large language model'
+				},
+				level2: {
+					label: 'Using a large language model',
+					summary: 'Caution: Using a large language model'
+				},
+				level3: {
+					label: 'Using a large language model',
+					summary: 'Warning: Using a large language model'
+				}
+			},
 			'uw-biog': {
 				level1: {
 					label: 'Adding unreferenced controversial information about living persons',
