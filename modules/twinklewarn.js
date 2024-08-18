@@ -1008,6 +1008,10 @@ Twinkle.warn.messages = {
 			label: 'Adding inappropriate entries to lists',
 			summary: 'Notice: Adding inappropriate entries to lists'
 		},
+		'uw-bareurl': {
+			label: 'Adding a bare URL',
+			summary: 'Notice: Adding a bare URL'
+		},
 		'uw-bite': {
 			label: '"Biting" newcomers',
 			summary: 'Notice: "Biting" newcomers',
