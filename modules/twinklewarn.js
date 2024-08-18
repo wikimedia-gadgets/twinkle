@@ -875,6 +875,12 @@ Twinkle.warn.messages = {
 					summary: 'Only warning: Creating inappropriate pages'
 				}
 			},
+			'uw-fv': {
+				level1: {
+					label: 'Added statement had source, but it did not verify content',
+					summary: 'General note: Added statement had source, but it did not verify content'
+				}
+			},
 			'uw-mislead': {
 				level1: {
 					label: 'Using misleading edit summaries',
