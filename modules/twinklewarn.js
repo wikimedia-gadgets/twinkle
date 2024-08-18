@@ -847,6 +847,19 @@ Twinkle.warn.messages = {
 					summary: 'Only warning: Creating inappropriate pages'
 				}
 			},
+			'uw-mislead': {
+				level1: {
+					label: 'Using misleading edit summaries',
+					summary: 'General note: Using misleading edit summaries'
+				},
+				level2: {
+					label: 'Using misleading edit summaries',
+					summary: 'Caution: Using misleading edit summaries'
+				},
+				level3: {
+					label: 'Using misleading edit summaries',
+					summary: 'Warning: Using misleading edit summaries'
+			},
 			'uw-mos': {
 				level1: {
 					label: 'Manual of style',
