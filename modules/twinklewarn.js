@@ -935,6 +935,28 @@ Twinkle.warn.messages = {
 					summary: 'Only warning: Page moves against naming conventions or consensus'
 				}
 			},
+			'uw-redirect': {
+				level1: {
+					label: 'Creating inappropriate redirects',
+					summary: 'General note: Creating inappropriate redirects'
+				},
+				level2: {
+					label: 'Creating inappropriate redirects',
+					summary: 'Caution: Creating inappropriate redirects'
+				},
+				level3: {
+					label: 'Creating inappropriate redirects',
+					summary: 'Warning: Creating inappropriate redirects'
+				},
+				level4: {
+					label: 'Creating inappropriate redirects',
+					summary: 'Final warning: Creating inappropriate redirects'
+				},
+				level4im: {
+					label: 'Creating inappropriate redirects',
+					summary: 'Only warning: Creating inappropriate redirects'
+				}
+			},
 			'uw-tpv': {
 				level1: {
 					label: "Refactoring others' talk page comments",
