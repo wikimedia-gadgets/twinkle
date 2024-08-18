@@ -503,6 +503,20 @@ Twinkle.warn.messages = {
 					summary: 'Final warning: Subtle vandalism'
 				}
 			},
+			'uw-talkinarticle': {
+				level1: {
+					label: 'Adding commentary to an article',
+					summary: 'General note: Adding commentary to an article'
+				},
+				level2: {
+					label: 'Subtle vandalism',
+					summary: 'Caution: Adding commentary to an article'
+				},
+				level3: {
+					label: 'Subtle vandalism',
+					summary: 'Warning: Adding commentary to an article'
+				}
+			},
 			'uw-tdel': {
 				level1: {
 					label: 'Removal of maintenance templates',
