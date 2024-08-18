@@ -859,6 +859,7 @@ Twinkle.warn.messages = {
 				level3: {
 					label: 'Using misleading edit summaries',
 					summary: 'Warning: Using misleading edit summaries'
+				}
 			},
 			'uw-mos': {
 				level1: {
