@@ -5,18 +5,18 @@
 
 
 /*
- ****************************************
- *** twinklespeedy.js: CSD module
- ****************************************
- * Mode of invocation:     Tab ("CSD")
- * Active on:              Non-special, existing pages
- *
- * NOTE FOR DEVELOPERS:
- *   If adding a new criterion, add it to the appropriate places at the top of
- *   twinkleconfig.js.  Also check out the default values of the CSD preferences
- *   in twinkle.js, and add your new criterion to those if you think it would be
- *   good.
- */
+	 ****************************************
+	 *** twinklespeedy.js: CSD module
+	 ****************************************
+	 * Mode of invocation:     Tab ("CSD")
+	 * Active on:              Non-special, existing pages
+	 *
+	 * NOTE FOR DEVELOPERS:
+	 *   If adding a new criterion, add it to the appropriate places at the top of
+	 *   twinkleconfig.js.  Also check out the default values of the CSD preferences
+	 *   in twinkle.js, and add your new criterion to those if you think it would be
+	 *   good.
+	 */
 
 Twinkle.speedy = function twinklespeedy() {
 	// Disable on:
@@ -143,7 +143,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					value: 'warnusertalk',
 					name: 'warnusertalk',
 					tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
-						'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
+							'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
 					checked: !Twinkle.speedy.hasCSD,
 					event: function(event) {
 						event.stopPropagation();
@@ -173,7 +173,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				value: 'notify',
 				name: 'notify',
 				tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
-						'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
+							'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
 				checked: !Morebits.userIsSysop || !(Twinkle.speedy.hasCSD || Twinkle.getPref('deleteSysopDefaultToDelete')),
 				event: function(event) {
 					event.stopPropagation();
@@ -738,9 +738,9 @@ Twinkle.speedy.userList = [
 		tooltip: 'User pages of users that do not exist (Check Special:Listusers)'
 	},
 	{
-		label: 'U5: Blatant WP:NOTWEBHOST violations',
+		label: 'U5: WP:NOTWEBHOST violations by a non-contributor',
 		value: 'notwebhost',
-		tooltip: 'Pages in userspace consisting of writings, information, discussions, and/or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of userspace, with the exception of plausible drafts and pages adhering to WP:UPYES.',
+		tooltip: 'Pages in userspace consisting of writings, information, discussions, or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of user pages, except for plausible drafts and pages adhering to WP:UPYES. It applies regardless of the age of the page in question.',
 		hideWhenRedirect: true
 	},
 	{
@@ -1132,17 +1132,17 @@ Twinkle.speedy.callbacks = {
 			Morebits.status.warn('You (' + initialContrib + ') created this page; skipping user notification');
 			initialContrib = null;
 
-		// don't notify users when their user talk page is nominated/deleted
+			// don't notify users when their user talk page is nominated/deleted
 		} else if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
 			Morebits.status.warn('Notifying initial contributor: this user created their own user talk page; skipping notification');
 			initialContrib = null;
 
-		// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
+			// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
 		} else if ((initialContrib === 'Cyberbot I' || initialContrib === 'SoxBot') && params.normalizeds[0] === 'f2') {
 			Morebits.status.warn('Notifying initial contributor: page created procedurally by bot; skipping notification');
 			initialContrib = null;
 
-		// Check for already existing tags
+			// Check for already existing tags
 		} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
 			Morebits.status.info('Notifying initial contributor', 'canceled by user; skipping notification.');
 			initialContrib = null;
@@ -1260,8 +1260,8 @@ Twinkle.speedy.callbacks = {
 		deleteTalk: function(params) {
 			// delete talk page
 			if (params.deleteTalkPage &&
-					params.normalized !== 'f8' &&
-					!document.getElementById('ca-talk').classList.contains('new')) {
+						params.normalized !== 'f8' &&
+						!document.getElementById('ca-talk').classList.contains('new')) {
 				var talkpage = new Morebits.wiki.page(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceNumber') + 1] + ':' + mw.config.get('wgTitle'), 'Deleting talk page');
 				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page "' + Morebits.pageNameNorm + '"');
 				talkpage.setChangeTags(Twinkle.changeTags);
@@ -1502,7 +1502,7 @@ Twinkle.speedy.callbacks = {
 				var thispage = new Morebits.wiki.page(Morebits.pageNameNorm);
 				thispage.setCallbackParameters(params);
 				thispage.lookupCreation(Twinkle.speedy.callbacks.noteToCreator);
-			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
+				// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
 			} else if (params.lognomination) {
 				Twinkle.speedy.callbacks.user.addToLog(params, null);
 			}
@@ -1511,19 +1511,19 @@ Twinkle.speedy.callbacks = {
 		addToLog: function(params, initialContrib) {
 			var usl = new Morebits.userspaceLogger(Twinkle.getPref('speedyLogPageName'));
 			usl.initialText =
-				"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
-				'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
-				'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
-				(Morebits.userIsSysop ? '\n\nThis log does not track outright speedy deletions made using Twinkle.' : '');
+					"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
+					'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
+					'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
+					(Morebits.userIsSysop ? '\n\nThis log does not track outright speedy deletions made using Twinkle.' : '');
 
 			var formatParamLog = function(normalize, csdparam, input) {
 				if ((normalize === 'G4' && csdparam === 'xfd') ||
-					(normalize === 'G6' && csdparam === 'page') ||
-					(normalize === 'G6' && csdparam === 'fullvotepage') ||
-					(normalize === 'G6' && csdparam === 'sourcepage') ||
-					(normalize === 'A2' && csdparam === 'source') ||
-					(normalize === 'A10' && csdparam === 'article') ||
-					(normalize === 'F1' && csdparam === 'filename')) {
+						(normalize === 'G6' && csdparam === 'page') ||
+						(normalize === 'G6' && csdparam === 'fullvotepage') ||
+						(normalize === 'G6' && csdparam === 'sourcepage') ||
+						(normalize === 'A2' && csdparam === 'source') ||
+						(normalize === 'A10' && csdparam === 'article') ||
+						(normalize === 'F1' && csdparam === 'filename')) {
 					input = '[[:' + input + ']]';
 				} else if (normalize === 'G5' && csdparam === 'user') {
 					input = '[[:User:' + input + ']]';
@@ -1624,7 +1624,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.userreq_rationale']) {
 					var u1rationale = form['csd.userreq_rationale'].value;
 					if (mw.config.get('wgNamespaceNumber') === 3 && !(/\//).test(mw.config.get('wgTitle')) &&
-							(!u1rationale || !u1rationale.trim())) {
+								(!u1rationale || !u1rationale.trim())) {
 						alert('CSD U1:  Please specify a rationale when nominating user talk pages.');
 						parameters = null;
 						return false;
@@ -1871,9 +1871,9 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 };
 
 /**
- * @param {Event} e
- * @returns {Array}
- */
+	 * @param {Event} e
+	 * @returns {Array}
+	 */
 Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
 	var values = (e.target.form ? e.target.form : e.target).getChecked('csd');
 	if (values.length === 0) {
@@ -1887,7 +1887,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 	var form = e.target.form ? e.target.form : e.target;
 
 	if (e.target.type === 'checkbox' || e.target.type === 'text' ||
-			e.target.type === 'select') {
+				e.target.type === 'select') {
 		return;
 	}
 
@@ -1923,7 +1923,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 
 	var warnusertalk = form.warnusertalk.checked && normalizeds.some(function (norm, index) {
 		return Twinkle.getPref('warnUserOnSpeedyDelete').indexOf(norm) !== -1 &&
-			!(norm === 'g6' && values[index] !== 'copypaste');
+				!(norm === 'g6' && values[index] !== 'copypaste');
 	});
 
 	var welcomeuser = warnusertalk && normalizeds.some(function (norm) {
@@ -1952,7 +1952,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	var form = e.target.form ? e.target.form : e.target;
 
 	if (e.target.type === 'checkbox' || e.target.type === 'text' ||
-			e.target.type === 'select') {
+				e.target.type === 'select') {
 		return;
 	}
 
@@ -1978,7 +1978,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 
 	var notifyuser = form.notify.checked && normalizeds.some(function(norm, index) {
 		return Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1 &&
-			!(norm === 'g6' && values[index] !== 'copypaste');
+				!(norm === 'g6' && values[index] !== 'copypaste');
 	});
 	var welcomeuser = notifyuser && normalizeds.some(function(norm) {
 		return Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1;
