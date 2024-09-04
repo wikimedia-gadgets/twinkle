@@ -637,6 +637,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'input',
 				name: 'cfdstarget',
 				label: 'New name:',
+				size: 70,
 				value: '',
 				required: true
 			});
