@@ -720,12 +720,11 @@ Twinkle.tag.article.tagList = {
 		],
 		'Style of writing': [
 			{ tag: 'Advert', description: 'written like an advertisement' },
-			{ tag: 'Cleanup tense', description: 'does not follow guidelines on use of different tenses.' },
 			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
 			{ tag: 'Fanpov', description: "written from a fan's point of view" },
 			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
-			{ tag: 'Resume-like', description: 'written like a resume' },
 			{ tag: 'Manual', description: 'written like a manual or guidebook' },
+			{ tag: 'Over-quotation', description: 'too many or too-lengthy quotations for an encyclopedic entry' },
 			{ tag: 'Cleanup press release', description: 'reads like a press release or news article',
 				subgroup: {
 					type: 'hidden',
@@ -734,9 +733,10 @@ Twinkle.tag.article.tagList = {
 					value: 'article'
 				}
 			},
-			{ tag: 'Over-quotation', description: 'too many or too-lengthy quotations for an encyclopedic entry' },
 			{ tag: 'Prose', description: 'written in a list format but may read better as prose' },
+			{ tag: 'Resume-like', description: 'written like a resume' },
 			{ tag: 'Technical', description: 'too technical for most readers to understand' },
+			{ tag: 'Cleanup tense', description: 'does not follow guidelines on use of different tenses.' },
 			{ tag: 'Tone', description: 'tone or style may not reflect the encyclopedic tone used on Wikipedia' }
 		],
 		'Sense (or lack thereof)': [
@@ -809,7 +809,6 @@ Twinkle.tag.article.tagList = {
 			} : [] },
 			{ tag: 'Disputed', description: 'questionable factual accuracy' },
 			{ tag: 'Fringe theories', description: 'presents fringe theories as mainstream views' },
-			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
 			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject',
 				subgroup: [
 					{
@@ -825,6 +824,7 @@ Twinkle.tag.article.tagList = {
 					}
 				]
 			},
+			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
 			{ tag: 'Paid contributions', description: 'contains paid contributions, and may therefore require cleanup' },
 			{ tag: 'Peacock', description: 'contains wording that promotes the subject in a subjective manner without adding information' },
 			{ tag: 'POV', description: 'does not maintain a neutral point of view' },
