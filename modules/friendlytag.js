@@ -808,6 +808,7 @@ Twinkle.tag.article.tagList = {
 				tooltip: 'Optional, but strongly recommended. Leave blank if not wanted.'
 			} : [] },
 			{ tag: 'Disputed', description: 'questionable factual accuracy' },
+			{ tag: 'Fringe theories', description: 'presents fringe theories as mainstream views' },
 			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
 			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject',
 				subgroup: [
