@@ -380,7 +380,7 @@ Twinkle.welcome.templates = {
 			'welcome-unregistered-unsourced': {
 				description: 'for anonymous users who have added unsourced content',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-unregistered-unsourced|$ARTICLE$|$USERNAME$}} ~~~~'
+				syntax: '{{subst:welcome-unregistered-unsourced|$ARTICLE$|$USERNAME$}}'
 			}
 		}
 	},
