@@ -1130,7 +1130,8 @@ Twinkle.warn.messages = {
 		},
 		'uw-usertalk': {
 			label: 'Misuse of user talk page',
-			summary: 'Notice: Misuse of user talk page'
+			summary: 'Notice: Misuse of user talk page',
+			hideLinkedPage: true
 		},
 		'uw-vgscope': {
 			label: 'Adding video game walkthroughs, cheats or instructions',
