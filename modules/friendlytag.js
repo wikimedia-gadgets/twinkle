@@ -1548,7 +1548,7 @@ Twinkle.tag.callbacks = {
 				});
 				pages.forEach(function(page) {
 					var removed = false;
-					page.linkshere.forEach(function(el) {
+					page.linkshere.concat({title: page.title}).forEach(function(el) {
 						var tag = el.title.slice(9);
 						var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
 						if (tag_re.test(pageText)) {
