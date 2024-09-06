@@ -377,7 +377,7 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcome-unregistered-delete|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
-			'welcome-anon-unsourced': {
+			'welcome-unregistered-unsourced': {
 				description: 'for anonymous users who have added unsourced content',
 				linkedArticle: true,
 				syntax: '{{subst:welcome-anon-unsourced|$ARTICLE$|$USERNAME$}} ~~~~'
