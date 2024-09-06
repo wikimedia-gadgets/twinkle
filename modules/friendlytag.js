@@ -1167,6 +1167,16 @@ Twinkle.tag.fileList = {
 	'Wikimedia Commons-related tags': [
 		{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
 		{
+			label: '{{Deleted on Commons}}: file has previously been deleted from Commons',
+			value: 'Deleted on Commons',
+			subgroup: {
+				type: 'input',
+				name: 'deletedOnCommonsName',
+				label: 'Name on Commons:',
+				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix'
+			}
+		},
+		{
 			label: '{{Do not move to Commons}}: file not suitable for moving to Commons',
 			value: 'Do not move to Commons',
 			subgroup: [
@@ -1193,6 +1203,16 @@ Twinkle.tag.fileList = {
 				type: 'input',
 				name: 'keeplocalName',
 				label: 'Commons image name if different:',
+				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+			}
+		},
+		{
+			label: '{{Nominated for deletion on Commons}}: file is nominated for deletion on Commons',
+			value: 'Nominated for deletion on Commons',
+			subgroup: {
+				type: 'input',
+				name: 'nominatedOnCommonsName',
+				label: 'Name on Commons:',
 				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 			}
 		},
@@ -1958,6 +1978,16 @@ Twinkle.tag.callbacks = {
 						break;
 					case 'Should be SVG':
 						currentTag += '|' + params.svgCategory;
+						break;
+					case 'Nominated for deletion on Commons':
+						if (params.nominatedOnCommonsName !== '') {
+							currentTag += '|1=' + params.nominatedOnCommonsName;
+						}
+						break;
+					case 'Deleted on Commons':
+						if (params.deletedOnCommonsName !== '') {
+							currentTag += '|1=' + params.deletedOnCommonsName;
+						}
 						break;
 					default:
 						break;  // don't care
