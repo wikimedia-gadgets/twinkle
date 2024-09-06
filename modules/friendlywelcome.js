@@ -376,6 +376,11 @@ Twinkle.welcome.templates = {
 				description: 'for unregistered users who have removed content from pages',
 				linkedArticle: true,
 				syntax: '{{subst:welcome-unregistered-delete|$ARTICLE$|$USERNAME$}} ~~~~'
+			},
+			'welcome-unregistered-unsourced': {
+				description: 'for anonymous users who have added unsourced content',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-unregistered-unsourced|$ARTICLE$|$USERNAME$}}'
 			}
 		}
 	},
@@ -537,6 +542,18 @@ Twinkle.welcome.templates = {
 			'welcomeen-he': {
 				description: 'welcome for users whose first language appears to be Hebrew',
 				syntax: '{{subst:welcomeen-he}}'
+			},
+			'welcomeen-hi': {
+				description: 'welcome for users whose first language appears to be Hindi',
+				syntax: '{{subst:welcomeen-hi}}'
+			},
+			'welcomeen-id': {
+				description: 'welcome for users whose first language appears to be Indonesian',
+				syntax: '{{subst:welcomeen-id}}'
+			},
+			'welcomeen-it': {
+				description: 'welcome for users whose first language appears to be Italian',
+				syntax: '{{subst:welcomeen-it}}'
 			},
 			'welcomeen-ja': {
 				description: 'welcome for users whose first language appears to be Japanese',
