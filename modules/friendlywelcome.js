@@ -543,6 +543,18 @@ Twinkle.welcome.templates = {
 				description: 'welcome for users whose first language appears to be Hebrew',
 				syntax: '{{subst:welcomeen-he}}'
 			},
+			'welcomeen-hi': {
+				description: 'welcome for users whose first language appears to be Hindi',
+				syntax: '{{subst:welcomeen-hi}}'
+			},
+			'welcomeen-id': {
+				description: 'welcome for users whose first language appears to be Indonesian',
+				syntax: '{{subst:welcomeen-id}}'
+			},
+			'welcomeen-it': {
+				description: 'welcome for users whose first language appears to be Italian',
+				syntax: '{{subst:welcomeen-it}}'
+			},
 			'welcomeen-ja': {
 				description: 'welcome for users whose first language appears to be Japanese',
 				syntax: '{{subst:welcomeen-ja}}'
@@ -586,18 +598,6 @@ Twinkle.welcome.templates = {
 			'welcomeen-uk': {
 				description: 'welcome for users whose first language appears to be Ukrainian',
 				syntax: '{{subst:welcomeen-uk}}'
-			},
-			'welcomeen-it': {
-				description: 'welcome for users whose first language appears to be Italian',
-				syntax: '{{subst:welcomeen-it}}'
-			},
-			'welcomeen-hi': {
-				description: 'welcome for users whose first language appears to be Hindi',
-				syntax: '{{subst:welcomeen-hi}}'
-			},
-			'welcomeen-id': {
-				description: 'welcome for users whose first language appears to be Indonesian',
-				syntax: '{{subst:welcomeen-id}}'
 			}
 		}
 	}
