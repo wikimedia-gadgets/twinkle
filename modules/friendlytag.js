@@ -315,7 +315,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 				// break out on encountering the first heading, which means we are no
 				// longer in the lead section
-				if (e.tagName === 'H2') {
+				if (e.classList.contains('mw-heading')) {
 					return false;
 				}
 
