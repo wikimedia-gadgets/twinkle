@@ -931,27 +931,6 @@ Twinkle.config.sections = [
 		title: 'Hidden',
 		hidden: true,
 		preferences: [
-			// twinkle.js: portlet setup
-			{
-				name: 'portletArea',
-				type: 'string'
-			},
-			{
-				name: 'portletId',
-				type: 'string'
-			},
-			{
-				name: 'portletName',
-				type: 'string'
-			},
-			{
-				name: 'portletType',
-				type: 'string'
-			},
-			{
-				name: 'portletNext',
-				type: 'string'
-			},
 			// twinklefluff.js: defines how many revision to query maximum, maximum possible is 50, default is 50
 			{
 				name: 'revertMaxRevisions',
