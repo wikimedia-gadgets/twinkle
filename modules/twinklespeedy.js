@@ -700,21 +700,15 @@ Twinkle.speedy.categoryList = [
 		tooltip: 'Categories that have been unpopulated for at least seven days. This does not apply to categories being discussed at WP:CFD, disambiguation categories, and certain other exceptions. If the category isn\'t relatively new, it possibly contained articles earlier, and deeper investigation is needed'
 	},
 	{
-		label: 'G8: Categories populated by a deleted or retargeted template',
-		value: 'templatecat',
-		tooltip: 'This is for situations where a category is effectively empty, because the template(s) that formerly placed pages in that category are now deleted. This excludes categories that are still in use.',
+		label: 'C4: Permanently unused maintenance categories',
+		value: 'c4',
+		tooltip: 'Unused maintenance categories, such as empty dated maintenance categories for dates in the past, tracking categories no longer used by a template after a rewrite, or empty subcategories of Category:Wikipedia sockpuppets or Category:Suspected Wikipedia sockpuppets. Empty maintenance categories are not necessarily unused—this criterion is for categories which will always be empty, not just currently empty.',
 		subgroup: {
-			name: 'templatecat_rationale',
+			name: 'c4_rationale',
 			type: 'input',
 			label: 'Optional explanation:',
 			size: 60
 		}
-	},
-	{
-		label: 'G8: Redirects to non-existent targets',
-		value: 'redirnone',
-		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
-		hideWhenMultiple: true
 	}
 ];
 
@@ -1019,7 +1013,6 @@ Twinkle.speedy.normalizeHash = {
 	'talk': 'g8',
 	'subpage': 'g8',
 	'redirnone': 'g8',
-	'templatecat': 'g8',
 	'imagepage': 'g8',
 	'attack': 'g10',
 	'negublp': 'g10',
@@ -1058,6 +1051,7 @@ Twinkle.speedy.normalizeHash = {
 	'imgcopyvio': 'f9',
 	'nopermission': 'f11',
 	'catempty': 'c1',
+	'c4': 'c4',
 	'userreq': 'u1',
 	'nouser': 'u2',
 	'notwebhost': 'u5'
@@ -1718,12 +1712,6 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'templatecat':  // G8
-				if (form['csd.templatecat_rationale'] && form['csd.templatecat_rationale'].value) {
-					currentParams.rationale = form['csd.templatecat_rationale'].value;
-				}
-				break;
-
 			case 'attack':  // G10
 				currentParams.blanked = 'yes';
 				// it is actually blanked elsewhere in code, but setting the flag here
@@ -1811,6 +1799,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						return false;
 					}
 					currentParams.article = duptitle;
+				}
+				break;
+
+			case 'c4':  // C4
+				if (form['csd.c4_rationale'] && form['csd.c4_rationale'].value) {
+					currentParams.rationale = form['csd.c4_rationale'].value;
 				}
 				break;
 
