@@ -637,6 +637,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'input',
 				name: 'cfdstarget',
 				label: 'New name:',
+				size: 70,
 				value: '',
 				required: true
 			});
@@ -805,6 +806,10 @@ Twinkle.xfd.callbacks = {
 		}
 
 		text += '}}';
+
+		if (venue === 'rfd' || venue === 'tfd' || venue === 'cfd') {
+			text += '\n';
+		}
 
 		// Don't delsort if delsortCats is undefined (TFD, FFD, etc.)
 		// Don't delsort if delsortCats is an empty array (AFD where user chose no categories)
@@ -2205,7 +2210,6 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			wikipedia_page.setCallbackParameters(params);
 
 			if (params.rmtr) {
-				wikipedia_page.setPageSection(2);
 				wikipedia_page.load(Twinkle.xfd.callbacks.rm.listAtRMTR);
 			} else {
 				// listAtTalk uses .append(), so no need to load the page

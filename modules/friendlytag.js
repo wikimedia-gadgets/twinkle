@@ -723,9 +723,9 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
 			{ tag: 'Fanpov', description: "written from a fan's point of view" },
 			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
-			{ tag: 'Like resume', description: 'written like a resume' },
+			{ tag: 'Resume-like', description: 'written like a resume' },
 			{ tag: 'Manual', description: 'written like a manual or guidebook' },
-			{ tag: 'Cleanup-PR', description: 'reads like a press release or news article',
+			{ tag: 'Cleanup press release', description: 'reads like a press release or news article',
 				subgroup: {
 					type: 'hidden',
 					name: 'cleanupPR1',
@@ -832,9 +832,12 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Weasel', description: 'neutrality or verifiability is compromised by the use of weasel words' }
 		],
 		'Verifiability and sources': [
-			{ tag: 'BLP sources', description: 'BLP that needs additional sources for verification' },
-			{ tag: 'BLP unsourced', description: 'BLP that has no sources at all (use BLP PROD instead for new articles)' },
+			{ tag: 'BLP one source', description: 'BLP that relies largely or entirely on a single source' },
+			{ tag: 'BLP sources', description: 'BLP that needs additional references or sources for verification' },
+			{ tag: 'BLP unreferenced', description: 'BLP does not cite any sources at all (use BLP PROD instead for new articles)' },
 			{ tag: 'More citations needed', description: 'needs additional references or sources for verification' },
+			{ tag: 'No significant coverage', description: 'does not cite any sources containing significant coverage' },
+			{ tag: 'No significant coverage (sports)', description: 'sports biography that does not cite any sources containing significant coverage' },
 			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
 			{ tag: 'Original research', description: 'contains original research' },
 			{ tag: 'Primary sources', description: 'relies too much on references to primary sources, and needs secondary sources' },
@@ -1461,13 +1464,15 @@ Twinkle.tag.callbacks = {
 
 						var text, summary;
 						if (params.tags.indexOf('Rough translation') !== -1) {
-							templateText = '{{subst:duflu|pg=' + Morebits.pageNameNorm + '|Language=' +
+							templateText = '{{subst:Dual fluency request|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
+							// Place in section == Translated pages that could still use some cleanup ==
 							text = old_text + '\n\n' + templateText;
 							summary = 'Translation cleanup requested on ';
-						} else {
-							templateText = '{{subst:needtrans|pg=' + Morebits.pageNameNorm + '|Language=' +
+						} else if (params.tags.indexOf('Not English') !== -1) {
+							templateText = '{{subst:Translation request|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
+							// Place in section == Pages for consideration ==
 							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
 								'\n\n' + templateText + '\n\n$1');
 							summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';
@@ -1563,7 +1568,7 @@ Twinkle.tag.callbacks = {
 				});
 				pages.forEach(function(page) {
 					var removed = false;
-					page.linkshere.forEach(function(el) {
+					page.linkshere.concat({title: page.title}).forEach(function(el) {
 						var tag = el.title.slice(9);
 						var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
 						if (tag_re.test(pageText)) {

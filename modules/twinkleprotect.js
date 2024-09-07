@@ -686,12 +686,15 @@ Twinkle.protect.protectionLengths = [
 	{ label: '2 days', value: '2 days' },
 	{ label: '3 days', value: '3 days' },
 	{ label: '4 days', value: '4 days' },
+	{ label: '10 days', value: '10 days' },
 	{ label: '1 week', value: '1 week' },
 	{ label: '2 weeks', value: '2 weeks' },
 	{ label: '1 month', value: '1 month' },
 	{ label: '2 months', value: '2 months' },
 	{ label: '3 months', value: '3 months' },
+	{ label: '6 months', value: '6 months' },
 	{ label: '1 year', value: '1 year' },
+	{ label: '2 years', value: '2 years' },
 	{ label: 'indefinite', value: 'infinity' },
 	{ label: 'Custom...', value: 'custom' }
 ];

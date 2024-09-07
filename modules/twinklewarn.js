@@ -208,8 +208,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 //   label (required): A short description displayed in the dialog
 //   summary (required): The edit summary used. If an article name is entered, the summary is postfixed with "on [[article]]", and it is always postfixed with "."
 //   suppressArticleInSummary (optional): Set to true to suppress showing the article name in the edit summary. Useful if the warning relates to attack pages, or some such.
-//   hideLinkedPage (optional): Set to true to hide the "Linked article" text box. Some warning templates do not have a linked article parameter.
-//   hideReason (optional): Set to true to hide the "Reason" text box. Some warning templates do not have a reason parameter.
+//   hideLinkedPage (optional): Set to true to hide the "Linked page" text box. Some warning templates do not have a linked article parameter.
+//   hideReason (optional): Set to true to hide the "Optional message" text box. Some warning templates do not have a reason parameter.
 Twinkle.warn.messages = {
 	levels: {
 		'Common warnings': {
@@ -945,7 +945,8 @@ Twinkle.warn.messages = {
 		},
 		'uw-articletodraft': {
 			label: 'Article moved to draftspace',
-			summary: 'Notice: Article moved to draftspace'
+			summary: 'Notice: Article moved to draftspace',
+			hideReason: true
 		},
 		'uw-autobiography': {
 			label: 'Creating autobiographies',
@@ -966,7 +967,8 @@ Twinkle.warn.messages = {
 		},
 		'uw-blar': {
 			label: 'Article blanked and redirected',
-			summary: 'Notice: Article blanked and redirected'
+			summary: 'Notice: Article blanked and redirected',
+			hideReason: true
 		},
 		'uw-coi': {
 			label: 'Conflict of interest',
@@ -1048,6 +1050,10 @@ Twinkle.warn.messages = {
 			label: 'Excessive addition of redlinks or repeated blue links',
 			summary: 'Notice: Excessive addition of redlinks or repeated blue links'
 		},
+		'uw-lonsd': {
+			label: 'Insertion of long short description',
+			summary: 'Notice: Insertion of long short description'
+		},
 		'uw-minor': {
 			label: 'Incorrect use of minor edits check box',
 			summary: 'Notice: Incorrect use of minor edits check box'
@@ -1121,6 +1127,11 @@ Twinkle.warn.messages = {
 		'uw-userspace draft finish': {
 			label: 'Stale userspace draft',
 			summary: 'Notice: Stale userspace draft'
+		},
+		'uw-usertalk': {
+			label: 'Misuse of user talk page',
+			summary: 'Notice: Misuse of user talk page',
+			hideLinkedPage: true
 		},
 		'uw-vgscope': {
 			label: 'Adding video game walkthroughs, cheats or instructions',
@@ -1476,7 +1487,14 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 			})
 			.change(Twinkle.warn.callback.change_subcategory);
 
-		$('.select2-selection').keydown(Morebits.select2.autoStart).focus();
+		$('.select2-selection')
+			.keydown(Morebits.select2.autoStart)
+			.focus()
+			.on('click', function () {
+				// This container doesn't exist until .select2-selection is clicked by the user.
+				// Opt out of dark mode for now.
+				$('.select2-container').addClass('notheme');
+			});
 
 		mw.util.addCSS(
 			// Increase height
@@ -1507,7 +1525,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	}
 
 	// If template shouldn't have an optional message, hide the optional message label and text box
-	var hideReason = Twinkle.warn.getTemplateProperty(Twinkle.warn.messages, selected_template, 'hideLinkedPage');
+	var hideReason = Twinkle.warn.getTemplateProperty(Twinkle.warn.messages, selected_template, 'hideReason');
 	if (hideReason) {
 		e.target.form.reason.value = '';
 		Morebits.quickForm.setElementVisibility(e.target.form.reason.parentElement, false);

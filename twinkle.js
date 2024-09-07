@@ -263,121 +263,27 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		return null;
 	}
 
-	var nextnode;
-	if (nextnodeid) {
-		nextnode = document.getElementById(nextnodeid);
+	if (type === 'menu') {
+		// In order to get mw.util.addPortlet to generate a dropdown menu in vector and vector-2022, the nextnodeid must be p-cactions. Any other nextnodeid will generate a non-dropdown portlet instead.
+		nextnodeid = 'p-cactions';
 	}
 
-	// verify/normalize input
-	var skin = mw.config.get('skin');
-	if ((skin !== 'vector' && skin !== 'vector-2022') || (navigation !== 'left-navigation' && navigation !== 'right-navigation')) {
-		type = null; // menu supported only in vector's #left-navigation & #right-navigation
-	}
-	var outerNavClass, innerDivClass;
-	switch (skin) {
-		case 'vector':
-		case 'vector-2022':
-			// XXX: portal doesn't work
-			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
-				navigation = 'mw-panel';
-			}
+	var portlet = mw.util.addPortlet(id, text, '#' + nextnodeid);
 
-			outerNavClass = 'mw-portlet vector-menu';
-			if (navigation === 'mw-panel') {
-				outerNavClass += ' vector-menu-portal';
-			} else if (type === 'menu') {
-				outerNavClass += ' vector-menu-dropdown vector-dropdown vector-menu-dropdown-noicon';
-			} else {
-				outerNavClass += ' vector-menu-tabs';
-			}
+	// The Twinkle dropdown menu has been added to the left of p-cactions, since that is the only spot that will create a dropdown menu. But we want it on the right. Move it to the right.
+	if (mw.config.get('skin') === 'vector') {
+		$('#p-twinkle').insertAfter('#p-cactions');
+	} else if (mw.config.get('skin') === 'vector-2022') {
+		var $landmark = $('#right-navigation > .vector-page-tools-landmark');
+		$('#p-twinkle-dropdown').insertAfter($landmark);
 
-			innerDivClass = 'vector-menu-content vector-dropdown-content';
-			break;
-		case 'modern':
-			if (navigation !== 'mw_portlets' && navigation !== 'mw_contentwrapper') {
-				navigation = 'mw_portlets';
-			}
-			outerNavClass = 'portlet';
-			break;
-		case 'timeless':
-			outerNavClass = 'mw-portlet';
-			innerDivClass = 'mw-portlet-body';
-			break;
-		default:
-			navigation = 'column-one';
-			outerNavClass = 'portlet';
-			break;
-	}
-
-	// Build the DOM elements.
-	var outerNav, heading;
-	if (skin === 'vector-2022') {
-		outerNav = document.createElement('div');
-		heading = document.createElement('label');
-	} else {
-		outerNav = document.createElement('nav');
-		heading = document.createElement('h3');
-	}
-
-	outerNav.setAttribute('aria-labelledby', id + '-label');
-	outerNav.className = outerNavClass + ' emptyPortlet';
-	outerNav.id = id;
-	if (nextnode && nextnode.parentNode === root) {
-		root.insertBefore(outerNav, nextnode);
-	} else {
-		root.appendChild(outerNav);
-	}
-
-	heading.id = id + '-label';
-	var ul = document.createElement('ul');
-
-	if (skin === 'vector' || skin === 'vector-2022') {
-		heading.setAttribute('for', id + '-dropdown-checkbox');
-		ul.className = 'vector-menu-content-list';
-		heading.className = 'vector-menu-heading vector-dropdown-label';
-
-		// add invisible checkbox to keep menu open when clicked
-		// similar to the p-cactions ("More") menu
-		if (outerNavClass.indexOf('vector-menu-dropdown') !== -1) {
-			var chkbox = document.createElement('input');
-			chkbox.id = id + '-dropdown-checkbox';
-			chkbox.className = 'vector-menu-checkbox vector-dropdown-checkbox';
-			chkbox.setAttribute('type', 'checkbox');
-			chkbox.setAttribute('aria-labelledby', id + '-label');
-			outerNav.appendChild(chkbox);
-
-			// Vector gets its title in a span; all others except
-			// timeless have no title, and it has no span
-			var span = document.createElement('span');
-			span.appendChild(document.createTextNode(text));
-			heading.appendChild(span);
-
-			var a = document.createElement('a');
-			a.href = '#';
-
-			$(a).click(function(e) {
-				e.preventDefault();
-			});
-
-			heading.appendChild(a);
+		// .vector-page-tools-landmark is unstable and could change. If so, log it to console, to hopefully get someone's attention.
+		if (!$landmark) {
+			mw.log.warn('Unexpected change in DOM');
 		}
-	} else {
-		// Basically just Timeless
-		heading.appendChild(document.createTextNode(text));
 	}
 
-	outerNav.appendChild(heading);
-
-	if (innerDivClass) {
-		var innerDiv = document.createElement('div');
-		innerDiv.className = innerDivClass;
-		innerDiv.appendChild(ul);
-		outerNav.appendChild(innerDiv);
-	} else {
-		outerNav.appendChild(ul);
-	}
-
-	return outerNav;
+	return portlet;
 };
 
 /**

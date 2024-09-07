@@ -138,8 +138,9 @@ The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 
 If you are an interface admin on English Wikipedia and you want to deploy Twinkle's master branch, and you aren't interested in sync.pl's fancy options, here's a simple work instruction. Don't forget to change the username and password.
 
-```
 Microsoft Windows:
+```
+First time:
 - download and install strawberry perl. https://strawberryperl.com/
 - open powershell
 - `cd` to your twinkle/scripts directory
@@ -156,10 +157,12 @@ family   = wikipedia
 url      =
 base     = MediaWiki:Gadget-
 
-- (local files are used for the deploy I think, so get everything up to date in the next 3 steps)
+Every time:
+- `cd` to your twinkle directory
 - `git checkout master`
-- go to GitHub and sync your Twinkle fork
+- In your browser, go to GitHub, go to your Twinkle fork, and check if it says it is out of date. If so, click "Sync fork"
 - `git pull`
+- `cd scripts`
 - `perl sync.pl --mode=deploy --all`
 - it'll ask yes/no. type y
 - if it prompts you for any edit summaries, just hit enter to skip
@@ -168,11 +171,12 @@ base     = MediaWiki:Gadget-
 
 ### Dependencies
 
-All the dependencies that Twinkle uses are JavaScript **dev** dependencies. They are not used at all on-wiki and are just used during development. Here's what they are and what they do. This may help with evaluating dependabot patches (dependabot is a GitHub bot that helps keep libraries up to date by submitting pull requests).
+All the dependencies that Twinkle uses are JavaScript **dev** dependencies. They are not used at all on-wiki and are just used during development. Here's what they are and what they do.
 
 - eslint - Used by continuous integration for enforcing code linting rules.
 - jest - Used by continuous integration for unit testing.
 - jest-environment-jsdom - Needed for Jest to work.
 - mock-mediawiki - Used by continuous integration for unit testing.
 - mwn - Used when you run `npm start`. `npm start` is what enables localhost testing.
-- Everything else - Dependabot will not usually try to update these unless one of the 5 above dependencies gets out of date. It is probably best to update the above dependencies instead.
+
+When updating dependencies, CI should take care of testing most of that. Manually testing `npm start` should be the only additional check needed.
