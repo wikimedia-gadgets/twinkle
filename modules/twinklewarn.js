@@ -1242,6 +1242,10 @@ Twinkle.warn.messages = {
 			label: 'Canvassing',
 			summary: 'Warning: Canvassing'
 		},
+		'uw-circular': {
+			label: 'Using circular sources',
+			summary: 'Notice: Using circular sources'
+		},
 		'uw-copyright': {
 			label: 'Copyright violation',
 			summary: 'Warning: Copyright violation'
