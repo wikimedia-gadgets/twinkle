@@ -283,7 +283,7 @@ body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
 	display: inline-block;
 }
 
-/* For styling message/warning boxes. Cannot use MediaWiki ombox class because it will be deprecated soon. */
+/* For styling message/warning boxes. These are identical to the versions that used to be in MediaWiki but that were removed. */
 table.morebits-ombox {
     margin: 4px 10%;
     border-collapse: collapse;
@@ -303,4 +303,19 @@ th.morebits-mbox-text, td.morebits-mbox-text {
     border: none;
     padding: 0.25em 0.9em;
     width: 100%;
+}
+.morebits-message-box {
+    background-color: var(--background-color-notice-subtle, #eaecf0);
+    color: var(--color-emphasized, #000);
+    box-sizing: border-box;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color-notice, #54595d);
+    padding: 12px 24px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    overflow: hidden;
+}
+.morebits-message-box-success {
+    background-color: var(--background-color-success-subtle, #d5fdf4);
+    border-color: var(--border-color-success, #096450);
 }
