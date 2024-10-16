@@ -348,7 +348,7 @@ th.morebits-mbox-text, td.morebits-mbox-text {
 }
 
 /* Override select2 silliness */
-.select2-selection {
+.select2, .select2-container, .select2-selection, .select2-results {
     background: var(--background-color-base, #fff) !important;
-    color: inherit !importants;
+    color: inherit !important;
 }
