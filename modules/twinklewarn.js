@@ -1050,7 +1050,7 @@ Twinkle.warn.messages = {
 			label: 'Excessive addition of redlinks or repeated blue links',
 			summary: 'Notice: Excessive addition of redlinks or repeated blue links'
 		},
-		'uw-lonsd': {
+		'uw-longsd': {
 			label: 'Insertion of long short description',
 			summary: 'Notice: Insertion of long short description'
 		},
