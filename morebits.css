@@ -346,3 +346,9 @@ th.morebits-mbox-text, td.morebits-mbox-text {
     padding: 0.25em 0.9em;
     width: 100%;
 }
+
+/* Override select2 silliness */
+.select2-selection {
+    background: var(--background-color-base, #fff) !important;
+    color: inherit !importants;
+}
