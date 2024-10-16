@@ -1050,7 +1050,7 @@ Twinkle.warn.messages = {
 			label: 'Excessive addition of redlinks or repeated blue links',
 			summary: 'Notice: Excessive addition of redlinks or repeated blue links'
 		},
-		'uw-lonsd': {
+		'uw-longsd': {
 			label: 'Insertion of long short description',
 			summary: 'Notice: Insertion of long short description'
 		},
@@ -1127,6 +1127,11 @@ Twinkle.warn.messages = {
 		'uw-userspace draft finish': {
 			label: 'Stale userspace draft',
 			summary: 'Notice: Stale userspace draft'
+		},
+		'uw-usertalk': {
+			label: 'Misuse of user talk page',
+			summary: 'Notice: Misuse of user talk page',
+			hideLinkedPage: true
 		},
 		'uw-vgscope': {
 			label: 'Adding video game walkthroughs, cheats or instructions',

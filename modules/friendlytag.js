@@ -13,8 +13,8 @@
  */
 
 Twinkle.tag = function friendlytag() {
-	// redirect tagging
-	if (Morebits.isPageRedirect()) {
+	// redirect tagging (exclude category redirects, which are all soft redirects and so shouldn't be tagged with rcats)
+	if (Morebits.isPageRedirect() && mw.config.get('wgNamespaceNumber') !== 14) {
 		Twinkle.tag.mode = 'redirect';
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Tag redirect');
 	// file tagging
@@ -315,7 +315,7 @@ Twinkle.tag.callback = function friendlytagCallback() {
 
 				// break out on encountering the first heading, which means we are no
 				// longer in the lead section
-				if (e.tagName === 'H2') {
+				if (e.classList.contains('mw-heading')) {
 					return false;
 				}
 
@@ -837,6 +837,8 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'BLP sources', description: 'BLP that needs additional references or sources for verification' },
 			{ tag: 'BLP unreferenced', description: 'BLP does not cite any sources at all (use BLP PROD instead for new articles)' },
 			{ tag: 'More citations needed', description: 'needs additional references or sources for verification' },
+			{ tag: 'No significant coverage', description: 'does not cite any sources containing significant coverage' },
+			{ tag: 'No significant coverage (sports)', description: 'sports biography that does not cite any sources containing significant coverage' },
 			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
 			{ tag: 'Original research', description: 'contains original research' },
 			{ tag: 'Primary sources', description: 'relies too much on references to primary sources, and needs secondary sources' },
@@ -1444,13 +1446,13 @@ Twinkle.tag.callbacks = {
 
 						var text, summary;
 						if (params.tags.indexOf('Rough translation') !== -1) {
-							templateText = '{{subst:duflu|pg=' + Morebits.pageNameNorm + '|Language=' +
+							templateText = '{{subst:Dual fluency request|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 							// Place in section == Translated pages that could still use some cleanup ==
 							text = old_text + '\n\n' + templateText;
 							summary = 'Translation cleanup requested on ';
 						} else if (params.tags.indexOf('Not English') !== -1) {
-							templateText = '{{subst:needtrans|pg=' + Morebits.pageNameNorm + '|Language=' +
+							templateText = '{{subst:Translation request|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 							// Place in section == Pages for consideration ==
 							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
@@ -1548,7 +1550,7 @@ Twinkle.tag.callbacks = {
 				});
 				pages.forEach(function(page) {
 					var removed = false;
-					page.linkshere.forEach(function(el) {
+					page.linkshere.concat({title: page.title}).forEach(function(el) {
 						var tag = el.title.slice(9);
 						var tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
 						if (tag_re.test(pageText)) {
