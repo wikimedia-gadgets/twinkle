@@ -9,7 +9,7 @@
  */
 
 /* Define CSS variables */
-:root {
+html {
 	--morebits-color-status-status: #4682B4;
 	--morebits-color-legend: #31628F;
 	--morebits-color-tooltip: #0000cd;
@@ -20,25 +20,25 @@
 }
 
 @media screen {
-	:root html.skin-theme-clientpref-night {
+	html.skin-theme-clientpref-night {
 		--morebits-color-status-status: #A6C4DE;
 		--morebits-color-legend: #6B9DCC;
-		--morebits-color-tooltip: #5757FF;
+		--morebits-color-tooltip: #7A7AFF;
 		--morebits-color-info: #6BDB6B;
 		--morebits-color-warning: #FFC7B3;
-		--morebits-bgcolor-dialog: #00396B;
+		--morebits-bgcolor-dialog: #17244A;
 		--morebits-bgcolor-titlebar: #2F4165
 	}
 }
 
 @media screen and (prefers-color-scheme: dark) {
-	:root html.skin-theme-clientpref-os {
+	html.skin-theme-clientpref-os {
 		--morebits-color-status-status: #A6C4DE;
 		--morebits-color-legend: #6B9DCC;
-		--morebits-color-tooltip: #5757FF;
+		--morebits-color-tooltip: #7A7AFF;
 		--morebits-color-info: #6BDB6B;
 		--morebits-color-warning: #FFC7B3;
-		--morebits-bgcolor-dialog: #00396B;
+		--morebits-bgcolor-dialog: #17244A;
 		--morebits-bgcolor-titlebar: #2F4165
 	}
 }
@@ -70,6 +70,7 @@ form.quickform
 	vertical-align: middle;
 	margin: auto;
 	padding: .5em;
+	color: var(--color-base, #202122);
 }
 
 form.quickform *
@@ -329,6 +330,7 @@ table.morebits-ombox {
     border-collapse: collapse;
     border: 1px solid #a2a9b1;
     background: var(--background-color-neutral-subtle, #f8f9fa);
+    color: inherit;
     box-sizing: border-box;
 }
 table.morebits-ombox-content {
