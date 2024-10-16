@@ -24,6 +24,7 @@
 	padding: 0.6em;
 	margin: 0.5em auto;
 	text-align: center;
+	color: inherit;
 }
 
 /* twinkleoptions.js */
@@ -41,4 +42,14 @@
 /* WP:TWPREFS */
 #twinkle-config-content input[type=checkbox] {
 	margin-right: 2px;
+}
+
+@media screen {
+	html.skin-theme-clientpref-night #twinkle-config-headerbox {
+		background: #532B18;
+}
+
+@media screen and (prefers-color-scheme: dark) {
+	html.skin-theme-clientpref-os #twinkle-config-headerbox {
+		background: #532B18;
 }
