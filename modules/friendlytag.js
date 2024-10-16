@@ -13,8 +13,8 @@
  */
 
 Twinkle.tag = function friendlytag() {
-	// redirect tagging
-	if (Morebits.isPageRedirect()) {
+	// redirect tagging (exclude category redirects, which are all soft redirects and so shouldn't be tagged with rcats)
+	if (Morebits.isPageRedirect() && mw.config.get('wgNamespaceNumber') !== 14) {
 		Twinkle.tag.mode = 'redirect';
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'friendly-tag', 'Tag redirect');
 	// file tagging
