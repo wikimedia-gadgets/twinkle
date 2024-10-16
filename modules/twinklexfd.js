@@ -227,6 +227,8 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	var evt = document.createEvent('Event');
 	evt.initEvent('change', true, true);
 	result.venue.dispatchEvent(evt);
+
+	Twinkle.notifyOnChanges();
 };
 
 Twinkle.xfd.callback.wrongVenueWarning = function twinklexfdWrongVenueWarning(venue) {
