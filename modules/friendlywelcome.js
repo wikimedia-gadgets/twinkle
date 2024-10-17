@@ -219,7 +219,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 	var firstRadio = e.target.form.template[0];
 	firstRadio.checked = true;
-	var vals = sets[Object.keys(sets)[0]];
+	var vals = Object.values(sets)[0];
 	e.target.form.article.disabled = vals[firstRadio.value] ? !vals[firstRadio.value].linkedArticle : true;
 };
 
