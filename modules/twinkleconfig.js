@@ -990,7 +990,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		if (!document.getElementById('twinkle-config')) {
 			return;  // maybe the page is misconfigured, or something - but any attempt to modify it will be pointless
 		}
-		
+
 		// set style to nothing to prevent conflict with external css
 		document.getElementById('twinkle-config').removeAttribute('style');
 		document.getElementById('twinkle-config-titlebar').removeAttribute('style');
