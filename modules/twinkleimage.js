@@ -9,7 +9,7 @@
  *** twinkleimage.js: Image CSD module
  ****************************************
  * Mode of invocation:     Tab ("DI")
- * Active on:              Local nonredirect file pages (not on Commons)
+ * Active on:              Local nonredirect file pages (not on Commons) - Only file pages that exist locally; Files that exist on Commons do not trigger this module.
  */
 
 Twinkle.image = function twinkleimage() {
@@ -67,23 +67,23 @@ Twinkle.image.callback = function twinkleimageCallback() {
 				tooltip: 'Image or media has neither information on source nor its copyright status'
 			},
 			{
-				label: 'Orphaned fair use (CSD F5)',
-				value: 'orphaned fair use',
+				label: 'Orphaned non-free use (CSD F5)',
+				value: 'orphaned non-free use',
 				tooltip: 'Image or media is unlicensed for use on Wikipedia and allowed only under a claim of fair use per Wikipedia:Non-free content, but it is not used in any articles'
 			},
 			{
-				label: 'No fair use rationale (CSD F6)',
-				value: 'no fair use rationale',
+				label: 'No non-free use rationale (CSD F6)',
+				value: 'no non-free use rationale',
 				tooltip: 'Image or media is claimed to be used under Wikipedia\'s fair use policy but has no explanation as to why it is permitted under the policy'
 			},
 			{
-				label: 'Disputed fair use rationale (CSD F7)',
-				value: 'disputed fair use rationale',
+				label: 'Disputed non-free use rationale (CSD F7)',
+				value: 'disputed non-free use rationale',
 				tooltip: 'Image or media has a fair use rationale that is disputed or invalid, such as a {{Non-free logo}} tag on a photograph of a mascot'
 			},
 			{
-				label: 'Replaceable fair use (CSD F7)',
-				value: 'replaceable fair use',
+				label: 'Replaceable non-free use (CSD F7)',
+				value: 'replaceable non-free use',
 				tooltip: 'Image or media may fail Wikipedia\'s first non-free content criterion ([[WP:NFCC#1]]) in that it illustrates a subject for which a free image might reasonably be found or created that adequately provides the same information'
 			},
 			{
@@ -151,14 +151,14 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 				label: 'Source:'
 			});
 			break;
-		case 'disputed fair use rationale':
+		case 'disputed non-free use rationale':
 			work_area.append({
 				type: 'textarea',
 				name: 'reason',
 				label: 'Concern:'
 			});
 			break;
-		case 'orphaned fair use':
+		case 'orphaned non-free use':
 			work_area.append({
 				type: 'input',
 				name: 'replacement',
@@ -166,7 +166,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 				tooltip: 'Optional file that replaces this one.  The "File:" prefix is optional.'
 			});
 			break;
-		case 'replaceable fair use':
+		case 'replaceable non-free use':
 			work_area.append({
 				type: 'textarea',
 				name: 'reason',
@@ -194,14 +194,14 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		case 'no license':
 			csdcrit = 'F4';
 			break;
-		case 'orphaned fair use':
+		case 'orphaned non-free use':
 			csdcrit = 'F5';
 			break;
-		case 'no fair use rationale':
+		case 'no non-free use rationale':
 			csdcrit = 'F6';
 			break;
-		case 'disputed fair use rationale':
-		case 'replaceable fair use':
+		case 'disputed non-free use rationale':
+		case 'replaceable non-free use':
 			csdcrit = 'F7';
 			break;
 		case 'no permission':
@@ -263,13 +263,13 @@ Twinkle.image.callbacks = {
 			case 'no permission':
 				tag += params.source ? '|source=' + params.source : '';
 				break;
-			case 'disputed fair use rationale':
+			case 'disputed non-free use rationale':
 				tag += params.reason ? '|concern=' + params.reason : '';
 				break;
-			case 'orphaned fair use':
+			case 'orphaned non-free use':
 				tag += params.replacement ? '|replacement=' + params.replacement : '';
 				break;
-			case 'replaceable fair use':
+			case 'replaceable non-free use':
 				tag += params.reason ? '|1=' + params.reason : '';
 				break;
 			default:
