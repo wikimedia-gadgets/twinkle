@@ -981,7 +981,6 @@ Twinkle.config.sections = [
 
 ]; // end of Twinkle.config.sections
 
-
 Twinkle.config.init = function twinkleconfigInit() {
 
 	// create the config page at Wikipedia:Twinkle/Preferences
@@ -993,8 +992,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 		}
 		
 		// set style to nothing to prevent conflict with external css
-		document.getElementById('twinkle-config').removeAttribute("style")
-		document.getElementById('twinkle-config-titlebar').removeAttribute("style")
+		document.getElementById('twinkle-config').removeAttribute('style');
+		document.getElementById('twinkle-config-titlebar').removeAttribute('style');
 
 		var contentdiv = document.getElementById('twinkle-config-content');
 		contentdiv.textContent = '';  // clear children
