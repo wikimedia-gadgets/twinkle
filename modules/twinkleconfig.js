@@ -991,9 +991,10 @@ Twinkle.config.init = function twinkleconfigInit() {
 		if (!document.getElementById('twinkle-config')) {
 			return;  // maybe the page is misconfigured, or something - but any attempt to modify it will be pointless
 		}
-
-		// set style (the url() CSS function doesn't seem to work from wikicode - ?!)
-		document.getElementById('twinkle-config-titlebar').style.backgroundImage = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC)';
+		
+		// set style to nothing to prevent conflict with external css
+		document.getElementById('twinkle-config').removeAttribute("style")
+		document.getElementById('twinkle-config-titlebar').removeAttribute("style")
 
 		var contentdiv = document.getElementById('twinkle-config-content');
 		contentdiv.textContent = '';  // clear children
@@ -1258,9 +1259,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 				// add help tip
 				cell = document.createElement('td');
-				cell.style.fontSize = '90%';
+				cell.className = 'twinkle-config-helptip';
 
-				cell.style.color = 'gray';
 				if (pref.helptip) {
 					// convert mentions of templates in the helptip to clickable links
 					cell.innerHTML = pref.helptip.replace(/{{(.+?)}}/g,
@@ -1287,8 +1287,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 		var footerbox = document.createElement('div');
 		footerbox.setAttribute('id', 'twinkle-config-buttonpane');
-		footerbox.style.backgroundColor = '#BCCADF';
-		footerbox.style.padding = '0.5em';
 		var button = document.createElement('button');
 		button.setAttribute('id', 'twinkle-config-submit');
 		button.setAttribute('type', 'submit');

@@ -15,8 +15,9 @@ html {
 	--morebits-color-tooltip: #0000cd;
 	--morebits-color-info: #228B22;
 	--morebits-color-warning: #FF4500;
+	--morebits-color-titlebar-links: #3062AD;
 	--morebits-bgcolor-dialog: #F0F8FF;
-	--morebits-bgcolor-titlebar: #BCCADF
+	--morebits-bgcolor-titlebar: #BCCADF;
 }
 
 @media screen {
@@ -26,8 +27,9 @@ html {
 		--morebits-color-tooltip: #7A7AFF;
 		--morebits-color-info: #6BDB6B;
 		--morebits-color-warning: #FFC7B3;
+		--morebits-color-titlebar-links: #8BADDF;
 		--morebits-bgcolor-dialog: #17244A;
-		--morebits-bgcolor-titlebar: #2F4165
+		--morebits-bgcolor-titlebar: #2F4165;
 	}
 }
 
@@ -38,6 +40,7 @@ html {
 		--morebits-color-tooltip: #7A7AFF;
 		--morebits-color-info: #6BDB6B;
 		--morebits-color-warning: #FFC7B3;
+		--morebits-color-titlebar-links: #8BADDF;
 		--morebits-bgcolor-dialog: #17244A;
 		--morebits-bgcolor-titlebar: #2F4165
 	}
@@ -309,7 +312,7 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 }
 
 body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
-	color: #3062AD;
+	color: var(--morebits-color-titlebar-links, #3062AD);
 }
 
 .morebits-dialog-buttons[data-empty] + .morebits-dialog-footerlinks {
@@ -347,8 +350,38 @@ th.morebits-mbox-text, td.morebits-mbox-text {
     width: 100%;
 }
 
+/* Twinkle config */
+#twinkle-config {
+	border: 1px solid #666;
+	background: var(--morebits-bgcolor-dialog, #F0F8FF);
+	color: inherit;
+}
+
+#twinkle-config label {
+	color: var(--color-base, #202122);
+}
+
+#twinkle-config-titlebar {
+	background: var(--morebits-bgcolor-titlebar, #BCCADF);
+	color: inherit;
+}
+
+#twinkle-config-buttonpane {
+	background: var(--morebits-bgcolor-titlebar, #BCCADF);
+	color: inherit;
+	padding: 0.5em;
+}
+
+.twinkle-config-helptip {
+	font-size: 90%;
+	color: var(--color-subtle, #54595d);
+}
+
 /* Override select2 silliness */
-.select2, .select2-container, .select2-selection, .select2-results {
+.morebits-dialog-content .select2,
+.morebits-dialog-content .select2-container,
+.morebits-dialog-content .select2-selection,
+.morebits-dialog-content .select2-results {
     background: var(--background-color-base, #fff) !important;
     color: inherit !important;
 }
