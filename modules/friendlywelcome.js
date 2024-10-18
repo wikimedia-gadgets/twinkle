@@ -279,6 +279,11 @@ Twinkle.welcome.templates = {
 			'welcome mentor': {
 				description: 'welcome for mentor users to give to their mentees',
 				syntax: '{{subst:mentor welcome|$USERNAME$}} ~~~~'
+			},
+			'welcome draft': {
+				description: 'welcome for users who write draft articles',
+				linkedArticle: true,
+				syntax: '{{subst:welcome draft|art=$ARTICLE$}} ~~~~'
 			}
 		},
 
