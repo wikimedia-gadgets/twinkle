@@ -849,6 +849,14 @@ Twinkle.tag.article.tagList = {
 		]
 	},
 	'Specific content issues': {
+		'Accessibility': [
+			{ tag: 'Cleanup colors', description: 'uses color as only way to convey information' },
+			{ tag: 'Overcoloured', description: 'overuses color'}
+		],
+		'Categories': [
+			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
+			{ tag: 'Uncategorized', description: 'not added to any categories', excludeMI: true }
+		],
 		'Language': [
 			{ tag: 'Not English', description: 'written in a language other than English and needs translation',
 				excludeMI: true,
@@ -902,10 +910,6 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Cleanup bare URLs', description: 'uses bare URLs for references, which are prone to link rot' },
 			{ tag: 'More footnotes needed', description: 'has some references, but insufficient inline citations' },
 			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' }
-		],
-		'Categories': [
-			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
-			{ tag: 'Uncategorized', description: 'not added to any categories', excludeMI: true }
 		]
 	},
 	'Merging': [
