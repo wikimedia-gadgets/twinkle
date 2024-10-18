@@ -1501,9 +1501,11 @@ Twinkle.xfd.callbacks = {
 
 			apiobj.statelem.info('next in order is [[' + apiobj.params.discussionpage + ']]');
 
+			var wikipedia_page;
+
 			// Tagging page
 			if (mw.config.get('wgNamespaceNumber') !== 710) { // cannot tag TimedText pages
-				var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
 				wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
 				wikipedia_page.setCallbackParameters(apiobj.params);
 				wikipedia_page.load(Twinkle.xfd.callbacks.mfd.taggingPage);
