@@ -178,32 +178,6 @@ Twinkle.defaultConfig = {
 	markSharedIPAsMinor: true
 };
 
-// now some skin dependent config.
-switch (mw.config.get('skin')) {
-	case 'vector':
-	case 'vector-2022':
-		Twinkle.defaultConfig.portletArea = 'right-navigation';
-		Twinkle.defaultConfig.portletId = 'p-twinkle';
-		Twinkle.defaultConfig.portletName = 'TW';
-		Twinkle.defaultConfig.portletType = 'menu';
-		Twinkle.defaultConfig.portletNext = 'p-search';
-		break;
-	case 'timeless':
-		Twinkle.defaultConfig.portletArea = '#page-tools .sidebar-inner';
-		Twinkle.defaultConfig.portletId = 'p-twinkle';
-		Twinkle.defaultConfig.portletName = 'Twinkle';
-		Twinkle.defaultConfig.portletType = null;
-		Twinkle.defaultConfig.portletNext = 'p-userpagetools';
-		break;
-	default:
-		Twinkle.defaultConfig.portletArea = null;
-		Twinkle.defaultConfig.portletId = 'p-cactions';
-		Twinkle.defaultConfig.portletName = null;
-		Twinkle.defaultConfig.portletType = null;
-		Twinkle.defaultConfig.portletNext = null;
-}
-
-
 Twinkle.getPref = function twinkleGetPref(name) {
 	if (typeof Twinkle.prefs === 'object' && Twinkle.prefs[name] !== undefined) {
 		return Twinkle.prefs[name];
@@ -248,7 +222,36 @@ Twinkle.getPref = function twinkleGetPref(name) {
  *
  * @return Node -- the DOM node of the new item (a DIV element) or null
  */
-Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
+Twinkle.addPortlet = function() {
+	let navigation, id, text, type, nextnodeid;
+	switch (mw.config.get('skin')) {
+		case 'vector':
+		case 'vector-2022':
+			navigation = 'right-navigation';
+			id = 'p-twinkle';
+			text = 'TW';
+			type = 'menu';
+			nextnodeid = 'p-search';
+			break;
+		case 'timeless':
+			navigation = '#page-tools .sidebar-inner';
+			id = 'p-twinkle';
+			text = 'Twinkle';
+			type = null;
+			nextnodeid = 'p-userpagetools';
+			break;
+		default:
+			navigation = null;
+			id = 'p-cactions';
+			text = null;
+			type = null;
+			nextnodeid = null;
+	}
+
+	if (navigation === null) {
+		return;
+	}
+
 	// sanity checks, and get required DOM nodes
 	var root = document.getElementById(navigation) || document.querySelector(navigation);
 	if (!root) {
@@ -268,7 +271,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		nextnodeid = 'p-cactions';
 	}
 
-	var portlet = mw.util.addPortlet(id, text, '#' + nextnodeid);
+	mw.util.addPortlet(id, text, '#' + nextnodeid);
 
 	// The Twinkle dropdown menu has been added to the left of p-cactions, since that is the only spot that will create a dropdown menu. But we want it on the right. Move it to the right.
 	if (mw.config.get('skin') === 'vector') {
@@ -283,7 +286,7 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		}
 	}
 
-	return portlet;
+	return id;
 };
 
 /**
@@ -292,10 +295,8 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
  * @param task: Either a URL for the portlet link or a function to execute.
  */
 Twinkle.addPortletLink = function(task, text, id, tooltip) {
-	if (Twinkle.getPref('portletArea') !== null) {
-		Twinkle.addPortlet(Twinkle.getPref('portletArea'), Twinkle.getPref('portletId'), Twinkle.getPref('portletName'), Twinkle.getPref('portletType'), Twinkle.getPref('portletNext'));
-	}
-	var link = mw.util.addPortletLink(Twinkle.getPref('portletId'), typeof task === 'string' ? task : '#', text, id, tooltip);
+	const portletId = Twinkle.addPortlet();
+	var link = mw.util.addPortletLink(portletId, typeof task === 'string' ? task : '#', text, id, tooltip);
 	$('.client-js .skin-vector #p-cactions').css('margin-right', 'initial');
 	if (typeof task === 'function') {
 		$(link).click(function (ev) {
@@ -303,6 +304,7 @@ Twinkle.addPortletLink = function(task, text, id, tooltip) {
 			ev.preventDefault();
 		});
 	}
+	// $.collapsibleTabs is defined in the Vector 2010 skin
 	if ($.collapsibleTabs) {
 		$.collapsibleTabs.handleResize();
 	}
