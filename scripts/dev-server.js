@@ -49,7 +49,7 @@ server.listen(port, hostname, async () => {
 	if (!process.env.MW_OAUTH2_TOKEN && (!process.env.MW_USERNAME || !process.env.MW_PASSWORD)) {
 		return console.log("Ensure the Twinkle gadget version is disabled. If you provide your credentials as environment variables (either the BotPassword credentials as MW_USERNAME and MW_PASSWORD, or an owner-only OAuth2 consumer token as MW_OAUTH2_TOKEN), we'll try to automatically disable the gadget for you and re-enable it when you're done testing.");
 	}
-	let mwn, user;
+	let mwn, user, initTime;
 	try {
 		mwn = require('mwn').mwn;
 	} catch (_) {
@@ -63,6 +63,7 @@ server.listen(port, hostname, async () => {
 			"oauth2Token": process.env.MW_OAUTH2_TOKEN,
 			"silent": true
 		});
+		initTime = Date.now();
 	} catch (e) {
 		if (e instanceof mwn.Error) {
 			console.log(`[mwn]: can't disable twinkle as gadget: login failure: ${e}`);
@@ -79,6 +80,10 @@ server.listen(port, hostname, async () => {
 	// Catch ^C
 	process.on('SIGINT', async () => {
 		try {
+			if ((Date.now() - initTime)/1000/60 >= 15) {
+				// More than 15 minutes passed, preemptively fetch new token
+				await user.getTokens();
+			}
 			await user.saveOption('gadget-' + GADGET_NAME, '1');
 			console.log('[i] Re-enabled twinkle as gadget.');
 		} catch (e) {
