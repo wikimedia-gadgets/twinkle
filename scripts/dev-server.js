@@ -9,8 +9,8 @@
 const http = require('http');
 const fs = require('fs/promises');
 
-async function readFile(filepath) {
-	return (await fs.readFile(__dirname + '/../' + filepath)).toString();
+async function readFiles(filePaths) {
+	return Promise.all(filePaths.map(path => fs.readFile(__dirname + '/../' + path).then(blob => blob.toString())));
 }
 const server = http.createServer(async (request, response) => {
 	const moduleFiles = (await fs.readdir('./modules')).filter(f => f.endsWith('.js'));
@@ -21,14 +21,18 @@ const server = http.createServer(async (request, response) => {
 
 	if (process.argv[2] !== '--no-sysop') {
 		// Pretend to be a sysop, if not one already - enables testing of sysop modules by non-sysops
-		jsCode += `if (mw.config.get('wgUserGroups').indexOf('sysop') === -1) mw.config.get('wgUserGroups').push('sysop');`;
+		jsCode += `if (mw.config.get('wgUserGroups').indexOf('sysop') === -1) mw.config.get('wgUserGroups').push('sysop');\n`;
 	}
 
-	for (let file of jsFiles) {
-		jsCode += await readFile(file);
+	const [scripts, styles] = await Promise.all([
+		readFiles(jsFiles),
+		readFiles(cssFiles)
+	]);
+	for (let script of scripts) {
+		jsCode += script;
 	}
-	for (let file of cssFiles) {
-		let css = (await readFile(file)).replace(/\s+/g, ' ');
+	for (let stylesheet of styles) {
+		let css = stylesheet.replace(/\s+/g, ' ');
 		css = JSON.stringify(css); // escape double quotes and backslashes
 		jsCode += `;mw.loader.addStyleTag(${css});`;
 	}
