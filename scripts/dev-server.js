@@ -46,8 +46,8 @@ server.listen(port, hostname, async () => {
 	console.log(`Server running at http://${hostname}:${port}/`);
 	console.log(`Please add "mw.loader.load('http://${hostname}:${port}');" to your on-wiki common.js file to begin testing.`);
 
-	if (!process.env.MW_USERNAME || !process.env.MW_PASSWORD) {
-		return console.log("Ensure the Twinkle gadget version is disabled. If you provide your MW_USERNAME and MW_PASSWORD as environment variables, we'll try to automatically disable the gadget for you and re-enable it when you're done testing.");
+	if (!process.env.MW_OAUTH2_TOKEN && (!process.env.MW_USERNAME || !process.env.MW_PASSWORD)) {
+		return console.log("Ensure the Twinkle gadget version is disabled. If you provide your credentials as environment variables (either the BotPassword credentials as MW_USERNAME and MW_PASSWORD, or an owner-only OAuth2 consumer token as MW_OAUTH2_TOKEN), we'll try to automatically disable the gadget for you and re-enable it when you're done testing.");
 	}
 	let mwn, user;
 	try {
@@ -60,6 +60,7 @@ server.listen(port, hostname, async () => {
 			"apiUrl": "https://en.wikipedia.org/w/api.php",
 			"username": process.env.MW_USERNAME,
 			"password": process.env.MW_PASSWORD,
+			"oauth2Token": process.env.MW_OAUTH2_TOKEN,
 			"silent": true
 		});
 	} catch (e) {
