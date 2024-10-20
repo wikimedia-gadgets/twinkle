@@ -4770,8 +4770,6 @@ Morebits.wiki.preview = function(previewbox) {
 	this.previewbox = previewbox;
 	$(previewbox).addClass('morebits-previewbox').hide();
 
-	this.shown = false;
-
 	/**
 	 * Displays the preview box, and populates it with a loading indicator. This should be used only when the creation of the wikitext that
 	 * will be displayed in the preview box is done asynchronously or will take a significant amount of time.
@@ -4839,7 +4837,6 @@ Morebits.wiki.preview = function(previewbox) {
 	/** Hides the preview box and clears it. */
 	this.closePreview = function() {
 		$(previewbox).empty().hide();
-		this.shown = false;
 	};
 };
 
