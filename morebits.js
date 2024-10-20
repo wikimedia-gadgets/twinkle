@@ -770,6 +770,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
+			subnode.setAttribute('dyninput', 'yes');
 			if (data.value) {
 				subnode.setAttribute('value', data.value);
 			}
@@ -942,7 +943,7 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 
 
 // Some utility methods for manipulating quickForms after their creation:
-// (None of these work for "dyninput" type fields at present)
+// (only getInputData works for "dyninput" type fields at present)
 
 /**
  * Returns an object containing all filled form data entered by the user, with the object
@@ -985,7 +986,13 @@ Morebits.quickForm.getInputData = function(form) {
 			case 'select-multiple':
 				result[fieldNameNorm] = $(field).val(); // field.value doesn't work
 				break;
-			case 'text': // falls through
+			case 'text':
+				if (field.getAttribute('dyninput') === 'yes') {
+					result[fieldNameNorm] = result[fieldNameNorm] || [];
+					result[fieldNameNorm].push(field.value.trim());
+					break;
+				}
+				// falls through
 			case 'textarea':
 				result[fieldNameNorm] = field.value.trim();
 				break;
@@ -4763,6 +4770,22 @@ Morebits.wiki.preview = function(previewbox) {
 	this.previewbox = previewbox;
 	$(previewbox).addClass('morebits-previewbox').hide();
 
+	this.shown = false;
+
+	/**
+	 * Displays the preview box, and populates it with a loading indicator. This should be used only when the creation of the wikitext that
+	 * will be displayed in the preview box is done asynchronously or will take a significant amount of time.
+	 */
+	this.displayLoading = function() {
+		$(previewbox).empty().show();
+
+		var statusspan = document.createElement('span');
+		previewbox.appendChild(statusspan);
+		Morebits.status.init(statusspan);
+
+		Morebits.status.status('Preview', 'loading...');
+	};
+
 	/**
 	 * Displays the preview box, and begins an asynchronous attempt
 	 * to render the specified wikitext.
@@ -4773,7 +4796,7 @@ Morebits.wiki.preview = function(previewbox) {
 	 * @returns {jQuery.promise}
 	 */
 	this.beginRender = function(wikitext, pageTitle, sectionTitle) {
-		$(previewbox).show();
+		$(previewbox).empty().show();
 
 		var statusspan = document.createElement('span');
 		previewbox.appendChild(statusspan);
@@ -4816,6 +4839,7 @@ Morebits.wiki.preview = function(previewbox) {
 	/** Hides the preview box and clears it. */
 	this.closePreview = function() {
 		$(previewbox).empty().hide();
+		this.shown = false;
 	};
 };
 

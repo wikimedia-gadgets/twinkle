@@ -87,6 +87,16 @@ Twinkle.arv.callback = function (uid, isIP) {
 		label: 'Work area',
 		name: 'work_area'
 	});
+
+	var previewlink = document.createElement('a');
+	$(previewlink).click(function() {
+		Twinkle.arv.callback.preview(result);  // |result| is defined below
+	});
+	previewlink.style.cursor = 'pointer';
+	previewlink.textContent = 'Preview';
+	form.append({ type: 'div', id: 'arvpreview', label: [ previewlink ] });
+	form.append({ type: 'div', id: 'twinklearv-previewbox', style: 'display: none' });
+
 	form.append({ type: 'submit' });
 	form.append({
 		type: 'hidden',
@@ -97,6 +107,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 	var result = form.render();
 	Window.setContent(result);
 	Window.display();
+	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklearv-previewbox').last()[0]);
 
 	// Check if the user is blocked, update notice
 	var query = {
@@ -137,6 +148,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 	var root = e.target.form;
 	var old_area = Morebits.quickForm.getElements(root, 'work_area')[0];
 	var work_area = null;
+
+	root.previewer.closePreview();
 
 	switch (value) {
 		case 'aiv':
@@ -309,7 +322,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append(
 				{
 					type: 'dyninput',
-					name: 'sockpuppet',
+					name: 'sockpuppets',
 					label: 'Sockpuppets',
 					sublabel: 'Sock:',
 					tooltip: 'The username of the sockpuppet without the "User:" prefix',
@@ -382,9 +395,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 									var $input = $('<input/>', {
 										type: 'checkbox',
 										name: 's_' + field,
-										value: rev.revid
+										value: JSON.stringify(rev)
 									});
-									$input.data('revinfo', rev);
 									$input.appendTo($entry);
 									var comment = '<span>';
 									// revdel/os
@@ -473,71 +485,20 @@ Twinkle.arv.callback.changeCategory = function (e) {
 Twinkle.arv.callback.evaluate = function(e) {
 	var form = e.target;
 	var reason = '';
-	var comment = '';
-	if (form.reason) {
-		comment = form.reason.value;
-	}
-	var uid = form.uid.value;
+	var input = Morebits.quickForm.getInputData(form);
 
-	var types;
-	switch (form.category.value) {
+	switch (input.category) {
 
 		// Report user for vandalism
 		case 'aiv':
 			/* falls through */
 		default:
-			types = form.getChecked('arvtype');
-			if (!types.length && comment === '') {
+			reason = Twinkle.arv.callback.getAivReasonOnlyWikitext(input);
+
+			if (reason === null) {
 				alert('You must specify some reason');
 				return;
 			}
-
-			types = types.map(function(v) {
-				switch (v) {
-					case 'final':
-						return 'vandalism after final warning';
-					case 'postblock':
-						return 'vandalism after recent release of block';
-					case 'vandalonly':
-						return 'actions evidently indicate a vandalism-only account';
-					case 'promoonly':
-						return 'account is being used only for promotional purposes';
-					case 'spambot':
-						return 'account is evidently a spambot or a compromised account';
-					default:
-						return 'unknown reason';
-				}
-			}).join('; ');
-
-			if (form.page.value !== '') {
-				// Allow links to redirects, files, and categories
-				reason = 'On {{No redirect|:' + form.page.value + '}}';
-				if (form.badid.value !== '') {
-					reason += ' ({{diff|' + form.page.value + '|' + form.badid.value + '|' + form.goodid.value + '|diff}})';
-				}
-				reason += ':';
-			}
-
-			if (types) {
-				reason += ' ' + types;
-			}
-
-			if (comment !== '') {
-				var reasonEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(reason);
-				reason += reasonEndsInPunctuationOrBlank ? '' : '.';
-				var reasonIsBlank = reason === '';
-				reason += reasonIsBlank ? '' : ' ';
-				reason += comment;
-			}
-
-			reason = reason.trim();
-			var reasonEndsInPunctuation = /[.?!;]$/.test(reason);
-			if (!reasonEndsInPunctuation) {
-				reason += '.';
-			}
-
-			reason += ' ~~~~';
-			reason = reason.replace(/\r?\n/g, '\n*:');  // indent newlines
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
@@ -554,7 +515,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				var $aivLink = '<a target="_blank" href="/wiki/WP:AIV">WP:AIV</a>';
 
 				// check if user has already been reported
-				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(text)) {
+				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(input.uid) + '\\s*\\}\\}').test(text)) {
 					aivPage.getStatusElement().error('Report already present, will not add a new one');
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $aivLink + ':');
 					return;
@@ -566,8 +527,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 					var tb2Text = tb2Page.getPageText();
 					var tb2statelem = tb2Page.getStatusElement();
 
-					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(tb2Text)) {
-						if (confirm('The user ' + uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
+					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(input.uid) + '\\s*\\}\\}').test(tb2Text)) {
+						if (confirm('The user ' + input.uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
 							tb2statelem.info('Proceeded despite bot report');
 						} else {
 							tb2statelem.error('Report from a bot is already present, stopping');
@@ -579,47 +540,19 @@ Twinkle.arv.callback.evaluate = function(e) {
 					}
 
 					aivPage.getStatusElement().status('Adding new report...');
-					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
+					aivPage.setEditSummary('Reporting [[Special:Contributions/' + input.uid + '|' + input.uid + ']].');
 					aivPage.setChangeTags(Twinkle.changeTags);
-					aivPage.setAppendText('\n*{{vandal|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
-					aivPage.append();
+					aivPage.setAppendText();
+					aivPage.append(Twinkle.arv.callback.buildAivReport(input));
 				});
 			});
 			break;
 
 		// Report inappropriate username
 		case 'username':
-			types = form.getChecked('arvtype').map(Morebits.string.toLowerCaseFirstChar);
-			var censorUsername = types.includes('offensive'); // check if the username is marked offensive
+			var censorUsername = input.arvtype.includes('offensive'); // check if the username is marked offensive
 
-			// generate human-readable string, e.g. "misleading and promotional username"
-			if (types.length <= 2) {
-				types = types.join(' and ');
-			} else {
-				types = [ types.slice(0, -1).join(', '), types.slice(-1) ].join(' and ');
-			}
-
-			// a or an?
-			var adjective = 'a';
-			if (/[aeiouwyh]/.test(types[0] || '')) { // non 100% correct, but whatever, including 'h' for Cockney
-				adjective = 'an';
-			}
-
-			// generate wikicode to place on [[WP:UAA]] page
-			reason = '*{{user-uaa|1=' + uid + '}} &ndash; ';
-			if (types.length) {
-				reason += 'Violation of the username policy as ' + adjective + ' ' + types + ' username. ';
-			}
-			if (comment !== '') {
-				reason += Morebits.string.toUpperCaseFirstChar(comment);
-				var endsInPeriod = /\.$/.test(comment);
-				if (!endsInPeriod) {
-					reason += '.';
-				}
-				reason += ' ';
-			}
-			reason += '~~~~';
-			reason = reason.replace(/\r?\n/g, '\n*:');  // indent newlines
+			reason = Twinkle.arv.callback.getUsernameReportWikitext(input);
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
@@ -634,14 +567,14 @@ Twinkle.arv.callback.evaluate = function(e) {
 				var text = uaaPage.getPageText();
 
 				// check if user has already been reported
-				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + Morebits.string.escapeRegExp(uid) + '\\s*(\\||\\})').test(text)) {
+				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + Morebits.string.escapeRegExp(input.uid) + '\\s*(\\||\\})').test(text)) {
 					uaaPage.getStatusElement().error('User is already listed.');
 					var $uaaLink = '<a target="_blank" href="/wiki/WP:UAA">WP:UAA</a>';
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $uaaLink + ':');
 					return;
 				}
 				uaaPage.getStatusElement().status('Adding new report...');
-				uaaPage.setEditSummary('Reporting ' + (censorUsername ? 'an offensive username.' : '[[Special:Contributions/' + uid + '|' + uid + ']].'));
+				uaaPage.setEditSummary('Reporting ' + (censorUsername ? 'an offensive username.' : '[[Special:Contributions/' + input.uid + '|' + input.uid + ']].'));
 				uaaPage.setChangeTags(Twinkle.changeTags);
 
 				// Blank newline per [[Special:Permalink/996949310#Spacing]]; see also [[WP:LISTGAP]] and [[WP:INDENTGAP]]
@@ -654,237 +587,412 @@ Twinkle.arv.callback.evaluate = function(e) {
 		case 'sock':
 			/* falls through */
 		case 'puppet':
-			var sockParameters = {
-				evidence: form.evidence.value.trim(),
-				checkuser: form.checkuser.checked
-			};
+			var reportData = Twinkle.arv.callback.getSpiReportData(input);
 
-			var puppetReport = form.category.value === 'puppet';
-			if (puppetReport && !form.sockmaster.value.trim()) {
-				alert('You have not entered a sockmaster account for this puppet. Consider reporting this account as a sockpuppeteer instead.');
-				return;
-			} else if (!puppetReport && !form.sockpuppet[0].value.trim()) {
-				alert('You have not entered any sockpuppet account(s) for this sockmaster. Consider reporting this account as a sockpuppet instead.');
+			if (reportData.error) {
+				alert(reportData.error);
 				return;
 			}
-
-			sockParameters.uid = puppetReport ? form.sockmaster.value.trim() : uid;
-			sockParameters.sockpuppets = puppetReport ? [uid] : Morebits.array.uniq($.map($('input:text[name=sockpuppet]', form), function(o) {
-				return $(o).val() || null;
-			}));
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
-			Twinkle.arv.processSock(sockParameters);
+
+			Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
+
+			var reportpage = 'Wikipedia:Sockpuppet investigations/' + reportData.sockmaster;
+
+			Morebits.wiki.actionCompleted.redirect = reportpage;
+			Morebits.wiki.actionCompleted.notice = 'Reporting complete';
+
+			var spiPage = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
+			spiPage.setFollowRedirect(true);
+			spiPage.setEditSummary('Adding new report for [[Special:Contributions/' + reportData.sockmaster + '|' + reportData.sockmaster + ']].');
+			spiPage.setChangeTags(Twinkle.changeTags);
+			spiPage.setAppendText(reportData.wikitext);
+			spiPage.setWatchlist(Twinkle.getPref('spiWatchReport'));
+			spiPage.append();
+
+			Morebits.wiki.removeCheckpoint();  // all page updates have been started
 			break;
 
 		case 'an3':
-			var diffs = $.map($('input:checkbox[name=s_diffs]:checked', form), function(o) {
-				return $(o).data('revinfo');
-			});
-
-			if (diffs.length < 3 && !confirm('You have selected fewer than three offending edits. Do you wish to make the report anyway?')) {
-				return;
-			}
-
-			var warnings = $.map($('input:checkbox[name=s_warnings]:checked', form), function(o) {
-				return $(o).data('revinfo');
-			});
-
-			if (!warnings.length && !confirm('You have not selected any edits where you warned the offender. Do you wish to make the report anyway?')) {
-				return;
-			}
-
-			var resolves = $.map($('input:checkbox[name=s_resolves]:checked', form), function(o) {
-				return $(o).data('revinfo');
-			});
-			var free_resolves = $('input[name=s_resolves_free]').val();
-
-			var an3_next = function(free_resolves) {
-				if (!resolves.length && !free_resolves && !confirm('You have not selected any edits where you tried to resolve the issue. Do you wish to make the report anyway?')) {
-					return;
+			// prepare the AN3 report, then post and notify
+			Twinkle.arv.callback.getAn3ReportData(input).then((data) => {
+				// If there are any reasons why the user might want to cancel the report, check with them about each reason and cancel if they choose to
+				for (var i = 0; i < data.confirmations.length; i++) {
+					if (!confirm(data.confirmations[i])) {
+						return;
+					}
 				}
-
-				var an3Parameters = {
-					uid: uid,
-					page: form.page.value.trim(),
-					comment: form.comment.value.trim(),
-					diffs: diffs,
-					warnings: warnings,
-					resolves: resolves,
-					free_resolves: free_resolves
-				};
 
 				Morebits.simpleWindow.setButtonsEnabled(false);
 				Morebits.status.init(form);
-				Twinkle.arv.processAN3(an3Parameters);
-			};
 
-			if (free_resolves) {
-				var query;
-				var diff, oldid;
-				var specialDiff = /Special:Diff\/(\d+)(?:\/(\S+))?/i.exec(free_resolves);
-				if (specialDiff) {
-					if (specialDiff[2]) {
-						oldid = specialDiff[1];
-						diff = specialDiff[2];
-					} else {
-						diff = specialDiff[1];
-					}
-				} else {
-					diff = mw.util.getParamValue('diff', free_resolves);
-					oldid = mw.util.getParamValue('oldid', free_resolves);
-				}
-				var title = mw.util.getParamValue('title', free_resolves);
-				var diffNum = /^\d+$/.test(diff); // used repeatedly
+				Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
 
-				// rvdiffto in prop=revisions is deprecated, but action=compare doesn't return
-				// timestamps ([[phab:T247686]]) so we can't rely on it unless necessary.
-				// Likewise, we can't rely on a meaningful comment for diff=cur.
-				// Additionally, links like Special:Diff/123/next, Special:Diff/123/456, or ?diff=next&oldid=123
-				// would each require making use of rvdir=newer in the revisions API.
-				// That requires a title parameter, so we have to use compare instead of revisions.
-				if (oldid && (diff === 'cur' || (!title && (diff === 'next' || diffNum)))) {
-					query = {
-						action: 'compare',
-						fromrev: oldid,
-						prop: 'ids|title',
-						format: 'json'
-					};
-					if (diffNum) {
-						query.torev = diff;
-					} else {
-						query.torelative = diff;
-					}
-				} else {
-					query = {
-						action: 'query',
-						prop: 'revisions',
-						rvprop: 'ids|timestamp|comment',
-						format: 'json',
-						indexpageids: true
-					};
+				var reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
 
-					if (diff && oldid) {
-						if (diff === 'prev') {
-							query.revids = oldid;
-						} else {
-							query.titles = title;
-							query.rvdir = 'newer';
-							query.rvstartid = oldid;
+				Morebits.wiki.actionCompleted.redirect = reportpage;
+				Morebits.wiki.actionCompleted.notice = 'Reporting complete';
 
-							if (diff === 'next' && title) {
-								query.rvlimit = 2;
-							} else if (diffNum) {
-								// Diffs may or may not be consecutive, no limit
-								query.rvendid = diff;
-							}
-						}
-					} else {
-						// diff=next|prev|cur with no oldid
-						// Implies title= exists otherwise it's not a valid diff link (well, it is, but to the Main Page)
-						if (diff && /^\D+$/.test(diff)) {
-							query.titles = title;
-						} else {
-							query.revids = diff || oldid;
-						}
-					}
-				}
+				var an3Page = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
+				an3Page.setFollowRedirect(true);
+				an3Page.setEditSummary('Adding new report for [[Special:Contributions/' + data.uid + '|' + data.uid + ']].');
+				an3Page.setChangeTags(Twinkle.changeTags);
+				an3Page.setAppendText(data.reportWikitext);
+				an3Page.append();
 
-				new mw.Api().get(query).done(function(data) {
-					var page;
-					if (data.compare && data.compare.fromtitle === data.compare.totitle) {
-						page = data;
-					} else if (data.query) {
-						var pageid = data.query.pageids[0];
-						page = data.query.pages[pageid];
-					} else {
-						return;
-					}
-					an3_next(page);
-				}).fail(function(data) {
-					console.log('API failed :(', data); // eslint-disable-line no-console
-				});
-			} else {
-				an3_next();
-			}
+				// notify user
+
+				var notifyText = '\n\n{{subst:an3-notice|1=' + mw.util.wikiUrlencode(data.uid) + '|auto=1}} ~~~~';
+
+				var talkPage = new Morebits.wiki.page('User talk:' + data.uid, 'Notifying edit warrior');
+				talkPage.setFollowRedirect(true);
+				talkPage.setEditSummary('Notifying about edit warring noticeboard discussion.');
+				talkPage.setChangeTags(Twinkle.changeTags);
+				talkPage.setAppendText(notifyText);
+				talkPage.append();
+				Morebits.wiki.removeCheckpoint();  // all page updates have been started
+			});
 			break;
 	}
 };
 
-Twinkle.arv.processSock = function(params) {
-	Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
+Twinkle.arv.callback.preview = function(form) {
+	var input = Morebits.quickForm.getInputData(form);
 
-	// prepare the SPI report
+	console.log(input); // eslint-disable-line no-console
+
+	var reportText = '';
+	switch (input.category) {
+		case 'aiv':
+			/* falls through */
+		default:
+			reportText = Twinkle.arv.callback.getAivReasonOnlyWikitext(input);
+
+			if (reportText === null) {
+				reportText = 'Preview failed: A reason must be specified.';
+			} else {
+				reportText = Twinkle.arv.callback.buildAivReport(input);
+			}
+			break;
+		case 'username':
+			reportText = Twinkle.arv.callback.getUsernameReportWikitext(input);
+			break;
+		case 'sock':
+			/* falls through */
+		case 'puppet':
+			var reportData = Twinkle.arv.callback.getSpiReportData(input);
+
+			if (reportData.error) {
+				reportText = 'Preview failed: ' + reportData.error;
+			} else {
+				reportText = '__NOTOC__{{checkuser|' + reportData.sockmaster + '|master=yes}}\n' + reportData.wikitext; // add sockmaster links
+			}
+			break;
+		case 'an3':
+			form.previewer.displayLoading();
+			Twinkle.arv.callback.getAn3ReportData(input).then((data) => {
+				reportText = data.reportWikitext.trim();
+				form.previewer.beginRender(reportText);
+			});
+			return; // stop here, as the preview can only be displayed when the promise resolves
+	}
+
+	form.previewer.beginRender(reportText);
+};
+
+Twinkle.arv.callback.getAivReasonOnlyWikitext = function(input) {
+	var text = '';
+	var type = input.arvtype;
+
+	if (!type.length && input.reason === '') {
+		return null;
+	}
+
+	type = type.map(function(v) {
+		switch (v) {
+			case 'final':
+				return 'vandalism after final warning';
+			case 'postblock':
+				return 'vandalism after recent release of block';
+			case 'vandalonly':
+				return 'actions evidently indicate a vandalism-only account';
+			case 'promoonly':
+				return 'account is being used only for promotional purposes';
+			case 'spambot':
+				return 'account is evidently a spambot or a compromised account';
+			default:
+				return 'unknown reason';
+		}
+	}).join('; ');
+
+	if (input.page !== '') {
+		// Allow links to redirects, files, and categories
+		text = 'On {{No redirect|:' + input.page + '}}';
+		if (input.badid !== '') {
+			text += ' ({{diff|' + input.page + '|' + input.badid + '|' + input.goodid + '|diff}})';
+		}
+		text += ':';
+	}
+
+	if (type) {
+		text += ' ' + type;
+	}
+
+	if (input.reason !== '') {
+		var textEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(text);
+		text += textEndsInPunctuationOrBlank ? '' : '.';
+		var textIsBlank = text === '';
+		text += textIsBlank ? '' : ' ';
+		text += input.reason;
+	}
+
+	text = text.trim();
+	var textEndsInPunctuation = /[.?!;]$/.test(text);
+	if (!textEndsInPunctuation) {
+		text += '.';
+	}
+
+	text += ' ~~~~';
+	text = text.replace(/\r?\n/g, '\n*:');  // indent newlines
+
+	return text;
+};
+
+Twinkle.arv.callback.buildAivReport = function(input) {
+	return '\n*{{vandal|' + (/=/.test(input.uid) ? '1=' : '') + input.uid + '}} &ndash; ' + Twinkle.arv.callback.getAivReasonOnlyWikitext(input);
+};
+
+Twinkle.arv.callback.getUsernameReportWikitext = function(input) {
+	// generate human-readable string, e.g. "misleading and promotional username"
+	if (input.arvtype.length <= 2) {
+		input.arvtype = input.arvtype.join(' and ');
+	} else {
+		input.arvtype = [ input.arvtype.slice(0, -1).join(', '), input.arvtype.slice(-1) ].join(' and ');
+	}
+
+	// a or an?
+	var adjective = 'a';
+	if (/[aeiouwyh]/.test(input.arvtype[0] || '')) { // non 100% correct, but whatever, including 'h' for Cockney
+		adjective = 'an';
+	}
+
+	var text = '*{{user-uaa|1=' + input.uid + '}} &ndash; ';
+	if (input.arvtype.length) {
+		text += 'Violation of the username policy as ' + adjective + ' ' + input.arvtype + ' username. ';
+	}
+	if (input.reason !== '') {
+		text += Morebits.string.toUpperCaseFirstChar(input.reason);
+		var endsInPeriod = /\.$/.test(input.reason);
+		if (!endsInPeriod) {
+			text += '.';
+		}
+		text += ' ';
+	}
+	text += '~~~~';
+	text = text.replace(/\r?\n/g, '\n*:');  // indent newlines
+
+	return text;
+};
+
+Twinkle.arv.callback.getSpiReportData = function(input) {
+	var isPuppetReport = input.category === 'puppet';
+
+	if (!isPuppetReport) {
+		input.sockpuppets = input.sockpuppets.filter((sock) => sock !== ''); // ignore empty sockpuppet inputs
+	}
+
+	if (isPuppetReport && !input.sockmaster) {
+		return { error: 'You have not entered a sockmaster account for this puppet. Consider reporting this account as a sockpuppeteer instead.' };
+	} else if (!isPuppetReport && input.sockpuppets.length === 0) {
+		return { error: 'You have not entered any sockpuppet account(s) for this sockmaster. Consider reporting this account as a sockpuppet instead.' };
+	}
+
+	input.sockmaster = input.sockmaster || input.uid;
+	input.sockpuppets = isPuppetReport ? [input.uid] : Morebits.array.uniq(input.sockpuppets);
+
 	var text = '\n{{subst:SPI report|' +
-		params.sockpuppets.map(function(sock, index) {
-			return (index + 1) + '=' + sock;
-		}).join('|') + '\n|evidence=' + params.evidence + ' \n';
+	input.sockpuppets.map(function(sock, index) {
+		return (index + 1) + '=' + sock;
+	}).join('|') + '\n|evidence=' + input.evidence + ' \n';
 
-	if (params.checkuser) {
+	if (input.checkuser) {
 		text += '|checkuser=yes';
 	}
 	text += '}}';
 
-	var reportpage = 'Wikipedia:Sockpuppet investigations/' + params.uid;
-
-	Morebits.wiki.actionCompleted.redirect = reportpage;
-	Morebits.wiki.actionCompleted.notice = 'Reporting complete';
-
-	var spiPage = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
-	spiPage.setFollowRedirect(true);
-	spiPage.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].');
-	spiPage.setChangeTags(Twinkle.changeTags);
-	spiPage.setAppendText(text);
-	spiPage.setWatchlist(Twinkle.getPref('spiWatchReport'));
-	spiPage.append();
-
-	Morebits.wiki.removeCheckpoint();  // all page updates have been started
+	return {
+		sockmaster: input.sockmaster,
+		wikitext: text
+	};
 };
 
-Twinkle.arv.processAN3 = function(params) {
-	// prepare the AN3 report
-	var minid;
-	for (var i = 0; i < params.diffs.length; ++i) {
-		if (params.diffs[i].parentid && (!minid || params.diffs[i].parentid < minid)) {
-			minid = params.diffs[i].parentid;
-		}
+Twinkle.arv.callback.getAn3ReportData = function(input) {
+	var data;
+	var confirmations = [];
+
+	var diffs = input.s_diffs ? input.s_diffs.map((revJSON) => JSON.parse(revJSON)) : [];
+
+	if (diffs.length < 3) {
+		confirmations.push('You have selected fewer than three offending edits. Do you wish to make the report anyway?');
 	}
 
-	new mw.Api().get({
-		action: 'query',
-		prop: 'revisions',
-		format: 'json',
-		rvprop: 'sha1|ids|timestamp|comment',
-		rvlimit: 100, // intentionally limited
-		rvstartid: minid,
-		rvexcludeuser: params.uid,
-		indexpageids: true,
-		titles: params.page
-	}).done(function(data) {
-		Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
+	var warnings = input.s_warnings ? input.s_warnings.map((revJSON) => JSON.parse(revJSON)) : [];
 
+	if (!warnings.length) {
+		confirmations.push('You have not selected any edits where you warned the offender. Do you wish to make the report anyway?');
+	}
+
+	var resolves = input.s_resolves ? input.s_resolves.map((revJSON) => JSON.parse(revJSON)) : [];
+	var free_resolves = input.s_resolves_free;
+
+	return new Promise((resolve, reject) => {
+		if (free_resolves) {
+			var query;
+			var diff, oldid;
+			var specialDiff = /Special:Diff\/(\d+)(?:\/(\S+))?/i.exec(free_resolves);
+			if (specialDiff) {
+				if (specialDiff[2]) {
+					oldid = specialDiff[1];
+					diff = specialDiff[2];
+				} else {
+					diff = specialDiff[1];
+				}
+			} else {
+				diff = mw.util.getParamValue('diff', free_resolves);
+				oldid = mw.util.getParamValue('oldid', free_resolves);
+			}
+			var title = mw.util.getParamValue('title', free_resolves);
+			var diffNum = /^\d+$/.test(diff); // used repeatedly
+
+			// rvdiffto in prop=revisions is deprecated, but action=compare doesn't return
+			// timestamps ([[phab:T247686]]) so we can't rely on it unless necessary.
+			// Likewise, we can't rely on a meaningful comment for diff=cur.
+			// Additionally, links like Special:Diff/123/next, Special:Diff/123/456, or ?diff=next&oldid=123
+			// would each require making use of rvdir=newer in the revisions API.
+			// That requires a title parameter, so we have to use compare instead of revisions.
+			if (oldid && (diff === 'cur' || (!title && (diff === 'next' || diffNum)))) {
+				query = {
+					action: 'compare',
+					fromrev: oldid,
+					prop: 'ids|title',
+					format: 'json'
+				};
+				if (diffNum) {
+					query.torev = diff;
+				} else {
+					query.torelative = diff;
+				}
+			} else {
+				query = {
+					action: 'query',
+					prop: 'revisions',
+					rvprop: 'ids|timestamp|comment',
+					format: 'json',
+					indexpageids: true
+				};
+
+				if (diff && oldid) {
+					if (diff === 'prev') {
+						query.revids = oldid;
+					} else {
+						query.titles = title;
+						query.rvdir = 'newer';
+						query.rvstartid = oldid;
+
+						if (diff === 'next' && title) {
+							query.rvlimit = 2;
+						} else if (diffNum) {
+							// Diffs may or may not be consecutive, no limit
+							query.rvendid = diff;
+						}
+					}
+				} else {
+					// diff=next|prev|cur with no oldid
+					// Implies title= exists otherwise it's not a valid diff link (well, it is, but to the Main Page)
+					if (diff && /^\D+$/.test(diff)) {
+						query.titles = title;
+					} else {
+						query.revids = diff || oldid;
+					}
+				}
+			}
+
+			new mw.Api().get(query).then(function(queryResponse) {
+				var page;
+				if (queryResponse.compare && queryResponse.compare.fromtitle === queryResponse.compare.totitle) {
+					page = queryResponse;
+				} else if (queryResponse.query) {
+					var pageid = queryResponse.query.pageids[0];
+					page = queryResponse.query.pages[pageid];
+				} else {
+					return;
+				}
+				resolve(page);
+			}).catch((queryResponse) => {
+				reject(queryResponse);
+			});
+		} else {
+			resolve();
+		}
+	}).then((free_resolves_data) => {
+		if (!resolves.length && !free_resolves_data) {
+			confirmations.push('You have not selected any edits where you tried to resolve the issue. Do you wish to make the report anyway?');
+		}
+
+		data = {
+			uid: input.uid,
+			page: input.page,
+			comment: input.comment,
+			diffs: diffs,
+			warnings: warnings,
+			resolves: resolves,
+			free_resolves: free_resolves_data,
+			confirmations: confirmations
+		};
+
+		var minid;
+		for (var i = 0; i < data.diffs.length; ++i) {
+			if (data.diffs[i].parentid && (!minid || data.diffs[i].parentid < minid)) {
+				minid = data.diffs[i].parentid;
+			}
+		}
+
+		return new mw.Api().get({
+			action: 'query',
+			prop: 'revisions',
+			format: 'json',
+			rvprop: 'sha1|ids|timestamp|comment',
+			rvlimit: 100, // intentionally limited
+			rvstartid: minid,
+			rvexcludeuser: data.uid,
+			indexpageids: true,
+			titles: data.page
+		});
+	}).then((queryResponse) => {
 		// In case an edit summary was revdel'd
 		var hasHiddenComment = function(rev) {
 			if (!rev.comment && typeof rev.commenthidden === 'string') {
 				return '(comment hidden)';
 			}
-			return '"' + rev.comment + '"';
+			// swap curly braces for HTML entities to avoid templates being rendered if they were included in an edit summary
+			return '"' + rev.comment.replace('{', '&#123;').replace('}', '&#125;') + '"';
 
 		};
 
 		var orig;
-		if (data.length) {
-			var sha1 = data[0].sha1;
-			for (var i = 1; i < data.length; ++i) {
-				if (data[i].sha1 === sha1) {
-					orig = data[i];
+		if (queryResponse.length) {
+			var sha1 = queryResponse[0].sha1;
+			for (var i = 1; i < queryResponse.length; ++i) {
+				if (queryResponse[i].sha1 === sha1) {
+					orig = queryResponse[i];
 					break;
 				}
 			}
 
 			if (!orig) {
-				orig = data[0];
+				orig = queryResponse[0];
 			}
 		}
 
@@ -896,8 +1004,8 @@ Twinkle.arv.processAN3 = function(params) {
 		var grouped_diffs = {};
 
 		var parentid, lastid;
-		for (var j = 0; j < params.diffs.length; ++j) {
-			var cur = params.diffs[j];
+		for (var j = 0; j < data.diffs.length; ++j) {
+			var cur = data.diffs[j];
 			if ((cur.revid && cur.revid !== parentid) || lastid === null) {
 				lastid = cur.revid;
 				grouped_diffs[lastid] = [];
@@ -919,15 +1027,15 @@ Twinkle.arv.processAN3 = function(params) {
 			}).join('\n');
 			return ret;
 		}).reverse().join('\n');
-		var warningtext = params.warnings.reverse().map(function(v) {
+		var warningtext = data.warnings.reverse().map(function(v) {
 			return '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v);
 		}).join('\n');
-		var resolvetext = params.resolves.reverse().map(function(v) {
+		var resolvetext = data.resolves.reverse().map(function(v) {
 			return '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v);
 		}).join('\n');
 
-		if (params.free_resolves) {
-			var page = params.free_resolves;
+		if (data.free_resolves) {
+			var page = data.free_resolves;
 			if (page.compare) {
 				resolvetext += '\n# ' + ' {{diff|oldid=' + page.compare.fromrevid + '|diff=' + page.compare.torevid + '|label=Consecutive edits on ' + page.compare.totitle + '}}';
 			} else if (page.revisions) {
@@ -945,39 +1053,21 @@ Twinkle.arv.processAN3 = function(params) {
 			}
 		}
 
-		var comment = params.comment.replace(/~*$/g, '').trim();
+		var comment = data.comment.replace(/~*$/g, '').trim();
 
 		if (comment) {
 			comment += ' ~~~~';
 		}
 
-		var text = '\n\n' + '{{subst:AN3 report|diffs=' + difftext + '|warnings=' + warningtext + '|resolves=' + resolvetext + '|pagename=' + params.page + '|orig=' + origtext + '|comment=' + comment + '|uid=' + params.uid + '}}';
+		var reportWikitext = '\n\n' + '{{subst:AN3 report|diffs=' + difftext + '|warnings=' + warningtext + '|resolves=' + resolvetext + '|pagename=' + data.page + '|orig=' + origtext + '|comment=' + comment + '|uid=' + data.uid + '}}';
 
-		var reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
-
-		Morebits.wiki.actionCompleted.redirect = reportpage;
-		Morebits.wiki.actionCompleted.notice = 'Reporting complete';
-
-		var an3Page = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
-		an3Page.setFollowRedirect(true);
-		an3Page.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].');
-		an3Page.setChangeTags(Twinkle.changeTags);
-		an3Page.setAppendText(text);
-		an3Page.append();
-
-		// notify user
-
-		var notifyText = '\n\n{{subst:an3-notice|1=' + mw.util.wikiUrlencode(params.uid) + '|auto=1}} ~~~~';
-
-		var talkPage = new Morebits.wiki.page('User talk:' + params.uid, 'Notifying edit warrior');
-		talkPage.setFollowRedirect(true);
-		talkPage.setEditSummary('Notifying about edit warring noticeboard discussion.');
-		talkPage.setChangeTags(Twinkle.changeTags);
-		talkPage.setAppendText(notifyText);
-		talkPage.append();
-		Morebits.wiki.removeCheckpoint();  // all page updates have been started
-	}).fail(function(data) {
-		console.log('API failed :(', data); // eslint-disable-line no-console
+		return {
+			uid: data.uid,
+			reportWikitext: reportWikitext,
+			confirmations: data.confirmations
+		};
+	}).catch((errorData) => {
+		return Promise.reject({ message: 'API failed :(', data: errorData });
 	});
 };
 
