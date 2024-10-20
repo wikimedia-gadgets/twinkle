@@ -661,8 +661,6 @@ Twinkle.arv.callback.evaluate = function(e) {
 Twinkle.arv.callback.preview = function(form) {
 	var input = Morebits.quickForm.getInputData(form);
 
-	console.log(input); // eslint-disable-line no-console
-
 	var reportText = '';
 	switch (input.category) {
 		case 'aiv':
