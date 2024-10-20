@@ -94,9 +94,11 @@ html {
 @media screen {
 	html.skin-theme-clientpref-night #twinkle-config-headerbox {
 		background: #532B18;
+	}
 }
 
 @media screen and (prefers-color-scheme: dark) {
 	html.skin-theme-clientpref-os #twinkle-config-headerbox {
 		background: #532B18;
+	}
 }
