@@ -975,7 +975,7 @@ Twinkle.arv.callback.getAn3ReportData = function(input) {
 				return '(comment hidden)';
 			}
 			// swap curly braces for HTML entities to avoid templates being rendered if they were included in an edit summary
-			return '"' + rev.comment.replace('{', '&#123;').replace('}', '&#125;') + '"';
+			return '"' + rev.comment.replace(/\{/g, '&#123;').replace(/\}/g, '&#125;') + '"';
 
 		};
 
