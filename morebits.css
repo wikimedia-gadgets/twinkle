@@ -10,58 +10,58 @@
 
 /* Define CSS variables */
 html {
-	--morebits-color-status-status: #4682B4;
-	--morebits-color-legend: #31628F;
-	--morebits-color-tooltip: #0000cd;
-	--morebits-color-info: #228B22;
-	--morebits-color-warning: #FF4500;
-	--morebits-color-titlebar-links: #3062AD;
-	--morebits-bgcolor-dialog: #F0F8FF;
-	--morebits-bgcolor-titlebar: #BCCADF;
+	--twinkle-color-status-status: #4682B4;
+	--twinkle-color-legend: #31628F;
+	--twinkle-color-tooltip: #0000cd;
+	--twinkle-color-info: #228B22;
+	--twinkle-color-warning: #FF4500;
+	--twinkle-color-titlebar-links: #3062AD;
+	--twinkle-bgcolor-dialog: #F0F8FF;
+	--twinkle-bgcolor-titlebar: #BCCADF;
 }
 
 @media screen {
 	html.skin-theme-clientpref-night {
-		--morebits-color-status-status: #A6C4DE;
-		--morebits-color-legend: #6B9DCC;
-		--morebits-color-tooltip: #7A7AFF;
-		--morebits-color-info: #6BDB6B;
-		--morebits-color-warning: #FFC7B3;
-		--morebits-color-titlebar-links: #8BADDF;
-		--morebits-bgcolor-dialog: #17244A;
-		--morebits-bgcolor-titlebar: #2F4165;
+		--twinkle-color-status-status: #A6C4DE;
+		--twinkle-color-legend: #6B9DCC;
+		--twinkle-color-tooltip: #7A7AFF;
+		--twinkle-color-info: #6BDB6B;
+		--twinkle-color-warning: #FFC7B3;
+		--twinkle-color-titlebar-links: #8BADDF;
+		--twinkle-bgcolor-dialog: #17244A;
+		--twinkle-bgcolor-titlebar: #2F4165;
 	}
 }
 
 @media screen and (prefers-color-scheme: dark) {
 	html.skin-theme-clientpref-os {
-		--morebits-color-status-status: #A6C4DE;
-		--morebits-color-legend: #6B9DCC;
-		--morebits-color-tooltip: #7A7AFF;
-		--morebits-color-info: #6BDB6B;
-		--morebits-color-warning: #FFC7B3;
-		--morebits-color-titlebar-links: #8BADDF;
-		--morebits-bgcolor-dialog: #17244A;
-		--morebits-bgcolor-titlebar: #2F4165
+		--twinkle-color-status-status: #A6C4DE;
+		--twinkle-color-legend: #6B9DCC;
+		--twinkle-color-tooltip: #7A7AFF;
+		--twinkle-color-info: #6BDB6B;
+		--twinkle-color-warning: #FFC7B3;
+		--twinkle-color-titlebar-links: #8BADDF;
+		--twinkle-bgcolor-dialog: #17244A;
+		--twinkle-bgcolor-titlebar: #2F4165
 	}
 }
 
 /* Morebits.status */
 
 .morebits_status_status {
-	color: var(--morebits-color-status-status, #4682B4);
+	color: var(--twinkle-color-status-status, #4682B4);
 }
 
 .morebits_status_info {
-	color: var(--morebits-color-info, #228B22);
+	color: var(--twinkle-color-info, #228B22);
 }
 
 .morebits_status_warn {
-	color: var(--morebits-color-warning, #FF4500);
+	color: var(--twinkle-color-warning, #FF4500);
 }
 
 .morebits_status_error {
-	color: var(--morebits-color-warning, #FF4500);
+	color: var(--twinkle-color-warning, #FF4500);
 	font-weight: bold;
 }
 
@@ -88,7 +88,7 @@ form.quickform fieldset
 
 form.quickform legend
 {
-	color: var(--morebits-color-legend, #31628F);
+	color: var(--twinkle-color-legend, #31628F);
 	font-weight: bold;
 }
 
@@ -164,7 +164,7 @@ form.quickform .quickformSubgroup
 /* The tooltip button and the content itself */
 form.quickform .morebits-tooltipButton
 {
-	color: var(--morebits-color-tooltip, mediumblue);
+	color: var(--twinkle-color-tooltip, mediumblue);
 	font-weight: bold;
 	cursor: help;
 	padding: .3em;
@@ -238,7 +238,7 @@ div.morebits-usertext {
 .morebits-dialog {
 	border: 1px #666 solid;
 	font-family: sans-serif;
-	background-color: var(--morebits-bgcolor-dialog, #F0F8FF);
+	background-color: var(--twinkle-bgcolor-dialog, #F0F8FF);
 	color: inherit;
 	background-image: none;
 }
@@ -258,7 +258,7 @@ div.morebits-usertext {
 
 body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	height: 1em;
-	background-color: var(--morebits-bgcolor-titlebar, #BCCADF) !important;
+	background-color: var(--twinkle-bgcolor-titlebar, #BCCADF) !important;
 	color: inherit;
 	background-image: none !important;
 	font: bold 108% sans-serif; /* 100% is 12px (from above) => 108% is 12.96px */
@@ -288,7 +288,7 @@ body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 }
 
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
-	background-color: var(--morebits-bgcolor-titlebar, #BCCADF);
+	background-color: var(--twinkle-bgcolor-titlebar, #BCCADF);
 	color: inherit;
 	margin: 0;
 	min-height: .5em;
@@ -312,7 +312,7 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 }
 
 body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
-	color: var(--morebits-color-titlebar-links, #3062AD);
+	color: var(--twinkle-color-titlebar-links, #3062AD);
 }
 
 .morebits-dialog-buttons[data-empty] + .morebits-dialog-footerlinks {
@@ -348,33 +348,6 @@ th.morebits-mbox-text, td.morebits-mbox-text {
     border: none;
     padding: 0.25em 0.9em;
     width: 100%;
-}
-
-/* Twinkle config */
-#twinkle-config {
-	border: 1px solid #666;
-	background: var(--morebits-bgcolor-dialog, #F0F8FF);
-	color: inherit;
-}
-
-#twinkle-config label {
-	color: var(--color-base, #202122);
-}
-
-#twinkle-config-titlebar {
-	background: var(--morebits-bgcolor-titlebar, #BCCADF);
-	color: inherit;
-}
-
-#twinkle-config-buttonpane {
-	background: var(--morebits-bgcolor-titlebar, #BCCADF);
-	color: inherit;
-	padding: 0.5em;
-}
-
-.twinkle-config-helptip {
-	font-size: 90%;
-	color: var(--color-subtle, #54595d);
 }
 
 /* Override select2 silliness */
