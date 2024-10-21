@@ -112,7 +112,6 @@ exports[`quickform input element 1`] = `
     Label
   </label>
   <input
-    class="notheme"
     id="node_0"
     name="inputname"
     type="text"
@@ -168,7 +167,6 @@ exports[`quickform select element 1`] = `
     Select label
   </label>
   <select
-    class="notheme"
     id="node_1"
     name="selectname"
   >
@@ -205,7 +203,6 @@ exports[`quickform textarea element 1`] = `
   id="div_node_7"
 >
   <textarea
-    class="notheme"
     cols="4"
     id="node_7"
     name="textareaname1"
