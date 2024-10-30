@@ -1478,6 +1478,7 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 	if (!Twinkle.getPref('oldSelect')) {
 		$('select[name=sub_group]')
 			.select2({
+				theme: 'default select2-morebits',
 				width: '100%',
 				matcher: Morebits.select2.matchers.optgroupFull,
 				templateResult: Morebits.select2.highlightSearchMatches,

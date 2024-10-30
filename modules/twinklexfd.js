@@ -378,6 +378,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			$(work_area).find('[name=delsortCats]')
 				.attr('data-placeholder', 'Select delsort pages')
 				.select2({
+					theme: 'default select2-morebits',
 					width: '100%',
 					matcher: Morebits.select2.matcher,
 					templateResult: Morebits.select2.highlightSearchMatches,

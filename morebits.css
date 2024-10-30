@@ -358,10 +358,12 @@ th.morebits-mbox-text, td.morebits-mbox-text {
 }
 
 /* Override select2 silliness */
-.morebits-dialog-content .select2,
-.morebits-dialog-content .select2-container,
-.morebits-dialog-content .select2-selection,
-.morebits-dialog-content .select2-results {
+.select2-morebits,
+.select2-morebits .select2-results,
+.select2-morebits .select2-results__option[aria-selected=true],
+.select2-morebits .select2-selection__rendered,
+.select2-morebits .select2-selection--multiple,
+.select2-morebits .select2-selection__choice {
     background: var(--background-color-base, #fff) !important;
     color: inherit !important;
 }

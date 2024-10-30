@@ -649,6 +649,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 
 		$form.find('[name=pagerestrictions]').select2({
+			theme: 'default select2-morebits',
 			width: '100%',
 			placeholder: 'Select pages to block user from',
 			language: {
