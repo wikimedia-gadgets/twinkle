@@ -6,15 +6,15 @@ html {
 
 @media screen {
 	html.skin-theme-clientpref-night {
-		--twinkle-bgcolor-dialog: #17244A;
-		--twinkle-bgcolor-titlebar: #2F4165;
+		--twinkle-bgcolor-dialog: #141c26;
+		--twinkle-bgcolor-titlebar: #1c2a52;
 	}
 }
 
 @media screen and (prefers-color-scheme: dark) {
 	html.skin-theme-clientpref-os {
-		--twinkle-bgcolor-dialog: #17244A;
-		--twinkle-bgcolor-titlebar: #2F4165
+		--twinkle-bgcolor-dialog: #141c26;
+		--twinkle-bgcolor-titlebar: #1c2a52;
 	}
 }
 
