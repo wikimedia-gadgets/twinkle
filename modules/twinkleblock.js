@@ -698,6 +698,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 
 		$form.find('[name=namespacerestrictions]').select2({
+			theme: 'default select2-morebits',
 			width: '100%',
 			matcher: Morebits.select2.matchers.wordBeginning,
 			language: {
