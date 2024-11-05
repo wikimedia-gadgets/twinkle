@@ -542,8 +542,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 					aivPage.getStatusElement().status('Adding new report...');
 					aivPage.setEditSummary('Reporting [[Special:Contributions/' + input.uid + '|' + input.uid + ']].');
 					aivPage.setChangeTags(Twinkle.changeTags);
-					aivPage.setAppendText();
-					aivPage.append(Twinkle.arv.callback.buildAivReport(input));
+					aivPage.setAppendText(Twinkle.arv.callback.buildAivReport(input));
+					aivPage.append();
 				});
 			});
 			break;
@@ -653,6 +653,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 				talkPage.setAppendText(notifyText);
 				talkPage.append();
 				Morebits.wiki.removeCheckpoint();  // all page updates have been started
+			}).catch((error) => {
+				console.error('Error occurred while preparing AN3 report.', error); // eslint-disable-line no-console
+				alert('Error occurred while preparing AN3 report: ' + error.message);
 			});
 			break;
 	}
@@ -693,6 +696,9 @@ Twinkle.arv.callback.preview = function(form) {
 			Twinkle.arv.callback.getAn3ReportData(input).then((data) => {
 				reportText = data.reportWikitext.trim();
 				form.previewer.beginRender(reportText);
+			}).catch((error) => {
+				console.error('Error occurred while preparing AN3 report.', error); // eslint-disable-line no-console
+				form.previewer.beginRender('Preview failed: ' + error.message);
 			});
 			return; // stop here, as the preview can only be displayed when the promise resolves
 	}
@@ -925,11 +931,11 @@ Twinkle.arv.callback.getAn3ReportData = function(input) {
 					var pageid = queryResponse.query.pageids[0];
 					page = queryResponse.query.pages[pageid];
 				} else {
-					return;
+					reject({ message: 'Could not find any diff associated with the URL provided.', data: queryResponse });
 				}
 				resolve(page);
 			}).catch((queryResponse) => {
-				reject(queryResponse);
+				reject({ message: 'Call to MediaWiki API failed.', data: queryResponse });
 			});
 		} else {
 			resolve();
@@ -967,6 +973,8 @@ Twinkle.arv.callback.getAn3ReportData = function(input) {
 			rvexcludeuser: data.uid,
 			indexpageids: true,
 			titles: data.page
+		}).catch((queryResponse) => {
+			throw { message: 'Call to MediaWiki API failed.', data: queryResponse };
 		});
 	}).then((queryResponse) => {
 		// In case an edit summary was revdel'd
@@ -1065,7 +1073,11 @@ Twinkle.arv.callback.getAn3ReportData = function(input) {
 			confirmations: data.confirmations
 		};
 	}).catch((errorData) => {
-		return Promise.reject({ message: 'API failed :(', data: errorData });
+		if (typeof errorData !== 'object' || Object.prototype.hasOwnProperty.call(errorData, 'message')) {
+			return Promise.reject({ message: 'Unknown error: ' + errorData });
+		}
+
+		return Promise.reject(errorData);
 	});
 };
 
