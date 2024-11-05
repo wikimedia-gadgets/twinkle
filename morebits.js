@@ -5861,7 +5861,7 @@ Morebits.simpleWindow = function SimpleWindow(width, height) {
 
 	// resize the scrollbox with the dialog, if one is present
 	$widget.resizable('option', 'alsoResize', '#' + this.content.id + ' .morebits-scrollbox, #' + this.content.id);
-	
+
 	// add skin-invert to "close" button
 	$('.morebits-dialog .ui-dialog-titlebar-close').addClass('skin-invert');
 };
