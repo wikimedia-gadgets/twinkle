@@ -718,7 +718,7 @@ Twinkle.tag.article.tagList = {
 			}
 		],
 		'Style of writing': [
-			{ tag: 'Advert', description: 'written like an advertisement' },
+			{ tag: 'Promotional', description: 'contains promotional content' },
 			{ tag: 'Cleanup tense', description: 'does not follow guidelines on use of different tenses.' },
 			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
 			{ tag: 'Fanpov', description: "written from a fan's point of view" },
