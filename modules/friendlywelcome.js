@@ -598,6 +598,46 @@ Twinkle.welcome.templates = {
 			'welcomeen-uk': {
 				description: 'welcome for users whose first language appears to be Ukrainian',
 				syntax: '{{subst:welcomeen-uk}}'
+			},
+			'welcomeen-fa': {
+				description: 'welcome for users whose first language appears to be Persian',
+				syntax: '{{subst:welcomeen-fa}}'
+			},
+			'welcomeen-ha': {
+				description: 'welcome for users whose first language appears to be Hausa',
+				syntax: '{{subst:welcomeen-ha}}'
+			},
+			'welcomeen-ms': {
+				description: 'welcome for users whose first language appears to be Malay',
+				syntax: '{{subst:welcomeen-ms}}'
+			},
+			'welcomeen-no': {
+				description: 'welcome for users whose first language appears to be Norwegian',
+				syntax: '{{subst:welcomeen-no}}'
+			},
+			'welcomeen-pl': {
+				description: 'welcome for users whose first language appears to be Polish',
+				syntax: '{{subst:welcomeen-pl}}'
+			},
+			'welcomeen-th': {
+				description: 'welcome for users whose first language appears to be Thai',
+				syntax: '{{subst:welcomeen-th}}'
+			},
+			'welcomeen-tl': {
+				description: 'welcome for users whose first language appears to be Tagalog',
+				syntax: '{{subst:welcomeen-tl}}'
+			},
+			'welcomeen-tr': {
+				description: 'welcome for users whose first language appears to be Turkish',
+				syntax: '{{subst:welcomeen-tr}}'
+			},
+			'welcomeen-ur': {
+				description: 'welcome for users whose first language appears to be Urdu',
+				syntax: '{{subst:welcomeen-ur}}'
+			},
+			'welcomeen-vi': {
+				description: 'welcome for users whose first language appears to be Vietnamese',
+				syntax: '{{subst:welcomeen-vi}}'
 			}
 		}
 	}
