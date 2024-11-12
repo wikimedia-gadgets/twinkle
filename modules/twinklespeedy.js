@@ -143,7 +143,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					value: 'warnusertalk',
 					name: 'warnusertalk',
 					tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
-							'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
+						'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
 					checked: !Twinkle.speedy.hasCSD,
 					event: function(event) {
 						event.stopPropagation();
@@ -173,7 +173,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 				value: 'notify',
 				name: 'notify',
 				tooltip: 'A notification template will be placed on the talk page of the creator, IF you have a notification enabled in your Twinkle preferences ' +
-					'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
+						'for the criterion you choose AND this box is checked. The creator may be welcomed as well.',
 				checked: !Morebits.userIsSysop || !(Twinkle.speedy.hasCSD || Twinkle.getPref('deleteSysopDefaultToDelete')),
 				event: function(event) {
 					event.stopPropagation();
