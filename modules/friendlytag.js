@@ -828,6 +828,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Weasel', description: 'neutrality or verifiability is compromised by the use of weasel words' }
 		],
 		'Verifiability and sources': [
+			{ tag: 'BLP no footnotes', description: 'BLP that lacks inline citations'},
 			{ tag: 'BLP one source', description: 'BLP that relies largely or entirely on a single source' },
 			{ tag: 'BLP sources', description: 'BLP that needs additional references or sources for verification' },
 			{ tag: 'BLP unreferenced', description: 'BLP does not cite any sources at all (use BLP PROD instead for new articles)' },
@@ -841,7 +842,8 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Sources exist', description: 'notable topic, sources are available that could be added to article' },
 			{ tag: 'Third-party', description: 'relies too heavily on sources too closely associated with the subject' },
 			{ tag: 'Unreferenced', description: 'does not cite any sources at all' },
-			{ tag: 'Unreliable sources', description: 'some references may not be reliable' }
+			{ tag: 'Unreliable sources', description: 'some references may not be reliable' },
+			{ tag: 'User-generated', description: 'contains many references to user-generated (self-published) content'}
 		]
 	},
 	'Specific content issues': {

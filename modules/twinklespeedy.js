@@ -732,7 +732,7 @@ Twinkle.speedy.userList = [
 		tooltip: 'User pages of users that do not exist (Check Special:Listusers)'
 	},
 	{
-		label: 'U5: WP:NOTWEBHOST violations by a non-contributor',
+		label: 'U5: A non-contributor misusing Wikipedia as a web host',
 		value: 'notwebhost',
 		tooltip: 'Pages in userspace consisting of writings, information, discussions, or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of user pages, except for plausible drafts and pages adhering to WP:UPYES. It applies regardless of the age of the page in question.',
 		hideWhenRedirect: true
