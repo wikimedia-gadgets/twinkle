@@ -1161,6 +1161,7 @@ Twinkle.tag.redirectList = {
 Twinkle.tag.fileList = {
 	'License and sourcing problem tags': [
 		{ label: '{{Better source requested}}: source info consists of bare image URL/generic base URL only', value: 'Better source requested' },
+		{ label: '{{Maybe free media}}: currently tagged under non-free license, but free license may be available ', value: 'Maybe free media' },
 		{ label: '{{Non-free reduce}}: non-low-resolution fair use image (or too-long audio clip, etc)', value: 'Non-free reduce' },
 		{ label: '{{Orphaned non-free revisions}}: fair use media with old revisions that need to be deleted', value: 'Orphaned non-free revisions' }
 	],
@@ -1213,7 +1214,7 @@ Twinkle.tag.fileList = {
 		{ label: '{{Bad format}}: PDF/DOC/... file should be converted to a more useful format', value: 'Bad format' },
 		{ label: '{{Bad GIF}}: GIF that should be PNG, JPEG, or SVG', value: 'Bad GIF' },
 		{ label: '{{Bad JPEG}}: JPEG that should be PNG or SVG', value: 'Bad JPEG' },
-		{ label: '{{Bad SVG}}: SVG containing raster graphics', value: 'Bad SVG' },
+		{ label: '{{Bad SVG}}: SVG with a mix of raster and vector graphics', value: 'Bad SVG' },
 		{ label: '{{Bad trace}}: auto-traced SVG requiring cleanup', value: 'Bad trace' },
 		{
 			label: '{{Cleanup image}}: general cleanup', value: 'Cleanup image',
@@ -1226,6 +1227,7 @@ Twinkle.tag.fileList = {
 			}
 		},
 		{ label: '{{ClearType}}: image (not screenshot) with ClearType anti-aliasing', value: 'ClearType' },
+		{ label: '{{Fake SVG}}: SVG solely containing raster graphics without true vector content', value: 'Fake SVG' },
 		{ label: '{{Imagewatermark}}: image contains visible or invisible watermarking', value: 'Imagewatermark' },
 		{ label: '{{NoCoins}}: image using coins to indicate scale', value: 'NoCoins' },
 		{ label: '{{Overcompressed JPEG}}: JPEG with high levels of artifacts', value: 'Overcompressed JPEG' },
@@ -2065,16 +2067,18 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 				// Check that selected templates make sense given the file's extension.
 
-				// Bad GIF|JPEG|SVG
+				// Bad GIF|JPEG|SVG or Fake SVG
 				var badIndex; // Keep track of where the offending template is so we can reference it below
 				if ((extensionUpper !== 'GIF' && ((badIndex = params.tags.indexOf('Bad GIF')) !== -1)) ||
 					(extensionUpper !== 'JPEG' && ((badIndex = params.tags.indexOf('Bad JPEG')) !== -1)) ||
-					(extensionUpper !== 'SVG' && ((badIndex = params.tags.indexOf('Bad SVG')) !== -1))) {
+					(extensionUpper !== 'SVG' && ((badIndex = params.tags.indexOf('Bad SVG')) !== -1 || (badIndex = params.tags.indexOf('Fake SVG')) !== -1))) {
 					var suggestion = 'This appears to be a ' + extension + ' file, ';
-					if (['GIF', 'JPEG', 'SVG'].indexOf(extensionUpper) !== -1) {
-						suggestion += 'please use {{Bad ' + extensionUpper + '}} instead.';
-					} else {
+					// If there's no appropriate equivalent to suggest, then return a generic message
+					if (params.tags.includes('Fake SVG') || !(['GIF', 'JPEG', 'SVG'].indexOf(extensionUpper) !== -1)) {
 						suggestion += 'so {{' + params.tags[badIndex] + '}} is inappropriate.';
+					} else {
+						// Otherwise, recommend the equivalent template according to the file type
+						suggestion += 'please use {{Bad ' + extensionUpper + '}} instead.';
 					}
 					alert(suggestion);
 					return;
