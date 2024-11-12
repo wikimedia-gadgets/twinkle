@@ -903,7 +903,8 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Citation style', description: 'unclear or inconsistent citation style' },
 			{ tag: 'Cleanup bare URLs', description: 'uses bare URLs for references, which are prone to link rot' },
 			{ tag: 'More footnotes needed', description: 'has some references, but insufficient inline citations' },
-			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' }
+			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' },
+			{ tag: 'Parenthetical referencing', description: 'uses parenthetical referencing, which is deprecated on Wikipedia' }
 		],
 		'Categories': [
 			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
