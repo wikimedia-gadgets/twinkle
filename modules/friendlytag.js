@@ -855,10 +855,6 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Cleanup colors', description: 'uses color as only way to convey information' },
 			{ tag: 'Overcoloured', description: 'overuses color'}
 		],
-		'Categories': [
-			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
-			{ tag: 'Uncategorized', description: 'not added to any categories', excludeMI: true }
-		],
 		'Language': [
 			{ tag: 'Not English', description: 'written in a language other than English and needs translation',
 				excludeMI: true,
