@@ -847,7 +847,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Third-party', description: 'relies too heavily on sources too closely associated with the subject' },
 			{ tag: 'Unreferenced', description: 'does not cite any sources at all' },
 			{ tag: 'Unreliable sources', description: 'some references may not be reliable' },
-			{ tag: 'User-generated', description: 'contains largely references to user-generated content'}
+			{ tag: 'User-generated', description: 'contains many references to user-generated (self-published) content'}
 		]
 	},
 	'Specific content issues': {
