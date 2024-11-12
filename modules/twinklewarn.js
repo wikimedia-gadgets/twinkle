@@ -305,6 +305,10 @@ Twinkle.warn.messages = {
 				level3: {
 					label: 'Using a large language model',
 					summary: 'Warning: Using a large language model'
+				},
+				level4: {
+					label: 'Using a large language model',
+					summary: 'Final warning: Using a large language model'
 				}
 			},
 			'uw-biog': {
