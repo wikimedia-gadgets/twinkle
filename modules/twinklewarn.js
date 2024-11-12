@@ -1048,6 +1048,10 @@ Twinkle.warn.messages = {
 			summary: 'Notice: Article blanked and redirected',
 			hideReason: true
 		},
+		'uw-circular': {
+			label: 'Using circular sources',
+			summary: 'Notice: Using circular sources'
+		},
 		'uw-coi': {
 			label: 'Conflict of interest',
 			summary: 'Notice: Conflict of interest',
@@ -1250,10 +1254,6 @@ Twinkle.warn.messages = {
 		'uw-canvass': {
 			label: 'Canvassing',
 			summary: 'Warning: Canvassing'
-		},
-		'uw-circular': {
-			label: 'Using circular sources',
-			summary: 'Notice: Using circular sources'
 		},
 		'uw-copyright': {
 			label: 'Copyright violation',
