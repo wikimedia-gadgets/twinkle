@@ -348,7 +348,6 @@ Twinkle.fluff.addLinks = {
 };
 
 Twinkle.fluff.disableLinks = function disablelinks(parentNode) {
-	// Array.from not available in IE11 :(
 	$(parentNode).children().each(function(_ix, node) {
 		node.innerHTML = node.textContent; // Feels like cheating
 		$(node).css('font-weight', 'normal').css('color', 'darkgray');
