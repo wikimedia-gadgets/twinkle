@@ -685,7 +685,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Fiction', description: 'fails to distinguish between fact and fiction' },
 			{ tag: 'In-universe', description: 'subject is fictional and needs rewriting to provide a non-fictional perspective' },
 			{ tag: 'Long plot', description: 'plot summary is too long or excessively detailed' },
-			{ tag: 'More plot', description: 'plot summary is insufficient' },
+			{ tag: 'More plot', description: 'plot summary is too short' },
 			{ tag: 'No plot', description: 'needs a plot summary' }
 		]
 	},
