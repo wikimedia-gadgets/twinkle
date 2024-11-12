@@ -2125,7 +2125,7 @@ Morebits.date.prototype = {
 		level = parseInt(level, 10);
 		level = isNaN(level) ? 2 : level;
 
-		var header = Array(level + 1).join('='); // String.prototype.repeat not supported in IE 11
+		var header = '='.repeat(level);
 		var text = this.getUTCMonthName() + ' ' + this.getUTCFullYear();
 
 		if (header.length) { // wikitext-formatted header
@@ -3756,9 +3756,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * "edit" or "delete". In practice, only "edit" or "notedit" matters.
 	 * @returns {boolean}
 	 */
-	var fnCanUseMwUserToken = function(action) {
-		action = typeof action !== 'undefined' ? action : 'edit'; // IE doesn't support default parameters
-
+	var fnCanUseMwUserToken = function(action = 'edit') {
 		// If a watchlist expiry is set, we must always load the page
 		// to avoid overwriting indefinite protection.  Of course, not
 		// needed if setting indefinite watching!
@@ -5742,7 +5740,6 @@ Morebits.taskManager = function(context) {
 	this.taskDependencyMap = new Map();
 	this.failureCallbackMap = new Map();
 	this.deferreds = new Map();
-	this.allDeferreds = []; // Hack: IE doesn't support Map.prototype.values
 	this.context = context || window;
 
 	/**
@@ -5761,7 +5758,6 @@ Morebits.taskManager = function(context) {
 		this.failureCallbackMap.set(func, onFailure || function() {});
 		var deferred = $.Deferred();
 		this.deferreds.set(func, deferred);
-		this.allDeferreds.push(deferred);
 	};
 
 	/**
@@ -5792,7 +5788,7 @@ Morebits.taskManager = function(context) {
 				self.failureCallbackMap.get(task).apply(self.context, arguments);
 			});
 		});
-		return $.when.apply(null, this.allDeferreds); // resolved when everything is done!
+		return $.when.apply(null, [...this.deferreds.values()]); // resolved when everything is done!
 	};
 
 };

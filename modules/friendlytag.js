@@ -125,18 +125,11 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'article':
 			Window.setTitle('Article maintenance tagging');
 
-			// Object.values is unavailable in IE 11
-			var obj_values = Object.values || function (obj) {
-				return Object.keys(obj).map(function (key) {
-					return obj[key];
-				});
-			};
-
 			// Build sorting and lookup object flatObject, which is always
 			// needed but also used to generate the alphabetical list
 			Twinkle.tag.article.flatObject = {};
-			obj_values(Twinkle.tag.article.tagList).forEach(function (group) {
-				obj_values(group).forEach(function (subgroup) {
+			Object.values(Twinkle.tag.article.tagList).forEach(function (group) {
+				Object.values(group).forEach(function (subgroup) {
 					if (Array.isArray(subgroup)) {
 						subgroup.forEach(function (item) {
 							Twinkle.tag.article.flatObject[item.tag] = item;
