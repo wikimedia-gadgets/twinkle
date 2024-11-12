@@ -701,7 +701,7 @@ Twinkle.tag.article.tagList = {
 						{ label: '{{notability|Astro}}: notability guideline for astronomical objects', value: 'Astro' },
 						{ label: '{{notability|Biographies}}: notability guideline for biographies', value: 'Biographies' },
 						{ label: '{{notability|Books}}: notability guideline for books', value: 'Books' },
-						{ label: '{{notability|Companies}}: notability guidelines for companies and organizations', value: 'Companies' },
+						{ label: '{{notability|Companies}}: notability guideline for companies', value: 'Companies' },
 						{ label: '{{notability|Events}}: notability guideline for events', value: 'Events' },
 						{ label: '{{notability|Films}}: notability guideline for films', value: 'Films' },
 						{ label: '{{notability|Geographic}}: notability guideline for geographic features', value: 'Geographic' },
@@ -709,6 +709,7 @@ Twinkle.tag.article.tagList = {
 						{ label: '{{notability|Music}}: notability guideline for music', value: 'Music' },
 						{ label: '{{notability|Neologisms}}: notability guideline for neologisms', value: 'Neologisms' },
 						{ label: '{{notability|Numbers}}: notability guideline for numbers', value: 'Numbers' },
+						{ label: '{{notability|Organizations}}: notability guideline for organizations', value: 'Organizations' },
 						{ label: '{{notability|Products}}: notability guideline for products and services', value: 'Products' },
 						{ label: '{{notability|Sports}}: notability guideline for sports and athletics', value: 'Sports' },
 						{ label: '{{notability|Television}}: notability guideline for television shows', value: 'Television' },
@@ -719,12 +720,6 @@ Twinkle.tag.article.tagList = {
 		],
 		'Style of writing': [
 			{ tag: 'Advert', description: 'written like an advertisement' },
-			{ tag: 'Cleanup tense', description: 'does not follow guidelines on use of different tenses.' },
-			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
-			{ tag: 'Fanpov', description: "written from a fan's point of view" },
-			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
-			{ tag: 'Resume-like', description: 'written like a resume' },
-			{ tag: 'Manual', description: 'written like a manual or guidebook' },
 			{ tag: 'Cleanup press release', description: 'reads like a press release or news article',
 				subgroup: {
 					type: 'hidden',
@@ -733,8 +728,14 @@ Twinkle.tag.article.tagList = {
 					value: 'article'
 				}
 			},
+			{ tag: 'Cleanup tense', description: 'does not follow guidelines on use of different tenses.' },
+			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
+			{ tag: 'Fanpov', description: "written from a fan's point of view" },
+			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
+			{ tag: 'Manual', description: 'written like a manual or guidebook' },
 			{ tag: 'Over-quotation', description: 'too many or too-lengthy quotations for an encyclopedic entry' },
 			{ tag: 'Prose', description: 'written in a list format but may read better as prose' },
+			{ tag: 'Resume-like', description: 'written like a resume' },
 			{ tag: 'Technical', description: 'too technical for most readers to understand' },
 			{ tag: 'Tone', description: 'tone or style may not reflect the encyclopedic tone used on Wikipedia' }
 		],
@@ -807,7 +808,7 @@ Twinkle.tag.article.tagList = {
 				tooltip: 'Optional, but strongly recommended. Leave blank if not wanted.'
 			} : [] },
 			{ tag: 'Disputed', description: 'questionable factual accuracy' },
-			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
+			{ tag: 'Fringe theories', description: 'presents fringe theories as mainstream views' },
 			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject',
 				subgroup: [
 					{
@@ -823,6 +824,7 @@ Twinkle.tag.article.tagList = {
 					}
 				]
 			},
+			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
 			{ tag: 'Paid contributions', description: 'contains paid contributions, and may therefore require cleanup' },
 			{ tag: 'Peacock', description: 'contains wording that promotes the subject in a subjective manner without adding information' },
 			{ tag: 'POV', description: 'does not maintain a neutral point of view' },
@@ -1167,6 +1169,16 @@ Twinkle.tag.fileList = {
 	'Wikimedia Commons-related tags': [
 		{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
 		{
+			label: '{{Deleted on Commons}}: file has previously been deleted from Commons',
+			value: 'Deleted on Commons',
+			subgroup: {
+				type: 'input',
+				name: 'deletedOnCommonsName',
+				label: 'Name on Commons:',
+				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix'
+			}
+		},
+		{
 			label: '{{Do not move to Commons}}: file not suitable for moving to Commons',
 			value: 'Do not move to Commons',
 			subgroup: [
@@ -1193,6 +1205,16 @@ Twinkle.tag.fileList = {
 				type: 'input',
 				name: 'keeplocalName',
 				label: 'Commons image name if different:',
+				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+			}
+		},
+		{
+			label: '{{Nominated for deletion on Commons}}: file is nominated for deletion on Commons',
+			value: 'Nominated for deletion on Commons',
+			subgroup: {
+				type: 'input',
+				name: 'nominatedOnCommonsName',
+				label: 'Name on Commons:',
 				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 			}
 		},
@@ -1958,6 +1980,16 @@ Twinkle.tag.callbacks = {
 						break;
 					case 'Should be SVG':
 						currentTag += '|' + params.svgCategory;
+						break;
+					case 'Nominated for deletion on Commons':
+						if (params.nominatedOnCommonsName !== '') {
+							currentTag += '|1=' + params.nominatedOnCommonsName;
+						}
+						break;
+					case 'Deleted on Commons':
+						if (params.deletedOnCommonsName !== '') {
+							currentTag += '|1=' + params.deletedOnCommonsName;
+						}
 						break;
 					default:
 						break;  // don't care
