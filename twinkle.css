@@ -1,3 +1,23 @@
+/* Define CSS variables */
+html {
+	--twinkle-bgcolor-dialog: #F0F8FF;
+	--twinkle-bgcolor-titlebar: #BCCADF;
+}
+
+@media screen {
+	html.skin-theme-clientpref-night {
+		--twinkle-bgcolor-dialog: #141c26;
+		--twinkle-bgcolor-titlebar: #1c2a52;
+	}
+}
+
+@media screen and (prefers-color-scheme: dark) {
+	html.skin-theme-clientpref-os {
+		--twinkle-bgcolor-dialog: #141c26;
+		--twinkle-bgcolor-titlebar: #1c2a52;
+	}
+}
+
 /**
  * Explicitly set width of TW menu so that we can use a hidden peer gadget
  * to add space where the TW menu would go before it loads. See
@@ -24,6 +44,7 @@
 	padding: 0.6em;
 	margin: 0.5em auto;
 	text-align: center;
+	color: inherit;
 }
 
 /* twinkleoptions.js */
@@ -41,4 +62,43 @@
 /* WP:TWPREFS */
 #twinkle-config-content input[type=checkbox] {
 	margin-right: 2px;
+}
+
+/* Twinkle config */
+#twinkle-config {
+	border: 1px solid #666;
+	background: var(--twinkle-bgcolor-dialog, #F0F8FF);
+	color: inherit;
+}
+
+#twinkle-config label {
+	color: var(--color-base, #202122);
+}
+
+#twinkle-config-titlebar {
+	background: var(--twinkle-bgcolor-titlebar, #BCCADF);
+	color: inherit;
+}
+
+#twinkle-config-buttonpane {
+	background: var(--twinkle-bgcolor-titlebar, #BCCADF);
+	color: inherit;
+	padding: 0.5em;
+}
+
+.twinkle-config-helptip {
+	font-size: 90%;
+	color: var(--color-subtle, #54595d);
+}
+
+@media screen {
+	html.skin-theme-clientpref-night #twinkle-config-headerbox {
+		background: #532B18;
+	}
+}
+
+@media screen and (prefers-color-scheme: dark) {
+	html.skin-theme-clientpref-os #twinkle-config-headerbox {
+		background: #532B18;
+	}
 }

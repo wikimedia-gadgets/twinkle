@@ -1478,6 +1478,7 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 	if (!Twinkle.getPref('oldSelect')) {
 		$('select[name=sub_group]')
 			.select2({
+				theme: 'default select2-morebits',
 				width: '100%',
 				matcher: Morebits.select2.matchers.optgroupFull,
 				templateResult: Morebits.select2.highlightSearchMatches,
@@ -1487,14 +1488,7 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 			})
 			.change(Twinkle.warn.callback.change_subcategory);
 
-		$('.select2-selection')
-			.keydown(Morebits.select2.autoStart)
-			.focus()
-			.on('click', function () {
-				// This container doesn't exist until .select2-selection is clicked by the user.
-				// Opt out of dark mode for now.
-				$('.select2-container').addClass('notheme');
-			});
+		$('.select2-selection').keydown(Morebits.select2.autoStart).focus();
 
 		mw.util.addCSS(
 			// Increase height

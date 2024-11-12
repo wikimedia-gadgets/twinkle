@@ -378,6 +378,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			$(work_area).find('[name=delsortCats]')
 				.attr('data-placeholder', 'Select delsort pages')
 				.select2({
+					theme: 'default select2-morebits',
 					width: '100%',
 					matcher: Morebits.select2.matcher,
 					templateResult: Morebits.select2.highlightSearchMatches,
@@ -1804,8 +1805,11 @@ Twinkle.xfd.callbacks = {
 		taggingCategory: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
-
-			params.tagText = '{{subst:cfr-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n';
+			if (params.xfdcat === 'C2F') {
+				params.tagText = '{{subst:cfm-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n';
+			} else {
+				params.tagText = '{{subst:cfr-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n';
+			}
 			params.discussionpage = ''; // CFDS is just a bullet in a bulleted list. There's no section to link to, so we set this to blank. Blank will be recognized by both the generate userspace log code and the generate userspace log edit summary code as "don't wikilink to a section".
 			if (pageobj.canEdit()) {
 				pageobj.setPageText(params.tagText + text);

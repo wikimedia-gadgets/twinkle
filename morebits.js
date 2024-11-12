@@ -471,8 +471,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label.style.marginRight = '3px';
 			}
 			var select = node.appendChild(document.createElement('select'));
-			// opt out of dark mode for now
-			select.classList.add('notheme');
 			if (data.event) {
 				select.addEventListener('change', data.event, false);
 			}
@@ -675,9 +673,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
-			// opt out of dark mode for now
-			subnode.classList.add('notheme');
-
 			subnode.setAttribute('name', data.name);
 
 			if (data.type === 'input') {
@@ -867,8 +862,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label.appendChild(labelElement);
 			}
 			subnode = node.appendChild(document.createElement('textarea'));
-			// opt out of dark mode for now
-			subnode.classList.add('notheme');
 			subnode.setAttribute('name', data.name);
 			if (data.cols) {
 				subnode.setAttribute('cols', data.cols);
@@ -5868,6 +5861,9 @@ Morebits.simpleWindow = function SimpleWindow(width, height) {
 
 	// resize the scrollbox with the dialog, if one is present
 	$widget.resizable('option', 'alsoResize', '#' + this.content.id + ' .morebits-scrollbox, #' + this.content.id);
+
+	// add skin-invert to "close" button
+	$('.morebits-dialog .ui-dialog-titlebar-close').addClass('skin-invert');
 };
 
 Morebits.simpleWindow.prototype = {
