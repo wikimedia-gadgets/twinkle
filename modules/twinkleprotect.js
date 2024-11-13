@@ -1488,6 +1488,10 @@ Twinkle.protect.callbacks = {
 				} else {
 					if (params.noinclude) {
 						tag = '<noinclude>{{' + tag + '}}</noinclude>';
+
+						if (text.startsWith('==')) {
+							tag += '\n'; // a newline is needed to prevent section headings at the very beginning of the page from breaking
+						}
 					} else {
 						tag = '{{' + tag + '}}\n';
 					}
