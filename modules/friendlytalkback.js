@@ -340,7 +340,8 @@ Twinkle.talkback.evaluate = function(e) {
 	talkpage.setFollowRedirect(true);
 
 	talkpage.load((pageobj) => {
-		talkpage.setAppendText((pageobj.exists() && pageobj.getPageText() !== '' ? '\n\n' : '') + Twinkle.talkback.callbacks.getNoticeWikitext(input));
+		const whitespaceToPrepend = pageobj.exists() && pageobj.getPageText() !== '' ? '\n\n' : '';
+		talkpage.setAppendText(whitespaceToPrepend + Twinkle.talkback.callbacks.getNoticeWikitext(input));
 		talkpage.setChangeTags(Twinkle.changeTags);
 		talkpage.setCreateOption('recreate');
 		talkpage.setMinorEdit(Twinkle.getPref('markTalkbackAsMinor'));
