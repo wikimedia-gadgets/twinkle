@@ -713,7 +713,6 @@ Twinkle.tag.article.tagList = {
 			}
 		],
 		'Style of writing': [
-			{ tag: 'Advert', description: 'written like an advertisement' },
 			{ tag: 'Cleanup press release', description: 'reads like a press release or news article',
 				subgroup: {
 					type: 'hidden',
@@ -728,6 +727,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
 			{ tag: 'Manual', description: 'written like a manual or guidebook' },
 			{ tag: 'Over-quotation', description: 'too many or too-lengthy quotations for an encyclopedic entry' },
+			{ tag: 'Promotional', description: 'contains promotional content or is written like an advertisement' },
 			{ tag: 'Prose', description: 'written in a list format but may read better as prose' },
 			{ tag: 'Resume-like', description: 'written like a resume' },
 			{ tag: 'Technical', description: 'too technical for most readers to understand' },
