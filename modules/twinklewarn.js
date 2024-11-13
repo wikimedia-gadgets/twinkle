@@ -503,6 +503,20 @@ Twinkle.warn.messages = {
 					summary: 'Only warning: Ownership of articles'
 				}
 			},
+			'uw-pronouns': {
+				level1: {
+					label: 'Introducing incorrect pronouns',
+					summary: 'General note: Introducing incorrect pronouns'
+				},
+				level2: {
+					label: 'Introducing incorrect pronouns',
+					summary: 'Caution: Introducing incorrect pronouns'
+				},
+				level3: {
+					label: 'Introducing incorrect pronouns',
+					summary: 'Warning: Introducing incorrect pronouns'
+				}
+			},
 			'uw-subtle': {
 				level1: {
 					label: 'Subtle vandalism',
