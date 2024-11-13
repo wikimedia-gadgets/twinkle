@@ -2069,9 +2069,9 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				// {{Bad GIF|JPEG|SVG}}
 				var badIndex; // Keep track of where the offending template is so we can reference it below
 				if (
-					(extensionUpper !== 'GIF' && (badIndex = params.tags.indexOf('Bad GIF') !== -1)) ||
-					(extensionUpper !== 'JPEG' && (badIndex = params.tags.indexOf('Bad JPEG') !== -1)) ||
-					(extensionUpper !== 'SVG' && (badIndex = params.tags.indexOf('Bad SVG') !== -1))
+					(extensionUpper !== 'GIF' && ((badIndex = params.tags.indexOf('Bad GIF')) !== -1)) ||
+					(extensionUpper !== 'JPEG' && ((badIndex = params.tags.indexOf('Bad JPEG')) !== -1)) ||
+					(extensionUpper !== 'SVG' && ((badIndex = params.tags.indexOf('Bad SVG')) !== -1))
 				) {
 					var suggestion = 'This appears to be a ' + extension + ' file, ';
 					if (['GIF', 'JPEG', 'SVG'].includes(extensionUpper)) {
