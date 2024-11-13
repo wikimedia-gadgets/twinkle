@@ -169,7 +169,7 @@ Twinkle.defaultConfig = {
 	customWelcomeSignature: true,
 
 	// Talkback
-	markTalkbackAsMinor: true,
+	markTalkbackAsMinor: false,
 	insertTalkbackSignature: true,  // always sign talkback templates
 	talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
 	mailHeading: "You've got mail!",
