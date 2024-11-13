@@ -1073,7 +1073,7 @@ Twinkle.arv.callback.getAn3ReportData = function(input) {
 			confirmations: data.confirmations
 		};
 	}).catch((errorData) => {
-		if (typeof errorData !== 'object' || Object.prototype.hasOwnProperty.call(errorData, 'message')) {
+		if (typeof errorData !== 'object' || !Object.prototype.hasOwnProperty.call(errorData, 'message')) {
 			return Promise.reject({ message: 'Unknown error: ' + errorData });
 		}
 
