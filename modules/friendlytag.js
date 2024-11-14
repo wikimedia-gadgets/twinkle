@@ -2114,7 +2114,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				} else if (extensionUpper !== 'SVG' && params.tags.includes('Fake SVG')) {
 					alert('This appears to be a ' + extension + ' file, so {{Fake SVG}} is inappropriate.');
 					return;
-        }
+				}
 
 				// {{Should be PNG|SVG}}
 				if (params.tags.includes('Should be ' + extensionUpper)) {
