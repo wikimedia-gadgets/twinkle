@@ -125,18 +125,11 @@ Twinkle.tag.callback = function friendlytagCallback() {
 		case 'article':
 			Window.setTitle('Article maintenance tagging');
 
-			// Object.values is unavailable in IE 11
-			var obj_values = Object.values || function (obj) {
-				return Object.keys(obj).map(function (key) {
-					return obj[key];
-				});
-			};
-
 			// Build sorting and lookup object flatObject, which is always
 			// needed but also used to generate the alphabetical list
 			Twinkle.tag.article.flatObject = {};
-			obj_values(Twinkle.tag.article.tagList).forEach(function (group) {
-				obj_values(group).forEach(function (subgroup) {
+			Object.values(Twinkle.tag.article.tagList).forEach(function (group) {
+				Object.values(group).forEach(function (subgroup) {
 					if (Array.isArray(subgroup)) {
 						subgroup.forEach(function (item) {
 							Twinkle.tag.article.flatObject[item.tag] = item;
@@ -685,6 +678,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Fiction', description: 'fails to distinguish between fact and fiction' },
 			{ tag: 'In-universe', description: 'subject is fictional and needs rewriting to provide a non-fictional perspective' },
 			{ tag: 'Long plot', description: 'plot summary is too long or excessively detailed' },
+			{ tag: 'More plot', description: 'plot summary is too short' },
 			{ tag: 'No plot', description: 'needs a plot summary' }
 		]
 	},
@@ -701,7 +695,7 @@ Twinkle.tag.article.tagList = {
 						{ label: '{{notability|Astro}}: notability guideline for astronomical objects', value: 'Astro' },
 						{ label: '{{notability|Biographies}}: notability guideline for biographies', value: 'Biographies' },
 						{ label: '{{notability|Books}}: notability guideline for books', value: 'Books' },
-						{ label: '{{notability|Companies}}: notability guidelines for companies and organizations', value: 'Companies' },
+						{ label: '{{notability|Companies}}: notability guideline for companies', value: 'Companies' },
 						{ label: '{{notability|Events}}: notability guideline for events', value: 'Events' },
 						{ label: '{{notability|Films}}: notability guideline for films', value: 'Films' },
 						{ label: '{{notability|Geographic}}: notability guideline for geographic features', value: 'Geographic' },
@@ -709,6 +703,7 @@ Twinkle.tag.article.tagList = {
 						{ label: '{{notability|Music}}: notability guideline for music', value: 'Music' },
 						{ label: '{{notability|Neologisms}}: notability guideline for neologisms', value: 'Neologisms' },
 						{ label: '{{notability|Numbers}}: notability guideline for numbers', value: 'Numbers' },
+						{ label: '{{notability|Organizations}}: notability guideline for organizations', value: 'Organizations' },
 						{ label: '{{notability|Products}}: notability guideline for products and services', value: 'Products' },
 						{ label: '{{notability|Sports}}: notability guideline for sports and athletics', value: 'Sports' },
 						{ label: '{{notability|Television}}: notability guideline for television shows', value: 'Television' },
@@ -718,13 +713,6 @@ Twinkle.tag.article.tagList = {
 			}
 		],
 		'Style of writing': [
-			{ tag: 'Advert', description: 'written like an advertisement' },
-			{ tag: 'Cleanup tense', description: 'does not follow guidelines on use of different tenses.' },
-			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
-			{ tag: 'Fanpov', description: "written from a fan's point of view" },
-			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
-			{ tag: 'Resume-like', description: 'written like a resume' },
-			{ tag: 'Manual', description: 'written like a manual or guidebook' },
 			{ tag: 'Cleanup press release', description: 'reads like a press release or news article',
 				subgroup: {
 					type: 'hidden',
@@ -733,8 +721,15 @@ Twinkle.tag.article.tagList = {
 					value: 'article'
 				}
 			},
+			{ tag: 'Cleanup tense', description: 'does not follow guidelines on use of different tenses.' },
+			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
+			{ tag: 'Fanpov', description: "written from a fan's point of view" },
+			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
+			{ tag: 'Manual', description: 'written like a manual or guidebook' },
 			{ tag: 'Over-quotation', description: 'too many or too-lengthy quotations for an encyclopedic entry' },
+			{ tag: 'Promotional', description: 'contains promotional content or is written like an advertisement' },
 			{ tag: 'Prose', description: 'written in a list format but may read better as prose' },
+			{ tag: 'Resume-like', description: 'written like a resume' },
 			{ tag: 'Technical', description: 'too technical for most readers to understand' },
 			{ tag: 'Tone', description: 'tone or style may not reflect the encyclopedic tone used on Wikipedia' }
 		],
@@ -807,7 +802,7 @@ Twinkle.tag.article.tagList = {
 				tooltip: 'Optional, but strongly recommended. Leave blank if not wanted.'
 			} : [] },
 			{ tag: 'Disputed', description: 'questionable factual accuracy' },
-			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
+			{ tag: 'Fringe theories', description: 'presents fringe theories as mainstream views' },
 			{ tag: 'Globalize', description: 'may not represent a worldwide view of the subject',
 				subgroup: [
 					{
@@ -823,6 +818,7 @@ Twinkle.tag.article.tagList = {
 					}
 				]
 			},
+			{ tag: 'Hoax', description: 'may partially or completely be a hoax' },
 			{ tag: 'Paid contributions', description: 'contains paid contributions, and may therefore require cleanup' },
 			{ tag: 'Peacock', description: 'contains wording that promotes the subject in a subjective manner without adding information' },
 			{ tag: 'POV', description: 'does not maintain a neutral point of view' },
@@ -832,6 +828,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Weasel', description: 'neutrality or verifiability is compromised by the use of weasel words' }
 		],
 		'Verifiability and sources': [
+			{ tag: 'BLP no footnotes', description: 'BLP that lacks inline citations'},
 			{ tag: 'BLP one source', description: 'BLP that relies largely or entirely on a single source' },
 			{ tag: 'BLP sources', description: 'BLP that needs additional references or sources for verification' },
 			{ tag: 'BLP unreferenced', description: 'BLP does not cite any sources at all (use BLP PROD instead for new articles)' },
@@ -845,10 +842,15 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Sources exist', description: 'notable topic, sources are available that could be added to article' },
 			{ tag: 'Third-party', description: 'relies too heavily on sources too closely associated with the subject' },
 			{ tag: 'Unreferenced', description: 'does not cite any sources at all' },
-			{ tag: 'Unreliable sources', description: 'some references may not be reliable' }
+			{ tag: 'Unreliable sources', description: 'some references may not be reliable' },
+			{ tag: 'User-generated', description: 'contains many references to user-generated (self-published) content'}
 		]
 	},
 	'Specific content issues': {
+		'Accessibility': [
+			{ tag: 'Cleanup colors', description: 'uses color as only way to convey information' },
+			{ tag: 'Overcoloured', description: 'overuses color'}
+		],
 		'Language': [
 			{ tag: 'Not English', description: 'written in a language other than English and needs translation',
 				excludeMI: true,
@@ -901,7 +903,8 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Citation style', description: 'unclear or inconsistent citation style' },
 			{ tag: 'Cleanup bare URLs', description: 'uses bare URLs for references, which are prone to link rot' },
 			{ tag: 'More footnotes needed', description: 'has some references, but insufficient inline citations' },
-			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' }
+			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' },
+			{ tag: 'Parenthetical referencing', description: 'uses parenthetical referencing, which is deprecated on Wikipedia' }
 		],
 		'Categories': [
 			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
@@ -1168,6 +1171,16 @@ Twinkle.tag.fileList = {
 	'Wikimedia Commons-related tags': [
 		{ label: '{{Copy to Commons}}: free media that should be copied to Commons', value: 'Copy to Commons' },
 		{
+			label: '{{Deleted on Commons}}: file has previously been deleted from Commons',
+			value: 'Deleted on Commons',
+			subgroup: {
+				type: 'input',
+				name: 'deletedOnCommonsName',
+				label: 'Name on Commons:',
+				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix'
+			}
+		},
+		{
 			label: '{{Do not move to Commons}}: file not suitable for moving to Commons',
 			value: 'Do not move to Commons',
 			subgroup: [
@@ -1194,6 +1207,16 @@ Twinkle.tag.fileList = {
 				type: 'input',
 				name: 'keeplocalName',
 				label: 'Commons image name if different:',
+				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
+			}
+		},
+		{
+			label: '{{Nominated for deletion on Commons}}: file is nominated for deletion on Commons',
+			value: 'Nominated for deletion on Commons',
+			subgroup: {
+				type: 'input',
+				name: 'nominatedOnCommonsName',
+				label: 'Name on Commons:',
 				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 			}
 		},
@@ -1961,6 +1984,16 @@ Twinkle.tag.callbacks = {
 					case 'Should be SVG':
 						currentTag += '|' + params.svgCategory;
 						break;
+					case 'Nominated for deletion on Commons':
+						if (params.nominatedOnCommonsName !== '') {
+							currentTag += '|1=' + params.nominatedOnCommonsName;
+						}
+						break;
+					case 'Deleted on Commons':
+						if (params.deletedOnCommonsName !== '') {
+							currentTag += '|1=' + params.deletedOnCommonsName;
+						}
+						break;
 					default:
 						break;  // don't care
 				}
@@ -2060,6 +2093,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			var extension = ((extension = $('.mime-type').text()) && extension.split(/\//)[1]) || mw.Title.newFromText(Morebits.pageNameNorm).getExtension();
 			if (extension) {
 				var extensionUpper = extension.toUpperCase();
+
 				// What self-respecting file format has *two* extensions?!
 				if (extensionUpper === 'JPG') {
 					extension = 'JPEG';
@@ -2067,50 +2101,58 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 				// Check that selected templates make sense given the file's extension.
 
-				// Bad GIF|JPEG|SVG or Fake SVG
-				var badIndex; // Keep track of where the offending template is so we can reference it below
-				if ((extensionUpper !== 'GIF' && ((badIndex = params.tags.indexOf('Bad GIF')) !== -1)) ||
-					(extensionUpper !== 'JPEG' && ((badIndex = params.tags.indexOf('Bad JPEG')) !== -1)) ||
-					(extensionUpper !== 'SVG' && ((badIndex = params.tags.indexOf('Bad SVG')) !== -1 || (badIndex = params.tags.indexOf('Fake SVG')) !== -1))) {
-					var suggestion = 'This appears to be a ' + extension + ' file, ';
-					// If there's no appropriate equivalent to suggest, then return a generic message
-					if (params.tags.includes('Fake SVG') || !(['GIF', 'JPEG', 'SVG'].indexOf(extensionUpper) !== -1)) {
-						suggestion += 'so {{' + params.tags[badIndex] + '}} is inappropriate.';
-					} else {
-						// Otherwise, recommend the equivalent template according to the file type
-						suggestion += 'please use {{Bad ' + extensionUpper + '}} instead.';
-					}
-					alert(suggestion);
+				// {{Bad GIF|JPEG|SVG}}, {{Fake SVG}}
+				if (extensionUpper !== 'GIF' && params.tags.includes('Bad GIF')) {
+					alert('This appears to be a ' + extension + ' file, so {{Bad GIF}} is inappropriate.');
 					return;
-				}
-				// Should be PNG|SVG
-				if ((params.tags.toString().indexOf('Should be ') !== -1) && (params.tags.indexOf('Should be ' + extensionUpper) !== -1)) {
+				} else if (extensionUpper !== 'JPEG' && params.tags.includes('Bad JPEG')) {
+					alert('This appears to be a ' + extension + ' file, so {{Bad JPEG}} is inappropriate.');
+					return;
+				} else if (extensionUpper !== 'SVG' && params.tags.includes('Bad SVG')) {
+					alert('This appears to be a ' + extension + ' file, so {{Bad SVG}} is inappropriate.');
+					return;
+				} else if (extensionUpper !== 'SVG' && params.tags.includes('Fake SVG')) {
+					alert('This appears to be a ' + extension + ' file, so {{Fake SVG}} is inappropriate.');
+					return;
+        }
+
+				// {{Should be PNG|SVG}}
+				if (params.tags.includes('Should be ' + extensionUpper)) {
 					alert('This is already a ' + extension + ' file, so {{Should be ' + extensionUpper + '}} is inappropriate.');
 					return;
 				}
 
-				// Overcompressed JPEG
-				if (params.tags.indexOf('Overcompressed JPEG') !== -1 && extensionUpper !== 'JPEG') {
+				// {{Overcompressed JPEG}}
+				if (params.tags.includes('Overcompressed JPEG') && extensionUpper !== 'JPEG') {
 					alert('This appears to be a ' + extension + ' file, so {{Overcompressed JPEG}} probably doesn\'t apply.');
 					return;
 				}
-				// Bad trace and Bad font
+
+				// {{Bad trace}} and {{Bad font}}
 				if (extensionUpper !== 'SVG') {
-					if (params.tags.indexOf('Bad trace') !== -1) {
+					if (params.tags.includes('Bad trace')) {
 						alert('This appears to be a ' + extension + ' file, so {{Bad trace}} probably doesn\'t apply.');
 						return;
-					} else if (params.tags.indexOf('Bad font') !== -1) {
+					} else if (params.tags.includes('Bad font')) {
 						alert('This appears to be a ' + extension + ' file, so {{Bad font}} probably doesn\'t apply.');
 						return;
 					}
 				}
 			}
 
-			if (params.tags.indexOf('Do not move to Commons') !== -1 && params.DoNotMoveToCommons_expiry &&
-				(!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getFullYear())) {
+			// {{Do not move to Commons}}
+			if (
+				params.tags.includes('Do not move to Commons') &&
+				params.DoNotMoveToCommons_expiry &&
+				(
+					!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) ||
+					parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getFullYear()
+				)
+			) {
 				alert('Must be a valid future year.');
 				return;
 			}
+
 			break;
 
 		case 'redirect':

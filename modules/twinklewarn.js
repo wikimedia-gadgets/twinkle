@@ -293,6 +293,24 @@ Twinkle.warn.messages = {
 			}
 		},
 		'Behavior in articles': {
+			'uw-ai': {
+				level1: {
+					label: 'Using a large language model',
+					summary: 'General note: Using a large language model'
+				},
+				level2: {
+					label: 'Using a large language model',
+					summary: 'Caution: Using a large language model'
+				},
+				level3: {
+					label: 'Using a large language model',
+					summary: 'Warning: Using a large language model'
+				},
+				level4: {
+					label: 'Using a large language model',
+					summary: 'Final warning: Using a large language model'
+				}
+			},
 			'uw-biog': {
 				level1: {
 					label: 'Adding unreferenced controversial information about living persons',
@@ -485,6 +503,20 @@ Twinkle.warn.messages = {
 					summary: 'Only warning: Ownership of articles'
 				}
 			},
+			'uw-pronouns': {
+				level1: {
+					label: 'Introducing incorrect pronouns',
+					summary: 'General note: Introducing incorrect pronouns'
+				},
+				level2: {
+					label: 'Introducing incorrect pronouns',
+					summary: 'Caution: Introducing incorrect pronouns'
+				},
+				level3: {
+					label: 'Introducing incorrect pronouns',
+					summary: 'Warning: Introducing incorrect pronouns'
+				}
+			},
 			'uw-subtle': {
 				level1: {
 					label: 'Subtle vandalism',
@@ -501,6 +533,20 @@ Twinkle.warn.messages = {
 				level4: {
 					label: 'Subtle vandalism',
 					summary: 'Final warning: Subtle vandalism'
+				}
+			},
+			'uw-talkinarticle': {
+				level1: {
+					label: 'Adding commentary to an article',
+					summary: 'General note: Adding commentary to an article'
+				},
+				level2: {
+					label: 'Adding commentary to an article',
+					summary: 'Caution: Adding commentary to an article'
+				},
+				level3: {
+					label: 'Adding commentary to an article',
+					summary: 'Warning: Adding commentary to an article'
 				}
 			},
 			'uw-tdel': {
@@ -847,6 +893,26 @@ Twinkle.warn.messages = {
 					summary: 'Only warning: Creating inappropriate pages'
 				}
 			},
+			'uw-fv': {
+				level1: {
+					label: 'Added statement had source, but it did not verify content',
+					summary: 'General note: Added statement had source, but it did not verify content'
+				}
+			},
+			'uw-mislead': {
+				level1: {
+					label: 'Using misleading edit summaries',
+					summary: 'General note: Using misleading edit summaries'
+				},
+				level2: {
+					label: 'Using misleading edit summaries',
+					summary: 'Caution: Using misleading edit summaries'
+				},
+				level3: {
+					label: 'Using misleading edit summaries',
+					summary: 'Warning: Using misleading edit summaries'
+				}
+			},
 			'uw-mos': {
 				level1: {
 					label: 'Manual of style',
@@ -885,6 +951,28 @@ Twinkle.warn.messages = {
 				level4im: {
 					label: 'Page moves against naming conventions or consensus',
 					summary: 'Only warning: Page moves against naming conventions or consensus'
+				}
+			},
+			'uw-redirect': {
+				level1: {
+					label: 'Creating inappropriate redirects',
+					summary: 'General note: Creating inappropriate redirects'
+				},
+				level2: {
+					label: 'Creating inappropriate redirects',
+					summary: 'Caution: Creating inappropriate redirects'
+				},
+				level3: {
+					label: 'Creating inappropriate redirects',
+					summary: 'Warning: Creating inappropriate redirects'
+				},
+				level4: {
+					label: 'Creating inappropriate redirects',
+					summary: 'Final warning: Creating inappropriate redirects'
+				},
+				level4im: {
+					label: 'Creating inappropriate redirects',
+					summary: 'Only warning: Creating inappropriate redirects'
 				}
 			},
 			'uw-tpv': {
@@ -960,6 +1048,10 @@ Twinkle.warn.messages = {
 			label: 'Adding inappropriate entries to lists',
 			summary: 'Notice: Adding inappropriate entries to lists'
 		},
+		'uw-bareurl': {
+			label: 'Adding a bare URL',
+			summary: 'Notice: Adding a bare URL'
+		},
 		'uw-bite': {
 			label: '"Biting" newcomers',
 			summary: 'Notice: "Biting" newcomers',
@@ -969,6 +1061,10 @@ Twinkle.warn.messages = {
 			label: 'Article blanked and redirected',
 			summary: 'Notice: Article blanked and redirected',
 			hideReason: true
+		},
+		'uw-circular': {
+			label: 'Using circular sources',
+			summary: 'Notice: Using circular sources'
 		},
 		'uw-coi': {
 			label: 'Conflict of interest',
@@ -1057,6 +1153,10 @@ Twinkle.warn.messages = {
 		'uw-minor': {
 			label: 'Incorrect use of minor edits check box',
 			summary: 'Notice: Incorrect use of minor edits check box'
+		},
+		'uw-multiple-accts': {
+			label: 'Inappropriate use of alternative accounts',
+			summary: 'Notice: Inappropriate use of alternative accounts'
 		},
 		'uw-notenglish': {
 			label: 'Creating non-English articles',
@@ -1318,8 +1418,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 	var selected = false;
 	// worker function to create the combo box entries
-	var createEntries = function(contents, container, wrapInOptgroup, val) {
-		val = typeof val !== 'undefined' ? val : value; // IE doesn't support default parameters
+	var createEntries = function(contents, container, wrapInOptgroup, val = value) {
 		// level2->2, singlewarn->''; also used to distinguish the
 		// scaled levels from singlenotice, singlewarn, and custom
 		var level = val.replace(/^\D+/g, '');
@@ -1783,10 +1882,7 @@ Twinkle.warn.callbacks = {
 		var params = pageobj.getCallbackParameters();
 		var messageData = params.messageData;
 
-		// JS somehow didn't get destructured assignment until ES6 so of course IE doesn't support it
-		var warningHistory = Twinkle.warn.callbacks.dateProcessing(text);
-		var latest = warningHistory[0];
-		var history = warningHistory[1];
+		var [latest, history] = Twinkle.warn.callbacks.dateProcessing(text);
 
 		var now = new Morebits.date(pageobj.getLoadTime());
 
