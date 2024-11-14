@@ -2091,6 +2091,7 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 			var extension = ((extension = $('.mime-type').text()) && extension.split(/\//)[1]) || mw.Title.newFromText(Morebits.pageNameNorm).getExtension();
 			if (extension) {
 				var extensionUpper = extension.toUpperCase();
+
 				// What self-respecting file format has *two* extensions?!
 				if (extensionUpper === 'JPG') {
 					extension = 'JPEG';
@@ -2098,48 +2099,55 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 
 				// Check that selected templates make sense given the file's extension.
 
-				// Bad GIF|JPEG|SVG
-				var badIndex; // Keep track of where the offending template is so we can reference it below
-				if ((extensionUpper !== 'GIF' && ((badIndex = params.tags.indexOf('Bad GIF')) !== -1)) ||
-					(extensionUpper !== 'JPEG' && ((badIndex = params.tags.indexOf('Bad JPEG')) !== -1)) ||
-					(extensionUpper !== 'SVG' && ((badIndex = params.tags.indexOf('Bad SVG')) !== -1))) {
-					var suggestion = 'This appears to be a ' + extension + ' file, ';
-					if (['GIF', 'JPEG', 'SVG'].indexOf(extensionUpper) !== -1) {
-						suggestion += 'please use {{Bad ' + extensionUpper + '}} instead.';
-					} else {
-						suggestion += 'so {{' + params.tags[badIndex] + '}} is inappropriate.';
-					}
-					alert(suggestion);
+				// {{Bad GIF|JPEG|SVG}}
+				if (extensionUpper !== 'GIF' && params.tags.includes('Bad GIF')) {
+					alert('This appears to be a ' + extension + ' file, so {{Bad GIF}} is inappropriate.');
+					return;
+				} else if (extensionUpper !== 'JPEG' && params.tags.includes('Bad JPEG')) {
+					alert('This appears to be a ' + extension + ' file, so {{Bad JPEG}} is inappropriate.');
+					return;
+				} else if (extensionUpper !== 'SVG' && params.tags.includes('Bad SVG')) {
+					alert('This appears to be a ' + extension + ' file, so {{Bad SVG}} is inappropriate.');
 					return;
 				}
-				// Should be PNG|SVG
-				if ((params.tags.toString().indexOf('Should be ') !== -1) && (params.tags.indexOf('Should be ' + extensionUpper) !== -1)) {
+
+				// {{Should be PNG|SVG}}
+				if (params.tags.includes('Should be ' + extensionUpper)) {
 					alert('This is already a ' + extension + ' file, so {{Should be ' + extensionUpper + '}} is inappropriate.');
 					return;
 				}
 
-				// Overcompressed JPEG
-				if (params.tags.indexOf('Overcompressed JPEG') !== -1 && extensionUpper !== 'JPEG') {
+				// {{Overcompressed JPEG}}
+				if (params.tags.includes('Overcompressed JPEG') && extensionUpper !== 'JPEG') {
 					alert('This appears to be a ' + extension + ' file, so {{Overcompressed JPEG}} probably doesn\'t apply.');
 					return;
 				}
-				// Bad trace and Bad font
+
+				// {{Bad trace}} and {{Bad font}}
 				if (extensionUpper !== 'SVG') {
-					if (params.tags.indexOf('Bad trace') !== -1) {
+					if (params.tags.includes('Bad trace')) {
 						alert('This appears to be a ' + extension + ' file, so {{Bad trace}} probably doesn\'t apply.');
 						return;
-					} else if (params.tags.indexOf('Bad font') !== -1) {
+					} else if (params.tags.includes('Bad font')) {
 						alert('This appears to be a ' + extension + ' file, so {{Bad font}} probably doesn\'t apply.');
 						return;
 					}
 				}
 			}
 
-			if (params.tags.indexOf('Do not move to Commons') !== -1 && params.DoNotMoveToCommons_expiry &&
-				(!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) || parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getFullYear())) {
+			// {{Do not move to Commons}}
+			if (
+				params.tags.includes('Do not move to Commons') &&
+				params.DoNotMoveToCommons_expiry &&
+				(
+					!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) ||
+					parseInt(params.DoNotMoveToCommons_expiry, 10) <= new Date().getFullYear()
+				)
+			) {
 				alert('Must be a valid future year.');
 				return;
 			}
+
 			break;
 
 		case 'redirect':
