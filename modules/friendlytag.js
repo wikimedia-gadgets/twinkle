@@ -2067,23 +2067,16 @@ Twinkle.tag.callback.evaluate = function friendlytagCallbackEvaluate(e) {
 				// Check that selected templates make sense given the file's extension.
 
 				// {{Bad GIF|JPEG|SVG}}
-				var badIndex; // Keep track of where the offending template is so we can reference it below
-				if (
-					(extensionUpper !== 'GIF' && ((badIndex = params.tags.indexOf('Bad GIF')) !== -1)) ||
-					(extensionUpper !== 'JPEG' && ((badIndex = params.tags.indexOf('Bad JPEG')) !== -1)) ||
-					(extensionUpper !== 'SVG' && ((badIndex = params.tags.indexOf('Bad SVG')) !== -1))
-				) {
-					var suggestion = 'This appears to be a ' + extension + ' file, ';
-					if (['GIF', 'JPEG', 'SVG'].includes(extensionUpper)) {
-						suggestion += 'please use {{Bad ' + extensionUpper + '}} instead.';
-					} else {
-						suggestion += 'so {{' + params.tags[badIndex] + '}} is inappropriate.';
-					}
-					alert(suggestion);
+				if (extensionUpper !== 'GIF' && params.tags.includes('Bad GIF')) {
+					alert('This appears to be a ' + extension + ' file, so {{Bad GIF}} is inappropriate.');
+					return;
+				} else if (extensionUpper !== 'JPEG' && params.tags.includes('Bad JPEG')) {
+					alert('This appears to be a ' + extension + ' file, so {{Bad JPEG}} is inappropriate.');
+					return;
+				} else if (extensionUpper !== 'SVG' && params.tags.includes('Bad SVG')) {
+					alert('This appears to be a ' + extension + ' file, so {{Bad SVG}} is inappropriate.');
 					return;
 				}
-
-				// TODO: {{Bad GIF}} on a PNG test file is giving "so undefined is inappropriate".
 
 				// {{Should be PNG|SVG}}
 				if (params.tags.includes('Should be ' + extensionUpper)) {
