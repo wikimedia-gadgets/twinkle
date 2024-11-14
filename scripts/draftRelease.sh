@@ -76,7 +76,7 @@ for item in "${log[@]}"; do
 	fi
 
 	# Clean up a bit
-	files=$(echo "$files" | sed 's/modules\///' | perl -pe 's/(?:twinkle|friendly)?\B(.+)\.(?:j|cs)s$/$1/' | sort | uniq)
+	files=$(echo "$files" | sed 's/modules\///' | perl -pe 's/(?:twinkle)?\B(.+)\.(?:j|cs)s$/$1/' | sort | uniq)
 
 	item="${item#*';;'}"
 	author="${item%';;'*}"

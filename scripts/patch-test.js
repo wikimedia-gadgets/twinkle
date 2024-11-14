@@ -59,10 +59,6 @@ function createTestLoader(changedFiles) {
 		${importLine('twinkle.js')}
 
 	}).then(function() {
-		${importLine('modules/friendlyshared.js')}
-		${importLine('modules/friendlytag.js')}
-		${importLine('modules/friendlytalkback.js')}
-		${importLine('modules/friendlywelcome.js')}
 		${importLine('modules/twinklearv.js')}
 		${importLine('modules/twinklebatchdelete.js')}
 		${importLine('modules/twinklebatchprotect.js')}
@@ -75,9 +71,13 @@ function createTestLoader(changedFiles) {
 		${importLine('modules/twinkleimage.js')}
 		${importLine('modules/twinkleprod.js')}
 		${importLine('modules/twinkleprotect.js')}
+		${importLine('modules/twinkleshared.js')}
 		${importLine('modules/twinklespeedy.js')}
+		${importLine('modules/twinkletag.js')}
+		${importLine('modules/twinkletalkback.js')}
 		${importLine('modules/twinkleunlink.js')}
 		${importLine('modules/twinklewarn.js')}
+		${importLine('modules/twinklewelcome.js')}
 		${importLine('modules/twinklexfd.js')}
 	});`.replace(/^\t/mg, '').replace(/^\s*$/mg, '');
 

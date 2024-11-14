@@ -6,22 +6,22 @@
 
 /*
  ****************************************
- *** friendlyshared.js: Shared IP tagging module
+ *** twinkleshared.js: Shared IP tagging module
  ****************************************
  * Mode of invocation:     Tab ("Shared")
  * Active on:              IP user talk pages
  */
 
-Twinkle.shared = function friendlyshared() {
+Twinkle.shared = function twinkleshared() {
 	if (mw.config.get('wgNamespaceNumber') === 3 && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
 		var username = mw.config.get('wgRelevantUserName');
 		Twinkle.addPortletLink(function() {
 			Twinkle.shared.callback(username);
-		}, 'Shared IP', 'friendly-shared', 'Shared IP tagging');
+		}, 'Shared IP', 'twinkle-shared', 'Shared IP tagging');
 	}
 };
 
-Twinkle.shared.callback = function friendlysharedCallback() {
+Twinkle.shared.callback = function twinklesharedCallback() {
 	var Window = new Morebits.simpleWindow(600, 450);
 	Window.setTitle('Shared IP address tagging');
 	Window.setScriptName('Twinkle');
@@ -129,7 +129,7 @@ Twinkle.shared.standardList = [
 	}
 ];
 
-Twinkle.shared.callback.change_shared = function friendlysharedCallbackChangeShared(e) {
+Twinkle.shared.callback.change_shared = function twinklesharedCallbackChangeShared(e) {
 	e.target.form.contact.disabled = e.target.value !== 'Shared IP edu';  // only supported by {{Shared IP edu}}
 	e.target.form.organization.disabled = false;
 	e.target.form.host.disabled = e.target.value === 'Whois';  // host= not supported by {{Whois}}
@@ -207,7 +207,7 @@ Twinkle.shared.getTemplateWikitext = function(input) {
 	return text;
 };
 
-Twinkle.shared.callback.evaluate = function friendlysharedCallbackEvaluate(e) {
+Twinkle.shared.callback.evaluate = function twinklesharedCallbackEvaluate(e) {
 	var params = Morebits.quickForm.getInputData(e.target);
 	if (!params.template) {
 		alert('You must select a shared IP address template to use!');
