@@ -194,40 +194,30 @@ Twinkle.getPref = function twinkleGetPref(name) {
 
 
 /**
- * **************** Twinkle.addPortlet() ****************
- *
  * Adds a portlet menu to one of the navigation areas on the page.
- * This is necessarily quite a hack since skins, navigation areas, and
- * portlet menu types all work slightly different.
  *
- * Available navigation areas depend on the skin used.
- * Vector:
- *  For each option, the outer nav class contains "vector-menu", the inner div class is "vector-menu-content", and the ul is "vector-menu-content-list"
- *  "mw-panel", outer nav class contains "vector-menu-portal". Existing portlets/elements: "p-logo", "p-navigation", "p-interaction", "p-tb", "p-coll-print_export"
- *  "left-navigation", outer nav class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-namespaces", "p-variants" (menu)
- *  "right-navigation", outer nav class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-views", "p-cactions" (menu), "p-search"
- *  Special layout of p-personal portlet (part of "head") through specialized styles.
- * Monobook:
- *  "column-one", outer nav class "portlet", inner div class "pBody". Existing portlets: "p-cactions", "p-personal", "p-logo", "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
- *  Special layout of p-cactions and p-personal through specialized styles.
- * Modern:
- *  "mw_contentwrapper" (top nav), outer nav class "portlet", inner div class "pBody". Existing portlets or elements: "p-cactions", "mw_content"
- *  "mw_portlets" (sidebar), outer nav class "portlet", inner div class "pBody". Existing portlets: "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
- *
- * @param {String} navigation id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel")
- * @param {String} id id of the portlet menu to create, preferably start with "p-".
- * @param {String} text name of the portlet menu to create. Visibility depends on the class used.
- * @param {String} type type of portlet. Currently only used for the vector non-sidebar portlets, pass "menu" to make this portlet a drop down menu.
- * @param {Node} nextnodeid the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end.
- *
- * @return Node -- the DOM node of the new item (a DIV element) or null
+ * @return {String|null|undefined} -- the DOM node of the new item (a DIV element) or null
  */
 Twinkle.addPortlet = function() {
-	let navigation, id, text, type, nextnodeid;
+	/** @type {String} id of the target navigation area (skin dependent, on vector either of "#left-navigation", "#right-navigation", or "#mw-panel") */
+	let navigation;
+
+	/** @type {String} id of the portlet menu to create, preferably start with "p-". */
+	let id;
+
+	/** @type {String} name of the portlet menu to create. Visibility depends on the class used. */
+	let text;
+
+	/** @type {String} type of portlet. Currently only used for the vector non-sidebar portlets, pass "menu" to make this portlet a drop down menu. */
+	let type;
+
+	/** @type {Node} the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end. */
+	let nextnodeid;
+
 	switch (mw.config.get('skin')) {
 		case 'vector':
 		case 'vector-2022':
-			navigation = 'right-navigation';
+			navigation = '#right-navigation';
 			id = 'p-twinkle';
 			text = 'TW';
 			type = 'menu';
@@ -253,7 +243,7 @@ Twinkle.addPortlet = function() {
 	}
 
 	// sanity checks, and get required DOM nodes
-	var root = document.getElementById(navigation) || document.querySelector(navigation);
+	var root = document.querySelector(navigation);
 	if (!root) {
 		return null;
 	}
