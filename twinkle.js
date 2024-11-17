@@ -196,7 +196,7 @@ Twinkle.getPref = function twinkleGetPref(name) {
 /**
  * Adds a portlet menu to one of the navigation areas on the page.
  *
- * @return {String|null|undefined} -- the DOM node of the new item (a DIV element) or null
+ * @return {String} portletId
  */
 Twinkle.addPortlet = function() {
 	/** @type {String} id of the target navigation area (skin dependent, on vector either of "#left-navigation", "#right-navigation", or "#mw-panel") */
@@ -239,21 +239,18 @@ Twinkle.addPortlet = function() {
 	}
 
 	if (navigation === null) {
-		return;
+		return id;
 	}
 
 	// sanity checks, and get required DOM nodes
 	var root = document.querySelector(navigation);
 	if (!root) {
-		return null;
+		return id;
 	}
 
 	var item = document.getElementById(id);
 	if (item) {
-		if (item.parentNode && item.parentNode === root) {
-			return id;
-		}
-		return null;
+		return id;
 	}
 
 	if (type === 'menu') {
