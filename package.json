@@ -7,8 +7,6 @@
 		"start": "node scripts/dev-server.js",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"patchtest": "node scripts/patch-test.js",
-		"server": "node scripts/server.js",
 		"sync": "perl scripts/sync.pl",
 		"test": "jest",
 		"deployall": "perl scripts/sync.pl --mode=deploy --all"
