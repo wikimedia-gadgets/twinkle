@@ -261,7 +261,7 @@ Twinkle.addPortlet = function() {
 	var item = document.getElementById(id);
 	if (item) {
 		if (item.parentNode && item.parentNode === root) {
-			return item;
+			return id;
 		}
 		return null;
 	}
