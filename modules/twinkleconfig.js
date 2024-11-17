@@ -1741,8 +1741,7 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	var noticebox = document.createElement('div');
 	noticebox.className = 'cdx-message cdx-message--success';
 	noticebox.style.fontSize = '100%';
-	noticebox.style.marginTop = '2em';
-	noticebox.innerHTML = '<p><b>Your Twinkle preferences have been saved.</b><br /><br />To see the changes, you will need to <b>clear your browser cache entirely</b> (see <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> for instructions).</p>';
+	noticebox.innerHTML = '<p><b>Your Twinkle preferences have been saved.</b> To see the changes, you will need to clear your browser cache entirely (see <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> for instructions).</p>';
 	mw.loader.using('mediawiki.htmlform.codex.styles', function() {
 		Morebits.status.root.appendChild(noticebox);
 	});
