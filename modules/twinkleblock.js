@@ -649,6 +649,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 
 		$form.find('[name=pagerestrictions]').select2({
+			theme: 'default select2-morebits',
 			width: '100%',
 			placeholder: 'Select pages to block user from',
 			language: {
@@ -697,6 +698,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 
 		$form.find('[name=namespacerestrictions]').select2({
+			theme: 'default select2-morebits',
 			width: '100%',
 			matcher: Morebits.select2.matchers.wordBeginning,
 			language: {
@@ -815,13 +817,13 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   autoblock: <autoblock any IP addresses used (for registered users only)>
  *   disabletalk: <disable user from editing their own talk page while blocked>
  *   expiry: <string - expiry timestamp, can include relative times like "5 months", "2 weeks" etc>
- *   forAnonOnly: <show block option in the interface only if the relevant user is an IP>
+ *   forUnregisteredOnly: <show block option in the interface only if the relevant user is an IP>
  *   forRegisteredOnly: <show block option in the interface only if the relevant user is registered>
  *   label: <string - label for the option of the dropdown in the interface (keep brief)>
  *   noemail: prevent the user from sending email through Special:Emailuser
  *   pageParam: <set if the associated block template accepts a page parameter>
  *   prependReason: <string - prepends the value of 'reason' to the end of the existing reason, namely for when revoking talk page access>
- *   nocreate: <block account creation from the user's IP (for anonymous users only)>
+ *   nocreate: <block account creation from the user's IP (for unregistered users only)>
  *   nonstandard: <template does not conform to stewardship of WikiProject User Warnings and may not accept standard parameters>
  *   reason: <string - block rationale, as would appear in the block log,
  *            and the edit summary for when adding block template, unless 'summary' is set>
@@ -839,7 +841,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 Twinkle.block.blockPresetsInfo = {
 	'anonblock': {
 		expiry: '31 hours',
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{anonblock}}',
@@ -847,7 +849,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'anonblock - school': {
 		expiry: '36 hours',
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{anonblock}} <!-- Likely a school based on behavioral evidence -->',
@@ -856,7 +858,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'blocked proxy': {
 		expiry: '1 year',
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		hardblock: true,
@@ -865,7 +867,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'CheckUser block': {
 		expiry: '1 week',
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{CheckUser block}}',
@@ -881,7 +883,7 @@ Twinkle.block.blockPresetsInfo = {
 		sig: '~~~~'
 	},
 	'checkuserblock-wide': {
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{checkuserblock-wide}}',
@@ -889,7 +891,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'colocationwebhost': {
 		expiry: '1 year',
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nonstandard: true,
 		reason: '{{colocationwebhost}}',
 		sig: null
@@ -903,14 +905,14 @@ Twinkle.block.blockPresetsInfo = {
 		sig: '~~~~'
 	},
 	'school block': {
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{school block}}',
 		sig: '~~~~'
 	},
 	'spamblacklistblock': {
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		expiry: '1 month',
 		disabletalk: true,
 		nocreate: true,
@@ -920,19 +922,19 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{rangeblock}}',
 		nocreate: true,
 		nonstandard: true,
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		sig: '~~~~'
 	},
 	'tor': {
 		expiry: '1 year',
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nonstandard: true,
 		reason: '{{Tor}}',
 		sig: null
 	},
 	'webhostblock': {
 		expiry: '1 year',
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nonstandard: true,
 		reason: '{{webhostblock}}',
 		sig: null
@@ -949,7 +951,7 @@ Twinkle.block.blockPresetsInfo = {
 	'uw-ablock': {
 		autoblock: true,
 		expiry: '31 hours',
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nocreate: true,
 		pageParam: true,
 		reasonParam: true,
@@ -1082,7 +1084,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users'
 	},
 	'uw-ipevadeblock': {
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nocreate: true,
 		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
 		summary: 'Your IP address has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]'
@@ -1255,7 +1257,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'zombie proxy': {
 		expiry: '1 month',
-		forAnonOnly: true,
+		forUnregisteredOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{zombie proxy}}',
@@ -1485,7 +1487,7 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 			var registrationRestrict;
 			if (blockSettings.forRegisteredOnly) {
 				registrationRestrict = Twinkle.block.isRegistered;
-			} else if (blockSettings.forAnonOnly) {
+			} else if (blockSettings.forUnregisteredOnly) {
 				registrationRestrict = !Twinkle.block.isRegistered;
 			} else {
 				registrationRestrict = true;
