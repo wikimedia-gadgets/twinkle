@@ -229,8 +229,6 @@ Twinkle.addPortlet = function() {
 		default:
 			navigation = null;
 			id = 'p-cactions';
-			text = null;
-			nextnodeid = null;
 	}
 
 	if (navigation === null) {
