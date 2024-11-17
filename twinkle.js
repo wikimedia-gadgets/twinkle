@@ -208,9 +208,6 @@ Twinkle.addPortlet = function() {
 	/** @type {String} name of the portlet menu to create. Visibility depends on the class used. */
 	let text;
 
-	/** @type {String} type of portlet. Currently only used for the vector non-sidebar portlets, pass "menu" to make this portlet a drop down menu. */
-	let type;
-
 	/** @type {Node} the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end. */
 	let nextnodeid;
 
@@ -220,21 +217,19 @@ Twinkle.addPortlet = function() {
 			navigation = '#right-navigation';
 			id = 'p-twinkle';
 			text = 'TW';
-			type = 'menu';
-			nextnodeid = 'p-search';
+			// In order to get mw.util.addPortlet to generate a dropdown menu in vector and vector-2022, the nextnodeid must be p-cactions. Any other nextnodeid will generate a non-dropdown portlet instead.
+			nextnodeid = 'p-cactions';
 			break;
 		case 'timeless':
 			navigation = '#page-tools .sidebar-inner';
 			id = 'p-twinkle';
 			text = 'Twinkle';
-			type = null;
 			nextnodeid = 'p-userpagetools';
 			break;
 		default:
 			navigation = null;
 			id = 'p-cactions';
 			text = null;
-			type = null;
 			nextnodeid = null;
 	}
 
@@ -242,20 +237,16 @@ Twinkle.addPortlet = function() {
 		return id;
 	}
 
-	// sanity checks, and get required DOM nodes
+	// make sure navigation is a valid CSS selector
 	var root = document.querySelector(navigation);
 	if (!root) {
 		return id;
 	}
 
+	// if we already created the portlet, return early. we don't want to create it again.
 	var item = document.getElementById(id);
 	if (item) {
 		return id;
-	}
-
-	if (type === 'menu') {
-		// In order to get mw.util.addPortlet to generate a dropdown menu in vector and vector-2022, the nextnodeid must be p-cactions. Any other nextnodeid will generate a non-dropdown portlet instead.
-		nextnodeid = 'p-cactions';
 	}
 
 	mw.util.addPortlet(id, text, '#' + nextnodeid);
