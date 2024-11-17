@@ -282,19 +282,29 @@ Twinkle.addPortlet = function() {
  * @param task Either a URL for the portlet link or a function to execute.
  */
 Twinkle.addPortletLink = function(task, text, id, tooltip) {
+	// Create a portlet to hold all the portlet links (if not created already). And get the portletId.
 	const portletId = Twinkle.addPortlet();
+
+	// Create a portlet link and add it to the portlet.
 	var link = mw.util.addPortletLink(portletId, typeof task === 'string' ? task : '#', text, id, tooltip);
+
+	// Related to the hidden peer gadget that prevents jumpiness when the page first loads
 	$('.client-js .skin-vector #p-cactions').css('margin-right', 'initial');
+
+	// Add a click listener for the portlet link
 	if (typeof task === 'function') {
 		$(link).click(function (ev) {
 			task();
 			ev.preventDefault();
 		});
 	}
-	// $.collapsibleTabs is defined in the Vector 2010 skin
+
+	// $.collapsibleTabs is a feature of Vector 2010
 	if ($.collapsibleTabs) {
+		// Manually trigger a recalculation of what tabs to put where. This is to account for the space that the TW menu we just added is taking up.
 		$.collapsibleTabs.handleResize();
 	}
+
 	return link;
 };
 
