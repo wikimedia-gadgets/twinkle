@@ -169,7 +169,7 @@ Twinkle.defaultConfig = {
 	customWelcomeSignature: true,
 
 	// Talkback
-	markTalkbackAsMinor: true,
+	markTalkbackAsMinor: false,
 	insertTalkbackSignature: true,  // always sign talkback templates
 	talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
 	mailHeading: "You've got mail!",
@@ -323,7 +323,7 @@ $.ajax({
 	dataType: 'text'
 })
 	.fail(function () {
-		mw.notify('Could not load your Twinkle preferences, resorting to default preferences');
+		console.log('Could not load your Twinkle preferences, resorting to default preferences'); // eslint-disable-line no-console
 	})
 	.done(function (optionsText) {
 
