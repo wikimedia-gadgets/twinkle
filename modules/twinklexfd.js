@@ -671,7 +671,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			old_area.parentNode.replaceChild(work_area, old_area);
 			break;
 
-		case 'rm':
+		case 'rm': {
 			work_area = new Morebits.quickForm.element({
 				type: 'field',
 				label: 'Requested moves',
@@ -687,7 +687,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						tooltip: 'Use this option when you are unable to perform this uncontroversial move yourself because of a technical reason (e.g. a page already exists at the new title, or the page is protected)',
 						checked: false,
 						event: function() {
-							form.newname.required = this.checked;
+							$('input[name="newname"]', form).prop('required', this.checked);
+							$('input[type="button"][value="more"]', form)[0].sublist.inputs[1].required = this.checked;
 						},
 						subgroup: {
 							type: 'checkbox',
@@ -705,16 +706,32 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				]
 			});
 			work_area.append({
-				type: 'input',
-				name: 'newname',
-				label: 'New title:',
-				tooltip: 'Required for technical requests. Otherwise, if unsure of the appropriate title, you may leave it blank.'
+				type: 'dyninput',
+				inputs: [
+					{
+						label: 'From:',
+						name: 'currentname',
+						required: true
+					},
+					{
+						label: 'To:',
+						name: 'newname',
+						tooltip: 'Required for technical requests. Otherwise, if unsure of the appropriate title, you may leave it blank.'
+					}
+				],
+				min: 1
 			});
 
 			appendReasonBox();
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
+
+			const currentNonTalkPage = Morebits.pageNameNorm
+				.replace(/^Talk:/, '')
+				.replace(/^([A-Za-z]*) talk:/, '$1:');
+			form.currentname.value = currentNonTalkPage;
 			break;
+		}
 
 		default:
 			work_area = new Morebits.quickForm.element({
@@ -766,12 +783,17 @@ Twinkle.xfd.callbacks = {
 			// U+00A0 NO-BREAK SPACE; U+2013 EN RULE
 		}
 		if (venue === 'rm') {
-			// even if invoked from talk page, propose the subject page for move
-			var pageName = new mw.Title(Morebits.pageNameNorm).getSubjectPage().toText();
-			var rmtrDiscuss = params['rmtr-discuss'] ? '|discuss=no' : '';
-			var rmtr = '{{subst:RMassist|1=' + pageName + '|2=' + params.newname + rmtrDiscuss + '|reason=' + params.reason + '}}';
-			var requestedMove = '{{subst:Requested move|current1=' + pageName + '|new1=' + params.newname + '|reason=' + params.reason + '}}';
-			return params.rmtr ? rmtr : requestedMove;
+			if (params.rmtr) {
+				var rmtrDiscuss = params['rmtr-discuss'] ? '|discuss=no' : '';
+				return params.currentname
+					.map((currentname, i) => `{{subst:RMassist|1=${currentname}|2=${params.newname[i]}${rmtrDiscuss}|reason=${params.reason}}}`)
+					.join('\n');
+			}
+			return `{{subst:Requested move${
+				params.currentname
+					.map((currentname, i) => `|current${i + 1}=${currentname}|new${i + 1}=${params.newname[i]}`)
+					.join('')
+			}|reason=${params.reason}}}`;
 		}
 
 		var text = '{{subst:' + venue + '2';
