@@ -669,7 +669,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			old_area.parentNode.replaceChild(work_area, old_area);
 			break;
 
-		case 'rm':
+		case 'rm': {
 			work_area = new Morebits.quickForm.element({
 				type: 'field',
 				label: 'Requested moves',
@@ -724,8 +724,12 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
 
-			form.currentname.value = Morebits.pageNameNorm;
+			const currentNonTalkPage = Morebits.pageNameNorm
+				.replace(/^Talk:/, '')
+				.replace(/^([A-Za-z]*) talk:/, '$1:');
+			form.currentname.value = currentNonTalkPage;
 			break;
+		}
 
 		default:
 			work_area = new Morebits.quickForm.element({
