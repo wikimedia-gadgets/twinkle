@@ -1380,7 +1380,7 @@ Twinkle.speedy.callbacks = {
 			}
 
 			// Tag if possible, post on talk if not
-			if (pageobj.canEdit() && ['wikitext', 'Scribunto', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1 && mw.config.get('wgNamespaceNumber') !== 710) {
+			if (pageobj.canEdit() && ['wikitext', 'Scribunto', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1 && mw.config.get('wgNamespaceNumber') !== 710 /* TimedText */) {
 				var text = pageobj.getPageText();
 
 				statelem.status('Checking for tags on the page...');
