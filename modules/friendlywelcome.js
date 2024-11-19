@@ -138,7 +138,7 @@ Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
 		event: Twinkle.welcome.populateWelcomeList,
 		list: [
 			{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
-			{ type: 'option', value: 'anonymous', label: 'IP user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
+			{ type: 'option', value: 'unregistered', label: 'IP user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
 			{ type: 'option', value: 'wikiProject', label: 'WikiProject welcomes' },
 			{ type: 'option', value: 'nonEnglish', label: 'Non-English welcomes' }
 		]
@@ -183,7 +183,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 	var container = new Morebits.quickForm.element({ type: 'fragment' });
 
-	if ((type === 'standard' || type === 'anonymous') && Twinkle.getPref('customWelcomeList').length) {
+	if ((type === 'standard' || type === 'unregistered') && Twinkle.getPref('customWelcomeList').length) {
 		container.append({ type: 'header', label: 'Custom welcome templates' });
 		container.append({
 			type: 'radio',
@@ -219,7 +219,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 	var firstRadio = e.target.form.template[0];
 	firstRadio.checked = true;
-	var vals = sets[Object.keys(sets)[0]];
+	var vals = Object.values(sets)[0];
 	e.target.form.article.disabled = vals[firstRadio.value] ? !vals[firstRadio.value].linkedArticle : true;
 };
 
@@ -275,6 +275,15 @@ Twinkle.welcome.templates = {
 			'welcome non-latin': {
 				description: 'welcome for users with a username containing non-Latin characters',
 				syntax: '{{subst:welcome non-latin|$USERNAME$}} ~~~~'
+			},
+			'welcome mentor': {
+				description: 'welcome for mentor users to give to their mentees',
+				syntax: '{{subst:mentor welcome|$USERNAME$}} ~~~~'
+			},
+			'welcome draft': {
+				description: 'welcome for users who write draft articles',
+				linkedArticle: true,
+				syntax: '{{subst:welcome draft|art=$ARTICLE$}} ~~~~'
 			}
 		},
 
@@ -341,37 +350,42 @@ Twinkle.welcome.templates = {
 		}
 	},
 
-	anonymous: {
-		'Anonymous user welcome templates': {
-			'welcome-anon': {
-				description: 'for anonymous users; encourages creating an account',
+	unregistered: {
+		'Unregistered user welcome templates': {
+			'welcome-unregistered': {
+				description: 'for unregistered users; encourages creating an account',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-anon|art=$ARTICLE$}} ~~~~'
+				syntax: '{{subst:welcome-unregistered|art=$ARTICLE$}} ~~~~'
 			},
 			'thanks': {
-				description: 'for anonymous users; short; encourages creating an account',
+				description: 'for unregistered users; short; encourages creating an account',
 				linkedArticle: true,
 				syntax: '== Welcome! ==\n{{subst:thanks|page=$ARTICLE$}} ~~~~'
 			},
-			'welcome-anon-test': {
-				description: 'for anonymous users who have performed test edits',
+			'welcome-unregistered-test': {
+				description: 'for unregistered users who have performed test edits',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-anon-test|$ARTICLE$|$USERNAME$}} ~~~~'
+				syntax: '{{subst:welcome-unregistered-test|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
-			'welcome-anon-unconstructive': {
-				description: 'for anonymous users who have vandalized or made unhelpful edits',
+			'welcome-unregistered-unconstructive': {
+				description: 'for unregistered users who have vandalized or made unhelpful edits',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-anon-unconstructive|$ARTICLE$|$USERNAME$}}'
+				syntax: '{{subst:welcome-unregistered-unconstructive|$ARTICLE$|$USERNAME$}}'
 			},
-			'welcome-anon-constructive': {
-				description: 'for anonymous users who fight vandalism or edit constructively',
+			'welcome-unregistered-constructive': {
+				description: 'for unregistered users who fight vandalism or edit constructively',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-anon-constructive|art=$ARTICLE$}}'
+				syntax: '{{subst:welcome-unregistered-constructive|art=$ARTICLE$}}'
 			},
-			'welcome-anon-delete': {
-				description: 'for anonymous users who have removed content from pages',
+			'welcome-unregistered-delete': {
+				description: 'for unregistered users who have removed content from pages',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-anon-delete|$ARTICLE$|$USERNAME$}} ~~~~'
+				syntax: '{{subst:welcome-unregistered-delete|$ARTICLE$|$USERNAME$}} ~~~~'
+			},
+			'welcome-unregistered-unsourced': {
+				description: 'for anonymous users who have added unsourced content',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-unregistered-unsourced|$ARTICLE$|$USERNAME$}}'
 			}
 		}
 	},
@@ -530,9 +544,25 @@ Twinkle.welcome.templates = {
 				description: 'welcome for users whose first language appears to be German',
 				syntax: '{{subst:welcomeen-de}}'
 			},
+			'welcomeen-ha': {
+				description: 'welcome for users whose first language appears to be Hausa',
+				syntax: '{{subst:welcomeen-ha}}'
+			},
 			'welcomeen-he': {
 				description: 'welcome for users whose first language appears to be Hebrew',
 				syntax: '{{subst:welcomeen-he}}'
+			},
+			'welcomeen-hi': {
+				description: 'welcome for users whose first language appears to be Hindi',
+				syntax: '{{subst:welcomeen-hi}}'
+			},
+			'welcomeen-id': {
+				description: 'welcome for users whose first language appears to be Indonesian',
+				syntax: '{{subst:welcomeen-id}}'
+			},
+			'welcomeen-it': {
+				description: 'welcome for users whose first language appears to be Italian',
+				syntax: '{{subst:welcomeen-it}}'
 			},
 			'welcomeen-ja': {
 				description: 'welcome for users whose first language appears to be Japanese',
@@ -542,6 +572,10 @@ Twinkle.welcome.templates = {
 				description: 'welcome for users whose first language appears to be Korean',
 				syntax: '{{subst:welcomeen-ko}}'
 			},
+			'welcomeen-ms': {
+				description: 'welcome for users whose first language appears to be Malay',
+				syntax: '{{subst:welcomeen-ms}}'
+			},
 			'welcomeen-ml': {
 				description: 'welcome for users whose first language appears to be Malayalam',
 				syntax: '{{subst:welcomeen-ml}}'
@@ -550,9 +584,21 @@ Twinkle.welcome.templates = {
 				description: 'welcome for users whose first language appears to be Marathi',
 				syntax: '{{subst:welcomeen-mr}}'
 			},
+			'welcomeen-no': {
+				description: 'welcome for users whose first language appears to be Norwegian',
+				syntax: '{{subst:welcomeen-no}}'
+			},
 			'welcomeen-or': {
 				description: 'welcome for users whose first language appears to be Oriya (Odia)',
 				syntax: '{{subst:welcomeen-or}}'
+			},
+			'welcomeen-fa': {
+				description: 'welcome for users whose first language appears to be Persian',
+				syntax: '{{subst:welcomeen-fa}}'
+			},
+			'welcomeen-pl': {
+				description: 'welcome for users whose first language appears to be Polish',
+				syntax: '{{subst:welcomeen-pl}}'
 			},
 			'welcomeen-pt': {
 				description: 'welcome for users whose first language appears to be Portuguese',
@@ -574,9 +620,29 @@ Twinkle.welcome.templates = {
 				description: 'welcome for users whose first language appears to be Swedish',
 				syntax: '{{subst:welcomeen-sv}}'
 			},
+			'welcomeen-th': {
+				description: 'welcome for users whose first language appears to be Thai',
+				syntax: '{{subst:welcomeen-th}}'
+			},
+			'welcomeen-tl': {
+				description: 'welcome for users whose first language appears to be Tagalog',
+				syntax: '{{subst:welcomeen-tl}}'
+			},
+			'welcomeen-tr': {
+				description: 'welcome for users whose first language appears to be Turkish',
+				syntax: '{{subst:welcomeen-tr}}'
+			},
 			'welcomeen-uk': {
 				description: 'welcome for users whose first language appears to be Ukrainian',
 				syntax: '{{subst:welcomeen-uk}}'
+			},
+			'welcomeen-ur': {
+				description: 'welcome for users whose first language appears to be Urdu',
+				syntax: '{{subst:welcomeen-ur}}'
+			},
+			'welcomeen-vi': {
+				description: 'welcome for users whose first language appears to be Vietnamese',
+				syntax: '{{subst:welcomeen-vi}}'
 			}
 		}
 	}

@@ -67,7 +67,7 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 				label: 'Tag page with protection template',
 				value: 'tag',
 				tooltip: 'If the protecting admin forgot to apply a protection template, or you have just protected the page without tagging, you can use this to apply the appropriate protection tag.',
-				disabled: mw.config.get('wgArticleId') === 0 || mw.config.get('wgPageContentModel') === 'Scribunto'
+				disabled: mw.config.get('wgArticleId') === 0 || mw.config.get('wgPageContentModel') === 'Scribunto' || mw.config.get('wgNamespaceNumber') === 710 // TimedText
 			}
 		]
 	});
@@ -502,7 +502,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				value: '',
 				tooltip: 'Optional revision ID of the RfPP page where protection was requested.'
 			});
-			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto') {  // tagging isn't relevant for non-existing or module pages
+			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto' || mw.config.get('wgNamespaceNumber') === 710) {  // tagging isn't relevant for non-existing, module, or TimedText pages
 				break;
 			}
 			/* falls through */
@@ -686,12 +686,15 @@ Twinkle.protect.protectionLengths = [
 	{ label: '2 days', value: '2 days' },
 	{ label: '3 days', value: '3 days' },
 	{ label: '4 days', value: '4 days' },
+	{ label: '10 days', value: '10 days' },
 	{ label: '1 week', value: '1 week' },
 	{ label: '2 weeks', value: '2 weeks' },
 	{ label: '1 month', value: '1 month' },
 	{ label: '2 months', value: '2 months' },
 	{ label: '3 months', value: '3 months' },
+	{ label: '6 months', value: '6 months' },
 	{ label: '1 year', value: '1 year' },
+	{ label: '2 years', value: '2 years' },
 	{ label: 'indefinite', value: 'infinity' },
 	{ label: 'Custom...', value: 'custom' }
 ];
@@ -1072,8 +1075,8 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 		// Add any annotations
 		Twinkle.protect.callback.annotateProtectReason(e);
 
-		// sort out tagging options, disabled if nonexistent or lua
-		if (mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto') {
+		// sort out tagging options, disabled if nonexistent, lua, or TimedText
+		if (mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto' && mw.config.get('wgNamespaceNumber') !== 710) {
 			if (form.category.value === 'unprotect') {
 				form.tagtype.value = 'none';
 			} else {
@@ -1109,7 +1112,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	var input = Morebits.quickForm.getInputData(form);
 
 	var tagparams;
-	if (input.actiontype === 'tag' || (input.actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
+	if (input.actiontype === 'tag' || (input.actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto' && mw.config.get('wgNamespaceNumber') !== 710 /* TimedText */)) {
 		tagparams = {
 			tag: input.tagtype,
 			reason: false,
@@ -1485,6 +1488,10 @@ Twinkle.protect.callbacks = {
 				} else {
 					if (params.noinclude) {
 						tag = '<noinclude>{{' + tag + '}}</noinclude>';
+
+						if (text.startsWith('==')) {
+							tag += '\n'; // a newline is needed to prevent section headings at the very beginning of the page from breaking
+						}
 					} else {
 						tag = '{{' + tag + '}}\n';
 					}

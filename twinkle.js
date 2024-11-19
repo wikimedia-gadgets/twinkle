@@ -169,7 +169,7 @@ Twinkle.defaultConfig = {
 	customWelcomeSignature: true,
 
 	// Talkback
-	markTalkbackAsMinor: true,
+	markTalkbackAsMinor: false,
 	insertTalkbackSignature: true,  // always sign talkback templates
 	talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
 	mailHeading: "You've got mail!",
@@ -177,32 +177,6 @@ Twinkle.defaultConfig = {
 	// Shared
 	markSharedIPAsMinor: true
 };
-
-// now some skin dependent config.
-switch (mw.config.get('skin')) {
-	case 'vector':
-	case 'vector-2022':
-		Twinkle.defaultConfig.portletArea = 'right-navigation';
-		Twinkle.defaultConfig.portletId = 'p-twinkle';
-		Twinkle.defaultConfig.portletName = 'TW';
-		Twinkle.defaultConfig.portletType = 'menu';
-		Twinkle.defaultConfig.portletNext = 'p-search';
-		break;
-	case 'timeless':
-		Twinkle.defaultConfig.portletArea = '#page-tools .sidebar-inner';
-		Twinkle.defaultConfig.portletId = 'p-twinkle';
-		Twinkle.defaultConfig.portletName = 'Twinkle';
-		Twinkle.defaultConfig.portletType = null;
-		Twinkle.defaultConfig.portletNext = 'p-userpagetools';
-		break;
-	default:
-		Twinkle.defaultConfig.portletArea = null;
-		Twinkle.defaultConfig.portletId = 'p-cactions';
-		Twinkle.defaultConfig.portletName = null;
-		Twinkle.defaultConfig.portletType = null;
-		Twinkle.defaultConfig.portletNext = null;
-}
-
 
 Twinkle.getPref = function twinkleGetPref(name) {
 	if (typeof Twinkle.prefs === 'object' && Twinkle.prefs[name] !== undefined) {
@@ -220,55 +194,60 @@ Twinkle.getPref = function twinkleGetPref(name) {
 
 
 /**
- * **************** Twinkle.addPortlet() ****************
- *
  * Adds a portlet menu to one of the navigation areas on the page.
- * This is necessarily quite a hack since skins, navigation areas, and
- * portlet menu types all work slightly different.
  *
- * Available navigation areas depend on the skin used.
- * Vector:
- *  For each option, the outer nav class contains "vector-menu", the inner div class is "vector-menu-content", and the ul is "vector-menu-content-list"
- *  "mw-panel", outer nav class contains "vector-menu-portal". Existing portlets/elements: "p-logo", "p-navigation", "p-interaction", "p-tb", "p-coll-print_export"
- *  "left-navigation", outer nav class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-namespaces", "p-variants" (menu)
- *  "right-navigation", outer nav class contains "vector-menu-tabs" or "vector-menu-dropdown". Existing portlets: "p-views", "p-cactions" (menu), "p-search"
- *  Special layout of p-personal portlet (part of "head") through specialized styles.
- * Monobook:
- *  "column-one", outer nav class "portlet", inner div class "pBody". Existing portlets: "p-cactions", "p-personal", "p-logo", "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
- *  Special layout of p-cactions and p-personal through specialized styles.
- * Modern:
- *  "mw_contentwrapper" (top nav), outer nav class "portlet", inner div class "pBody". Existing portlets or elements: "p-cactions", "mw_content"
- *  "mw_portlets" (sidebar), outer nav class "portlet", inner div class "pBody". Existing portlets: "p-navigation", "p-search", "p-interaction", "p-tb", "p-coll-print_export"
- *
- * @param {String} navigation id of the target navigation area (skin dependant, on vector either of "left-navigation", "right-navigation", or "mw-panel")
- * @param {String} id id of the portlet menu to create, preferably start with "p-".
- * @param {String} text name of the portlet menu to create. Visibility depends on the class used.
- * @param {String} type type of portlet. Currently only used for the vector non-sidebar portlets, pass "menu" to make this portlet a drop down menu.
- * @param {Node} nextnodeid the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end.
- *
- * @return Node -- the DOM node of the new item (a DIV element) or null
+ * @return {String} portletId
  */
-Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
-	// sanity checks, and get required DOM nodes
-	var root = document.getElementById(navigation) || document.querySelector(navigation);
-	if (!root) {
-		return null;
+Twinkle.addPortlet = function() {
+	/** @type {String} id of the target navigation area (skin dependent, on vector either of "#left-navigation", "#right-navigation", or "#mw-panel") */
+	let navigation;
+
+	/** @type {String} id of the portlet menu to create, preferably start with "p-". */
+	let id;
+
+	/** @type {String} name of the portlet menu to create. Visibility depends on the class used. */
+	let text;
+
+	/** @type {Node} the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end. */
+	let nextnodeid;
+
+	switch (mw.config.get('skin')) {
+		case 'vector':
+		case 'vector-2022':
+			navigation = '#right-navigation';
+			id = 'p-twinkle';
+			text = 'TW';
+			// In order to get mw.util.addPortlet to generate a dropdown menu in vector and vector-2022, the nextnodeid must be p-cactions. Any other nextnodeid will generate a non-dropdown portlet instead.
+			nextnodeid = 'p-cactions';
+			break;
+		case 'timeless':
+			navigation = '#page-tools .sidebar-inner';
+			id = 'p-twinkle';
+			text = 'Twinkle';
+			nextnodeid = 'p-userpagetools';
+			break;
+		default:
+			navigation = null;
+			id = 'p-cactions';
 	}
 
+	if (navigation === null) {
+		return id;
+	}
+
+	// make sure navigation is a valid CSS selector
+	var root = document.querySelector(navigation);
+	if (!root) {
+		return id;
+	}
+
+	// if we already created the portlet, return early. we don't want to create it again.
 	var item = document.getElementById(id);
 	if (item) {
-		if (item.parentNode && item.parentNode === root) {
-			return item;
-		}
-		return null;
+		return id;
 	}
 
-	if (type === 'menu') {
-		// In order to get mw.util.addPortlet to generate a dropdown menu in vector and vector-2022, the nextnodeid must be p-cactions. Any other nextnodeid will generate a non-dropdown portlet instead.
-		nextnodeid = 'p-cactions';
-	}
-
-	var portlet = mw.util.addPortlet(id, text, '#' + nextnodeid);
+	mw.util.addPortlet(id, text, '#' + nextnodeid);
 
 	// The Twinkle dropdown menu has been added to the left of p-cactions, since that is the only spot that will create a dropdown menu. But we want it on the right. Move it to the right.
 	if (mw.config.get('skin') === 'vector') {
@@ -283,29 +262,38 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 		}
 	}
 
-	return portlet;
+	return id;
 };
 
 /**
- * **************** Twinkle.addPortletLink() ****************
- * Builds a portlet menu if it doesn't exist yet, and add the portlet link.
- * @param task: Either a URL for the portlet link or a function to execute.
+ * Builds a portlet menu if it doesn't exist yet, and adds a portlet link. This function runs at the top of every Twinkle module, ensuring that the first module to be loaded adds the portlet, and that every module can add a link to itself to the portlet.
+ *
+ * @param task Either a URL for the portlet link or a function to execute.
  */
 Twinkle.addPortletLink = function(task, text, id, tooltip) {
-	if (Twinkle.getPref('portletArea') !== null) {
-		Twinkle.addPortlet(Twinkle.getPref('portletArea'), Twinkle.getPref('portletId'), Twinkle.getPref('portletName'), Twinkle.getPref('portletType'), Twinkle.getPref('portletNext'));
-	}
-	var link = mw.util.addPortletLink(Twinkle.getPref('portletId'), typeof task === 'string' ? task : '#', text, id, tooltip);
+	// Create a portlet to hold all the portlet links (if not created already). And get the portletId.
+	const portletId = Twinkle.addPortlet();
+
+	// Create a portlet link and add it to the portlet.
+	var link = mw.util.addPortletLink(portletId, typeof task === 'string' ? task : '#', text, id, tooltip);
+
+	// Related to the hidden peer gadget that prevents jumpiness when the page first loads
 	$('.client-js .skin-vector #p-cactions').css('margin-right', 'initial');
+
+	// Add a click listener for the portlet link
 	if (typeof task === 'function') {
 		$(link).click(function (ev) {
 			task();
 			ev.preventDefault();
 		});
 	}
+
+	// $.collapsibleTabs is a feature of Vector 2010
 	if ($.collapsibleTabs) {
+		// Manually trigger a recalculation of what tabs to put where. This is to account for the space that the TW menu we just added is taking up.
 		$.collapsibleTabs.handleResize();
 	}
+
 	return link;
 };
 
@@ -323,7 +311,7 @@ $.ajax({
 	dataType: 'text'
 })
 	.fail(function () {
-		mw.notify('Could not load your Twinkle preferences, resorting to default preferences');
+		console.log('Could not load your Twinkle preferences, resorting to default preferences'); // eslint-disable-line no-console
 	})
 	.done(function (optionsText) {
 

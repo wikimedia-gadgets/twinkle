@@ -4,14 +4,12 @@
 	"private": true,
 	"repository": "wikimedia-gadgets/twinkle",
 	"scripts": {
-		"start": "node scripts/dev-server.js",
-		"lint": "eslint .",
+		"deploy": "perl scripts/deploy.pl",
+		"deployall": "perl scripts/deploy.pl --mode=deploy --all",
 		"lint:fix": "eslint . --fix",
-		"patchtest": "node scripts/patch-test.js",
-		"server": "node scripts/server.js",
-		"sync": "perl scripts/sync.pl",
-		"test": "jest",
-		"deployall": "perl scripts/sync.pl --mode=deploy --all"
+		"lint": "eslint .",
+		"start": "node scripts/dev-server.js",
+		"test": "jest"
 	},
 	"devDependencies": {
 		"eslint": "^8.54.0",
