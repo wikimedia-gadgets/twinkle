@@ -726,9 +726,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
 
-			const currentNonTalkPage = Morebits.pageNameNorm
-				.replace(/^Talk:/, '')
-				.replace(/^([A-Za-z]*) talk:/, '$1:');
+			const currentNonTalkPage = mw.Title.newFromText(Morebits.pageNameNorm).getSubjectPage().toText();
 			form.currentname.value = currentNonTalkPage;
 			break;
 		}
