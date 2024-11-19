@@ -544,6 +544,10 @@ Twinkle.welcome.templates = {
 				description: 'welcome for users whose first language appears to be German',
 				syntax: '== Welcome! ==\n{{subst:welcomeen-de}}'
 			},
+			'welcomeen-ha': {
+				description: 'welcome for users whose first language appears to be Hausa',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ha}}'
+			},
 			'welcomeen-he': {
 				description: 'welcome for users whose first language appears to be Hebrew',
 				syntax: '== Welcome! ==\n{{subst:welcomeen-he}}'
@@ -568,6 +572,10 @@ Twinkle.welcome.templates = {
 				description: 'welcome for users whose first language appears to be Korean',
 				syntax: '== Welcome! ==\n{{subst:welcomeen-ko}}'
 			},
+			'welcomeen-ms': {
+				description: 'welcome for users whose first language appears to be Malay',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ms}}'
+			},
 			'welcomeen-ml': {
 				description: 'welcome for users whose first language appears to be Malayalam',
 				syntax: '== Welcome! ==\n{{subst:welcomeen-ml}}'
@@ -576,9 +584,21 @@ Twinkle.welcome.templates = {
 				description: 'welcome for users whose first language appears to be Marathi',
 				syntax: '== Welcome! ==\n{{subst:welcomeen-mr}}'
 			},
+			'welcomeen-no': {
+				description: 'welcome for users whose first language appears to be Norwegian',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-no}}'
+			},
 			'welcomeen-or': {
 				description: 'welcome for users whose first language appears to be Oriya (Odia)',
 				syntax: '== Welcome! ==\n{{subst:welcomeen-or}}'
+			},
+			'welcomeen-fa': {
+				description: 'welcome for users whose first language appears to be Persian',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-fa}}'
+			},
+			'welcomeen-pl': {
+				description: 'welcome for users whose first language appears to be Polish',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-pl}}'
 			},
 			'welcomeen-pt': {
 				description: 'welcome for users whose first language appears to be Portuguese',
@@ -600,9 +620,29 @@ Twinkle.welcome.templates = {
 				description: 'welcome for users whose first language appears to be Swedish',
 				syntax: '== Welcome! ==\n{{subst:welcomeen-sv}}'
 			},
+			'welcomeen-th': {
+				description: 'welcome for users whose first language appears to be Thai',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-th}}'
+			},
+			'welcomeen-tl': {
+				description: 'welcome for users whose first language appears to be Tagalog',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-tl}}'
+			},
+			'welcomeen-tr': {
+				description: 'welcome for users whose first language appears to be Turkish',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-tr}}'
+			},
 			'welcomeen-uk': {
 				description: 'welcome for users whose first language appears to be Ukrainian',
 				syntax: '== Welcome! ==\n{{subst:welcomeen-uk}}'
+			},
+			'welcomeen-ur': {
+				description: 'welcome for users whose first language appears to be Urdu',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ur}}'
+			},
+			'welcomeen-vi': {
+				description: 'welcome for users whose first language appears to be Vietnamese',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-vi}}'
 			}
 		}
 	}

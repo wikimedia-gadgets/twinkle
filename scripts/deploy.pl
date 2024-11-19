@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# sync.pl by azatoth (2011), update by amorymeltzer (2019)
+# deploy.pl by azatoth (2011), update by amorymeltzer (2019)
 
 use strict;
 use warnings;
@@ -69,7 +69,7 @@ my $mw = MediaWiki::API->new({
 			      max_lag => 1000000, # not a botty script, thus smash it!
 			      on_error => \&dieNice
 			     });
-$mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
+$mw->{ua}->agent('Twinkle/deploy.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $conf{username}, lgpassword => $conf{password}});
 
 my $diffFunc = $conf{w} || 'diff'; # Only used for the --diff option
