@@ -1380,7 +1380,7 @@ Twinkle.speedy.callbacks = {
 			}
 
 			// Tag if possible, post on talk if not
-			if (pageobj.canEdit() && ['wikitext', 'Scribunto', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
+			if (pageobj.canEdit() && ['wikitext', 'Scribunto', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1 && mw.config.get('wgNamespaceNumber') !== 710 /* TimedText */) {
 				var text = pageobj.getPageText();
 
 				statelem.status('Checking for tags on the page...');
@@ -1483,7 +1483,7 @@ Twinkle.speedy.callbacks = {
 					talk_page.setCallbackParameters(params);
 					talk_page.newSection(Twinkle.speedy.callbacks.user.tagComplete);
 				} else {
-					pageobj.getStatusElement().error('Page protected and nowhere to add an edit request, aborting');
+					pageobj.getStatusElement().error('Page cannot be edited and no other location to place a speedy deletion request, aborting');
 				}
 			}
 		},

@@ -500,17 +500,19 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Miscellany for deletion',
 				name: 'work_area'
 			});
-			work_area.append({
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Wrap deletion tag with &lt;noinclude&gt;',
-						value: 'noinclude',
-						name: 'noinclude',
-						tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. Select this option for userboxes.'
-					}
-				]
-			});
+			if (mw.config.get('wgNamespaceNumber') !== 710) { // TimedText cannot be tagged, so asking whether to noinclude the tag is pointless
+				work_area.append({
+					type: 'checkbox',
+					list: [
+						{
+							label: 'Wrap deletion tag with &lt;noinclude&gt;',
+							value: 'noinclude',
+							name: 'noinclude',
+							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. Select this option for userboxes.'
+						}
+					]
+				});
+			}
 			if ((mw.config.get('wgNamespaceNumber') === 2 /* User: */ || mw.config.get('wgNamespaceNumber') === 3 /* User talk: */) && mw.config.exists('wgRelevantUserName')) {
 				work_area.append({
 					type: 'checkbox',
@@ -1522,11 +1524,15 @@ Twinkle.xfd.callbacks = {
 
 			apiobj.statelem.info('next in order is [[' + apiobj.params.discussionpage + ']]');
 
+			var wikipedia_page;
+
 			// Tagging page
-			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
-			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
-			wikipedia_page.setCallbackParameters(apiobj.params);
-			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.taggingPage);
+			if (mw.config.get('wgNamespaceNumber') !== 710) { // cannot tag TimedText pages
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
+				wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
+				wikipedia_page.setCallbackParameters(apiobj.params);
+				wikipedia_page.load(Twinkle.xfd.callbacks.mfd.taggingPage);
+			}
 
 			// Updating data for the action completed event
 			Morebits.wiki.actionCompleted.redirect = apiobj.params.discussionpage;
