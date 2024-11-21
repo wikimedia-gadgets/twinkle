@@ -10,7 +10,6 @@
 		"mw": "readonly",
 		"Map": "readonly"
 	},
-	"ignorePatterns": ["scripts/", "tests/", "lib/"],
 	"rules": {
 		"array-bracket-spacing": "off",
 		"camelcase": "off",
