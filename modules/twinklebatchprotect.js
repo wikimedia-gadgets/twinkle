@@ -82,10 +82,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		name: 'movelevel',
 		label: 'Move protection:',
 		event: Twinkle.protect.formevents.movelevel,
-		list: Twinkle.protect.protectionLevels.filter((level) => 
-			// Autoconfirmed is required for a move, redundant
-			 level.value !== 'autoconfirmed'
-		)
+		list: Twinkle.protect.protectionLevels.filter((level) => /* Autoconfirmed is required for a move, redundant */ level.value !== 'autoconfirmed')
 	});
 	form.append({
 		type: 'select',
