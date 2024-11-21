@@ -6,18 +6,17 @@
 
 /*
  ****************************************
- *** friendlytalkback.js: Talkback module
+ *** twinkletalkback.js: Talkback module
  ****************************************
  * Mode of invocation:     Tab ("TB")
  * Active on:              Any page with relevant user name (userspace, contribs, etc.) except IP ranges
- * Config directives in:   FriendlyConfig
  */
 
 Twinkle.talkback = function() {
 	if (!mw.config.exists('wgRelevantUserName') || Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
 		return;
 	}
-	Twinkle.addPortletLink(Twinkle.talkback.callback, 'TB', 'friendly-talkback', 'Easy talkback');
+	Twinkle.addPortletLink(Twinkle.talkback.callback, 'TB', 'twinkle-talkback', 'Easy talkback');
 };
 
 Twinkle.talkback.callback = function() {
@@ -70,14 +69,14 @@ Twinkle.talkback.callback = function() {
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
 	form.append({ type: 'div', id: 'talkbackpreview', label: [ previewlink ] });
-	form.append({ type: 'div', id: 'friendlytalkback-previewbox', style: 'display: none' });
+	form.append({ type: 'div', id: 'twinkletalkback-previewbox', style: 'display: none' });
 
 	form.append({ type: 'submit' });
 
 	var result = form.render();
 	Window.setContent(result);
 	Window.display();
-	result.previewer = new Morebits.wiki.preview($(result).find('div#friendlytalkback-previewbox').last()[0]);
+	result.previewer = new Morebits.wiki.preview($(result).find('div#twinkletalkback-previewbox').last()[0]);
 
 	// We must init the
 	var evt = document.createEvent('Event');

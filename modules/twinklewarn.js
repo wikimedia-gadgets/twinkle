@@ -21,7 +21,7 @@ Twinkle.warn = function twinklewarn() {
 		if (Twinkle.getPref('autoMenuAfterRollback') &&
 			mw.config.get('wgNamespaceNumber') === 3 &&
 			Twinkle.getPrefill('vanarticle') &&
-			!Twinkle.getPrefill('friendlywelcome') &&
+			!Twinkle.getPrefill('twinklewelcome') &&
 			!Twinkle.getPrefill('noautowarn')) {
 			Twinkle.warn.callback();
 		}
