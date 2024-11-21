@@ -18,6 +18,14 @@
 		"max-len": "off",
 		"no-jquery/no-class-state": "off",
 		"no-jquery/no-global-selector": "off",
+		"no-shadow": "off",
+		"no-underscore-dangle": "off",
+		"object-curly-spacing": "off",
+		"space-before-function-paren": "off",
+		"space-in-parens": "off",
+		"template-curly-spacing": "off",
+		"unicorn/prefer-string-slice": "off",
+
 		"no-nested-ternary": "error",
 		"no-restricted-syntax": [
 			"warn",
@@ -30,13 +38,6 @@
 				"selector": "MemberExpression > Identifier[name=\"fail\"]"
 			}
 		],
-		"no-shadow": "off",
-		"no-underscore-dangle": "off",
-		"object-curly-spacing": "off",
-		"space-before-function-paren": "off",
-		"space-in-parens": "off",
-		"template-curly-spacing": "off",
-		"unicorn/prefer-string-slice": "off",
 
 		"arrow-parens": "warn",
 		"dot-location": "warn",
