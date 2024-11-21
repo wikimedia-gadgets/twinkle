@@ -44,8 +44,6 @@ Twinkle.defaultConfig = {};
  * It is important that all new preferences added here, especially admin-only ones, are also added to
  * |Twinkle.config.sections| in twinkleconfig.js, so they are configurable via the Twinkle preferences panel.
  * For help on the actual preferences, see the comments in twinkleconfig.js.
- *
- * Formerly Twinkle.defaultConfig.twinkle and Twinkle.defaultConfig.friendly
  */
 Twinkle.defaultConfig = {
 	// General
@@ -146,7 +144,6 @@ Twinkle.defaultConfig = {
 	deletionSummaryAd: ' ([[WP:TW|TW]])',
 	protectionSummaryAd: ' ([[WP:TW|TW]])',
 
-	// Formerly defaultConfig.friendly:
 	// Tag
 	groupByDefault: true,
 	watchTaggedVenues: ['articles', 'drafts', 'redirects', 'files'],

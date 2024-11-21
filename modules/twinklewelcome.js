@@ -6,16 +6,16 @@
 
 /*
  ****************************************
- *** friendlywelcome.js: Welcome module
+ *** twinklewelcome.js: Welcome module
  ****************************************
  * Mode of invocation:     Tab ("Wel"), or from links on diff pages
  * Active on:              Any page with relevant user name (userspace,
  *                         contribs, etc.) and diff pages
  */
 
-Twinkle.welcome = function friendlywelcome() {
-	if (Twinkle.getPrefill('friendlywelcome')) {
-		if (Twinkle.getPrefill('friendlywelcome') === 'auto') {
+Twinkle.welcome = function twinklewelcome() {
+	if (Twinkle.getPrefill('twinklewelcome')) {
+		if (Twinkle.getPrefill('twinklewelcome') === 'auto') {
 			Twinkle.welcome.auto();
 		} else {
 			Twinkle.welcome.semiauto();
@@ -68,7 +68,7 @@ Twinkle.welcome.normal = function() {
 
 				var oWelcomeNode = welcomeNode.cloneNode(true);
 				oWelcomeNode.firstChild.setAttribute('href', oHref + '&' + $.param({
-					friendlywelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
+					twinklewelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 					vanarticle: Morebits.pageNameNorm
 				}));
 				$oldDiffHasRedlinkedTalkPage[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
@@ -80,7 +80,7 @@ Twinkle.welcome.normal = function() {
 
 				var nWelcomeNode = welcomeNode.cloneNode(true);
 				nWelcomeNode.firstChild.setAttribute('href', nHref + '&' + $.param({
-					friendlywelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
+					twinklewelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 					vanarticle: Morebits.pageNameNorm
 				}));
 				$newDiffHasRedlinkedTalkPage[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
@@ -92,7 +92,7 @@ Twinkle.welcome.normal = function() {
 	if (mw.config.exists('wgRelevantUserName') && !Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
 		Twinkle.addPortletLink(function() {
 			Twinkle.welcome.callback(mw.config.get('wgRelevantUserName'));
-		}, 'Wel', 'friendly-welcome', 'Welcome user');
+		}, 'Wel', 'twinkle-welcome', 'Welcome user');
 	}
 };
 
@@ -116,7 +116,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
 };
 
-Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
+Twinkle.welcome.callback = function twinklewelcomeCallback(uid) {
 	if (uid === mw.config.get('wgUserName') && !confirm('Are you really sure you want to welcome yourself?...')) {
 		return;
 	}
@@ -732,7 +732,7 @@ Twinkle.welcome.callbacks = {
 	}
 };
 
-Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) {
+Twinkle.welcome.callback.evaluate = function twinklewelcomeCallbackEvaluate(e) {
 	var form = e.target;
 
 	var params = Morebits.quickForm.getInputData(form); // : type, template, article
