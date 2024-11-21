@@ -60,7 +60,7 @@ Twinkle.defaultConfig = {
 	defaultToPartialBlocks: false,
 	blankTalkpageOnIndefBlock: false,
 
-	// Fluff (revert and rollback)
+	// Rollback
 	autoMenuAfterRollback: false,
 	openTalkPage: [ 'agf', 'norm', 'vand' ],
 	openTalkPageOnAutoRevert: false,
@@ -69,8 +69,8 @@ Twinkle.defaultConfig = {
 	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
 	watchRevertedExpiry: '1 month',
 	offerReasonOnNormalRevert: true,
-	confirmOnFluff: false,
-	confirmOnMobileFluff: true,
+	confirmOnRollback: false,
+	confirmOnMobileRollback: true,
 	showRollbackLinks: [ 'diff', 'others' ],
 
 	// DI (twinkleimage)
@@ -417,7 +417,7 @@ Twinkle.summaryAd = ' ([[WP:TW|TW]])';
 Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|distinguish|for|further|selfref|year dab|similar names|highway detail hatnote|broader|about(?:-distinguish| other people)?|other\\s?(?:hurricane(?: use)?s|people|persons|places|ships|uses(?: of)?)|redirect(?:-(?:distinguish|synonym|multi))?|see\\s?(?:wiktionary|also(?: if exists)?)';
 
 /**
- * When performing rollbacks with fluff [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method gets a prefill, either from URL parameters (e.g. &vanarticle=Test) or from data previously stored using Twinkle.setPrefill()
+ * When performing rollbacks with [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method gets a prefill, either from URL parameters (e.g. &vanarticle=Test) or from data previously stored using Twinkle.setPrefill()
  */
 Twinkle.getPrefill = function (key) {
 	Twinkle.prefill = Twinkle.prefill || {};
@@ -428,7 +428,7 @@ Twinkle.getPrefill = function (key) {
 };
 
 /**
- * When performing rollbacks with fluff [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method sets a prefill. This data will be lost if the page is refreshed, unless it is added to the URL as a parameter.
+ * When performing rollbacks with [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method sets a prefill. This data will be lost if the page is refreshed, unless it is added to the URL as a parameter.
  */
 Twinkle.setPrefill = function (key, value) {
 	Twinkle.prefill = Twinkle.prefill || {};

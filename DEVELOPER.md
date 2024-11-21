@@ -38,10 +38,10 @@ Each Twinkle module and dependency lives on the wiki as a separate file. The lis
 - `modules/twinkleconfig.js` &rarr; [MediaWiki:Gadget-twinkleconfig.js][]
 - `modules/twinkledeprod.js` &rarr; [MediaWiki:Gadget-twinkledeprod.js][]
 - `modules/twinklediff.js` &rarr; [MediaWiki:Gadget-twinklediff.js][]
-- `modules/twinklefluff.js` &rarr; [MediaWiki:Gadget-twinklefluff.js][]
 - `modules/twinkleimage.js` &rarr; [MediaWiki:Gadget-twinkleimage.js][]
 - `modules/twinkleprod.js` &rarr; [MediaWiki:Gadget-twinkleprod.js][]
 - `modules/twinkleprotect.js` &rarr; [MediaWiki:Gadget-twinkleprotect.js][]
+- `modules/twinklerollback.js` &rarr; [MediaWiki:Gadget-twinklerollback.js][]
 - `modules/twinkleshared.js` &rarr; [MediaWiki:Gadget-twinkleshared.js][]
 - `modules/twinklespeedy.js` &rarr; [MediaWiki:Gadget-twinklespeedy.js][]
 - `modules/twinkletag.js` &rarr; [MediaWiki:Gadget-twinkletag.js][]
@@ -113,10 +113,10 @@ The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 [MediaWiki:Gadget-twinkleconfig.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleconfig.js
 [MediaWiki:Gadget-twinkledeprod.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkledeprod.js
 [MediaWiki:Gadget-twinklediff.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklediff.js
-[MediaWiki:Gadget-twinklefluff.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklefluff.js
 [MediaWiki:Gadget-twinkleimage.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleimage.js
 [MediaWiki:Gadget-twinkleprod.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleprod.js
 [MediaWiki:Gadget-twinkleprotect.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleprotect.js
+[MediaWiki:Gadget-twinklerollback.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklerollback.js
 [MediaWiki:Gadget-twinkleshared.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleshared.js
 [MediaWiki:Gadget-twinklespeedy.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklespeedy.js
 [MediaWiki:Gadget-twinkletag.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkletag.js
