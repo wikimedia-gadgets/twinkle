@@ -67,7 +67,7 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 				label: 'Tag page with protection template',
 				value: 'tag',
 				tooltip: 'If the protecting admin forgot to apply a protection template, or you have just protected the page without tagging, you can use this to apply the appropriate protection tag.',
-				disabled: mw.config.get('wgArticleId') === 0 || mw.config.get('wgPageContentModel') === 'Scribunto'
+				disabled: mw.config.get('wgArticleId') === 0 || mw.config.get('wgPageContentModel') === 'Scribunto' || mw.config.get('wgNamespaceNumber') === 710 // TimedText
 			}
 		]
 	});
@@ -502,7 +502,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				value: '',
 				tooltip: 'Optional revision ID of the RfPP page where protection was requested.'
 			});
-			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto') {  // tagging isn't relevant for non-existing or module pages
+			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto' || mw.config.get('wgNamespaceNumber') === 710) {  // tagging isn't relevant for non-existing, module, or TimedText pages
 				break;
 			}
 			/* falls through */
@@ -1075,8 +1075,8 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 		// Add any annotations
 		Twinkle.protect.callback.annotateProtectReason(e);
 
-		// sort out tagging options, disabled if nonexistent or lua
-		if (mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto') {
+		// sort out tagging options, disabled if nonexistent, lua, or TimedText
+		if (mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto' && mw.config.get('wgNamespaceNumber') !== 710) {
 			if (form.category.value === 'unprotect') {
 				form.tagtype.value = 'none';
 			} else {
@@ -1112,7 +1112,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 	var input = Morebits.quickForm.getInputData(form);
 
 	var tagparams;
-	if (input.actiontype === 'tag' || (input.actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto')) {
+	if (input.actiontype === 'tag' || (input.actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto' && mw.config.get('wgNamespaceNumber') !== 710 /* TimedText */)) {
 		tagparams = {
 			tag: input.tagtype,
 			reason: false,
@@ -1488,6 +1488,10 @@ Twinkle.protect.callbacks = {
 				} else {
 					if (params.noinclude) {
 						tag = '<noinclude>{{' + tag + '}}</noinclude>';
+
+						if (text.startsWith('==')) {
+							tag += '\n'; // a newline is needed to prevent section headings at the very beginning of the page from breaking
+						}
 					} else {
 						tag = '{{' + tag + '}}\n';
 					}

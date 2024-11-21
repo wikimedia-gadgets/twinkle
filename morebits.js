@@ -353,7 +353,7 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  *  - `number`: A number input box.
  *      - Attributes: Everything the text `input` has, as well as: min, max, step, list
  *  - `dyninput`: A set of text boxes with "Remove" buttons and an "Add" button.
- *      - Attributes: name, label, min, max, sublabel, value, size, maxlength, event
+ *      - Attributes: name, label, min, max, inputs, sublabel, value, size, maxlength, event
  *  - `hidden`: An invisible form field.
  *      - Attributes: name, value
  *  - `header`: A level 5 header.
@@ -371,7 +371,7 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  * There is some difference on how types handle the `label` attribute:
  * - `div`, `select`, `field`, `checkbox`/`radio`, `input`, `textarea`, `header`, and `dyninput` can accept an array of items,
  * and the label item(s) can be `Element`s.
- * - `option`, `optgroup`, `_dyninput_element`, `submit`, and `button` accept only a single string.
+ * - `option`, `optgroup`, `_dyninput_cell`, `submit`, and `button` accept only a single string.
  *
  * @memberof Morebits.quickForm
  * @class
@@ -471,8 +471,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label.style.marginRight = '3px';
 			}
 			var select = node.appendChild(document.createElement('select'));
-			// opt out of dark mode for now
-			select.classList.add('notheme');
 			if (data.event) {
 				select.addEventListener('change', data.event, false);
 			}
@@ -675,9 +673,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			}
 
 			subnode = node.appendChild(document.createElement('input'));
-			// opt out of dark mode for now
-			subnode.classList.add('notheme');
-
 			subnode.setAttribute('name', data.name);
 
 			if (data.type === 'input') {
@@ -736,14 +731,17 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			var moreButton = more[1];
 
 			var sublist = {
-				type: '_dyninput_element',
-				label: data.sublabel || data.label,
-				name: data.name,
-				value: data.value,
-				size: data.size,
+				type: '_dyninput_row',
 				remove: false,
 				maxlength: data.maxlength,
-				event: data.event
+				event: data.event,
+				inputs: data.inputs || [{
+					// compatibility
+					label: data.sublabel || data.label,
+					name: data.name,
+					value: data.value,
+					size: data.size
+				}]
 			};
 
 			for (i = 0; i < min; ++i) {
@@ -759,31 +757,13 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			moreButton.max = max - min;
 			moreButton.counter = 0;
 			break;
-		case '_dyninput_element': // Private, similar to normal input
+		case '_dyninput_row': // Private
 			node = document.createElement('div');
 
-			if (data.label) {
-				label = node.appendChild(document.createElement('label'));
-				label.appendChild(document.createTextNode(data.label));
-				label.setAttribute('for', id);
-				label.style.marginRight = '3px';
-			}
-
-			subnode = node.appendChild(document.createElement('input'));
-			if (data.value) {
-				subnode.setAttribute('value', data.value);
-			}
-			subnode.setAttribute('name', data.name);
-			subnode.setAttribute('type', 'text');
-			if (data.size) {
-				subnode.setAttribute('size', data.size);
-			}
-			if (data.maxlength) {
-				subnode.setAttribute('maxlength', data.maxlength);
-			}
-			if (data.event) {
-				subnode.addEventListener('keyup', data.event, false);
-			}
+			data.inputs.forEach(function(subdata) {
+				var cell = new Morebits.quickForm.element($.extend(subdata, { type: '_dyninput_cell' }));
+				node.appendChild(cell.render());
+			});
 			if (data.remove) {
 				var remove = this.compute({
 					type: 'button',
@@ -805,6 +785,41 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				removeButton.listnode = data.listnode;
 				removeButton.morebutton = data.morebutton;
 			}
+			break;
+		case '_dyninput_cell': // Private, similar to normal input
+			node = document.createElement('span');
+
+			if (data.label) {
+				label = node.appendChild(document.createElement('label'));
+				label.appendChild(document.createTextNode(data.label));
+				label.setAttribute('for', id + '_input');
+				label.style.marginRight = '3px';
+			}
+
+			subnode = node.appendChild(document.createElement('input'));
+			subnode.setAttribute('id', id + '_input');
+			if (data.value) {
+				subnode.setAttribute('value', data.value);
+			}
+			subnode.setAttribute('name', data.name);
+			subnode.setAttribute('type', 'text');
+			subnode.setAttribute('data-dyninput', 'data-dyninput');
+			if (data.size) {
+				subnode.setAttribute('size', data.size);
+			}
+			if (data.maxlength) {
+				subnode.setAttribute('maxlength', data.maxlength);
+			}
+			if (data.required) {
+				subnode.setAttribute('required', 'required');
+			}
+			if (data.disabled) {
+				subnode.setAttribute('required', 'disabled');
+			}
+			if (data.event) {
+				subnode.addEventListener('keyup', data.event, false);
+			}
+			node.style.marginRight = '3px';
 			break;
 		case 'hidden':
 			node = document.createElement('input');
@@ -867,8 +882,6 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label.appendChild(labelElement);
 			}
 			subnode = node.appendChild(document.createElement('textarea'));
-			// opt out of dark mode for now
-			subnode.classList.add('notheme');
 			subnode.setAttribute('name', data.name);
 			if (data.cols) {
 				subnode.setAttribute('cols', data.cols);
@@ -987,7 +1000,12 @@ Morebits.quickForm.getInputData = function(form) {
 				break;
 			case 'text': // falls through
 			case 'textarea':
-				result[fieldNameNorm] = field.value.trim();
+				if (field.dataset.dyninput) {
+					result[fieldNameNorm] = result[fieldNameNorm] || [];
+					result[fieldNameNorm].push(field.value.trim());
+				} else {
+					result[fieldNameNorm] = field.value.trim();
+				}
 				break;
 			default: // could be select-one, date, number, email, etc
 				if (field.value) {
@@ -2132,7 +2150,7 @@ Morebits.date.prototype = {
 		level = parseInt(level, 10);
 		level = isNaN(level) ? 2 : level;
 
-		var header = Array(level + 1).join('='); // String.prototype.repeat not supported in IE 11
+		var header = '='.repeat(level);
 		var text = this.getUTCMonthName() + ' ' + this.getUTCFullYear();
 
 		if (header.length) { // wikitext-formatted header
@@ -3763,9 +3781,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * "edit" or "delete". In practice, only "edit" or "notedit" matters.
 	 * @returns {boolean}
 	 */
-	var fnCanUseMwUserToken = function(action) {
-		action = typeof action !== 'undefined' ? action : 'edit'; // IE doesn't support default parameters
-
+	var fnCanUseMwUserToken = function(action = 'edit') {
 		// If a watchlist expiry is set, we must always load the page
 		// to avoid overwriting indefinite protection.  Of course, not
 		// needed if setting indefinite watching!
@@ -5749,7 +5765,6 @@ Morebits.taskManager = function(context) {
 	this.taskDependencyMap = new Map();
 	this.failureCallbackMap = new Map();
 	this.deferreds = new Map();
-	this.allDeferreds = []; // Hack: IE doesn't support Map.prototype.values
 	this.context = context || window;
 
 	/**
@@ -5768,7 +5783,6 @@ Morebits.taskManager = function(context) {
 		this.failureCallbackMap.set(func, onFailure || function() {});
 		var deferred = $.Deferred();
 		this.deferreds.set(func, deferred);
-		this.allDeferreds.push(deferred);
 	};
 
 	/**
@@ -5799,7 +5813,7 @@ Morebits.taskManager = function(context) {
 				self.failureCallbackMap.get(task).apply(self.context, arguments);
 			});
 		});
-		return $.when.apply(null, this.allDeferreds); // resolved when everything is done!
+		return $.when.apply(null, [...this.deferreds.values()]); // resolved when everything is done!
 	};
 
 };
@@ -5868,6 +5882,9 @@ Morebits.simpleWindow = function SimpleWindow(width, height) {
 
 	// resize the scrollbox with the dialog, if one is present
 	$widget.resizable('option', 'alsoResize', '#' + this.content.id + ' .morebits-scrollbox, #' + this.content.id);
+
+	// add skin-invert to "close" button
+	$('.morebits-dialog .ui-dialog-titlebar-close').addClass('skin-invert');
 };
 
 Morebits.simpleWindow.prototype = {

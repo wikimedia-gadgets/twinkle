@@ -6,16 +6,16 @@
 
 /*
  ****************************************
- *** friendlywelcome.js: Welcome module
+ *** twinklewelcome.js: Welcome module
  ****************************************
  * Mode of invocation:     Tab ("Wel"), or from links on diff pages
  * Active on:              Any page with relevant user name (userspace,
  *                         contribs, etc.) and diff pages
  */
 
-Twinkle.welcome = function friendlywelcome() {
-	if (Twinkle.getPrefill('friendlywelcome')) {
-		if (Twinkle.getPrefill('friendlywelcome') === 'auto') {
+Twinkle.welcome = function twinklewelcome() {
+	if (Twinkle.getPrefill('twinklewelcome')) {
+		if (Twinkle.getPrefill('twinklewelcome') === 'auto') {
 			Twinkle.welcome.auto();
 		} else {
 			Twinkle.welcome.semiauto();
@@ -68,7 +68,7 @@ Twinkle.welcome.normal = function() {
 
 				var oWelcomeNode = welcomeNode.cloneNode(true);
 				oWelcomeNode.firstChild.setAttribute('href', oHref + '&' + $.param({
-					friendlywelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
+					twinklewelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 					vanarticle: Morebits.pageNameNorm
 				}));
 				$oldDiffHasRedlinkedTalkPage[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
@@ -80,7 +80,7 @@ Twinkle.welcome.normal = function() {
 
 				var nWelcomeNode = welcomeNode.cloneNode(true);
 				nWelcomeNode.firstChild.setAttribute('href', nHref + '&' + $.param({
-					friendlywelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
+					twinklewelcome: Twinkle.getPref('quickWelcomeMode') === 'auto' ? 'auto' : 'norm',
 					vanarticle: Morebits.pageNameNorm
 				}));
 				$newDiffHasRedlinkedTalkPage[0].parentNode.parentNode.appendChild(document.createTextNode(' '));
@@ -92,7 +92,7 @@ Twinkle.welcome.normal = function() {
 	if (mw.config.exists('wgRelevantUserName') && !Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
 		Twinkle.addPortletLink(function() {
 			Twinkle.welcome.callback(mw.config.get('wgRelevantUserName'));
-		}, 'Wel', 'friendly-welcome', 'Welcome user');
+		}, 'Wel', 'twinkle-welcome', 'Welcome user');
 	}
 };
 
@@ -116,7 +116,7 @@ Twinkle.welcome.welcomeUser = function welcomeUser() {
 	wikipedia_page.load(Twinkle.welcome.callbacks.main);
 };
 
-Twinkle.welcome.callback = function friendlywelcomeCallback(uid) {
+Twinkle.welcome.callback = function twinklewelcomeCallback(uid) {
 	if (uid === mw.config.get('wgUserName') && !confirm('Are you really sure you want to welcome yourself?...')) {
 		return;
 	}
@@ -219,7 +219,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 	var firstRadio = e.target.form.template[0];
 	firstRadio.checked = true;
-	var vals = sets[Object.keys(sets)[0]];
+	var vals = Object.values(sets)[0];
 	e.target.form.article.disabled = vals[firstRadio.value] ? !vals[firstRadio.value].linkedArticle : true;
 };
 
@@ -279,6 +279,11 @@ Twinkle.welcome.templates = {
 			'welcome mentor': {
 				description: 'welcome for mentor users to give to their mentees',
 				syntax: '{{subst:mentor welcome|$USERNAME$}} ~~~~'
+			},
+			'welcome draft': {
+				description: 'welcome for users who write draft articles',
+				linkedArticle: true,
+				syntax: '{{subst:welcome draft|art=$ARTICLE$}} ~~~~'
 			}
 		},
 
@@ -513,91 +518,131 @@ Twinkle.welcome.templates = {
 			},
 			'welcomeen-ar': {
 				description: 'welcome for users whose first language appears to be Arabic',
-				syntax: '{{subst:welcomeen-ar}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ar}}'
 			},
 			'welcomeen-sq': {
 				description: 'welcome for users whose first language appears to be Albanian',
-				syntax: '{{subst:welcomeen-sq}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-sq}}'
 			},
 			'welcomeen-zh': {
 				description: 'welcome for users whose first language appears to be Chinese',
-				syntax: '{{subst:welcomeen-zh}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-zh}}'
 			},
 			'welcomeen-nl': {
 				description: 'welcome for users whose first language appears to be Dutch',
-				syntax: '{{subst:welcomeen-nl}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-nl}}'
 			},
 			'welcomeen-fi': {
 				description: 'welcome for users whose first language appears to be Finnish',
-				syntax: '{{subst:welcomeen-fi}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-fi}}'
 			},
 			'welcomeen-fr': {
 				description: 'welcome for users whose first language appears to be French',
-				syntax: '{{subst:welcomeen-fr}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-fr}}'
 			},
 			'welcomeen-de': {
 				description: 'welcome for users whose first language appears to be German',
-				syntax: '{{subst:welcomeen-de}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-de}}'
+			},
+			'welcomeen-ha': {
+				description: 'welcome for users whose first language appears to be Hausa',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ha}}'
 			},
 			'welcomeen-he': {
 				description: 'welcome for users whose first language appears to be Hebrew',
-				syntax: '{{subst:welcomeen-he}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-he}}'
 			},
 			'welcomeen-hi': {
 				description: 'welcome for users whose first language appears to be Hindi',
-				syntax: '{{subst:welcomeen-hi}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-hi}}'
 			},
 			'welcomeen-id': {
 				description: 'welcome for users whose first language appears to be Indonesian',
-				syntax: '{{subst:welcomeen-id}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-id}}'
 			},
 			'welcomeen-it': {
 				description: 'welcome for users whose first language appears to be Italian',
-				syntax: '{{subst:welcomeen-it}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-it}}'
 			},
 			'welcomeen-ja': {
 				description: 'welcome for users whose first language appears to be Japanese',
-				syntax: '{{subst:welcomeen-ja}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ja}}'
 			},
 			'welcomeen-ko': {
 				description: 'welcome for users whose first language appears to be Korean',
-				syntax: '{{subst:welcomeen-ko}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ko}}'
+			},
+			'welcomeen-ms': {
+				description: 'welcome for users whose first language appears to be Malay',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ms}}'
 			},
 			'welcomeen-ml': {
 				description: 'welcome for users whose first language appears to be Malayalam',
-				syntax: '{{subst:welcomeen-ml}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ml}}'
 			},
 			'welcomeen-mr': {
 				description: 'welcome for users whose first language appears to be Marathi',
-				syntax: '{{subst:welcomeen-mr}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-mr}}'
+			},
+			'welcomeen-no': {
+				description: 'welcome for users whose first language appears to be Norwegian',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-no}}'
 			},
 			'welcomeen-or': {
 				description: 'welcome for users whose first language appears to be Oriya (Odia)',
-				syntax: '{{subst:welcomeen-or}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-or}}'
+			},
+			'welcomeen-fa': {
+				description: 'welcome for users whose first language appears to be Persian',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-fa}}'
+			},
+			'welcomeen-pl': {
+				description: 'welcome for users whose first language appears to be Polish',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-pl}}'
 			},
 			'welcomeen-pt': {
 				description: 'welcome for users whose first language appears to be Portuguese',
-				syntax: '{{subst:welcomeen-pt}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-pt}}'
 			},
 			'welcomeen-ro': {
 				description: 'welcome for users whose first language appears to be Romanian',
-				syntax: '{{subst:welcomeen-ro}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ro}}'
 			},
 			'welcomeen-ru': {
 				description: 'welcome for users whose first language appears to be Russian',
-				syntax: '{{subst:welcomeen-ru}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ru}}'
 			},
 			'welcomeen-es': {
 				description: 'welcome for users whose first language appears to be Spanish',
-				syntax: '{{subst:welcomeen-es}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-es}}'
 			},
 			'welcomeen-sv': {
 				description: 'welcome for users whose first language appears to be Swedish',
-				syntax: '{{subst:welcomeen-sv}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-sv}}'
+			},
+			'welcomeen-th': {
+				description: 'welcome for users whose first language appears to be Thai',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-th}}'
+			},
+			'welcomeen-tl': {
+				description: 'welcome for users whose first language appears to be Tagalog',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-tl}}'
+			},
+			'welcomeen-tr': {
+				description: 'welcome for users whose first language appears to be Turkish',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-tr}}'
 			},
 			'welcomeen-uk': {
 				description: 'welcome for users whose first language appears to be Ukrainian',
-				syntax: '{{subst:welcomeen-uk}}'
+				syntax: '== Welcome! ==\n{{subst:welcomeen-uk}}'
+			},
+			'welcomeen-ur': {
+				description: 'welcome for users whose first language appears to be Urdu',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-ur}}'
+			},
+			'welcomeen-vi': {
+				description: 'welcome for users whose first language appears to be Vietnamese',
+				syntax: '== Welcome! ==\n{{subst:welcomeen-vi}}'
 			}
 		}
 	}
@@ -687,7 +732,7 @@ Twinkle.welcome.callbacks = {
 	}
 };
 
-Twinkle.welcome.callback.evaluate = function friendlywelcomeCallbackEvaluate(e) {
+Twinkle.welcome.callback.evaluate = function twinklewelcomeCallbackEvaluate(e) {
 	var form = e.target;
 
 	var params = Morebits.quickForm.getInputData(form); // : type, template, article

@@ -38,7 +38,7 @@ Twinkle.config.commonSets = {
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
 		u1: 'U1', u2: 'U2', u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9',
-		c1: 'C1',
+		c1: 'C1', c4: 'C4',
 		r2: 'R2', r3: 'R3', r4: 'R4'
 	},
 	csdCriteriaDisplayOrder: [
@@ -47,7 +47,7 @@ Twinkle.config.commonSets = {
 		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
 		'u1', 'u2', 'u5',
 		'f1', 'f2', 'f3', 'f7', 'f8', 'f9',
-		'c1',
+		'c1', 'c4',
 		'r2', 'r3', 'r4'
 	],
 	csdCriteriaNotification: {
@@ -75,7 +75,7 @@ Twinkle.config.commonSets = {
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
 		u1: 'U1', u2: 'U2', u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f11: 'F11',
-		c1: 'C1',
+		c1: 'C1', c4: 'C4',
 		r2: 'R2', r3: 'R3', r4: 'R4'
 	},
 	csdAndImageDeletionCriteriaDisplayOrder: [
@@ -84,7 +84,7 @@ Twinkle.config.commonSets = {
 		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
 		'u1', 'u2', 'u5',
 		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f11',
-		'c1',
+		'c1', 'c4',
 		'r2', 'r3', 'r4'
 	],
 	namespacesNoSpecial: {
@@ -931,27 +931,6 @@ Twinkle.config.sections = [
 		title: 'Hidden',
 		hidden: true,
 		preferences: [
-			// twinkle.js: portlet setup
-			{
-				name: 'portletArea',
-				type: 'string'
-			},
-			{
-				name: 'portletId',
-				type: 'string'
-			},
-			{
-				name: 'portletName',
-				type: 'string'
-			},
-			{
-				name: 'portletType',
-				type: 'string'
-			},
-			{
-				name: 'portletNext',
-				type: 'string'
-			},
 			// twinklefluff.js: defines how many revision to query maximum, maximum possible is 50, default is 50
 			{
 				name: 'revertMaxRevisions',
@@ -981,7 +960,6 @@ Twinkle.config.sections = [
 
 ]; // end of Twinkle.config.sections
 
-
 Twinkle.config.init = function twinkleconfigInit() {
 
 	// create the config page at Wikipedia:Twinkle/Preferences
@@ -992,8 +970,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 			return;  // maybe the page is misconfigured, or something - but any attempt to modify it will be pointless
 		}
 
-		// set style (the url() CSS function doesn't seem to work from wikicode - ?!)
-		document.getElementById('twinkle-config-titlebar').style.backgroundImage = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAkCAMAAAB%2FqqA%2BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEhQTFRFr73ZobTPusjdsMHZp7nVwtDhzNbnwM3fu8jdq7vUt8nbxtDkw9DhpbfSvMrfssPZqLvVztbno7bRrr7W1d%2Fs1N7qydXk0NjpkW7Q%2BgAAADVJREFUeNoMwgESQCAAAMGLkEIi%2FP%2BnbnbpdB59app5Vdg0sXAoMZCpGoFbK6ciuy6FX4ABAEyoAef0BXOXAAAAAElFTkSuQmCC)';
+		// set style to nothing to prevent conflict with external css
+		document.getElementById('twinkle-config').removeAttribute('style');
+		document.getElementById('twinkle-config-titlebar').removeAttribute('style');
 
 		var contentdiv = document.getElementById('twinkle-config-content');
 		contentdiv.textContent = '';  // clear children
@@ -1258,9 +1237,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 				// add help tip
 				cell = document.createElement('td');
-				cell.style.fontSize = '90%';
+				cell.className = 'twinkle-config-helptip';
 
-				cell.style.color = 'gray';
 				if (pref.helptip) {
 					// convert mentions of templates in the helptip to clickable links
 					cell.innerHTML = pref.helptip.replace(/{{(.+?)}}/g,
@@ -1287,8 +1265,6 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 		var footerbox = document.createElement('div');
 		footerbox.setAttribute('id', 'twinkle-config-buttonpane');
-		footerbox.style.backgroundColor = '#BCCADF';
-		footerbox.style.padding = '0.5em';
 		var button = document.createElement('button');
 		button.setAttribute('id', 'twinkle-config-submit');
 		button.setAttribute('type', 'submit');
@@ -1742,11 +1718,12 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	pageobj.getStatusElement().info('successful');
 
 	var noticebox = document.createElement('div');
-	noticebox.className = 'mw-message-box mw-message-box-success';
+	noticebox.className = 'cdx-message cdx-message--success';
 	noticebox.style.fontSize = '100%';
-	noticebox.style.marginTop = '2em';
-	noticebox.innerHTML = '<p><b>Your Twinkle preferences have been saved.</b></p><p>To see the changes, you will need to <b>clear your browser cache entirely</b> (see <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> for instructions).</p>';
-	Morebits.status.root.appendChild(noticebox);
+	noticebox.innerHTML = '<p><b>Your Twinkle preferences have been saved.</b> To see the changes, you will need to clear your browser cache entirely (see <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> for instructions).</p>';
+	mw.loader.using('mediawiki.htmlform.codex.styles', function() {
+		Morebits.status.root.appendChild(noticebox);
+	});
 	var noticeclear = document.createElement('br');
 	noticeclear.style.clear = 'both';
 	Morebits.status.root.appendChild(noticeclear);

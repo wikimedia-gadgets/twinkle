@@ -378,6 +378,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			$(work_area).find('[name=delsortCats]')
 				.attr('data-placeholder', 'Select delsort pages')
 				.select2({
+					theme: 'default select2-morebits',
 					width: '100%',
 					matcher: Morebits.select2.matcher,
 					templateResult: Morebits.select2.highlightSearchMatches,
@@ -499,17 +500,19 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Miscellany for deletion',
 				name: 'work_area'
 			});
-			work_area.append({
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Wrap deletion tag with &lt;noinclude&gt;',
-						value: 'noinclude',
-						name: 'noinclude',
-						tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. Select this option for userboxes.'
-					}
-				]
-			});
+			if (mw.config.get('wgNamespaceNumber') !== 710) { // TimedText cannot be tagged, so asking whether to noinclude the tag is pointless
+				work_area.append({
+					type: 'checkbox',
+					list: [
+						{
+							label: 'Wrap deletion tag with &lt;noinclude&gt;',
+							value: 'noinclude',
+							name: 'noinclude',
+							tooltip: 'Will wrap the deletion tag in &lt;noinclude&gt; tags, so that it won\'t transclude. Select this option for userboxes.'
+						}
+					]
+				});
+			}
 			if ((mw.config.get('wgNamespaceNumber') === 2 /* User: */ || mw.config.get('wgNamespaceNumber') === 3 /* User talk: */) && mw.config.exists('wgRelevantUserName')) {
 				work_area.append({
 					type: 'checkbox',
@@ -670,7 +673,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			old_area.parentNode.replaceChild(work_area, old_area);
 			break;
 
-		case 'rm':
+		case 'rm': {
 			work_area = new Morebits.quickForm.element({
 				type: 'field',
 				label: 'Requested moves',
@@ -686,7 +689,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 						tooltip: 'Use this option when you are unable to perform this uncontroversial move yourself because of a technical reason (e.g. a page already exists at the new title, or the page is protected)',
 						checked: false,
 						event: function() {
-							form.newname.required = this.checked;
+							$('input[name="newname"]', form).prop('required', this.checked);
+							$('input[type="button"][value="more"]', form)[0].sublist.inputs[1].required = this.checked;
 						},
 						subgroup: {
 							type: 'checkbox',
@@ -704,16 +708,30 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				]
 			});
 			work_area.append({
-				type: 'input',
-				name: 'newname',
-				label: 'New title:',
-				tooltip: 'Required for technical requests. Otherwise, if unsure of the appropriate title, you may leave it blank.'
+				type: 'dyninput',
+				inputs: [
+					{
+						label: 'From:',
+						name: 'currentname',
+						required: true
+					},
+					{
+						label: 'To:',
+						name: 'newname',
+						tooltip: 'Required for technical requests. Otherwise, if unsure of the appropriate title, you may leave it blank.'
+					}
+				],
+				min: 1
 			});
 
 			appendReasonBox();
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
+
+			const currentNonTalkPage = mw.Title.newFromText(Morebits.pageNameNorm).getSubjectPage().toText();
+			form.currentname.value = currentNonTalkPage;
 			break;
+		}
 
 		default:
 			work_area = new Morebits.quickForm.element({
@@ -765,12 +783,17 @@ Twinkle.xfd.callbacks = {
 			// U+00A0 NO-BREAK SPACE; U+2013 EN RULE
 		}
 		if (venue === 'rm') {
-			// even if invoked from talk page, propose the subject page for move
-			var pageName = new mw.Title(Morebits.pageNameNorm).getSubjectPage().toText();
-			var rmtrDiscuss = params['rmtr-discuss'] ? '|discuss=no' : '';
-			var rmtr = '{{subst:RMassist|1=' + pageName + '|2=' + params.newname + rmtrDiscuss + '|reason=' + params.reason + '}}';
-			var requestedMove = '{{subst:Requested move|current1=' + pageName + '|new1=' + params.newname + '|reason=' + params.reason + '}}';
-			return params.rmtr ? rmtr : requestedMove;
+			if (params.rmtr) {
+				var rmtrDiscuss = params['rmtr-discuss'] ? '|discuss=no' : '';
+				return params.currentname
+					.map((currentname, i) => `{{subst:RMassist|1=${currentname}|2=${params.newname[i]}${rmtrDiscuss}|reason=${params.reason}}}`)
+					.join('\n');
+			}
+			return `{{subst:Requested move${
+				params.currentname
+					.map((currentname, i) => `|current${i + 1}=${currentname}|new${i + 1}=${params.newname[i]}`)
+					.join('')
+			}|reason=${params.reason}}}`;
 		}
 
 		var text = '{{subst:' + venue + '2';
@@ -1499,11 +1522,15 @@ Twinkle.xfd.callbacks = {
 
 			apiobj.statelem.info('next in order is [[' + apiobj.params.discussionpage + ']]');
 
+			var wikipedia_page;
+
 			// Tagging page
-			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
-			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
-			wikipedia_page.setCallbackParameters(apiobj.params);
-			wikipedia_page.load(Twinkle.xfd.callbacks.mfd.taggingPage);
+			if (mw.config.get('wgNamespaceNumber') !== 710) { // cannot tag TimedText pages
+				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
+				wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
+				wikipedia_page.setCallbackParameters(apiobj.params);
+				wikipedia_page.load(Twinkle.xfd.callbacks.mfd.taggingPage);
+			}
 
 			// Updating data for the action completed event
 			Morebits.wiki.actionCompleted.redirect = apiobj.params.discussionpage;
@@ -1804,8 +1831,11 @@ Twinkle.xfd.callbacks = {
 		taggingCategory: function(pageobj) {
 			var text = pageobj.getPageText();
 			var params = pageobj.getCallbackParameters();
-
-			params.tagText = '{{subst:cfr-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n';
+			if (params.xfdcat === 'C2F') {
+				params.tagText = '{{subst:cfm-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n';
+			} else {
+				params.tagText = '{{subst:cfr-speedy|1=' + params.cfdstarget.replace(/^:?Category:/, '') + '}}\n';
+			}
 			params.discussionpage = ''; // CFDS is just a bullet in a bulleted list. There's no section to link to, so we set this to blank. Blank will be recognized by both the generate userspace log code and the generate userspace log edit summary code as "don't wikilink to a section".
 			if (pageobj.canEdit()) {
 				pageobj.setPageText(params.tagText + text);

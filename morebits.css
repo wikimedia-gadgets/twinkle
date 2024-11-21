@@ -8,22 +8,60 @@
  * The latest development source is available at [https://github.com/wikimedia-gadgets/twinkle/blob/master/morebits.css].
  */
 
+/* Define CSS variables */
+html {
+	--morebits-color-status-status: #4682B4;
+	--morebits-color-legend: #31628F;
+	--morebits-color-tooltip: #0000cd;
+	--morebits-color-info: #228B22;
+	--morebits-color-warning: #FF4500;
+	--morebits-color-titlebar-links: #3062AD;
+	--morebits-bgcolor-dialog: #F0F8FF;
+	--morebits-bgcolor-titlebar: #BCCADF;
+}
+
+@media screen {
+	html.skin-theme-clientpref-night {
+		--morebits-color-status-status: #A6C4DE;
+		--morebits-color-legend: #6B9DCC;
+		--morebits-color-tooltip: #7A7AFF;
+		--morebits-color-info: #6BDB6B;
+		--morebits-color-warning: #FF6D38;
+		--morebits-color-titlebar-links: #8BADDF;
+		--morebits-bgcolor-dialog: #141c26;
+		--morebits-bgcolor-titlebar: #1c2a52;
+	}
+}
+
+@media screen and (prefers-color-scheme: dark) {
+	html.skin-theme-clientpref-os {
+		--morebits-color-status-status: #A6C4DE;
+		--morebits-color-legend: #6B9DCC;
+		--morebits-color-tooltip: #7A7AFF;
+		--morebits-color-info: #6BDB6B;
+		--morebits-color-warning: #FF6D38;
+		--morebits-color-titlebar-links: #8BADDF;
+		--morebits-bgcolor-dialog: #141c26;
+		--morebits-bgcolor-titlebar: #1c2a52;
+	}
+}
+
 /* Morebits.status */
 
 .morebits_status_status {
-	color: #4682B4;
+	color: var(--morebits-color-status-status, #4682B4);
 }
 
 .morebits_status_info {
-	color: #228B22;
+	color: var(--morebits-color-info, #228B22);
 }
 
 .morebits_status_warn {
-	color: #FF4500;
+	color: var(--morebits-color-warning, #FF4500);
 }
 
 .morebits_status_error {
-	color: #FF4500;
+	color: var(--morebits-color-warning, #FF4500);
 	font-weight: bold;
 }
 
@@ -35,6 +73,7 @@ form.quickform
 	vertical-align: middle;
 	margin: auto;
 	padding: .5em;
+	color: var(--color-base, #202122);
 }
 
 form.quickform *
@@ -49,7 +88,7 @@ form.quickform fieldset
 
 form.quickform legend
 {
-	color: #31628F;
+	color: var(--morebits-color-legend, #31628F);
 	font-weight: bold;
 }
 
@@ -102,7 +141,7 @@ form.quickform textarea
 
 form.quickform input:disabled + label
 {
-	color: gray;
+	color: var(--color-disabled, #72777d);
 }
 
 form.quickform span.quickformDescription
@@ -125,7 +164,7 @@ form.quickform .quickformSubgroup
 /* The tooltip button and the content itself */
 form.quickform .morebits-tooltipButton
 {
-	color: mediumblue;
+	color: var(--morebits-color-tooltip, mediumblue);
 	font-weight: bold;
 	cursor: help;
 	padding: .3em;
@@ -141,7 +180,8 @@ form.quickform .morebits-tooltipButton
 
 div.morebits-scrollbox
 {
-	background: white;
+	background: var(--background-color-base, #fff);
+	color: inherit;
 	border: 1px solid gray;
 	margin-bottom: .6em;
 	margin-top: .6em;
@@ -167,8 +207,8 @@ div.morebits-scrollbox > :last-child
 
 div.morebits-previewbox
 {
-	background: white;
-	color: black;
+	background: inherit;
+	color: inherit;
 	border: 2px inset;
 	margin: .4em auto .2em;
 	padding: .2em .4em;
@@ -186,7 +226,8 @@ div.morebits-previewbox .mw-editsection
 
 div.morebits-usertext {
 	border: 1px solid #a2a9b1;
-	background-color: #f8f9fa;
+	background-color: var(--background-color-neutral-subtle, #f8f9fa);
+	color: inherit;
 	padding: 5px;
 	font-size: 95%;
 }
@@ -197,7 +238,8 @@ div.morebits-usertext {
 .morebits-dialog {
 	border: 1px #666 solid;
 	font-family: sans-serif;
-	background-color: #F0F8FF;
+	background-color: var(--morebits-bgcolor-dialog, #F0F8FF);
+	color: inherit;
 	background-image: none;
 }
 
@@ -216,7 +258,8 @@ div.morebits-usertext {
 
 body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	height: 1em;
-	background-color: #BCCADF !important;
+	background-color: var(--morebits-bgcolor-titlebar, #BCCADF) !important;
+	color: inherit;
 	background-image: none !important;
 	font: bold 108% sans-serif; /* 100% is 12px (from above) => 108% is 12.96px */
 	overflow: hidden;
@@ -245,7 +288,8 @@ body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 }
 
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
-	background-color: #BCCADF;
+	background-color: var(--morebits-bgcolor-titlebar, #BCCADF);
+	color: inherit;
 	margin: 0;
 	min-height: .5em;
 	padding-left: 1.2em !important;
@@ -268,7 +312,7 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 }
 
 body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
-	color: #3062AD;
+	color: var(--morebits-color-titlebar-links, #3062AD);
 }
 
 .morebits-dialog-buttons[data-empty] + .morebits-dialog-footerlinks {
@@ -283,12 +327,20 @@ body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
 	display: inline-block;
 }
 
+.morebits-ui-tooltip {
+	background: var(--background-color-neutral-subtle, #f8f9fa);
+	color: inherit;
+	border-color: var(--border-color-base, #a2ab91);
+	box-shadow: 0 0 5px #a2ab91;
+}
+
 /* For styling message/warning boxes. Cannot use MediaWiki ombox class because it will be deprecated soon. */
 table.morebits-ombox {
     margin: 4px 10%;
     border-collapse: collapse;
     border: 1px solid #a2a9b1;
-    background: #f8f9fa;
+    background: var(--background-color-neutral-subtle, #f8f9fa);
+    color: inherit;
     box-sizing: border-box;
 }
 table.morebits-ombox-content {
@@ -303,4 +355,15 @@ th.morebits-mbox-text, td.morebits-mbox-text {
     border: none;
     padding: 0.25em 0.9em;
     width: 100%;
+}
+
+/* Override select2 silliness */
+.select2-morebits,
+.select2-morebits .select2-results,
+.select2-morebits .select2-results__option[aria-selected=true],
+.select2-morebits .select2-selection__rendered,
+.select2-morebits .select2-selection--multiple,
+.select2-morebits .select2-selection__choice {
+    background: var(--background-color-base, #fff) !important;
+    color: inherit !important;
 }

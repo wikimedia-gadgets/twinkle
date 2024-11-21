@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# sync.pl by azatoth (2011), update by amorymeltzer (2019)
+# deploy.pl by azatoth (2011), update by amorymeltzer (2019)
 
 use strict;
 use warnings;
@@ -69,7 +69,7 @@ my $mw = MediaWiki::API->new({
 			      max_lag => 1000000, # not a botty script, thus smash it!
 			      on_error => \&dieNice
 			     });
-$mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
+$mw->{ua}->agent('Twinkle/deploy.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $conf{username}, lgpassword => $conf{password}});
 
 my $diffFunc = $conf{w} || 'diff'; # Only used for the --diff option
@@ -459,23 +459,23 @@ twinkle.js
   morebits.css
   lib/select2.min.js
   lib/select2.min.css
-  modules/twinkleconfig.js
   modules/twinklearv.js
   modules/twinklebatchdelete.js
   modules/twinklebatchprotect.js
   modules/twinklebatchundelete.js
   modules/twinkleblock.js
+  modules/twinkleconfig.js
   modules/twinkledeprod.js
   modules/twinklediff.js
   modules/twinklefluff.js
   modules/twinkleimage.js
   modules/twinkleprod.js
   modules/twinkleprotect.js
+  modules/twinkleshared.js
   modules/twinklespeedy.js
+  modules/twinkletag.js
+  modules/twinkletalkback.js
   modules/twinkleunlink.js
   modules/twinklewarn.js
+  modules/twinklewelcome.js
   modules/twinklexfd.js
-  modules/friendlyshared.js
-  modules/friendlytag.js
-  modules/friendlytalkback.js
-  modules/friendlywelcome.js

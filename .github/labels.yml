@@ -28,21 +28,19 @@
   - modules/twinklespeedy.js
   - modules/twinkleimage.js
 "Module: tag":
-  - modules/friendlytag.js
+  - modules/twinkletag.js
 "Module: talkback":
-  - modules/friendlytalkback.js
+  - modules/twinkletalkback.js
 "Module: unlink":
   - modules/twinkleunlink.js
 "Module: warn":
   - modules/twinklewarn.js
 "Module: welcome":
-  - modules/friendlywelcome.js
+  - modules/twinklewelcome.js
 "Module: xfd":
   - modules/twinklexfd.js
 Tests:
   - tests/*
-  - scripts/patch-test.js
-  - scripts/server.js
 Docs:
   - "*.md"
 Gadget:
