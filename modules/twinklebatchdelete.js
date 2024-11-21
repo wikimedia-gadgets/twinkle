@@ -166,20 +166,20 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	Twinkle.batchdelete.pages = {};
 
 	const statelem = new Morebits.status('Grabbing list of pages');
-	const wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
+	const wikipedia_api = new Morebits.wiki.api('loading...', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		let pages = (response.query && response.query.pages) || [];
-		pages = pages.filter(function(page) {
+		pages = pages.filter((page) => {
 			return !page.missing && page.imagerepository !== 'shared';
 		});
 		pages.sort(Twinkle.sortByNamespace);
-		pages.forEach(function(page) {
+		pages.forEach((page) => {
 			const metadata = [];
 			if (page.redirect) {
 				metadata.push('redirect');
 			}
 
-			const editProt = page.protection.filter(function(pr) {
+			const editProt = page.protection.filter((pr) => {
 				return pr.type === 'edit' && pr.level === 'sysop';
 			}).pop();
 			if (editProt) {
@@ -209,7 +209,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			type: 'button',
 			label: 'Select All',
 			event: function dBatchSelectAll() {
-				$(result).find('input[name=pages]:not(:checked)').each(function(_, e) {
+				$(result).find('input[name=pages]:not(:checked)').each((_, e) => {
 					e.click(); // check it, and invoke click event so that subgroup can be shown
 				});
 
@@ -221,7 +221,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			type: 'button',
 			label: 'Deselect All',
 			event: function dBatchDeselectAll() {
-				$(result).find('input[name=pages]:checked').each(function(_, e) {
+				$(result).find('input[name=pages]:checked').each((_, e) => {
 					e.click(); // uncheck it, and invoke click event so that subgroup can be hidden
 				});
 			}
@@ -231,7 +231,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			name: 'pages',
 			id: 'tw-dbatch-pages',
 			shiftClickSupport: true,
-			list: $.map(Twinkle.batchdelete.pages, function (e) {
+			list: $.map(Twinkle.batchdelete.pages, (e) => {
 				return e;
 			})
 		});
@@ -242,7 +242,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 
 		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
 
-	}, statelem);
+	}), statelem);
 
 	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
@@ -265,7 +265,7 @@ Twinkle.batchdelete.generateNewPageList = function(form) {
 		name: 'pages',
 		id: 'tw-dbatch-pages',
 		shiftClickSupport: true,
-		list: $.map(Twinkle.batchdelete.pages, function (e) {
+		list: $.map(Twinkle.batchdelete.pages, (e) => {
 			return e;
 		})
 	}).render();
@@ -286,7 +286,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		// available without use of any API calls
 		if (subpagesLoaded) {
 
-			$.each(Twinkle.batchdelete.pages, function(i, el) {
+			$.each(Twinkle.batchdelete.pages, (i, el) => {
 				// Get back the subgroup from subgroup_, where we saved it
 				if (el.subgroup === null && el.subgroup_) {
 					el.subgroup = el.subgroup_;
@@ -306,14 +306,14 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		const loadingText = '<strong id="dbatch-subpage-loading">Loading... </strong>';
 		$(e.target).after(loadingText);
 
-		const pages = $(form.pages).map(function(i, el) {
+		const pages = $(form.pages).map((i, el) => {
 			return el.value;
 		}).get();
 
 		const subpageLister = new Morebits.batchOperation();
 		subpageLister.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		subpageLister.setPageList(pages);
-		subpageLister.run(function worker (pageName) {
+		subpageLister.run((pageName) => {
 			const pageTitle = mw.Title.newFromText(pageName);
 
 			// No need to look for subpages in main/file/mediawiki space
@@ -332,18 +332,18 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 				gapnamespace: pageTitle.namespace,
 				gaplimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
-			}, function onSuccess(apiobj) {
+			}, ((apiobj) => {
 				const response = apiobj.getResponse();
 				const pages = (response.query && response.query.pages) || [];
 				const subpageList = [];
 				pages.sort(Twinkle.sortByNamespace);
-				pages.forEach(function(page) {
+				pages.forEach((page) => {
 					const metadata = [];
 					if (page.redirect) {
 						metadata.push('redirect');
 					}
 
-					const editProt = page.protection.filter(function(pr) {
+					const editProt = page.protection.filter((pr) => {
 						return pr.type === 'edit' && pr.level === 'sysop';
 					}).pop();
 					if (editProt) {
@@ -376,13 +376,13 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 					};
 				}
 				subpageLister.workerSuccess();
-			}, null /* statusElement */, function onFailure() {
+			}), null /* statusElement */, (() => {
 				subpageLister.workerFailure();
-			});
+			}));
 			wikipedia_api.params = { pageNameFull: pageName }; // Used in onSuccess()
 			wikipedia_api.post();
 
-		}, function postFinish () {
+		}, () => {
 			// List 'em on the interface
 
 			newPageList = Twinkle.batchdelete.generateNewPageList(form);
@@ -400,7 +400,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 
 	} else if (!e.target.checked) {
 
-		$.each(Twinkle.batchdelete.pages, function(i, el) {
+		$.each(Twinkle.batchdelete.pages, (i, el) => {
 			if (el.subgroup) {
 				// Remove subgroup after saving its contents in subgroup_
 				// so that it can be retrieved easily if user decides to
@@ -422,7 +422,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 
 	const form = event.target;
 
-	const numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter(function(index, element) {
+	const numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter((index, element) => {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
 	if (numProtected > 0 && !confirm('You are about to delete ' + mw.language.convertNumber(numProtected) + ' fully protected page(s). Are you sure?')) {
@@ -447,7 +447,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 	// we only need the initial status lines if we're deleting the pages in the pages array
 	pageDeleter.setOption('preserveIndividualStatusLines', input.delete_page);
 	pageDeleter.setPageList(input.pages);
-	pageDeleter.run(function worker(pageName) {
+	pageDeleter.run((pageName) => {
 		const params = {
 			page: pageName,
 			delete_page: input.delete_page,
@@ -469,13 +469,13 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 		} else {
 			Twinkle.batchdelete.callbacks.doExtras(wikipedia_page);
 		}
-	}, function postFinish() {
+	}, () => {
 		if (input.delete_subpages && input.subpages) {
 			const subpageDeleter = new Morebits.batchOperation('Deleting subpages');
 			subpageDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 			subpageDeleter.setOption('preserveIndividualStatusLines', true);
 			subpageDeleter.setPageList(input.subpages);
-			subpageDeleter.run(function(pageName) {
+			subpageDeleter.run((pageName) => {
 				const params = {
 					page: pageName,
 					delete_page: true,
@@ -572,7 +572,7 @@ Twinkle.batchdelete.callbacks = {
 	deleteRedirectsMain: function(apiobj) {
 		const response = apiobj.getResponse();
 		let pages = response.query.pages[0].redirects || [];
-		pages = pages.map(function(redirect) {
+		pages = pages.map((redirect) => {
 			return redirect.title;
 		});
 		if (!pages.length) {
@@ -582,7 +582,7 @@ Twinkle.batchdelete.callbacks = {
 		const redirectDeleter = new Morebits.batchOperation('Deleting redirects to ' + apiobj.params.page);
 		redirectDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		redirectDeleter.setPageList(pages);
-		redirectDeleter.run(function(pageName) {
+		redirectDeleter.run((pageName) => {
 			const wikipedia_page = new Morebits.wiki.page(pageName, 'Deleting ' + pageName);
 			wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"');
 			wikipedia_page.setChangeTags(Twinkle.changeTags);
@@ -605,7 +605,7 @@ Twinkle.batchdelete.callbacks = {
 	unlinkBacklinksMain: function(apiobj) {
 		const response = apiobj.getResponse();
 		let pages = response.query.backlinks || [];
-		pages = pages.map(function(page) {
+		pages = pages.map((page) => {
 			return page.title;
 		});
 		if (!pages.length) {
@@ -615,7 +615,7 @@ Twinkle.batchdelete.callbacks = {
 		const unlinker = new Morebits.batchOperation('Unlinking backlinks to ' + apiobj.params.page);
 		unlinker.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		unlinker.setPageList(pages);
-		unlinker.run(function(pageName) {
+		unlinker.run((pageName) => {
 			const wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking on ' + pageName);
 			const params = $.extend({}, apiobj.params);
 			params.title = pageName;
@@ -658,7 +658,7 @@ Twinkle.batchdelete.callbacks = {
 	unlinkImageInstancesMain: function(apiobj) {
 		const response = apiobj.getResponse();
 		let pages = response.query.imageusage || [];
-		pages = pages.map(function(page) {
+		pages = pages.map((page) => {
 			return page.title;
 		});
 		if (!pages.length) {
@@ -668,7 +668,7 @@ Twinkle.batchdelete.callbacks = {
 		const unlinker = new Morebits.batchOperation('Unlinking backlinks to ' + apiobj.params.page);
 		unlinker.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		unlinker.setPageList(pages);
-		unlinker.run(function(pageName) {
+		unlinker.run((pageName) => {
 			const wikipedia_page = new Morebits.wiki.page(pageName, 'Removing file usages on ' + pageName);
 			const params = $.extend({}, apiobj.params);
 			params.title = pageName;

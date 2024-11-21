@@ -129,7 +129,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Window.display();
 	result.root = result;
 
-	Twinkle.block.fetchUserInfo(function() {
+	Twinkle.block.fetchUserInfo(() => {
 		// Toggle initial partial state depending on prior block type,
 		// will override the defaultToPartialBlocks pref
 		if (blockedUserName === relevantUserName) {
@@ -170,7 +170,7 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 
 	Twinkle.block.isRegistered = !!userinfo.userid;
 	if (Twinkle.block.isRegistered) {
-		Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map(function(e) {
+		Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map((e) => {
 			return e.group;
 		}).indexOf('bot') !== -1;
 	} else {
@@ -232,9 +232,9 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 		query.usprop = 'groupmemberships';
 	}
 
-	api.get(query).then(function(data) {
+	api.get(query).then((data) => {
 		Twinkle.block.processUserInfo(data, fn);
-	}, function(msg) {
+	}, (msg) => {
 		Morebits.status.init($('div[name="currentblock"] span').last()[0]);
 		Morebits.status.warn('Error fetching user info', msg);
 	});
@@ -242,7 +242,7 @@ Twinkle.block.fetchUserInfo = function twinkleblockFetchUserInfo(fn) {
 
 Twinkle.block.callback.saveFieldset = function twinkleblockCallbacksaveFieldset(fieldset) {
 	Twinkle.block[$(fieldset).prop('name')] = {};
-	$(fieldset).serializeArray().forEach(function(el) {
+	$(fieldset).serializeArray().forEach((el) => {
 		// namespaces and pages for partial blocks are overwritten
 		// here, but we're handling them elsewhere so that's fine
 		Twinkle.block[$(fieldset).prop('name')][el.name] = el.value;
@@ -315,7 +315,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		prior.list = [{ label: 'Prior block settings', value: 'prior', selected: true }];
 
 		// Arrays of objects are annoying to check
-		if (!blockGroup.some(function(bg) {
+		if (!blockGroup.some((bg) => {
 			return bg.label === prior.label;
 		})) {
 			blockGroup.push(prior);
@@ -333,7 +333,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		}
 	} else {
 		// But first remove any prior prior
-		blockGroup = blockGroup.filter(function(bg) {
+		blockGroup = blockGroup.filter((bg) => {
 			return bg.label !== prior.label;
 		});
 	}
@@ -410,7 +410,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				value: '',
 				tooltip: 'Block from editing these namespaces.'
 			});
-			$.each(menuFormattedNamespaces, function(number, name) {
+			$.each(menuFormattedNamespaces, (number, name) => {
 				// Ignore -1: Special; -2: Media; and 2300-2303: Gadget (talk) and Gadget definition (talk)
 				if (number >= 0 && number < 830) {
 					ns.append({ type: 'option', label: name, value: number });
@@ -519,9 +519,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	// grab discretionary sanctions list from en-wiki
 	Twinkle.block.dsinfo = Morebits.wiki.getCachedJson('Template:Ds/topics.json');
 
-	Twinkle.block.dsinfo.then(function(dsinfo) {
+	Twinkle.block.dsinfo.then((dsinfo) => {
 		const $select = $('[name="dstopic"]');
-		const $options = $.map(dsinfo, function (value, key) {
+		const $options = $.map(dsinfo, (value, key) => {
 			return $('<option>').val(value.code).text(key).prop('label', key);
 		});
 		$select.append($options);
@@ -624,7 +624,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		}
 
 		const $previewlink = $('<a id="twinkleblock-preview-link">Preview</a>');
-		$previewlink.off('click').on('click', function() {
+		$previewlink.off('click').on('click', () => {
 			Twinkle.block.callback.preview($form[0]);
 		});
 		$previewlink.css({cursor: 'pointer'});
@@ -679,7 +679,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				},
 				processResults: function(data) {
 					return {
-						results: data.query.allpages.map(function(page) {
+						results: data.query.allpages.map((page) => {
 							const title = mw.Title.newFromText(page.title, page.ns).toText();
 							return {
 								id: title,
@@ -1333,7 +1333,7 @@ Twinkle.block.blockPresetsInfo = {
 
 Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets() {
 	// supply sensible defaults
-	$.each(Twinkle.block.blockPresetsInfo, function(preset, settings) {
+	$.each(Twinkle.block.blockPresetsInfo, (preset, settings) => {
 		settings.summary = settings.summary || settings.reason;
 		settings.sig = settings.sig !== undefined ? settings.sig : 'yes';
 		settings.indefinite = settings.indefinite || Morebits.string.isInfinity(settings.expiry);
@@ -1452,8 +1452,8 @@ Twinkle.block.blockGroupsPartial = [
 
 
 Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(group, show_template) {
-	return $.map(group, function(blockGroup) {
-		const list = $.map(blockGroup.list, function(blockPreset) {
+	return $.map(group, (blockGroup) => {
+		const list = $.map(blockGroup.list, (blockPreset) => {
 			switch (blockPreset.value) {
 				case 'uw-talkrevoked':
 					if (blockedUserName !== relevantUserName) {
@@ -1547,9 +1547,9 @@ Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSee
 		new RegExp('( <!--|;) ' + 'see also ' + Twinkle.block.seeAlsos.join(' and ') + '( -->)?'), ''
 	);
 
-	Twinkle.block.seeAlsos = Twinkle.block.seeAlsos.filter(function(el) {
+	Twinkle.block.seeAlsos = Twinkle.block.seeAlsos.filter((el) => {
 		return el !== this.value;
-	}.bind(this));
+	});
 
 	if (this.checked) {
 		Twinkle.block.seeAlsos.push(this.value);
@@ -1571,7 +1571,7 @@ Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSR
 		new RegExp(' ?\\(\\[\\[' + Twinkle.block.dsReason + '\\]\\]\\)'), ''
 	);
 
-	Twinkle.block.dsinfo.then(function(dsinfo) {
+	Twinkle.block.dsinfo.then((dsinfo) => {
 		const sanctionCode = this.selectedIndex;
 		const sanctionName = this.options[sanctionCode].label;
 		Twinkle.block.dsReason = dsinfo[sanctionName].page;
@@ -1580,7 +1580,7 @@ Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSR
 		} else {
 			this.form.reason.value = reason + ' ([[' + Twinkle.block.dsReason + ']])';
 		}
-	}.bind(this));
+	});
 };
 
 Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, data) {
@@ -1612,7 +1612,7 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 		data.autoblock = false;
 	}
 
-	$(form).find('[name=field_block_options]').find(':checkbox').each(function(i, el) {
+	$(form).find('[name=field_block_options]').find(':checkbox').each((i, el) => {
 		// don't override original options if useInitialOptions is set
 		if (data.useInitialOptions && data[el.name] === undefined) {
 			return;
@@ -1643,12 +1643,12 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 		// Add any preset options; in practice, just used for prior block settings
 		if (data.restrictions) {
 			if (data.restrictions.pages && !$pageSelect.val().length) {
-				const pages = data.restrictions.pages.map(function(pr) {
+				const pages = data.restrictions.pages.map((pr) => {
 					return pr.title;
 				});
 				// since page restrictions use an ajax source, we
 				// short-circuit that and just add a new option
-				pages.forEach(function(page) {
+				pages.forEach((page) => {
 					if (!$pageSelect.find("option[value='" + $.escapeSelector(page) + "']").length) {
 						const newOption = new Option(page, page, true, true);
 						$pageSelect.append(newOption);
@@ -1844,7 +1844,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 		} else {
 			query.bkusers = blockoptions.user;
 		}
-		api.get(query).then(function(data) {
+		api.get(query).then((data) => {
 			let block = data.query.blocks[0];
 			// As with the initial data fetch, if an IP is blocked
 			// *and* rangeblocked, this would only grab whichever
@@ -1890,12 +1890,12 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 			// execute block
 			blockoptions.tags = Twinkle.changeTags;
 			blockoptions.token = mw.user.tokens.get('csrfToken');
-			const mbApi = new Morebits.wiki.api('Executing block', blockoptions, function() {
+			const mbApi = new Morebits.wiki.api('Executing block', blockoptions, (() => {
 				statusElement.info('Completed');
 				if (toWarn) {
 					Twinkle.block.callback.issue_template(templateoptions);
 				}
-			});
+			}));
 			mbApi.post();
 		});
 	} else if (toWarn) {
@@ -1974,14 +1974,14 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 				};
 				text += '|area=' + (params.indefinite ? 'certain ' : 'from certain ');
 				if (params.pagerestrictions.length) {
-					text += 'pages (' + makeSentence(params.pagerestrictions.map(function(p) {
+					text += 'pages (' + makeSentence(params.pagerestrictions.map((p) => {
 						return '[[:' + p + ']]';
 					}));
 					text += params.namespacerestrictions.length ? ') and certain ' : ')';
 				}
 				if (params.namespacerestrictions.length) {
 					// 1 => Talk, 2 => User, etc.
-					const namespaceNames = params.namespacerestrictions.map(function(id) {
+					const namespaceNames = params.namespacerestrictions.map((id) => {
 						return menuFormattedNamespaces[id];
 					});
 					text += '[[Wikipedia:Namespace|namespaces]] (' + makeSentence(namespaceNames) + ')';

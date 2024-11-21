@@ -356,7 +356,7 @@ Twinkle.speedy.callback.priorDeletionCount = function () {
 		lelimit: 5  // A little bit goes a long way
 	};
 
-	new Morebits.wiki.api('Checking for past deletions', query, function(apiobj) {
+	new Morebits.wiki.api('Checking for past deletions', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		const delCount = response.query.logevents.length;
 		if (delCount) {
@@ -381,7 +381,7 @@ Twinkle.speedy.callback.priorDeletionCount = function () {
 			$('#prior-deletion-count').text(message + ' '); // Space before log link
 			$('#prior-deletion-count').append(link);
 		}
-	}).post();
+	})).post();
 };
 
 
@@ -402,7 +402,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 		e.stopPropagation();
 	};
 
-	return $.map(list, function(critElement) {
+	return $.map(list, (critElement) => {
 		const criterion = $.extend({}, critElement);
 
 		if (mode.isMultiple) {
@@ -1063,7 +1063,7 @@ Twinkle.speedy.callbacks = {
 		if (params.normalizeds.length > 1) {
 			code = '{{db-multiple';
 			params.utparams = {};
-			$.each(params.normalizeds, function(index, norm) {
+			$.each(params.normalizeds, (index, norm) => {
 				code += '|' + norm.toUpperCase();
 				parameters = params.templateParams[index] || [];
 				for (const i in parameters) {
@@ -1105,7 +1105,7 @@ Twinkle.speedy.callbacks = {
 		};
 
 		const statusIndicator = new Morebits.status('Building deletion summary');
-		const api = new Morebits.wiki.api('Parsing deletion template', query, function(apiobj) {
+		const api = new Morebits.wiki.api('Parsing deletion template', query, ((apiobj) => {
 			const reason = decodeURIComponent($(apiobj.getResponse().parse.text).find('#delete-reason').text()).replace(/\+/g, ' ');
 			if (!reason) {
 				statusIndicator.warn('Unable to generate summary from deletion template');
@@ -1113,7 +1113,7 @@ Twinkle.speedy.callbacks = {
 				statusIndicator.info('complete');
 			}
 			callback(reason);
-		}, statusIndicator);
+		}), statusIndicator);
 		api.post();
 	},
 
@@ -1150,7 +1150,7 @@ Twinkle.speedy.callbacks = {
 			if (params.normalizeds.length > 1) {
 				notifytext = '\n{{subst:db-' + (params.warnUser ? 'deleted' : 'notice') + '-multiple|1=' + Morebits.pageNameNorm;
 				let count = 2;
-				$.each(params.normalizeds, function(index, norm) {
+				$.each(params.normalizeds, (index, norm) => {
 					notifytext += '|' + count++ + '=' + norm.toUpperCase();
 				});
 			} else if (params.normalizeds[0] === 'db') {
@@ -1185,12 +1185,12 @@ Twinkle.speedy.callbacks = {
 			usertalkpage.setCreateOption('recreate');
 			usertalkpage.setWatchlist(Twinkle.getPref('watchSpeedyUser'));
 			usertalkpage.setFollowRedirect(true, false);
-			usertalkpage.append(function onNotifySuccess() {
+			usertalkpage.append(() => {
 				// add this nomination to the user's userspace log, if the user has enabled it
 				if (params.lognomination) {
 					Twinkle.speedy.callbacks.user.addToLog(params, initialContrib);
 				}
-			}, function onNotifyError() {
+			}, () => {
 				// if user could not be notified, log nomination without mentioning that notification was sent
 				if (params.lognomination) {
 					Twinkle.speedy.callbacks.user.addToLog(params, null);
@@ -1210,7 +1210,7 @@ Twinkle.speedy.callbacks = {
 				Twinkle.speedy.callbacks.sysop.deletePage(reason, params);
 			} else {
 				const code = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params)[0];
-				Twinkle.speedy.callbacks.parseWikitext(code, function(reason) {
+				Twinkle.speedy.callbacks.parseWikitext(code, (reason) => {
 					if (params.promptForSummary) {
 						reason = prompt('Enter the deletion summary to use, or press OK to accept the automatically generated one.', reason);
 					}
@@ -1231,7 +1231,7 @@ Twinkle.speedy.callbacks = {
 				thispage.setEditSummary(reason);
 				thispage.setChangeTags(Twinkle.changeTags);
 				thispage.setWatchlist(params.watch);
-				thispage.deletePage(function() {
+				thispage.deletePage(() => {
 					thispage.getStatusElement().info('done');
 					typeof callback === 'function' && callback();
 					Twinkle.speedy.callbacks.sysop.deleteTalk(params);
@@ -1242,8 +1242,8 @@ Twinkle.speedy.callbacks = {
 			// Otherwise open the talk page directly
 			if (params.warnUser) {
 				thispage.setCallbackParameters(params);
-				thispage.lookupCreation(function(pageobj) {
-					deleteMain(function() {
+				thispage.lookupCreation((pageobj) => {
+					deleteMain(() => {
 						Twinkle.speedy.callbacks.noteToCreator(pageobj);
 					});
 				});
@@ -1262,7 +1262,7 @@ Twinkle.speedy.callbacks = {
 				talkpage.deletePage();
 				// this is ugly, but because of the architecture of wiki.api, it is needed
 				// (otherwise success/failure messages for the previous action would be suppressed)
-				window.setTimeout(function() {
+				window.setTimeout(() => {
 					Twinkle.speedy.callbacks.sysop.deleteRedirects(params);
 				}, 1800);
 			} else {
@@ -1347,7 +1347,7 @@ Twinkle.speedy.callbacks = {
 
 			Morebits.wiki.addCheckpoint();
 
-			snapshot.forEach(function(value) {
+			snapshot.forEach((value) => {
 				const title = value.title;
 				const page = new Morebits.wiki.page(title, 'Deleting redirect "' + title + '"');
 				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + Morebits.pageNameNorm + '"');
@@ -1439,7 +1439,7 @@ Twinkle.speedy.callbacks = {
 				let editsummary;
 				if (params.normalizeds.length > 1) {
 					editsummary = 'Requesting speedy deletion (';
-					$.each(params.normalizeds, function(index, norm) {
+					$.each(params.normalizeds, (index, norm) => {
 						editsummary += '[[WP:CSD#' + norm.toUpperCase() + '|CSD ' + norm.toUpperCase() + ']], ';
 					});
 					editsummary = editsummary.substr(0, editsummary.length - 2); // remove trailing comma
@@ -1546,7 +1546,7 @@ Twinkle.speedy.callbacks = {
 			}
 			if (params.normalizeds.length > 1) {
 				appendText += 'multiple criteria (';
-				$.each(params.normalizeds, function(index, norm) {
+				$.each(params.normalizeds, (index, norm) => {
 					appendText += '[[WP:CSD#' + norm.toUpperCase() + '|' + norm.toUpperCase() + ']], ';
 				});
 				appendText = appendText.substr(0, appendText.length - 2);  // remove trailing comma
@@ -1563,11 +1563,11 @@ Twinkle.speedy.callbacks = {
 				if (params.normalizeds[0] && params.normalizeds[0] === 'db') {
 					extraInfo += formatParamLog('Custom', 'rationale', params.templateParams[0]['1']);
 				} else {
-					params.templateParams.forEach(function(item, index) {
+					params.templateParams.forEach((item, index) => {
 						const keys = Object.keys(item);
 						if (keys[0] !== undefined && keys[0].length > 0) {
 							// Second loop required since some items (G12, F9) may have multiple keys
-							keys.forEach(function(key, keyIndex) {
+							keys.forEach((key, keyIndex) => {
 								if (keys[keyIndex] === 'blanked' || keys[keyIndex] === 'ts') {
 									return true; // Not worth logging
 								}
@@ -1599,7 +1599,7 @@ Twinkle.speedy.callbacks = {
 Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values) {
 	let parameters = [];
 
-	$.each(values, function(index, value) {
+	$.each(values, (index, value) => {
 		const currentParams = [];
 		switch (value) {
 			case 'reason':
@@ -1829,7 +1829,7 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 		utparams.key1 = 'to';
 		utparams.value1 = Morebits.pageNameNorm;
 	} else if (normalized === 'g12') {
-		['url', 'url2', 'url3'].forEach(function(item, idx) {
+		['url', 'url2', 'url3'].forEach((item, idx) => {
 			if (parameters[item]) {
 				idx++;
 				utparams['key' + idx] = item;
@@ -1900,13 +1900,13 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		return;
 	}
 
-	const normalizeds = values.map(function(value) {
+	const normalizeds = values.map((value) => {
 		return Twinkle.speedy.normalizeHash[value];
 	});
 
 	// analyse each criterion to determine whether to watch the page, prompt for summary, or notify the creator
 	let watchPage, promptForSummary;
-	normalizeds.forEach(function(norm) {
+	normalizeds.forEach((norm) => {
 		if (Twinkle.getPref('watchSpeedyPages').indexOf(norm) !== -1) {
 			watchPage = Twinkle.getPref('watchSpeedyExpiry');
 		}
@@ -1915,12 +1915,12 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		}
 	});
 
-	const warnusertalk = form.warnusertalk.checked && normalizeds.some(function (norm, index) {
+	const warnusertalk = form.warnusertalk.checked && normalizeds.some((norm, index) => {
 		return Twinkle.getPref('warnUserOnSpeedyDelete').indexOf(norm) !== -1 &&
 			!(norm === 'g6' && values[index] !== 'copypaste');
 	});
 
-	const welcomeuser = warnusertalk && normalizeds.some(function (norm) {
+	const welcomeuser = warnusertalk && normalizeds.some((norm) => {
 		return Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1;
 	});
 
@@ -1961,23 +1961,23 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 
 	// var multiple = form.multiple.checked;
 
-	const normalizeds = values.map(function(value) {
+	const normalizeds = values.map((value) => {
 		return Twinkle.speedy.normalizeHash[value];
 	});
 
 	// analyse each criterion to determine whether to watch the page/notify the creator
-	const watchPage = normalizeds.some(function(csdCriteria) {
+	const watchPage = normalizeds.some((csdCriteria) => {
 		return Twinkle.getPref('watchSpeedyPages').indexOf(csdCriteria) !== -1;
 	}) && Twinkle.getPref('watchSpeedyExpiry');
 
-	const notifyuser = form.notify.checked && normalizeds.some(function(norm, index) {
+	const notifyuser = form.notify.checked && normalizeds.some((norm, index) => {
 		return Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1 &&
 			!(norm === 'g6' && values[index] !== 'copypaste');
 	});
-	const welcomeuser = notifyuser && normalizeds.some(function(norm) {
+	const welcomeuser = notifyuser && normalizeds.some((norm) => {
 		return Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1;
 	});
-	const csdlog = Twinkle.getPref('logSpeedyNominations') && normalizeds.some(function(norm) {
+	const csdlog = Twinkle.getPref('logSpeedyNominations') && normalizeds.some((norm) => {
 		return Twinkle.getPref('noLogOnSpeedyNomination').indexOf(norm) === -1;
 	});
 

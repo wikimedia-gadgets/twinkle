@@ -26,7 +26,7 @@ Twinkle.fluff = function twinklefluff() {
 		// wgDiffOldId included for clarity in if else loop [[phab:T214985]]
 		if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) {
 			// Reload alongside the revision slider
-			mw.hook('wikipage.diff').add(function () {
+			mw.hook('wikipage.diff').add(() => {
 				Twinkle.fluff.addLinks.diff();
 			});
 		} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgRevisionId') && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
@@ -43,7 +43,7 @@ Twinkle.fluff = function twinklefluff() {
 		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Recentchanges' || mw.config.get('wgCanonicalSpecialPageName') === 'Recentchangeslinked') {
 			// Reload with recent changes updates
 			// structuredChangeFilters.ui.initialized is just on load
-			mw.hook('wikipage.content').add(function(item) {
+			mw.hook('wikipage.content').add((item) => {
 				if (item.is('div')) {
 					Twinkle.fluff.addLinks.recentchanges();
 				}
@@ -120,12 +120,12 @@ Twinkle.fluff.linkBuilder = {
 		normLink.style.fontWeight = 'bold';
 		vandLink.style.fontWeight = 'bold';
 
-		$(normLink).click(function(e) {
+		$(normLink).click((e) => {
 			e.preventDefault();
 			Twinkle.fluff.revert('norm', vandal, rev, page);
 			Twinkle.fluff.disableLinks(revNode);
 		});
-		$(vandLink).click(function(e) {
+		$(vandLink).click((e) => {
 			e.preventDefault();
 			Twinkle.fluff.revert('vand', vandal, rev, page);
 			Twinkle.fluff.disableLinks(revNode);
@@ -143,7 +143,7 @@ Twinkle.fluff.linkBuilder = {
 		if (!inline) {
 			const agfNode = document.createElement('span');
 			const agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
-			$(agfLink).click(function(e) {
+			$(agfLink).click((e) => {
 				e.preventDefault();
 				Twinkle.fluff.revert('agf', vandal, rev, page);
 				// Twinkle.fluff.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
@@ -172,7 +172,7 @@ Twinkle.fluff.linkBuilder = {
 		revertToRevisionNode.style.fontWeight = 'bold';
 
 		const revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'restore this version');
-		$(revertToRevisionLink).click(function(e) {
+		$(revertToRevisionLink).click((e) => {
 			e.preventDefault();
 			Twinkle.fluff.revertToRevision(revisionRef);
 		});
@@ -200,7 +200,7 @@ Twinkle.fluff.addLinks = {
 				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
 				const $list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
 
-				$list.each(function(key, current) {
+				$list.each((key, current) => {
 					// revid is also available in the href of both
 					// .mw-changeslist-date or .mw-changeslist-diff
 					const page = $(current).find('.mw-contributions-title').text();
@@ -228,7 +228,7 @@ Twinkle.fluff.addLinks = {
 			// and find only individual lines or nested lines
 			$list = $list.not('.mw-rcfilters-ui-highlights-enhanced-toplevel').find('.mw-changeslist-line-inner, td.mw-enhanced-rc-nested');
 
-			$list.each(function(key, current) {
+			$list.each((key, current) => {
 				// The :not is possibly unnecessary, as it appears that
 				// .mw-userlink is simply not present if the username is hidden
 				const vandal = $(current).find('.mw-userlink:not(.history-deleted)').text();
@@ -264,7 +264,7 @@ Twinkle.fluff.addLinks = {
 			}
 
 			// oldid
-			histList.forEach(function(rev) {
+			histList.forEach((rev) => {
 				// From restoreThisRevision, non-transferable
 				// If the text has been revdel'd, it gets wrapped in a span with .history-deleted,
 				// and href will be undefined (and thus oldid is NaN)
@@ -348,7 +348,7 @@ Twinkle.fluff.addLinks = {
 };
 
 Twinkle.fluff.disableLinks = function disablelinks(parentNode) {
-	$(parentNode).children().each(function(_ix, node) {
+	$(parentNode).children().each((_ix, node) => {
 		node.innerHTML = node.textContent; // Feels like cheating
 		$(node).css('font-weight', 'normal').css('color', 'darkgray');
 	});

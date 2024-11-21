@@ -120,7 +120,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	unlinker.setOption('preserveIndividualStatusLines', true);
 	unlinker.setPageList(pages);
 	const params = { reason: input.reason, unlinker: unlinker };
-	unlinker.run(function(pageName) {
+	unlinker.run((pageName) => {
 		const wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking in page "' + pageName + '"');
 		wikipedia_page.setBotEdit(true);  // unlink considered a floody operation
 		wikipedia_page.setCallbackParameters($.extend({
@@ -150,7 +150,7 @@ Twinkle.unlink.callbacks = {
 				} else {
 					apiobj.params.form.append({ type: 'header', label: 'File usage' });
 					namespaces = [];
-					$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
+					$.each(Twinkle.getPref('unlinkNamespaces'), (k, v) => {
 						namespaces.push(v === '0' ? '(Article)' : mw.config.get('wgFormattedNamespaces')[v]);
 					});
 					apiobj.params.form.append({
@@ -197,7 +197,7 @@ Twinkle.unlink.callbacks = {
 				}
 				apiobj.params.form.append({ type: 'header', label: 'Backlinks' });
 				namespaces = [];
-				$.each(Twinkle.getPref('unlinkNamespaces'), function(k, v) {
+				$.each(Twinkle.getPref('unlinkNamespaces'), (k, v) => {
 					namespaces.push(v === '0' ? '(Article)' : mw.config.get('wgFormattedNamespaces')[v]);
 				});
 				apiobj.params.form.append({

@@ -200,7 +200,7 @@ Twinkle.prod.callbacks = {
 		};
 
 		const wikipedia_api = new Morebits.wiki.api('Checking talk page for prior nominations', query);
-		return wikipedia_api.post().then(function(apiobj) {
+		return wikipedia_api.post().then((apiobj) => {
 			const statelem = apiobj.statelem;
 
 			// Check talk page for templates indicating prior XfD or PROD
@@ -224,7 +224,7 @@ Twinkle.prod.callbacks = {
 		const ts = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Looking up page creator');
 		ts.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
 		ts.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
-		ts.lookupCreation(function(pageobj) {
+		ts.lookupCreation((pageobj) => {
 			params.initialContrib = pageobj.getCreator();
 			params.creation = pageobj.getCreationTimestamp();
 			pageobj.getStatusElement().info('Done, found ' + params.initialContrib);
@@ -238,7 +238,7 @@ Twinkle.prod.callbacks = {
 
 		const wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
 		wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
-		wikipedia_page.load(function(pageobj) {
+		wikipedia_page.load((pageobj) => {
 			const statelem = pageobj.getStatusElement();
 
 			if (!pageobj.exists()) {
@@ -377,7 +377,7 @@ Twinkle.prod.callbacks = {
 		usertalkpage.setChangeTags(Twinkle.changeTags);
 		usertalkpage.setCreateOption('recreate');
 		usertalkpage.setFollowRedirect(true, false);
-		usertalkpage.append(function onNotifySuccess() {
+		usertalkpage.append(() => {
 			// add nomination to the userspace log, if the user has enabled it
 			params.logInitialContrib = params.initialContrib;
 			def.resolve();
@@ -466,9 +466,9 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	// notification wasn't successful. Also, don't run if tagging was not done.
 	tm.add(cbs.addToLog, [ cbs.notifyAuthor, cbs.taggingPage ]);
 	// All set, go!
-	tm.execute().then(function() {
+	tm.execute().then(() => {
 		Morebits.status.actionCompleted('Tagging complete');
-		setTimeout(function () {
+		setTimeout(() => {
 			window.location.href = mw.util.getUrl(mw.config.get('wgPageName'));
 		}, Morebits.wiki.actionCompleted.timeOut);
 	});
