@@ -2062,7 +2062,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.warn, 'warn');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

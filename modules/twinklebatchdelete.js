@@ -712,7 +712,7 @@ Twinkle.batchdelete.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.batchdelete, 'batchdelete');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

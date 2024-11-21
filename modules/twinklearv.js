@@ -982,7 +982,7 @@ Twinkle.arv.processAN3 = function(params) {
 };
 
 Twinkle.addInitCallback(Twinkle.arv, 'arv');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

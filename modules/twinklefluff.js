@@ -844,7 +844,7 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, customString) {
 };
 
 Twinkle.addInitCallback(Twinkle.fluff, 'fluff');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

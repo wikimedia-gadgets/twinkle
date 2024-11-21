@@ -475,7 +475,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.prod, 'prod');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

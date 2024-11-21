@@ -340,7 +340,7 @@ Twinkle.batchprotect.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.batchprotect, 'batchprotect');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>
