@@ -35,6 +35,7 @@
 		"object-curly-spacing": "off",
 		"space-before-function-paren": "off",
 		"space-in-parens": "off",
+		"template-curly-spacing": "off",
 		"unicorn/prefer-string-slice": "off",
 
 		"arrow-parens": "warn",
