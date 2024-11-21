@@ -46,7 +46,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 	const form = new Morebits.quickForm(Twinkle.tag.callback.evaluate);
 
 	// if page is unreviewed, add a checkbox to the form so that user can pick whether or not to review it
-	const isPatroller = mw.config.get('wgUserGroups').some(r => ['patroller', 'sysop'].includes(r));
+	const isPatroller = mw.config.get('wgUserGroups').some((r) => ['patroller', 'sysop'].includes(r));
 	if (isPatroller) {
 		new mw.Api().get({
 			action: 'pagetriagelist',
