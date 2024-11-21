@@ -67,14 +67,14 @@ Twinkle.fluff.hiddenName = 'an unknown user';
 // Consolidated construction of fluff links
 Twinkle.fluff.linkBuilder = {
 	spanTag: function(color, content) {
-		let span = document.createElement('span');
+		const span = document.createElement('span');
 		span.style.color = color;
 		span.appendChild(document.createTextNode(content));
 		return span;
 	},
 
 	buildLink: function(color, text) {
-		let link = document.createElement('a');
+		const link = document.createElement('a');
 		link.appendChild(Twinkle.fluff.linkBuilder.spanTag('Black', '['));
 		link.appendChild(Twinkle.fluff.linkBuilder.spanTag(color, text));
 		link.appendChild(Twinkle.fluff.linkBuilder.spanTag('Black', ']'));
@@ -93,8 +93,8 @@ Twinkle.fluff.linkBuilder = {
 	rollbackLinks: function(vandal, inline, rev, page) {
 		vandal = vandal || null;
 
-		let elem = inline ? 'span' : 'div';
-		let revNode = document.createElement(elem);
+		const elem = inline ? 'span' : 'div';
+		const revNode = document.createElement(elem);
 
 		rev = parseInt(rev, 10);
 		if (rev) {
@@ -103,19 +103,19 @@ Twinkle.fluff.linkBuilder = {
 			revNode.setAttribute('id', 'tw-revert');
 		}
 
-		let separator = inline ? ' ' : ' || ';
-		let sepNode1 = document.createElement('span');
-		let sepText = document.createTextNode(separator);
+		const separator = inline ? ' ' : ' || ';
+		const sepNode1 = document.createElement('span');
+		const sepText = document.createTextNode(separator);
 		sepNode1.setAttribute('class', 'tw-rollback-link-separator');
 		sepNode1.appendChild(sepText);
 
-		let sepNode2 = sepNode1.cloneNode(true);
+		const sepNode2 = sepNode1.cloneNode(true);
 
-		let normNode = document.createElement('span');
-		let vandNode = document.createElement('span');
+		const normNode = document.createElement('span');
+		const vandNode = document.createElement('span');
 
-		let normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'rollback');
-		let vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'vandalism');
+		const normLink = Twinkle.fluff.linkBuilder.buildLink('SteelBlue', 'rollback');
+		const vandLink = Twinkle.fluff.linkBuilder.buildLink('Red', 'vandalism');
 
 		normLink.style.fontWeight = 'bold';
 		vandLink.style.fontWeight = 'bold';
@@ -141,8 +141,8 @@ Twinkle.fluff.linkBuilder = {
 		vandNode.appendChild(vandLink);
 
 		if (!inline) {
-			let agfNode = document.createElement('span');
-			let agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
+			const agfNode = document.createElement('span');
+			const agfLink = Twinkle.fluff.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
 			$(agfLink).click(function(e) {
 				e.preventDefault();
 				Twinkle.fluff.revert('agf', vandal, rev, page);
@@ -165,13 +165,13 @@ Twinkle.fluff.linkBuilder = {
 		// If not a specific revision number, should be wgDiffNewId/wgDiffOldId/wgRevisionId
 		revisionRef = typeof revisionRef === 'number' ? revisionRef : mw.config.get(revisionRef);
 
-		let elem = inline ? 'span' : 'div';
-		let revertToRevisionNode = document.createElement(elem);
+		const elem = inline ? 'span' : 'div';
+		const revertToRevisionNode = document.createElement(elem);
 
 		revertToRevisionNode.setAttribute('id', 'tw-revert-to-' + revisionRef);
 		revertToRevisionNode.style.fontWeight = 'bold';
 
-		let revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'restore this version');
+		const revertToRevisionLink = Twinkle.fluff.linkBuilder.buildLink('SaddleBrown', 'restore this version');
 		$(revertToRevisionLink).click(function(e) {
 			e.preventDefault();
 			Twinkle.fluff.revertToRevision(revisionRef);
@@ -191,19 +191,19 @@ Twinkle.fluff.addLinks = {
 		// $('sp-contributions-footer-anon-range') relies on the fmbox
 		// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
 		// is used to show rollback/vandalism links for IP ranges
-		let isRange = !!$('#sp-contributions-footer-anon-range')[0];
+		const isRange = !!$('#sp-contributions-footer-anon-range')[0];
 		if (mw.config.exists('wgRelevantUserName') || isRange) {
 			// Get the username these contributions are for
 			let username = mw.config.get('wgRelevantUserName');
 			if (Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
 				(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1) ||
 				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
-				let $list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
+				const $list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
 
 				$list.each(function(key, current) {
 					// revid is also available in the href of both
 					// .mw-changeslist-date or .mw-changeslist-diff
-					let page = $(current).find('.mw-contributions-title').text();
+					const page = $(current).find('.mw-contributions-title').text();
 
 					// Get username for IP ranges (wgRelevantUserName is null)
 					if (isRange) {
@@ -231,10 +231,10 @@ Twinkle.fluff.addLinks = {
 			$list.each(function(key, current) {
 				// The :not is possibly unnecessary, as it appears that
 				// .mw-userlink is simply not present if the username is hidden
-				let vandal = $(current).find('.mw-userlink:not(.history-deleted)').text();
-				let href = $(current).find('.mw-changeslist-diff').attr('href');
-				let rev = mw.util.getParamValue('diff', href);
-				let page = current.dataset.targetPage;
+				const vandal = $(current).find('.mw-userlink:not(.history-deleted)').text();
+				const href = $(current).find('.mw-changeslist-diff').attr('href');
+				const rev = mw.util.getParamValue('diff', href);
+				const page = current.dataset.targetPage;
 				current.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(vandal, true, rev, page));
 			});
 		}
@@ -243,19 +243,19 @@ Twinkle.fluff.addLinks = {
 	history: function() {
 		if (Twinkle.getPref('showRollbackLinks').indexOf('history') !== -1) {
 			// All revs
-			let histList = $('#pagehistory li').toArray();
+			const histList = $('#pagehistory li').toArray();
 
 			// On first page of results, so add revert/rollback
 			// links to the top revision
 			if (!$('a.mw-firstlink').length) {
-				let firstRow = histList.shift();
-				let firstUser = $(firstRow).find('.mw-userlink:not(.history-deleted)').text();
+				const firstRow = histList.shift();
+				const firstUser = $(firstRow).find('.mw-userlink:not(.history-deleted)').text();
 
 				// Check for first username different than the top user,
 				// only apply rollback links if/when found
 				// for() faster than every()
 				for (let i = 0; i < histList.length; i++) {
-					let hasMoreThanOneUser = $(histList[i]).find('.mw-userlink').text() !== firstUser;
+					const hasMoreThanOneUser = $(histList[i]).find('.mw-userlink').text() !== firstUser;
 					if (hasMoreThanOneUser) {
 						firstRow.appendChild(Twinkle.fluff.linkBuilder.rollbackLinks(firstUser, true));
 						break;
@@ -268,8 +268,8 @@ Twinkle.fluff.addLinks = {
 				// From restoreThisRevision, non-transferable
 				// If the text has been revdel'd, it gets wrapped in a span with .history-deleted,
 				// and href will be undefined (and thus oldid is NaN)
-				let href = rev.querySelector('.mw-changeslist-date').href;
-				let oldid = parseInt(mw.util.getParamValue('oldid', href), 10);
+				const href = rev.querySelector('.mw-changeslist-date').href;
+				const oldid = parseInt(mw.util.getParamValue('oldid', href), 10);
 				if (!isNaN(oldid)) {
 					rev.appendChild(Twinkle.fluff.linkBuilder.restoreThisRevisionLink(oldid, true));
 				}
@@ -281,15 +281,15 @@ Twinkle.fluff.addLinks = {
 
 	diff: function() {
 		// Autofill user talk links on diffs with vanarticle for easy warning, but don't autowarn
-		let warnFromTalk = function(xtitle) {
-			let talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
+		const warnFromTalk = function(xtitle) {
+			const talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
 			if (talkLink.length) {
 				let extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
 				// diffIDs for vanarticlerevid
 				extraParams += '&vanarticlerevid=';
 				extraParams += xtitle === 'otitle' ? mw.config.get('wgDiffOldId') : mw.config.get('wgDiffNewId');
 
-				let href = talkLink.attr('href');
+				const href = talkLink.attr('href');
 				if (href.indexOf('?') === -1) {
 					talkLink.attr('href', href + '?' + extraParams);
 				} else {
@@ -303,7 +303,7 @@ Twinkle.fluff.addLinks = {
 		// Don't load if there's a single revision or weird diff (cur on latest)
 		if (mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId'))) {
 			// Add a [restore this revision] link to the older revision
-			let oldTitle = document.getElementById('mw-diff-otitle1').parentNode;
+			const oldTitle = document.getElementById('mw-diff-otitle1').parentNode;
 			oldTitle.insertBefore(Twinkle.fluff.linkBuilder.restoreThisRevisionLink('wgDiffOldId'), oldTitle.firstChild);
 		}
 
@@ -313,7 +313,7 @@ Twinkle.fluff.addLinks = {
 		// Don't show if there's a single revision or weird diff (prev on first)
 		if (document.getElementById('differences-nextlink')) {
 			// Not latest revision, add [restore this revision] link to newer revision
-			let newTitle = document.getElementById('mw-diff-ntitle1').parentNode;
+			const newTitle = document.getElementById('mw-diff-ntitle1').parentNode;
 			newTitle.insertBefore(Twinkle.fluff.linkBuilder.restoreThisRevisionLink('wgDiffNewId'), newTitle.firstChild);
 		} else if (Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 && mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId') || document.getElementById('differences-prevlink'))) {
 			// Normally .mw-userlink is a link, but if the
@@ -332,16 +332,16 @@ Twinkle.fluff.addLinks = {
 			let vandal = $('#mw-diff-ntitle2').find('.mw-userlink')[0];
 			// See #1337
 			vandal = vandal ? vandal.text : '';
-			let ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
+			const ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
 
 			ntitle.insertBefore(Twinkle.fluff.linkBuilder.rollbackLinks(vandal), ntitle.firstChild);
 		}
 	},
 
 	oldid: function() { // Add a [restore this revision] link on old revisions
-		let revisionInfo = document.getElementById('mw-revision-info');
+		const revisionInfo = document.getElementById('mw-revision-info');
 		if (revisionInfo) {
-			let title = revisionInfo.parentNode;
+			const title = revisionInfo.parentNode;
 			title.insertBefore(Twinkle.fluff.linkBuilder.restoreThisRevisionLink('wgRevisionId'), title.firstChild);
 		}
 	}
@@ -360,11 +360,11 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		vandal = Morebits.ip.sanitizeIPv6(vandal);
 	}
 
-	let pagename = page || mw.config.get('wgPageName');
-	let revid = rev || mw.config.get('wgCurRevisionId');
+	const pagename = page || mw.config.get('wgPageName');
+	const revid = rev || mw.config.get('wgCurRevisionId');
 
 	if (Twinkle.fluff.rollbackInPlace) {
-		let notifyStatus = document.createElement('span');
+		const notifyStatus = document.createElement('span');
 		mw.notify(notifyStatus, {
 			autoHide: false,
 			title: 'Rollback on ' + page,
@@ -376,7 +376,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		$('#catlinks').remove();
 	}
 
-	let params = {
+	const params = {
 		type: type,
 		user: vandal,
 		userHidden: !vandal, // Keep track of whether the username was hidden
@@ -384,7 +384,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		revid: revid
 	};
 
-	let query = {
+	const query = {
 		action: 'query',
 		prop: ['info', 'revisions', 'flagged'],
 		titles: pagename,
@@ -397,7 +397,7 @@ Twinkle.fluff.revert = function revertPage(type, vandal, rev, page) {
 		type: 'csrf',
 		format: 'json'
 	};
-	let wikipedia_api = new Morebits.wiki.api('Grabbing data of earlier revisions', query, Twinkle.fluff.callbacks.main);
+	const wikipedia_api = new Morebits.wiki.api('Grabbing data of earlier revisions', query, Twinkle.fluff.callbacks.main);
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 };
@@ -406,7 +406,7 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 
 	Morebits.status.init(document.getElementById('mw-content-text'));
 
-	let query = {
+	const query = {
 		action: 'query',
 		prop: ['info', 'revisions'],
 		titles: mw.config.get('wgPageName'),
@@ -419,42 +419,42 @@ Twinkle.fluff.revertToRevision = function revertToRevision(oldrev) {
 		type: 'csrf',
 		format: 'json'
 	};
-	let wikipedia_api = new Morebits.wiki.api('Grabbing data of the earlier revision', query, Twinkle.fluff.callbacks.toRevision);
+	const wikipedia_api = new Morebits.wiki.api('Grabbing data of the earlier revision', query, Twinkle.fluff.callbacks.toRevision);
 	wikipedia_api.params = { rev: oldrev };
 	wikipedia_api.post();
 };
 
 Twinkle.fluff.callbacks = {
 	toRevision: function(apiobj) {
-		let response = apiobj.getResponse();
+		const response = apiobj.getResponse();
 
-		let loadtimestamp = response.curtimestamp;
-		let csrftoken = response.query.tokens.csrftoken;
+		const loadtimestamp = response.curtimestamp;
+		const csrftoken = response.query.tokens.csrftoken;
 
-		let page = response.query.pages[0];
-		let lastrevid = parseInt(page.lastrevid, 10);
-		let touched = page.touched;
+		const page = response.query.pages[0];
+		const lastrevid = parseInt(page.lastrevid, 10);
+		const touched = page.touched;
 
-		let rev = page.revisions[0];
-		let revertToRevID = parseInt(rev.revid, 10);
-		let revertToUser = rev.user;
-		let revertToUserHidden = !!rev.userhidden;
+		const rev = page.revisions[0];
+		const revertToRevID = parseInt(rev.revid, 10);
+		const revertToUser = rev.user;
+		const revertToUserHidden = !!rev.userhidden;
 
 		if (revertToRevID !== apiobj.params.rev) {
 			apiobj.statelem.error('The retrieved revision does not match the requested revision. Stopping revert.');
 			return;
 		}
 
-		let optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
+		const optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
 		if (optional_summary === null) {
 			apiobj.statelem.error('Aborted by user.');
 			return;
 		}
 
-		let summary = Twinkle.fluff.formatSummary('Restored revision ' + revertToRevID + ' by $USER',
+		const summary = Twinkle.fluff.formatSummary('Restored revision ' + revertToRevID + ' by $USER',
 			revertToUserHidden ? null : revertToUser, optional_summary);
 
-		let query = {
+		const query = {
 			action: 'edit',
 			title: mw.config.get('wgPageName'),
 			summary: summary,
@@ -469,7 +469,7 @@ Twinkle.fluff.callbacks = {
 		};
 		// Handle watching, possible expiry
 		if (Twinkle.getPref('watchRevertedPages').indexOf('torev') !== -1) {
-			let watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
+			const watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
 
 			if (!watchOrExpiry || watchOrExpiry === 'no') {
 				query.watchlist = 'nochange';
@@ -487,36 +487,36 @@ Twinkle.fluff.callbacks = {
 		Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
 
-		let wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, apiobj.statelem);
+		const wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, apiobj.statelem);
 		wikipedia_api.params = apiobj.params;
 		wikipedia_api.post();
 	},
 	main: function(apiobj) {
-		let response = apiobj.getResponse();
+		const response = apiobj.getResponse();
 
-		let loadtimestamp = response.curtimestamp;
-		let csrftoken = response.query.tokens.csrftoken;
+		const loadtimestamp = response.curtimestamp;
+		const csrftoken = response.query.tokens.csrftoken;
 
-		let page = response.query.pages[0];
+		const page = response.query.pages[0];
 		if (!page.actions.edit) {
 			apiobj.statelem.error("Unable to edit the page, it's probably protected.");
 			return;
 		}
 
-		let lastrevid = parseInt(page.lastrevid, 10);
-		let touched = page.touched;
+		const lastrevid = parseInt(page.lastrevid, 10);
+		const touched = page.touched;
 
-		let revs = page.revisions;
+		const revs = page.revisions;
 
-		let statelem = apiobj.statelem;
-		let params = apiobj.params;
+		const statelem = apiobj.statelem;
+		const params = apiobj.params;
 
 		if (revs.length < 1) {
 			statelem.error('We have less than one additional revision, thus impossible to revert.');
 			return;
 		}
-		let top = revs[0];
-		let lastuser = top.user;
+		const top = revs[0];
+		const lastuser = top.user;
 
 		if (lastrevid < params.revid) {
 			Morebits.status.error('Error', [ 'The most recent revision ID received from the server, ', Morebits.htmlNode('strong', lastrevid), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Stopping revert.' ]);
@@ -619,7 +619,7 @@ Twinkle.fluff.callbacks = {
 			return;
 		}
 
-		let good_revision = revs[found];
+		const good_revision = revs[found];
 		let userHasAlreadyConfirmedAction = false;
 		if (params.type !== 'vand' && count > 1) {
 			if (!confirm(userNorm + ' has made ' + mw.language.convertNumber(count) + ' edits in a row. Are you sure you want to revert them all?')) {
@@ -690,7 +690,7 @@ Twinkle.fluff.callbacks = {
 		}
 
 		// figure out whether we need to/can review the edit
-		let flagged = page.flagged;
+		const flagged = page.flagged;
 		if ((Morebits.userIsInGroup('reviewer') || Morebits.userIsSysop) &&
 				!!flagged &&
 				flagged.stable_revid >= params.goodid &&
@@ -699,7 +699,7 @@ Twinkle.fluff.callbacks = {
 			params.csrftoken = csrftoken;
 		}
 
-		let query = {
+		const query = {
 			action: 'edit',
 			title: params.pagename,
 			summary: summary,
@@ -714,7 +714,7 @@ Twinkle.fluff.callbacks = {
 		};
 		// Handle watching, possible expiry
 		if (Twinkle.getPref('watchRevertedPages').indexOf(params.type) !== -1) {
-			let watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
+			const watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
 
 			if (!watchOrExpiry || watchOrExpiry === 'no') {
 				query.watchlist = 'nochange';
@@ -734,15 +734,15 @@ Twinkle.fluff.callbacks = {
 		}
 		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
 
-		let wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, statelem);
+		const wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.fluff.callbacks.complete, statelem);
 		wikipedia_api.params = params;
 		wikipedia_api.post();
 
 	},
 	complete: function (apiobj) {
 		// TODO Most of this is copy-pasted from Morebits.wiki.page#fnSaveSuccess. Unify it
-		let response = apiobj.getResponse();
-		let edit = response.edit;
+		const response = apiobj.getResponse();
+		const edit = response.edit;
 
 		if (edit.captcha) {
 			apiobj.statelem.error('Could not rollback, because the wiki server wanted you to fill out a CAPTCHA.');
@@ -750,12 +750,12 @@ Twinkle.fluff.callbacks = {
 			apiobj.statelem.error('Revision we are reverting to is identical to current revision, stopping revert.');
 		} else {
 			apiobj.statelem.info('done');
-			let params = apiobj.params;
+			const params = apiobj.params;
 
 			if (params.notifyUser && !params.userHidden) { // notifyUser only from main, not from toRevision
 				Morebits.status.info('Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode('strong', params.user) ]);
 
-				let url = mw.util.getUrl('User talk:' + params.user, {
+				const url = mw.util.getUrl('User talk:' + params.user, {
 					action: 'edit',
 					preview: 'yes',
 					vanarticle: params.pagename.replace(/_/g, ' '),
@@ -793,14 +793,14 @@ Twinkle.fluff.callbacks = {
 
 			// review the revert, if needed
 			if (apiobj.params.reviewRevert) {
-				let query = {
+				const query = {
 					action: 'review',
 					revid: edit.newrevid,
 					token: apiobj.params.csrftoken,
 					comment: 'Automatically reviewing reversion' + Twinkle.summaryAd // until the below
 					// 'tags': Twinkle.changeTags // flaggedrevs tag support: [[phab:T247721]]
 				};
-				let wikipedia_api = new Morebits.wiki.api('Automatically accepting your changes', query);
+				const wikipedia_api = new Morebits.wiki.api('Automatically accepting your changes', query);
 				wikipedia_api.post();
 			}
 		}
@@ -822,11 +822,11 @@ Twinkle.fluff.formatSummary = function(builtInString, userName, customString) {
 	// over the 499-byte limit
 	if (/\$USER/.test(builtInString)) {
 		if (userName) {
-			let resultLen = unescape(encodeURIComponent(result.replace('$USER', ''))).length;
-			let contribsLink = '[[Special:Contributions/' + userName + '|' + userName + ']]';
-			let contribsLen = unescape(encodeURIComponent(contribsLink)).length;
+			const resultLen = unescape(encodeURIComponent(result.replace('$USER', ''))).length;
+			const contribsLink = '[[Special:Contributions/' + userName + '|' + userName + ']]';
+			const contribsLen = unescape(encodeURIComponent(contribsLink)).length;
 			if (resultLen + contribsLen <= 499) {
-				let talkLink = ' ([[User talk:' + userName + '|talk]])';
+				const talkLink = ' ([[User talk:' + userName + '|talk]])';
 				if (resultLen + contribsLen + unescape(encodeURIComponent(talkLink)).length <= 499) {
 					result = Morebits.string.safeReplace(result, '$USER', contribsLink + talkLink);
 				} else {

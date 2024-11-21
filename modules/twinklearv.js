@@ -13,17 +13,17 @@
  */
 
 Twinkle.arv = function twinklearv() {
-	let username = mw.config.get('wgRelevantUserName');
+	const username = mw.config.get('wgRelevantUserName');
 	if (!username || username === mw.config.get('wgUserName')) {
 		return;
 	}
 
-	let isIP = mw.util.isIPAddress(username, true);
+	const isIP = mw.util.isIPAddress(username, true);
 	// Ignore ranges wider than the CIDR limit
 	if (Morebits.ip.isRange(username) && !Morebits.ip.validCIDR(username)) {
 		return;
 	}
-	let userType = isIP ? 'IP' + (Morebits.ip.isRange(username) ? ' range' : '') : 'user';
+	const userType = isIP ? 'IP' + (Morebits.ip.isRange(username) ? ' range' : '') : 'user';
 
 	Twinkle.addPortletLink(function() {
 		Twinkle.arv.callback(username, isIP);
@@ -31,7 +31,7 @@ Twinkle.arv = function twinklearv() {
 };
 
 Twinkle.arv.callback = function (uid, isIP) {
-	let Window = new Morebits.simpleWindow(600, 500);
+	const Window = new Morebits.simpleWindow(600, 500);
 	Window.setTitle('Advance Reporting and Vetting'); // Backronym
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('AIV guide', 'WP:GAIV');
@@ -41,8 +41,8 @@ Twinkle.arv.callback = function (uid, isIP) {
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#arv');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	let form = new Morebits.quickForm(Twinkle.arv.callback.evaluate);
-	let categories = form.append({
+	const form = new Morebits.quickForm(Twinkle.arv.callback.evaluate);
+	const categories = form.append({
 		type: 'select',
 		name: 'category',
 		label: 'Select report type:',
@@ -94,12 +94,12 @@ Twinkle.arv.callback = function (uid, isIP) {
 		value: uid
 	});
 
-	let result = form.render();
+	const result = form.render();
 	Window.setContent(result);
 	Window.display();
 
 	// Check if the user is blocked, update notice
-	let query = {
+	const query = {
 		action: 'query',
 		list: 'blocks',
 		bkprop: 'range|flags',
@@ -111,10 +111,10 @@ Twinkle.arv.callback = function (uid, isIP) {
 		query.bkusers = uid;
 	}
 	new Morebits.wiki.api("Checking the user's block status", query, function(apiobj) {
-		let blocklist = apiobj.getResponse().query.blocks;
+		const blocklist = apiobj.getResponse().query.blocks;
 		if (blocklist.length) {
 			// If an IP is blocked *and* rangeblocked, only use whichever is more recent
-			let block = blocklist[0];
+			const block = blocklist[0];
 			let message = (isIP ? 'This IP ' + (Morebits.ip.isRange(uid) ? 'range' : 'address') : 'This account') + ' is ' + (block.partial ? 'partially' : 'already') + ' blocked';
 			// Start and end differ, range blocked
 			message += block.rangestart !== block.rangeend ? ' as part of a rangeblock.' : '.';
@@ -127,15 +127,15 @@ Twinkle.arv.callback = function (uid, isIP) {
 
 
 	// We must init the
-	let evt = document.createEvent('Event');
+	const evt = document.createEvent('Event');
 	evt.initEvent('change', true, true);
 	result.category.dispatchEvent(evt);
 };
 
 Twinkle.arv.callback.changeCategory = function (e) {
-	let value = e.target.value;
-	let root = e.target.form;
-	let old_area = Morebits.quickForm.getElements(root, 'work_area')[0];
+	const value = e.target.value;
+	const root = e.target.form;
+	const old_area = Morebits.quickForm.getElements(root, 'work_area')[0];
 	let work_area = null;
 
 	switch (value) {
@@ -154,8 +154,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				tooltip: 'Leave blank to not link to the page in the report',
 				value: Twinkle.getPrefill('vanarticle') || '',
 				event: function(e) {
-					let value = e.target.value;
-					let root = e.target.form;
+					const value = e.target.value;
+					const root = e.target.form;
 					if (value === '') {
 						root.badid.disabled = root.goodid.disabled = true;
 					} else {
@@ -172,8 +172,8 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				value: Twinkle.getPrefill('vanarticlerevid') || '',
 				disabled: !Twinkle.getPrefill('vanarticle'),
 				event: function(e) {
-					let value = e.target.value;
-					let root = e.target.form;
+					const value = e.target.value;
+					const root = e.target.form;
 					root.goodid.disabled = value === '';
 				}
 			});
@@ -349,13 +349,13 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'load',
 				label: 'Load',
 				event: function(e) {
-					let root = e.target.form;
+					const root = e.target.form;
 
-					let date = new Morebits.date().subtract(48, 'hours'); // all since 48 hours
+					const date = new Morebits.date().subtract(48, 'hours'); // all since 48 hours
 
 					// Run for each AN3 field
-					let getAN3Entries = function(field, rvuser, titles) {
-						let $field = $(root).find('[name=' + field + ']');
+					const getAN3Entries = function(field, rvuser, titles) {
+						const $field = $(root).find('[name=' + field + ']');
 						$field.find('.entry').remove();
 
 						new mw.Api().get({
@@ -369,17 +369,17 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							indexpageids: true,
 							titles: titles
 						}).done(function(data) {
-							let pageid = data.query.pageids[0];
-							let page = data.query.pages[pageid];
+							const pageid = data.query.pageids[0];
+							const page = data.query.pages[pageid];
 							if (!page.revisions) {
 								$('<span class="entry">None found</span>').appendTo($field);
 							} else {
 								for (let i = 0; i < page.revisions.length; ++i) {
-									let rev = page.revisions[i];
-									let $entry = $('<div/>', {
+									const rev = page.revisions[i];
+									const $entry = $('<div/>', {
 										class: 'entry'
 									});
-									let $input = $('<input/>', {
+									const $input = $('<input/>', {
 										type: 'checkbox',
 										name: 's_' + field,
 										value: rev.revid
@@ -400,15 +400,15 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 							// add free form input for resolves
 							if (field === 'resolves') {
-								let $free_entry = $('<div/>', {
+								const $free_entry = $('<div/>', {
 									class: 'entry'
 								});
-								let $free_input = $('<input/>', {
+								const $free_input = $('<input/>', {
 									type: 'text',
 									name: 's_resolves_free'
 								});
 
-								let $free_label = $('<label/>', {
+								const $free_label = $('<label/>', {
 									for: 's_resolves_free',
 									html: 'URL link of diff with additional discussions: '
 								});
@@ -420,18 +420,18 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					};
 
 					// warnings
-					let uid = root.uid.value;
+					const uid = root.uid.value;
 					getAN3Entries('warnings', mw.config.get('wgUserName'), 'User talk:' + uid);
 
 					// diffs and resolves require a valid page
-					let page = root.page.value;
+					const page = root.page.value;
 					if (page) {
 						// diffs
 						getAN3Entries('diffs', uid, page);
 
 						// resolutions
-						let t = new mw.Title(page);
-						let talk_page = t.getTalkPage().getPrefixedText();
+						const t = new mw.Title(page);
+						const talk_page = t.getTalkPage().getPrefixedText();
 						getAN3Entries('resolves', mw.config.get('wgUserName'), talk_page);
 					} else {
 						$(root).find('[name=diffs]').find('.entry').remove();
@@ -471,13 +471,13 @@ Twinkle.arv.callback.changeCategory = function (e) {
 };
 
 Twinkle.arv.callback.evaluate = function(e) {
-	let form = e.target;
+	const form = e.target;
 	let reason = '';
 	let comment = '';
 	if (form.reason) {
 		comment = form.reason.value;
 	}
-	let uid = form.uid.value;
+	const uid = form.uid.value;
 
 	let types;
 	switch (form.category.value) {
@@ -523,9 +523,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 
 			if (comment !== '') {
-				let reasonEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(reason);
+				const reasonEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(reason);
 				reason += reasonEndsInPunctuationOrBlank ? '' : '.';
-				let reasonIsBlank = reason === '';
+				const reasonIsBlank = reason === '';
 				reason += reasonIsBlank ? '' : ' ';
 				reason += comment;
 			}
@@ -550,8 +550,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 			aivPage.setFollowRedirect(true);
 
 			aivPage.load(function() {
-				let text = aivPage.getPageText();
-				let $aivLink = '<a target="_blank" href="/wiki/WP:AIV">WP:AIV</a>';
+				const text = aivPage.getPageText();
+				const $aivLink = '<a target="_blank" href="/wiki/WP:AIV">WP:AIV</a>';
 
 				// check if user has already been reported
 				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(text)) {
@@ -561,10 +561,10 @@ Twinkle.arv.callback.evaluate = function(e) {
 				}
 
 				// then check for any bot reports
-				let tb2Page = new Morebits.wiki.page('Wikipedia:Administrator intervention against vandalism/TB2', 'Checking bot reports');
+				const tb2Page = new Morebits.wiki.page('Wikipedia:Administrator intervention against vandalism/TB2', 'Checking bot reports');
 				tb2Page.load(function() {
-					let tb2Text = tb2Page.getPageText();
-					let tb2statelem = tb2Page.getStatusElement();
+					const tb2Text = tb2Page.getPageText();
+					const tb2statelem = tb2Page.getStatusElement();
 
 					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(tb2Text)) {
 						if (confirm('The user ' + uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
@@ -612,7 +612,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 			if (comment !== '') {
 				reason += Morebits.string.toUpperCaseFirstChar(comment);
-				let endsInPeriod = /\.$/.test(comment);
+				const endsInPeriod = /\.$/.test(comment);
 				if (!endsInPeriod) {
 					reason += '.';
 				}
@@ -631,12 +631,12 @@ Twinkle.arv.callback.evaluate = function(e) {
 			uaaPage.setFollowRedirect(true);
 
 			uaaPage.load(function() {
-				let text = uaaPage.getPageText();
+				const text = uaaPage.getPageText();
 
 				// check if user has already been reported
 				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + Morebits.string.escapeRegExp(uid) + '\\s*(\\||\\})').test(text)) {
 					uaaPage.getStatusElement().error('User is already listed.');
-					let $uaaLink = '<a target="_blank" href="/wiki/WP:UAA">WP:UAA</a>';
+					const $uaaLink = '<a target="_blank" href="/wiki/WP:UAA">WP:UAA</a>';
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $uaaLink + ':');
 					return;
 				}
@@ -705,7 +705,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					return;
 				}
 
-				let an3Parameters = {
+				const an3Parameters = {
 					uid: uid,
 					page: form.page.value.trim(),
 					comment: form.comment.value.trim(),
@@ -723,7 +723,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			if (free_resolves) {
 				let query;
 				let diff, oldid;
-				let specialDiff = /Special:Diff\/(\d+)(?:\/(\S+))?/i.exec(free_resolves);
+				const specialDiff = /Special:Diff\/(\d+)(?:\/(\S+))?/i.exec(free_resolves);
 				if (specialDiff) {
 					if (specialDiff[2]) {
 						oldid = specialDiff[1];
@@ -735,8 +735,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 					diff = mw.util.getParamValue('diff', free_resolves);
 					oldid = mw.util.getParamValue('oldid', free_resolves);
 				}
-				let title = mw.util.getParamValue('title', free_resolves);
-				let diffNum = /^\d+$/.test(diff); // used repeatedly
+				const title = mw.util.getParamValue('title', free_resolves);
+				const diffNum = /^\d+$/.test(diff); // used repeatedly
 
 				// rvdiffto in prop=revisions is deprecated, but action=compare doesn't return
 				// timestamps ([[phab:T247686]]) so we can't rely on it unless necessary.
@@ -796,7 +796,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					if (data.compare && data.compare.fromtitle === data.compare.totitle) {
 						page = data;
 					} else if (data.query) {
-						let pageid = data.query.pageids[0];
+						const pageid = data.query.pageids[0];
 						page = data.query.pages[pageid];
 					} else {
 						return;
@@ -826,12 +826,12 @@ Twinkle.arv.processSock = function(params) {
 	}
 	text += '}}';
 
-	let reportpage = 'Wikipedia:Sockpuppet investigations/' + params.uid;
+	const reportpage = 'Wikipedia:Sockpuppet investigations/' + params.uid;
 
 	Morebits.wiki.actionCompleted.redirect = reportpage;
 	Morebits.wiki.actionCompleted.notice = 'Reporting complete';
 
-	let spiPage = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
+	const spiPage = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
 	spiPage.setFollowRedirect(true);
 	spiPage.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].');
 	spiPage.setChangeTags(Twinkle.changeTags);
@@ -865,7 +865,7 @@ Twinkle.arv.processAN3 = function(params) {
 		Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
 
 		// In case an edit summary was revdel'd
-		let hasHiddenComment = function(rev) {
+		const hasHiddenComment = function(rev) {
 			if (!rev.comment && typeof rev.commenthidden === 'string') {
 				return '(comment hidden)';
 			}
@@ -875,7 +875,7 @@ Twinkle.arv.processAN3 = function(params) {
 
 		let orig;
 		if (data.length) {
-			let sha1 = data[0].sha1;
+			const sha1 = data[0].sha1;
 			for (let i = 1; i < data.length; ++i) {
 				if (data[i].sha1 === sha1) {
 					orig = data[i];
@@ -893,11 +893,11 @@ Twinkle.arv.processAN3 = function(params) {
 			origtext = '{{diff2|' + orig.revid + '|' + orig.timestamp + '}} ' + hasHiddenComment(orig);
 		}
 
-		let grouped_diffs = {};
+		const grouped_diffs = {};
 
 		let parentid, lastid;
 		for (let j = 0; j < params.diffs.length; ++j) {
-			let cur = params.diffs[j];
+			const cur = params.diffs[j];
 			if ((cur.revid && cur.revid !== parentid) || lastid === null) {
 				lastid = cur.revid;
 				grouped_diffs[lastid] = [];
@@ -906,12 +906,12 @@ Twinkle.arv.processAN3 = function(params) {
 			grouped_diffs[lastid].push(cur);
 		}
 
-		let difftext = $.map(grouped_diffs, function(sub) {
+		const difftext = $.map(grouped_diffs, function(sub) {
 			let ret = '';
 			if (sub.length >= 2) {
-				let last = sub[0];
-				let first = sub.slice(-1)[0];
-				let label = 'Consecutive edits made from ' + new Morebits.date(first.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) to ' + new Morebits.date(last.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)';
+				const last = sub[0];
+				const first = sub.slice(-1)[0];
+				const label = 'Consecutive edits made from ' + new Morebits.date(first.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) to ' + new Morebits.date(last.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)';
 				ret = '# {{diff|oldid=' + first.parentid + '|diff=' + last.revid + '|label=' + label + '}}\n';
 			}
 			ret += sub.reverse().map(function(v) {
@@ -919,7 +919,7 @@ Twinkle.arv.processAN3 = function(params) {
 			}).join('\n');
 			return ret;
 		}).reverse().join('\n');
-		let warningtext = params.warnings.reverse().map(function(v) {
+		const warningtext = params.warnings.reverse().map(function(v) {
 			return '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v);
 		}).join('\n');
 		let resolvetext = params.resolves.reverse().map(function(v) {
@@ -927,19 +927,19 @@ Twinkle.arv.processAN3 = function(params) {
 		}).join('\n');
 
 		if (params.free_resolves) {
-			let page = params.free_resolves;
+			const page = params.free_resolves;
 			if (page.compare) {
 				resolvetext += '\n# ' + ' {{diff|oldid=' + page.compare.fromrevid + '|diff=' + page.compare.torevid + '|label=Consecutive edits on ' + page.compare.totitle + '}}';
 			} else if (page.revisions) {
-				let revCount = page.revisions.length;
+				const revCount = page.revisions.length;
 				let rev;
 				if (revCount < 3) { // diff=prev or next
 					rev = revCount === 1 ? page.revisions[0] : page.revisions[1];
 					resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + new Morebits.date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title + '}} ' + hasHiddenComment(rev);
 				} else { // diff and oldid are nonconsecutive
 					rev = page.revisions[0];
-					let revLatest = page.revisions[revCount - 1];
-					let label = 'Consecutive edits made from ' + new Morebits.date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) to ' + new Morebits.date(revLatest.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title;
+					const revLatest = page.revisions[revCount - 1];
+					const label = 'Consecutive edits made from ' + new Morebits.date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) to ' + new Morebits.date(revLatest.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title;
 					resolvetext += '\n# {{diff|oldid=' + rev.revid + '|diff=' + revLatest.revid + '|label=' + label + '}}\n';
 				}
 			}
@@ -951,14 +951,14 @@ Twinkle.arv.processAN3 = function(params) {
 			comment += ' ~~~~';
 		}
 
-		let text = '\n\n' + '{{subst:AN3 report|diffs=' + difftext + '|warnings=' + warningtext + '|resolves=' + resolvetext + '|pagename=' + params.page + '|orig=' + origtext + '|comment=' + comment + '|uid=' + params.uid + '}}';
+		const text = '\n\n' + '{{subst:AN3 report|diffs=' + difftext + '|warnings=' + warningtext + '|resolves=' + resolvetext + '|pagename=' + params.page + '|orig=' + origtext + '|comment=' + comment + '|uid=' + params.uid + '}}';
 
-		let reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
+		const reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
 
 		Morebits.wiki.actionCompleted.redirect = reportpage;
 		Morebits.wiki.actionCompleted.notice = 'Reporting complete';
 
-		let an3Page = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
+		const an3Page = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
 		an3Page.setFollowRedirect(true);
 		an3Page.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].');
 		an3Page.setChangeTags(Twinkle.changeTags);
@@ -967,9 +967,9 @@ Twinkle.arv.processAN3 = function(params) {
 
 		// notify user
 
-		let notifyText = '\n\n{{subst:an3-notice|1=' + mw.util.wikiUrlencode(params.uid) + '|auto=1}} ~~~~';
+		const notifyText = '\n\n{{subst:an3-notice|1=' + mw.util.wikiUrlencode(params.uid) + '|auto=1}} ~~~~';
 
-		let talkPage = new Morebits.wiki.page('User talk:' + params.uid, 'Notifying edit warrior');
+		const talkPage = new Morebits.wiki.page('User talk:' + params.uid, 'Notifying edit warrior');
 		talkPage.setFollowRedirect(true);
 		talkPage.setEditSummary('Notifying about edit warring noticeboard discussion.');
 		talkPage.setChangeTags(Twinkle.changeTags);

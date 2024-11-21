@@ -30,14 +30,14 @@ Twinkle.warn = function twinklewarn() {
 	// Modify URL of talk page on rollback success pages, makes use of a
 	// custom message box in [[MediaWiki:Rollback-success]]
 	if (mw.config.get('wgAction') === 'rollback') {
-		let $vandalTalkLink = $('#mw-rollback-success').find('.mw-usertoollinks a').first();
+		const $vandalTalkLink = $('#mw-rollback-success').find('.mw-usertoollinks a').first();
 		if ($vandalTalkLink.length) {
 			$vandalTalkLink.css('font-weight', 'bold');
 			$vandalTalkLink.wrapInner($('<span/>').attr('title', 'If appropriate, you can use Twinkle to warn the user about their edits to this page.'));
 
 			// Can't provide vanarticlerevid as only wgCurRevisionId is provided
-			let extraParam = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm);
-			let href = $vandalTalkLink.attr('href');
+			const extraParam = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm);
+			const href = $vandalTalkLink.attr('href');
 			if (href.indexOf('?') === -1) {
 				$vandalTalkLink.attr('href', href + '?' + extraParam);
 			} else {
@@ -66,21 +66,21 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#warn');
 	dialog.addFooterLink('Give feedback', 'WT:TW');
 
-	let form = new Morebits.quickForm(Twinkle.warn.callback.evaluate);
-	let main_select = form.append({
+	const form = new Morebits.quickForm(Twinkle.warn.callback.evaluate);
+	const main_select = form.append({
 		type: 'field',
 		label: 'Choose type of warning/notice to issue',
 		tooltip: 'First choose a main warning group, then the specific warning to issue.'
 	});
 
-	let main_group = main_select.append({
+	const main_group = main_select.append({
 		type: 'select',
 		name: 'main_group',
 		tooltip: 'You can customize the default selection in your Twinkle preferences',
 		event: Twinkle.warn.callback.change_category
 	});
 
-	let defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
+	const defaultGroup = parseInt(Twinkle.getPref('defaultWarningGroup'), 10);
 	main_group.append({ type: 'option', label: 'Auto-select level (1-4)', value: 'autolevel', selected: defaultGroup === 11 });
 	main_group.append({ type: 'option', label: '1: General note', value: 'level1', selected: defaultGroup === 1 });
 	main_group.append({ type: 'option', label: '2: Caution', value: 'level2', selected: defaultGroup === 2 });
@@ -116,10 +116,10 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	});
 
 
-	let more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
+	const more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
 	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
 
-	let previewlink = document.createElement('a');
+	const previewlink = document.createElement('a');
 	$(previewlink).click(function() {
 		Twinkle.warn.callbacks.preview(result);  // |result| is defined below
 	});
@@ -137,7 +137,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	result.previewer = new Morebits.wiki.preview($(result).find('div#twinklewarn-previewbox').last()[0]);
 
 	// Potential notices for staleness and missed reverts
-	let vanrevid = Twinkle.getPrefill('vanarticlerevid');
+	const vanrevid = Twinkle.getPrefill('vanarticlerevid');
 	if (vanrevid) {
 		let message = '';
 		let query = {};
@@ -156,8 +156,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			};
 
 			new Morebits.wiki.api('Checking if you successfully reverted the page', query, function(apiobj) {
-				let rev = apiobj.getResponse().query.pages[0].revisions;
-				let revertUser = rev && rev[1].user;
+				const rev = apiobj.getResponse().query.pages[0].revisions;
+				const revertUser = rev && rev[1].user;
 				if (revertUser && revertUser !== mw.config.get('wgUserName')) {
 					message += ' Someone else reverted the page and may have already warned the user.';
 					$('#twinkle-warn-warning-messages').text('Note:' + message);
@@ -166,8 +166,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		}
 
 		// Confirm edit wasn't too old for a warning
-		let checkStale = function(vantimestamp) {
-			let revDate = new Morebits.date(vantimestamp);
+		const checkStale = function(vantimestamp) {
+			const revDate = new Morebits.date(vantimestamp);
 			if (vantimestamp && revDate.isValid()) {
 				if (revDate.add(24, 'hours').isBefore(new Date())) {
 					message += ' This edit was made more than 24 hours ago so a warning may be stale.';
@@ -189,7 +189,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 				format: 'json'
 			};
 			new Morebits.wiki.api('Grabbing the revision timestamps', query, function(apiobj) {
-				let rev = apiobj.getResponse().query.pages[0].revisions;
+				const rev = apiobj.getResponse().query.pages[0].revisions;
 				vantimestamp = rev && rev[0].timestamp;
 				checkStale(vantimestamp);
 			}).post();
@@ -198,7 +198,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 
 
 	// We must init the first choice (General Note);
-	let evt = document.createEvent('Event');
+	const evt = document.createEvent('Event');
 	evt.initEvent('change', true, true);
 	result.main_group.dispatchEvent(evt);
 };
@@ -1361,11 +1361,11 @@ Twinkle.warn.messages = {
  */
 Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyName) {
 	let result;
-	let isNumberedTemplate = templateName.match(/(1|2|3|4|4im)$/);
+	const isNumberedTemplate = templateName.match(/(1|2|3|4|4im)$/);
 	if (isNumberedTemplate) {
-		let unNumberedTemplateName = templateName.replace(/(?:1|2|3|4|4im)$/, '');
-		let level = isNumberedTemplate[0];
-		let numberedWarnings = {};
+		const unNumberedTemplateName = templateName.replace(/(?:1|2|3|4|4im)$/, '');
+		const level = isNumberedTemplate[0];
+		const numberedWarnings = {};
 		$.each(templates.levels, function(key, val) {
 			$.extend(numberedWarnings, val);
 		});
@@ -1377,7 +1377,7 @@ Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyNam
 	}
 
 	// Non-level templates can also end in a number. So check this for all templates.
-	let otherWarnings = {};
+	const otherWarnings = {};
 	$.each(templates, function(key, val) {
 		if (key !== 'levels') {
 			$.extend(otherWarnings, val);
@@ -1398,8 +1398,8 @@ Twinkle.warn.prev_reason = null;
 Twinkle.warn.talkpageObj = null;
 
 Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCategory(e) {
-	let value = e.target.value;
-	let sub_group = e.target.root.sub_group;
+	const value = e.target.value;
+	const sub_group = e.target.root.sub_group;
 	sub_group.main_group = value;
 	let old_subvalue = sub_group.value;
 	let old_subvalue_re;
@@ -1418,10 +1418,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 
 	let selected = false;
 	// worker function to create the combo box entries
-	let createEntries = function(contents, container, wrapInOptgroup, val = value) {
+	const createEntries = function(contents, container, wrapInOptgroup, val = value) {
 		// level2->2, singlewarn->''; also used to distinguish the
 		// scaled levels from singlenotice, singlewarn, and custom
-		let level = val.replace(/^\D+/g, '');
+		const level = val.replace(/^\D+/g, '');
 		// due to an apparent iOS bug, we have to add an option-group to prevent truncation of text
 		// (search WT:TW archives for "Problem selecting warnings on an iPhone")
 		if (wrapInOptgroup && $.client.profile().platform === 'iphone') {
@@ -1439,10 +1439,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			if (!!level && !itemProperties[val]) {
 				return;
 			}
-			let key = typeof itemKey === 'string' ? itemKey : itemProperties.value;
-			let template = key + level;
+			const key = typeof itemKey === 'string' ? itemKey : itemProperties.value;
+			const template = key + level;
 
-			let elem = new Morebits.quickForm.element({
+			const elem = new Morebits.quickForm.element({
 				type: 'option',
 				label: '{{' + template + '}}: ' + (level ? itemProperties[val].label : itemProperties.label),
 				value: template
@@ -1452,11 +1452,11 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			if (!selected && old_subvalue && old_subvalue_re.test(template)) {
 				elem.data.selected = selected = true;
 			}
-			let elemRendered = container.appendChild(elem.render());
+			const elemRendered = container.appendChild(elem.render());
 			$(elemRendered).data('messageData', itemProperties);
 		});
 	};
-	let createGroup = function(warnGroup, label, wrapInOptgroup, val) {
+	const createGroup = function(warnGroup, label, wrapInOptgroup, val) {
 		wrapInOptgroup = typeof wrapInOptgroup !== 'undefined' ? wrapInOptgroup : true;
 		let optgroup = new Morebits.quickForm.element({
 			type: 'optgroup',
@@ -1507,15 +1507,15 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		case 'autolevel':
 			// Check user page to determine appropriate level
 			var autolevelProc = function() {
-				let wikitext = Twinkle.warn.talkpageObj.getPageText();
+				const wikitext = Twinkle.warn.talkpageObj.getPageText();
 				// history not needed for autolevel
-				let latest = Twinkle.warn.callbacks.dateProcessing(wikitext)[0];
+				const latest = Twinkle.warn.callbacks.dateProcessing(wikitext)[0];
 				// Pseudo-params with only what's needed to parse the level i.e. no messageData
-				let params = {
+				const params = {
 					sub_group: old_subvalue,
 					article: e.target.root.article.value
 				};
-				let lvl = 'level' + Twinkle.warn.callbacks.autolevelParseWikitext(wikitext, params, latest)[1];
+				const lvl = 'level' + Twinkle.warn.callbacks.autolevelParseWikitext(wikitext, params, latest)[1];
 
 				// Identical to level1, etc. above but explicitly provides the level
 				$.each(Twinkle.warn.messages.levels, function(groupLabel, groupContents) {
@@ -1530,7 +1530,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			if (Twinkle.warn.talkpageObj) {
 				autolevelProc();
 			} else {
-				let usertalk_page = new Morebits.wiki.page('User_talk:' + mw.config.get('wgRelevantUserName'), 'Loading previous warnings');
+				const usertalk_page = new Morebits.wiki.page('User_talk:' + mw.config.get('wgRelevantUserName'), 'Loading previous warnings');
 				usertalk_page.setFollowRedirect(true, false);
 				usertalk_page.load(function(pageobj) {
 					Twinkle.warn.talkpageObj = pageobj; // Update talkpageObj
@@ -1539,7 +1539,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 					// Catch and warn if the talkpage can't load,
 					// most likely because it's a cross-namespace redirect
 					// Supersedes the typical $autolevelMessage added in autolevelParseWikitext
-					let $noTalkPageNode = $('<strong/>', {
+					const $noTalkPageNode = $('<strong/>', {
 						text: 'Unable to load user talk page; it might be a cross-namespace redirect.  Autolevel detection will not work.',
 						id: 'twinkle-warn-autolevel-message',
 						css: {color: 'red' }
@@ -1605,11 +1605,11 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 };
 
 Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSubcategory(e) {
-	let selected_main_group = e.target.form.main_group.value;
-	let selected_template = e.target.form.sub_group.value;
+	const selected_main_group = e.target.form.main_group.value;
+	const selected_template = e.target.form.sub_group.value;
 
 	// If template shouldn't have a linked article, hide the linked article label and text box
-	let hideLinkedPage = Twinkle.warn.getTemplateProperty(Twinkle.warn.messages, selected_template, 'hideLinkedPage');
+	const hideLinkedPage = Twinkle.warn.getTemplateProperty(Twinkle.warn.messages, selected_template, 'hideLinkedPage');
 	if (hideLinkedPage) {
 		e.target.form.article.value = '';
 		Morebits.quickForm.setElementVisibility(e.target.form.article.parentElement, false);
@@ -1618,7 +1618,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 	}
 
 	// If template shouldn't have an optional message, hide the optional message label and text box
-	let hideReason = Twinkle.warn.getTemplateProperty(Twinkle.warn.messages, selected_template, 'hideReason');
+	const hideReason = Twinkle.warn.getTemplateProperty(Twinkle.warn.messages, selected_template, 'hideReason');
 	if (hideReason) {
 		e.target.form.reason.value = '';
 		Morebits.quickForm.setElementVisibility(e.target.form.reason.parentElement, false);
@@ -1628,7 +1628,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 
 	// Tags that don't take a linked article, but something else (often a username).
 	// The value of each tag is the label next to the input field
-	let notLinkedArticle = {
+	const notLinkedArticle = {
 		'uw-agf-sock': 'Optional username of other account (without User:) ',
 		'uw-bite': "Username of 'bitten' user (without User:) ",
 		'uw-socksuspect': 'Username of sock master, if known (without User:) ',
@@ -1636,7 +1636,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		'uw-aiv': 'Optional username that was reported (without User:) '
 	};
 
-	let hasLevel = ['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].indexOf(selected_main_group) !== -1;
+	const hasLevel = ['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].indexOf(selected_main_group) !== -1;
 	if (hasLevel) {
 		if (notLinkedArticle[selected_template]) {
 			if (Twinkle.warn.prev_article === null) {
@@ -1707,10 +1707,10 @@ Twinkle.warn.callbacks = {
 		return text + ' ~~~~';
 	},
 	showPreview: function(form, templatename) {
-		let input = Morebits.quickForm.getInputData(form);
+		const input = Morebits.quickForm.getInputData(form);
 		// Provided on autolevel, not otherwise
 		templatename = templatename || input.sub_group;
-		let linkedarticle = input.article;
+		const linkedarticle = input.article;
 		let templatetext;
 
 		templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
@@ -1722,28 +1722,28 @@ Twinkle.warn.callbacks = {
 	preview: function(form) {
 		if (form.main_group.value === 'autolevel') {
 			// Always get a new, updated talkpage for autolevel processing
-			let usertalk_page = new Morebits.wiki.page('User_talk:' + mw.config.get('wgRelevantUserName'), 'Loading previous warnings');
+			const usertalk_page = new Morebits.wiki.page('User_talk:' + mw.config.get('wgRelevantUserName'), 'Loading previous warnings');
 			usertalk_page.setFollowRedirect(true, false);
 			// Will fail silently if the talk page is a cross-ns redirect,
 			// removal of the preview box handled when loading the menu
 			usertalk_page.load(function(pageobj) {
 				Twinkle.warn.talkpageObj = pageobj; // Update talkpageObj
 
-				let wikitext = pageobj.getPageText();
+				const wikitext = pageobj.getPageText();
 				// history not needed for autolevel
-				let latest = Twinkle.warn.callbacks.dateProcessing(wikitext)[0];
-				let params = {
+				const latest = Twinkle.warn.callbacks.dateProcessing(wikitext)[0];
+				const params = {
 					sub_group: form.sub_group.value,
 					article: form.article.value,
 					messageData: $(form.sub_group).find('option[value="' + $(form.sub_group).val() + '"]').data('messageData')
 				};
-				let template = Twinkle.warn.callbacks.autolevelParseWikitext(wikitext, params, latest)[0];
+				const template = Twinkle.warn.callbacks.autolevelParseWikitext(wikitext, params, latest)[0];
 				Twinkle.warn.callbacks.showPreview(form, template);
 
 				// If the templates have diverged, fake a change event
 				// to reload the menu with the updated pageobj
 				if (form.sub_group.value !== template) {
-					let evt = document.createEvent('Event');
+					const evt = document.createEvent('Event');
 					evt.initEvent('change', true, true);
 					form.main_group.dispatchEvent(evt);
 				}
@@ -1760,13 +1760,13 @@ Twinkle.warn.callbacks = {
 	* warning and date; history lists all prior warnings
 	*/
 	dateProcessing: function(wikitext) {
-		let history_re = /<!--\s?Template:([uU]w-.*?)\s?-->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4} \(UTC\))/g;
-		let history = {};
-		let latest = { date: new Morebits.date(0), type: '' };
+		const history_re = /<!--\s?Template:([uU]w-.*?)\s?-->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4} \(UTC\))/g;
+		const history = {};
+		const latest = { date: new Morebits.date(0), type: '' };
 		let current;
 
 		while ((current = history_re.exec(wikitext)) !== null) {
-			let template = current[1], current_date = new Morebits.date(current[2]);
+			const template = current[1], current_date = new Morebits.date(current[2]);
 			if (!(template in history) || history[template].isBefore(current_date)) {
 				history[template] = current_date;
 			}
@@ -1802,7 +1802,7 @@ Twinkle.warn.callbacks = {
 		} else if (latest.type) { // Non-numbered warning
 			// Try to leverage existing categorization of
 			// warnings, all but one are universally lowercased
-			let loweredType = /uw-multipleIPs/i.test(latest.type) ? 'uw-multipleIPs' : latest.type.toLowerCase();
+			const loweredType = /uw-multipleIPs/i.test(latest.type) ? 'uw-multipleIPs' : latest.type.toLowerCase();
 			// It would be nice to account for blocks, but in most
 			// cases the hidden message is terminal, not the sig
 			if (Twinkle.warn.messages.singlewarn[loweredType]) {
@@ -1812,12 +1812,12 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		let $autolevelMessage = $('<div/>', {id: 'twinkle-warn-autolevel-message'});
+		const $autolevelMessage = $('<div/>', {id: 'twinkle-warn-autolevel-message'});
 
 		if (isNaN(level)) { // No prior warnings found, this is the first
 			level = 1;
 		} else if (level > 4 || level < 1) { // Shouldn't happen
-			let message = 'Unable to parse previous warning level, please manually select a warning level.';
+			const message = 'Unable to parse previous warning level, please manually select a warning level.';
 			if (statelem) {
 				statelem.error(message);
 			} else {
@@ -1826,14 +1826,14 @@ Twinkle.warn.callbacks = {
 			return;
 		} else {
 			date = date || new Date();
-			let autoTimeout = new Morebits.date(latest.date.getTime()).add(parseInt(Twinkle.getPref('autolevelStaleDays'), 10), 'days');
+			const autoTimeout = new Morebits.date(latest.date.getTime()).add(parseInt(Twinkle.getPref('autolevelStaleDays'), 10), 'days');
 			if (autoTimeout.isAfter(date)) {
 				if (level === 4) {
 					level = 4;
 					// Basically indicates whether we're in the final Main evaluation or not,
 					// and thus whether we can continue or need to display the warning and link
 					if (!statelem) {
-						let $link = $('<a/>', {
+						const $link = $('<a/>', {
 							href: '#',
 							text: 'click here to open the ARV tool.',
 							css: { fontWeight: 'bold' },
@@ -1845,7 +1845,7 @@ Twinkle.warn.callbacks = {
 								$('input[value=final]').prop('checked', true); // Vandalism after final
 							}
 						});
-						let statusNode = $('<div/>', {
+						const statusNode = $('<div/>', {
 							text: mw.config.get('wgRelevantUserName') + ' recently received a level 4 warning (' + latest.type + ') so it might be better to report them instead; ',
 							css: {color: 'red' }
 						});
@@ -1877,19 +1877,19 @@ Twinkle.warn.callbacks = {
 		return [template, level];
 	},
 	main: function(pageobj) {
-		let text = pageobj.getPageText();
-		let statelem = pageobj.getStatusElement();
-		let params = pageobj.getCallbackParameters();
+		const text = pageobj.getPageText();
+		const statelem = pageobj.getStatusElement();
+		const params = pageobj.getCallbackParameters();
 		let messageData = params.messageData;
 
-		let [latest, history] = Twinkle.warn.callbacks.dateProcessing(text);
+		const [latest, history] = Twinkle.warn.callbacks.dateProcessing(text);
 
-		let now = new Morebits.date(pageobj.getLoadTime());
+		const now = new Morebits.date(pageobj.getLoadTime());
 
 		Twinkle.warn.talkpageObj = pageobj; // Update talkpageObj, just in case
 		if (params.main_group === 'autolevel') {
 			// [template, level]
-			let templateAndLevel = Twinkle.warn.callbacks.autolevelParseWikitext(text, params, latest, now, statelem);
+			const templateAndLevel = Twinkle.warn.callbacks.autolevelParseWikitext(text, params, latest, now, statelem);
 
 			// Only if there's a change from the prior display/load
 			if (params.sub_group !== templateAndLevel[0] && !confirm('Will issue a {{' + templateAndLevel[0] + '}} template to the user, okay?')) {
@@ -1919,7 +1919,7 @@ Twinkle.warn.callbacks = {
 
 		// build the edit summary
 		// Function to handle generation of summary prefix for custom templates
-		let customProcess = function(template) {
+		const customProcess = function(template) {
 			template = template.split('|')[0];
 			let prefix;
 			switch (template.substr(-1)) {
@@ -1997,10 +1997,10 @@ Twinkle.warn.callbacks = {
 		// Only check sections if there are sections or there's a chance we won't create our own
 		if (!messageData.heading && text.length) {
 			// Get all sections
-			let sections = text.match(/^(==*).+\1/gm);
+			const sections = text.match(/^(==*).+\1/gm);
 			if (sections && sections.length !== 0) {
 				// Find the index of the section header in question
-				let dateHeaderRegex = now.monthHeaderRegex();
+				const dateHeaderRegex = now.monthHeaderRegex();
 				sectionNumber = 0;
 				// Find this month's section among L2 sections, preferring the bottom-most
 				sectionExists = sections.reverse().some(function(sec, idx) {
@@ -2027,10 +2027,10 @@ Twinkle.warn.callbacks = {
 };
 
 Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
-	let userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
+	const userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
 	// reason, main_group, sub_group, article
-	let params = Morebits.quickForm.getInputData(e.target);
+	const params = Morebits.quickForm.getInputData(e.target);
 
 	// Check that a reason was filled in if uw-username was selected
 	if (params.sub_group === 'uw-username' && !params.article) {
@@ -2046,7 +2046,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	// after the form is submitted is probably preferable
 
 	// Find the selected <option> element so we can fetch the data structure
-	let $selectedEl = $(e.target.sub_group).find('option[value="' + $(e.target.sub_group).val() + '"]');
+	const $selectedEl = $(e.target.sub_group).find('option[value="' + $(e.target.sub_group).val() + '"]');
 	params.messageData = $selectedEl.data('messageData');
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
@@ -2055,7 +2055,7 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = 'Warning complete, reloading talk page in a few seconds';
 
-	let wikipedia_page = new Morebits.wiki.page(userTalkPage, 'User talk page modification');
+	const wikipedia_page = new Morebits.wiki.page(userTalkPage, 'User talk page modification');
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.setFollowRedirect(true, false);
 	wikipedia_page.load(Twinkle.warn.callbacks.main);

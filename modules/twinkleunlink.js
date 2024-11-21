@@ -23,22 +23,22 @@ Twinkle.unlink = function twinkleunlink() {
 
 // the parameter is used when invoking unlink from admin speedy
 Twinkle.unlink.callback = function(presetReason) {
-	let fileSpace = mw.config.get('wgNamespaceNumber') === 6;
+	const fileSpace = mw.config.get('wgNamespaceNumber') === 6;
 
-	let Window = new Morebits.simpleWindow(600, 440);
+	const Window = new Morebits.simpleWindow(600, 440);
 	Window.setTitle('Unlink backlinks' + (fileSpace ? ' and file usages' : ''));
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Unlink prefs', 'WP:TW/PREF#unlink');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#unlink');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	let form = new Morebits.quickForm(Twinkle.unlink.callback.evaluate);
+	const form = new Morebits.quickForm(Twinkle.unlink.callback.evaluate);
 
 	// prepend some documentation: files are commented out, while any
 	// display text is preserved for links (otherwise the link itself is used)
-	let linkTextBefore = Morebits.htmlNode('code', '[[' + (fileSpace ? ':' : '') + Morebits.pageNameNorm + '|link text]]');
-	let linkTextAfter = Morebits.htmlNode('code', 'link text');
-	let linkPlainBefore = Morebits.htmlNode('code', '[[' + Morebits.pageNameNorm + ']]');
+	const linkTextBefore = Morebits.htmlNode('code', '[[' + (fileSpace ? ':' : '') + Morebits.pageNameNorm + '|link text]]');
+	const linkTextAfter = Morebits.htmlNode('code', 'link text');
+	const linkPlainBefore = Morebits.htmlNode('code', '[[' + Morebits.pageNameNorm + ']]');
 	let linkPlainAfter;
 	if (fileSpace) {
 		linkPlainAfter = Morebits.htmlNode('code', '<!-- [[' + Morebits.pageNameNorm + ']] -->');
@@ -66,7 +66,7 @@ Twinkle.unlink.callback = function(presetReason) {
 		size: 60
 	});
 
-	let query = {
+	const query = {
 		action: 'query',
 		list: 'backlinks',
 		bltitle: mw.config.get('wgPageName'),
@@ -83,11 +83,11 @@ Twinkle.unlink.callback = function(presetReason) {
 	} else {
 		query.blfilterredir = 'nonredirects';
 	}
-	let wikipedia_api = new Morebits.wiki.api('Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks);
+	const wikipedia_api = new Morebits.wiki.api('Grabbing backlinks', query, Twinkle.unlink.callbacks.display.backlinks);
 	wikipedia_api.params = { form: form, Window: Window, image: fileSpace };
 	wikipedia_api.post();
 
-	let root = document.createElement('div');
+	const root = document.createElement('div');
 	root.style.padding = '15px';  // just so it doesn't look broken
 	Morebits.status.init(root);
 	wikipedia_api.statelem.status('loading...');
@@ -96,8 +96,8 @@ Twinkle.unlink.callback = function(presetReason) {
 };
 
 Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event) {
-	let form = event.target;
-	let input = Morebits.quickForm.getInputData(form);
+	const form = event.target;
+	const input = Morebits.quickForm.getInputData(form);
 
 	if (!input.reason) {
 		alert('You must specify a reason for unlinking.');
@@ -106,7 +106,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 
 	input.backlinks = input.backlinks || [];
 	input.imageusage = input.imageusage || [];
-	let pages = Morebits.array.uniq(input.backlinks.concat(input.imageusage));
+	const pages = Morebits.array.uniq(input.backlinks.concat(input.imageusage));
 	if (!pages.length) {
 		alert('You must select at least one item to unlink.');
 		return;
@@ -115,13 +115,13 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
-	let unlinker = new Morebits.batchOperation('Unlinking ' + (input.backlinks.length ? 'backlinks' +
+	const unlinker = new Morebits.batchOperation('Unlinking ' + (input.backlinks.length ? 'backlinks' +
 			(input.imageusage.length ? ' and instances of file usage' : '') : 'instances of file usage'));
 	unlinker.setOption('preserveIndividualStatusLines', true);
 	unlinker.setPageList(pages);
-	let params = { reason: input.reason, unlinker: unlinker };
+	const params = { reason: input.reason, unlinker: unlinker };
 	unlinker.run(function(pageName) {
-		let wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking in page "' + pageName + '"');
+		const wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking in page "' + pageName + '"');
 		wikipedia_page.setBotEdit(true);  // unlink considered a floody operation
 		wikipedia_page.setCallbackParameters($.extend({
 			doBacklinks: input.backlinks.indexOf(pageName) !== -1,
@@ -134,12 +134,12 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 Twinkle.unlink.callbacks = {
 	display: {
 		backlinks: function twinkleunlinkCallbackDisplayBacklinks(apiobj) {
-			let response = apiobj.getResponse();
+			const response = apiobj.getResponse();
 			let havecontent = false;
 			let list, namespaces, i;
 
 			if (apiobj.params.image) {
-				let imageusage = response.query.imageusage.sort(Twinkle.sortByNamespace);
+				const imageusage = response.query.imageusage.sort(Twinkle.sortByNamespace);
 				list = [];
 				for (i = 0; i < imageusage.length; ++i) {
 					// Label made by Twinkle.generateBatchPageLinks
@@ -188,7 +188,7 @@ Twinkle.unlink.callbacks = {
 				}
 			}
 
-			let backlinks = response.query.backlinks.sort(Twinkle.sortByNamespace);
+			const backlinks = response.query.backlinks.sort(Twinkle.sortByNamespace);
 			if (backlinks.length > 0) {
 				list = [];
 				for (i = 0; i < backlinks.length; ++i) {
@@ -240,7 +240,7 @@ Twinkle.unlink.callbacks = {
 				apiobj.params.form.append({ type: 'submit' });
 			}
 
-			let result = apiobj.params.form.render();
+			const result = apiobj.params.form.render();
 			apiobj.params.Window.setContent(result);
 
 			Morebits.quickForm.getElements(result, 'backlinks').forEach(Twinkle.generateBatchPageLinks);
@@ -250,8 +250,8 @@ Twinkle.unlink.callbacks = {
 	},
 	unlinkBacklinks: function twinkleunlinkCallbackUnlinkBacklinks(pageobj) {
 		let oldtext = pageobj.getPageText();
-		let params = pageobj.getCallbackParameters();
-		let wikiPage = new Morebits.wikitext.page(oldtext);
+		const params = pageobj.getCallbackParameters();
+		const wikiPage = new Morebits.wikitext.page(oldtext);
 
 		let summaryText = '', warningString = false;
 		let text;

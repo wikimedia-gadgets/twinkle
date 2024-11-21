@@ -23,13 +23,13 @@ Twinkle.batchundelete = function twinklebatchundelete() {
 };
 
 Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
-	let Window = new Morebits.simpleWindow(600, 400);
+	const Window = new Morebits.simpleWindow(600, 400);
 	Window.setScriptName('Twinkle');
 	Window.setTitle('Batch undelete');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#batchundelete');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	let form = new Morebits.quickForm(Twinkle.batchundelete.callback.evaluate);
+	const form = new Morebits.quickForm(Twinkle.batchundelete.callback.evaluate);
 	form.append({
 		type: 'checkbox',
 		list: [
@@ -48,13 +48,13 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		size: 60
 	});
 
-	let statusdiv = document.createElement('div');
+	const statusdiv = document.createElement('div');
 	statusdiv.style.padding = '15px';  // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
 	Window.display();
 
-	let query = {
+	const query = {
 		action: 'query',
 		generator: 'links',
 		prop: 'info',
@@ -63,21 +63,21 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		gpllimit: Twinkle.getPref('batchMax'),
 		format: 'json'
 	};
-	let statelem = new Morebits.status('Grabbing list of pages');
-	let wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
-		let response = apiobj.getResponse();
+	const statelem = new Morebits.status('Grabbing list of pages');
+	const wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
+		const response = apiobj.getResponse();
 		let pages = (response.query && response.query.pages) || [];
 		pages = pages.filter(function(page) {
 			return page.missing;
 		});
-		let list = [];
+		const list = [];
 		pages.sort(Twinkle.sortByNamespace);
 		pages.forEach(function(page) {
-			let editProt = page.protection.filter(function(pr) {
+			const editProt = page.protection.filter(function(pr) {
 				return pr.type === 'create' && pr.level === 'sysop';
 			}).pop();
 
-			let title = page.title;
+			const title = page.title;
 			list.push({
 				label: title + (editProt ? ' (fully create protected' +
 					(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)') + ')' : ''),
@@ -109,7 +109,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		});
 		apiobj.params.form.append({ type: 'submit' });
 
-		let result = apiobj.params.form.render();
+		const result = apiobj.params.form.render();
 		apiobj.params.Window.setContent(result);
 
 		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
@@ -122,14 +122,14 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 Twinkle.batchundelete.callback.evaluate = function(event) {
 	Morebits.wiki.actionCompleted.notice = 'Batch undeletion is now complete';
 
-	let numProtected = Morebits.quickForm.getElements(event.target, 'pages').filter(function(element) {
+	const numProtected = Morebits.quickForm.getElements(event.target, 'pages').filter(function(element) {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
 	if (numProtected > 0 && !confirm('You are about to undelete ' + numProtected + ' fully create protected page(s). Are you sure?')) {
 		return;
 	}
 
-	let input = Morebits.quickForm.getInputData(event.target);
+	const input = Morebits.quickForm.getInputData(event.target);
 
 	if (!input.reason) {
 		alert('You need to give a reason, you cabal crony!');
@@ -143,19 +143,19 @@ Twinkle.batchundelete.callback.evaluate = function(event) {
 		return;
 	}
 
-	let pageUndeleter = new Morebits.batchOperation('Undeleting pages');
+	const pageUndeleter = new Morebits.batchOperation('Undeleting pages');
 	pageUndeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 	pageUndeleter.setOption('preserveIndividualStatusLines', true);
 	pageUndeleter.setPageList(input.pages);
 	pageUndeleter.run(function(pageName) {
-		let params = {
+		const params = {
 			page: pageName,
 			undel_talk: input.undel_talk,
 			reason: input.reason,
 			pageUndeleter: pageUndeleter
 		};
 
-		let wikipedia_page = new Morebits.wiki.page(pageName, 'Undeleting page ' + pageName);
+		const wikipedia_page = new Morebits.wiki.page(pageName, 'Undeleting page ' + pageName);
 		wikipedia_page.setCallbackParameters(params);
 		wikipedia_page.setEditSummary(input.reason);
 		wikipedia_page.setChangeTags(Twinkle.changeTags);
@@ -169,7 +169,7 @@ Twinkle.batchundelete.callbacks = {
 	// this stupid parameter name is a temporary thing until I implement an overhaul
 	// of Morebits.wiki.* callback parameters
 	doExtras: function(thingWithParameters) {
-		let params = thingWithParameters.parent ? thingWithParameters.parent.getCallbackParameters() :
+		const params = thingWithParameters.parent ? thingWithParameters.parent.getCallbackParameters() :
 			thingWithParameters.getCallbackParameters();
 		// the initial batch operation's job is to delete the page, and that has
 		// succeeded by now
@@ -178,7 +178,7 @@ Twinkle.batchundelete.callbacks = {
 		let query, wikipedia_api;
 
 		if (params.undel_talk) {
-			let talkpagename = new mw.Title(params.page).getTalkPage().getPrefixedText();
+			const talkpagename = new mw.Title(params.page).getTalkPage().getPrefixedText();
 			if (talkpagename !== params.page) {
 				query = {
 					action: 'query',
@@ -196,16 +196,16 @@ Twinkle.batchundelete.callbacks = {
 		}
 	},
 	undeleteTalk: function(apiobj) {
-		let page = apiobj.getResponse().query.pages[0];
-		let exists = !page.missing;
-		let delrevs = page.deletedrevisions && page.deletedrevisions[0].revid;
+		const page = apiobj.getResponse().query.pages[0];
+		const exists = !page.missing;
+		const delrevs = page.deletedrevisions && page.deletedrevisions[0].revid;
 
 		if (exists || !delrevs) {
 			// page exists or has no deleted revisions; forget about it
 			return;
 		}
 
-		let talkpage = new Morebits.wiki.page(apiobj.params.talkPage, 'Undeleting talk page of ' + apiobj.params.page);
+		const talkpage = new Morebits.wiki.page(apiobj.params.talkPage, 'Undeleting talk page of ' + apiobj.params.page);
 		talkpage.setEditSummary('Undeleting [[Help:Talk page|talk page]] of "' + apiobj.params.page + '"');
 		talkpage.setChangeTags(Twinkle.changeTags);
 		talkpage.undeletePage();
