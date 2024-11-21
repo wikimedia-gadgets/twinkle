@@ -129,9 +129,7 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 		letype: protType
 	}).then((data) => {
 		// don't check log entries that have already been checked (e.g. don't go into an infinite loop!)
-		const event = data.query ? $.grep(data.query.logevents, (le) => {
-			return $.inArray(le.logid, logIds);
-		})[0] : null;
+		const event = data.query ? $.grep(data.query.logevents, (le) => $.inArray(le.logid, logIds))[0] : null;
 		if (!event) {
 			// fail gracefully
 			return null;
@@ -358,10 +356,10 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'editlevel',
 					label: 'Who can edit:',
 					event: Twinkle.protect.formevents.editlevel,
-					list: Twinkle.protect.protectionLevels.filter((level) => {
+					list: Twinkle.protect.protectionLevels.filter((level) => 
 						// Filter TE outside of templates and modules
-						return isTemplate || level.value !== 'templateeditor';
-					})
+						 isTemplate || level.value !== 'templateeditor'
+					)
 				});
 				field2.append({
 					type: 'select',
@@ -392,10 +390,10 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'movelevel',
 					label: 'Who can move:',
 					event: Twinkle.protect.formevents.movelevel,
-					list: Twinkle.protect.protectionLevels.filter((level) => {
+					list: Twinkle.protect.protectionLevels.filter((level) => 
 						// Autoconfirmed is required for a move, redundant
-						return level.value !== 'autoconfirmed' && (isTemplate || level.value !== 'templateeditor');
-					})
+						 level.value !== 'autoconfirmed' && (isTemplate || level.value !== 'templateeditor')
+					)
 				});
 				field2.append({
 					type: 'select',
@@ -451,10 +449,10 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'createlevel',
 					label: 'Create protection:',
 					event: Twinkle.protect.formevents.createlevel,
-					list: Twinkle.protect.protectionLevels.filter((level) => {
+					list: Twinkle.protect.protectionLevels.filter((level) => 
 						// Filter TE always, and autoconfirmed in mainspace, redundant since WP:ACPERM
-						return level.value !== 'templateeditor' && (mw.config.get('wgNamespaceNumber') !== 0 || level.value !== 'autoconfirmed');
-					})
+						 level.value !== 'templateeditor' && (mw.config.get('wgNamespaceNumber') !== 0 || level.value !== 'autoconfirmed')
+					)
 				});
 				field2.append({
 					type: 'select',
@@ -758,10 +756,10 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
 		]
 	}
-].filter((type) => {
+].filter((type) => 
 	// Filter for templates and flaggedrevs
-	return (isTemplate || type.label !== 'Template protection') && (hasFlaggedRevs || type.label !== 'Pending changes');
-});
+	 (isTemplate || type.label !== 'Template protection') && (hasFlaggedRevs || type.label !== 'Pending changes')
+);
 
 Twinkle.protect.protectionTypesCreate = [
 	{ label: 'Unprotection', value: 'unprotect' },
@@ -1001,10 +999,10 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-move}}: other', value: 'pp-move' }
 		]
 	}
-].filter((type) => {
+].filter((type) => 
 	// Filter FlaggedRevs
-	return hasFlaggedRevs || type.label !== 'Pending changes templates';
-});
+	 hasFlaggedRevs || type.label !== 'Pending changes templates'
+);
 
 Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
 	const form = e.target.form;
@@ -1415,9 +1413,7 @@ Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallback
 			$(form.protectReason_notes_rfppRevid).parent().hide();
 		}
 	} else if (this.name === 'protectReason_notes_rfppRevid') {
-		Twinkle.protect.protectReasonAnnotations = Twinkle.protect.protectReasonAnnotations.filter((el) => {
-			return el.indexOf('[[Special:Permalink') === -1;
-		});
+		Twinkle.protect.protectReasonAnnotations = Twinkle.protect.protectReasonAnnotations.filter((el) => el.indexOf('[[Special:Permalink') === -1);
 		if (e.target.value.length) {
 			const permalink = '[[Special:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + ']]';
 			Twinkle.protect.protectReasonAnnotations.push(permalink);

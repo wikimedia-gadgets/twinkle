@@ -1900,9 +1900,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		return;
 	}
 
-	const normalizeds = values.map((value) => {
-		return Twinkle.speedy.normalizeHash[value];
-	});
+	const normalizeds = values.map((value) => Twinkle.speedy.normalizeHash[value]);
 
 	// analyse each criterion to determine whether to watch the page, prompt for summary, or notify the creator
 	let watchPage, promptForSummary;
@@ -1915,14 +1913,10 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		}
 	});
 
-	const warnusertalk = form.warnusertalk.checked && normalizeds.some((norm, index) => {
-		return Twinkle.getPref('warnUserOnSpeedyDelete').indexOf(norm) !== -1 &&
-			!(norm === 'g6' && values[index] !== 'copypaste');
-	});
+	const warnusertalk = form.warnusertalk.checked && normalizeds.some((norm, index) => Twinkle.getPref('warnUserOnSpeedyDelete').indexOf(norm) !== -1 &&
+			!(norm === 'g6' && values[index] !== 'copypaste'));
 
-	const welcomeuser = warnusertalk && normalizeds.some((norm) => {
-		return Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1;
-	});
+	const welcomeuser = warnusertalk && normalizeds.some((norm) => Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1);
 
 	const params = {
 		values: values,
@@ -1961,25 +1955,15 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 
 	// var multiple = form.multiple.checked;
 
-	const normalizeds = values.map((value) => {
-		return Twinkle.speedy.normalizeHash[value];
-	});
+	const normalizeds = values.map((value) => Twinkle.speedy.normalizeHash[value]);
 
 	// analyse each criterion to determine whether to watch the page/notify the creator
-	const watchPage = normalizeds.some((csdCriteria) => {
-		return Twinkle.getPref('watchSpeedyPages').indexOf(csdCriteria) !== -1;
-	}) && Twinkle.getPref('watchSpeedyExpiry');
+	const watchPage = normalizeds.some((csdCriteria) => Twinkle.getPref('watchSpeedyPages').indexOf(csdCriteria) !== -1) && Twinkle.getPref('watchSpeedyExpiry');
 
-	const notifyuser = form.notify.checked && normalizeds.some((norm, index) => {
-		return Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1 &&
-			!(norm === 'g6' && values[index] !== 'copypaste');
-	});
-	const welcomeuser = notifyuser && normalizeds.some((norm) => {
-		return Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1;
-	});
-	const csdlog = Twinkle.getPref('logSpeedyNominations') && normalizeds.some((norm) => {
-		return Twinkle.getPref('noLogOnSpeedyNomination').indexOf(norm) === -1;
-	});
+	const notifyuser = form.notify.checked && normalizeds.some((norm, index) => Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').indexOf(norm) !== -1 &&
+			!(norm === 'g6' && values[index] !== 'copypaste'));
+	const welcomeuser = notifyuser && normalizeds.some((norm) => Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').indexOf(norm) !== -1);
+	const csdlog = Twinkle.getPref('logSpeedyNominations') && normalizeds.some((norm) => Twinkle.getPref('noLogOnSpeedyNomination').indexOf(norm) === -1);
 
 	const params = {
 		values: values,
