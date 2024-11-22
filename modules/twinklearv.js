@@ -473,71 +473,27 @@ Twinkle.arv.callback.changeCategory = function (e) {
 Twinkle.arv.callback.evaluate = function(e) {
 	var form = e.target;
 	var reason = '';
+	var input = Morebits.quickForm.getInputData(form);
+
 	var comment = '';
 	if (form.reason) {
 		comment = form.reason.value;
 	}
 	var uid = form.uid.value;
-
 	var types;
-	switch (form.category.value) {
+
+	switch (input.category) {
 
 		// Report user for vandalism
 		case 'aiv':
 			/* falls through */
 		default:
-			types = form.getChecked('arvtype');
-			if (!types.length && comment === '') {
+			reason = Twinkle.arv.callback.getAivReasonWikitext(input);
+
+			if (reason === null) {
 				alert('You must specify some reason');
 				return;
 			}
-
-			types = types.map(function(v) {
-				switch (v) {
-					case 'final':
-						return 'vandalism after final warning';
-					case 'postblock':
-						return 'vandalism after recent release of block';
-					case 'vandalonly':
-						return 'actions evidently indicate a vandalism-only account';
-					case 'promoonly':
-						return 'account is being used only for promotional purposes';
-					case 'spambot':
-						return 'account is evidently a spambot or a compromised account';
-					default:
-						return 'unknown reason';
-				}
-			}).join('; ');
-
-			if (form.page.value !== '') {
-				// Allow links to redirects, files, and categories
-				reason = 'On {{No redirect|:' + form.page.value + '}}';
-				if (form.badid.value !== '') {
-					reason += ' ({{diff|' + form.page.value + '|' + form.badid.value + '|' + form.goodid.value + '|diff}})';
-				}
-				reason += ':';
-			}
-
-			if (types) {
-				reason += ' ' + types;
-			}
-
-			if (comment !== '') {
-				var reasonEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(reason);
-				reason += reasonEndsInPunctuationOrBlank ? '' : '.';
-				var reasonIsBlank = reason === '';
-				reason += reasonIsBlank ? '' : ' ';
-				reason += comment;
-			}
-
-			reason = reason.trim();
-			var reasonEndsInPunctuation = /[.?!;]$/.test(reason);
-			if (!reasonEndsInPunctuation) {
-				reason += '.';
-			}
-
-			reason += ' ~~~~';
-			reason = reason.replace(/\r?\n/g, '\n*:');  // indent newlines
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
@@ -554,7 +510,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				var $aivLink = '<a target="_blank" href="/wiki/WP:AIV">WP:AIV</a>';
 
 				// check if user has already been reported
-				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(text)) {
+				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(input.uid) + '\\s*\\}\\}').test(text)) {
 					aivPage.getStatusElement().error('Report already present, will not add a new one');
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $aivLink + ':');
 					return;
@@ -566,8 +522,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 					var tb2Text = tb2Page.getPageText();
 					var tb2statelem = tb2Page.getStatusElement();
 
-					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(tb2Text)) {
-						if (confirm('The user ' + uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
+					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(input.uid) + '\\s*\\}\\}').test(tb2Text)) {
+						if (confirm('The user ' + input.uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
 							tb2statelem.info('Proceeded despite bot report');
 						} else {
 							tb2statelem.error('Report from a bot is already present, stopping');
@@ -579,9 +535,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 					}
 
 					aivPage.getStatusElement().status('Adding new report...');
-					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
+					aivPage.setEditSummary('Reporting [[Special:Contributions/' + input.uid + '|' + input.uid + ']].');
 					aivPage.setChangeTags(Twinkle.changeTags);
-					aivPage.setAppendText('\n*{{vandal|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
+					aivPage.setAppendText(Twinkle.arv.callback.buildAivReport(input));
 					aivPage.append();
 				});
 			});
@@ -810,6 +766,68 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 			break;
 	}
+};
+
+Twinkle.arv.callback.getAivReasonWikitext = function(input) {
+	var text = '';
+	var type = input.arvtype;
+
+	if (!type.length && input.reason === '') {
+		return null;
+	}
+
+	type = type.map(function(v) {
+		switch (v) {
+			case 'final':
+				return 'vandalism after final warning';
+			case 'postblock':
+				return 'vandalism after recent release of block';
+			case 'vandalonly':
+				return 'actions evidently indicate a vandalism-only account';
+			case 'promoonly':
+				return 'account is being used only for promotional purposes';
+			case 'spambot':
+				return 'account is evidently a spambot or a compromised account';
+			default:
+				return 'unknown reason';
+		}
+	}).join('; ');
+
+	if (input.page !== '') {
+		// Allow links to redirects, files, and categories
+		text = 'On {{No redirect|:' + input.page + '}}';
+		if (input.badid !== '') {
+			text += ' ({{diff|' + input.page + '|' + input.badid + '|' + input.goodid + '|diff}})';
+		}
+		text += ':';
+	}
+
+	if (type) {
+		text += ' ' + type;
+	}
+
+	if (input.reason !== '') {
+		var textEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(text);
+		text += textEndsInPunctuationOrBlank ? '' : '.';
+		var textIsBlank = text === '';
+		text += textIsBlank ? '' : ' ';
+		text += input.reason;
+	}
+
+	text = text.trim();
+	var textEndsInPunctuation = /[.?!;]$/.test(text);
+	if (!textEndsInPunctuation) {
+		text += '.';
+	}
+
+	text += ' ~~~~';
+	text = text.replace(/\r?\n/g, '\n*:');  // indent newlines
+
+	return text;
+};
+
+Twinkle.arv.callback.buildAivReport = function(input) {
+	return '\n*{{vandal|' + (/=/.test(input.uid) ? '1=' : '') + input.uid + '}} &ndash; ' + Twinkle.arv.callback.getAivReasonWikitext(input);
 };
 
 Twinkle.arv.processSock = function(params) {
