@@ -201,13 +201,11 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 		container.append({
 			type: 'radio',
 			name: 'template',
-			list: $.map(templates, (properties, template) => {
-				return {
+			list: $.map(templates, (properties, template) => ({
 					value: template,
 					label: '{{' + template + '}}: ' + properties.description + (properties.linkedArticle ? '\u00A0*' : ''),  // U+00A0 NO-BREAK SPACE
 					tooltip: properties.tooltip  // may be undefined
-				};
-			}),
+				})),
 			event: function(ev) {
 				ev.target.form.article.disabled = !templates[ev.target.value].linkedArticle;
 			}

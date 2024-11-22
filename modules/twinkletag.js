@@ -256,12 +256,8 @@ Twinkle.tag.callback = function twinkletagCallback() {
 						type: 'checkbox',
 						name: 'tags',
 						list: subgroup
-							.filter((item) => {
-								return !isRestricted(item);
-							})
-							.map((item) => {
-								return { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup };
-							})
+							.filter((item) => !isRestricted(item))
+							.map((item) => ({ value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup }))
 					});
 				});
 			});
@@ -1568,9 +1564,7 @@ Twinkle.tag.callbacks = {
 				lhlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
 			}, ((apiobj) => {
-				const pages = apiobj.getResponse().query.pages.filter((p) => {
-					return !p.missing && !!p.linkshere;
-				});
+				const pages = apiobj.getResponse().query.pages.filter((p) => !p.missing && !!p.linkshere);
 				pages.forEach((page) => {
 					let removed = false;
 					page.linkshere.concat({title: page.title}).forEach((el) => {
@@ -1789,9 +1783,7 @@ Twinkle.tag.callbacks = {
 				lhlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
 			}, ((apiobj) => {
-				const pages = apiobj.getResponse().query.pages.filter((p) => {
-					return !p.missing && !!p.linkshere;
-				});
+				const pages = apiobj.getResponse().query.pages.filter((p) => !p.missing && !!p.linkshere);
 				pages.forEach((page) => {
 					let found = false;
 					page.linkshere.forEach((el) => {
@@ -2037,9 +2029,7 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 
 	// Given an array of incompatible tags, check if we have two or more selected
 	const checkIncompatible = function(conflicts, extra) {
-		const count = conflicts.reduce((sum, tag) => {
-			return sum += params.tags.indexOf(tag) !== -1;
-		}, 0);
+		const count = conflicts.reduce((sum, tag) => sum += params.tags.indexOf(tag) !== -1, 0);
 		if (count > 1) {
 			let message = 'Please select only one of: {{' + conflicts.join('}}, {{') + '}}.';
 			message += extra ? ' ' + extra : '';

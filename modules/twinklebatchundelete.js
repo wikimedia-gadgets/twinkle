@@ -67,15 +67,11 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	const wikipedia_api = new Morebits.wiki.api('loading...', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		let pages = (response.query && response.query.pages) || [];
-		pages = pages.filter((page) => {
-			return page.missing;
-		});
+		pages = pages.filter((page) => page.missing);
 		const list = [];
 		pages.sort(Twinkle.sortByNamespace);
 		pages.forEach((page) => {
-			const editProt = page.protection.filter((pr) => {
-				return pr.type === 'create' && pr.level === 'sysop';
-			}).pop();
+			const editProt = page.protection.filter((pr) => pr.type === 'create' && pr.level === 'sysop').pop();
 
 			const title = page.title;
 			list.push({
@@ -122,9 +118,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 Twinkle.batchundelete.callback.evaluate = function(event) {
 	Morebits.wiki.actionCompleted.notice = 'Batch undeletion is now complete';
 
-	const numProtected = Morebits.quickForm.getElements(event.target, 'pages').filter((element) => {
-		return element.checked && element.nextElementSibling.style.color === 'red';
-	}).length;
+	const numProtected = Morebits.quickForm.getElements(event.target, 'pages').filter((element) => element.checked && element.nextElementSibling.style.color === 'red').length;
 	if (numProtected > 0 && !confirm('You are about to undelete ' + numProtected + ' fully create protected page(s). Are you sure?')) {
 		return;
 	}

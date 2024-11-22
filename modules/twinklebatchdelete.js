@@ -169,9 +169,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	const wikipedia_api = new Morebits.wiki.api('loading...', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		let pages = (response.query && response.query.pages) || [];
-		pages = pages.filter((page) => {
-			return !page.missing && page.imagerepository !== 'shared';
-		});
+		pages = pages.filter((page) => !page.missing && page.imagerepository !== 'shared');
 		pages.sort(Twinkle.sortByNamespace);
 		pages.forEach((page) => {
 			const metadata = [];
@@ -179,9 +177,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 				metadata.push('redirect');
 			}
 
-			const editProt = page.protection.filter((pr) => {
-				return pr.type === 'edit' && pr.level === 'sysop';
-			}).pop();
+			const editProt = page.protection.filter((pr) => pr.type === 'edit' && pr.level === 'sysop').pop();
 			if (editProt) {
 				metadata.push('fully protected' +
 				(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
@@ -231,9 +227,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			name: 'pages',
 			id: 'tw-dbatch-pages',
 			shiftClickSupport: true,
-			list: $.map(Twinkle.batchdelete.pages, (e) => {
-				return e;
-			})
+			list: $.map(Twinkle.batchdelete.pages, (e) => e)
 		});
 		form.append({ type: 'submit' });
 
@@ -265,9 +259,7 @@ Twinkle.batchdelete.generateNewPageList = function(form) {
 		name: 'pages',
 		id: 'tw-dbatch-pages',
 		shiftClickSupport: true,
-		list: $.map(Twinkle.batchdelete.pages, (e) => {
-			return e;
-		})
+		list: $.map(Twinkle.batchdelete.pages, (e) => e)
 	}).render();
 };
 
@@ -306,9 +298,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		const loadingText = '<strong id="dbatch-subpage-loading">Loading... </strong>';
 		$(e.target).after(loadingText);
 
-		const pages = $(form.pages).map((i, el) => {
-			return el.value;
-		}).get();
+		const pages = $(form.pages).map((i, el) => el.value).get();
 
 		const subpageLister = new Morebits.batchOperation();
 		subpageLister.setOption('chunkSize', Twinkle.getPref('batchChunks'));
@@ -343,9 +333,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 						metadata.push('redirect');
 					}
 
-					const editProt = page.protection.filter((pr) => {
-						return pr.type === 'edit' && pr.level === 'sysop';
-					}).pop();
+					const editProt = page.protection.filter((pr) => pr.type === 'edit' && pr.level === 'sysop').pop();
 					if (editProt) {
 						metadata.push('fully protected' +
 						(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + new Morebits.date(editProt.expiry).calendar('utc') + ' (UTC)'));
@@ -422,9 +410,7 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 
 	const form = event.target;
 
-	const numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter((index, element) => {
-		return element.checked && element.nextElementSibling.style.color === 'red';
-	}).length;
+	const numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter((index, element) => element.checked && element.nextElementSibling.style.color === 'red').length;
 	if (numProtected > 0 && !confirm('You are about to delete ' + mw.language.convertNumber(numProtected) + ' fully protected page(s). Are you sure?')) {
 		return;
 	}
@@ -572,9 +558,7 @@ Twinkle.batchdelete.callbacks = {
 	deleteRedirectsMain: function(apiobj) {
 		const response = apiobj.getResponse();
 		let pages = response.query.pages[0].redirects || [];
-		pages = pages.map((redirect) => {
-			return redirect.title;
-		});
+		pages = pages.map((redirect) => redirect.title);
 		if (!pages.length) {
 			return;
 		}
@@ -605,9 +589,7 @@ Twinkle.batchdelete.callbacks = {
 	unlinkBacklinksMain: function(apiobj) {
 		const response = apiobj.getResponse();
 		let pages = response.query.backlinks || [];
-		pages = pages.map((page) => {
-			return page.title;
-		});
+		pages = pages.map((page) => page.title);
 		if (!pages.length) {
 			return;
 		}
@@ -658,9 +640,7 @@ Twinkle.batchdelete.callbacks = {
 	unlinkImageInstancesMain: function(apiobj) {
 		const response = apiobj.getResponse();
 		let pages = response.query.imageusage || [];
-		pages = pages.map((page) => {
-			return page.title;
-		});
+		pages = pages.map((page) => page.title);
 		if (!pages.length) {
 			return;
 		}

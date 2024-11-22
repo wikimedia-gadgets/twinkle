@@ -72,9 +72,7 @@ Twinkle.deprod.callback = function() {
 				metadata.push(concerns[title]);
 			}
 
-			const editProt = page.protection.filter((pr) => {
-				return pr.type === 'edit' && pr.level === 'sysop';
-			}).pop();
+			const editProt = page.protection.filter((pr) => pr.type === 'edit' && pr.level === 'sysop').pop();
 			if (editProt) {
 				metadata.push('fully protected' +
 					(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + editProt.expiry));

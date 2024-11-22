@@ -271,9 +271,7 @@ Morebits.namespaceRegex = function(namespaces) {
 			// Namespaces are completely agnostic as to case,
 			// and a regex string is more useful/compatible than a RegExp object,
 			// so we accept any casing for any letter.
-			aliases.push(name.split('').map((char) => {
-				return Morebits.pageNameRegex(char);
-			}).join(''));
+			aliases.push(name.split('').map((char) => Morebits.pageNameRegex(char)).join(''));
 		}
 	});
 	switch (aliases.length) {
@@ -1047,9 +1045,7 @@ Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) 
  * @returns {HTMLInputElement}
  */
 Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(elementArray, value) {
-	const found = $.grep(elementArray, (el) => {
-		return el.value === value;
-	});
+	const found = $.grep(elementArray, (el) => el.value === value);
 	if (found.length > 0) {
 		return found[0];
 	}
@@ -1598,9 +1594,7 @@ Morebits.array = {
 		if (!Array.isArray(arr)) {
 			throw 'A non-array object passed to Morebits.array.uniq';
 		}
-		return arr.filter((item, idx) => {
-			return arr.indexOf(item) === idx;
-		});
+		return arr.filter((item, idx) => arr.indexOf(item) === idx);
 	},
 
 	/**
@@ -1615,9 +1609,7 @@ Morebits.array = {
 		if (!Array.isArray(arr)) {
 			throw 'A non-array object passed to Morebits.array.dups';
 		}
-		return arr.filter((item, idx) => {
-			return arr.indexOf(item) !== idx;
-		});
+		return arr.filter((item, idx) => arr.indexOf(item) !== idx);
 	},
 
 
@@ -2091,9 +2083,7 @@ Morebits.date.prototype = {
 			 * Y{1,2}(Y{2})? matches exactly 1, 2 or 4 occurrences of 'Y'
 			 */
 			/H{1,2}|h{1,2}|m{1,2}|s{1,2}|SSS|d(d{2,3})?|D{1,2}|M{1,4}|Y{1,2}(Y{2})?|A/g,
-			(match) => {
-				return replacementMap[match];
-			}
+			(match) => replacementMap[match]
 		);
 		return unbinder.rebind().replace(/\[(.*?)\]/g, '$1');
 	},
@@ -2558,9 +2548,7 @@ Morebits.wiki.api.getToken = function() {
 		type: 'csrf',
 		format: 'json'
 	});
-	return tokenApi.post().then((apiobj) => {
-		return apiobj.response.query.tokens.csrftoken;
-	});
+	return tokenApi.post().then((apiobj) => apiobj.response.query.tokens.csrftoken);
 };
 
 
@@ -3895,9 +3883,7 @@ Morebits.wiki.page = function(pageName, status) {
 		// extract protection info, to alert admins when they are about to edit a protected page
 		// Includes cascading protection
 		if (Morebits.userIsSysop) {
-			const editProt = page.protection.filter((pr) => {
-				return pr.type === 'edit' && pr.level === 'sysop';
-			}).pop();
+			const editProt = page.protection.filter((pr) => pr.type === 'edit' && pr.level === 'sysop').pop();
 			if (editProt) {
 				ctx.fullyProtected = editProt.expiry;
 			} else {
@@ -4145,9 +4131,7 @@ Morebits.wiki.page = function(pageName, status) {
 		if (!text) { // no text - content empty or inaccessible (revdelled or suppressed)
 			return false;
 		}
-		return Morebits.l10n.redirectTagAliases.some((tag) => {
-			return new RegExp('^\\s*' + tag + '\\W', 'i').test(text);
-		});
+		return Morebits.l10n.redirectTagAliases.some((tag) => new RegExp('^\\s*' + tag + '\\W', 'i').test(text));
 	};
 
 	var fnLookupCreationSuccess = function() {
@@ -4279,13 +4263,9 @@ Morebits.wiki.page = function(pageName, status) {
 		// extract protection info
 		let editprot;
 		if (action === 'undelete') {
-			editprot = response.pages[0].protection.filter((pr) => {
-				return pr.type === 'create' && pr.level === 'sysop';
-			}).pop();
+			editprot = response.pages[0].protection.filter((pr) => pr.type === 'create' && pr.level === 'sysop').pop();
 		} else if (action === 'delete' || action === 'move') {
-			editprot = response.pages[0].protection.filter((pr) => {
-				return pr.type === 'edit' && pr.level === 'sysop';
-			}).pop();
+			editprot = response.pages[0].protection.filter((pr) => pr.type === 'edit' && pr.level === 'sysop').pop();
 		}
 		if (editprot && !ctx.suppressProtectWarning &&
 			!confirm('You are about to ' + action + ' the fully protected page "' + ctx.pageName +
@@ -4633,9 +4613,7 @@ Morebits.wiki.page = function(pageName, status) {
 
 		// Default to pre-existing cascading protection if unchanged (similar to above)
 		if (ctx.protectCascade === null) {
-			ctx.protectCascade = !!prs.filter((pr) => {
-				return pr.cascade;
-			}).length;
+			ctx.protectCascade = !!prs.filter((pr) => pr.cascade).length;
 		}
 		// Warn if cascading protection being applied with an invalid protection level,
 		// which for edit protection will cause cascading to be silently stripped
@@ -5793,9 +5771,7 @@ Morebits.taskManager = function(context) {
 	this.execute = function() {
 		const self = this; // proxy for `this` for use inside functions where `this` is something else
 		this.taskDependencyMap.forEach((deps, task) => {
-			const dependencyPromisesArray = deps.map((dep) => {
-				return self.deferreds.get(dep);
-			});
+			const dependencyPromisesArray = deps.map((dep) => self.deferreds.get(dep));
 			$.when.apply(self.context, dependencyPromisesArray).then(function() {
 				const result = task.apply(self.context, arguments);
 				if (result === undefined) { // maybe the function threw, or it didn't return anything

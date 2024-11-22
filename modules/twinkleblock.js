@@ -170,9 +170,7 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 
 	Twinkle.block.isRegistered = !!userinfo.userid;
 	if (Twinkle.block.isRegistered) {
-		Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map((e) => {
-			return e.group;
-		}).indexOf('bot') !== -1;
+		Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map((e) => e.group).indexOf('bot') !== -1;
 	} else {
 		Twinkle.block.userIsBot = false;
 	}
@@ -315,9 +313,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		prior.list = [{ label: 'Prior block settings', value: 'prior', selected: true }];
 
 		// Arrays of objects are annoying to check
-		if (!blockGroup.some((bg) => {
-			return bg.label === prior.label;
-		})) {
+		if (!blockGroup.some((bg) => bg.label === prior.label)) {
 			blockGroup.push(prior);
 		}
 
@@ -333,9 +329,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		}
 	} else {
 		// But first remove any prior prior
-		blockGroup = blockGroup.filter((bg) => {
-			return bg.label !== prior.label;
-		});
+		blockGroup = blockGroup.filter((bg) => bg.label !== prior.label);
 	}
 
 	// Can be in preset or template field, so the old one in the template
@@ -521,9 +515,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 	Twinkle.block.dsinfo.then((dsinfo) => {
 		const $select = $('[name="dstopic"]');
-		const $options = $.map(dsinfo, (value, key) => {
-			return $('<option>').val(value.code).text(key).prop('label', key);
-		});
+		const $options = $.map(dsinfo, (value, key) => $('<option>').val(value.code).text(key).prop('label', key));
 		$select.append($options);
 	});
 
@@ -1547,9 +1539,7 @@ Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSee
 		new RegExp('( <!--|;) ' + 'see also ' + Twinkle.block.seeAlsos.join(' and ') + '( -->)?'), ''
 	);
 
-	Twinkle.block.seeAlsos = Twinkle.block.seeAlsos.filter((el) => {
-		return el !== this.value;
-	});
+	Twinkle.block.seeAlsos = Twinkle.block.seeAlsos.filter((el) => el !== this.value);
 
 	if (this.checked) {
 		Twinkle.block.seeAlsos.push(this.value);
@@ -1643,9 +1633,7 @@ Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, 
 		// Add any preset options; in practice, just used for prior block settings
 		if (data.restrictions) {
 			if (data.restrictions.pages && !$pageSelect.val().length) {
-				const pages = data.restrictions.pages.map((pr) => {
-					return pr.title;
-				});
+				const pages = data.restrictions.pages.map((pr) => pr.title);
 				// since page restrictions use an ajax source, we
 				// short-circuit that and just add a new option
 				pages.forEach((page) => {
@@ -1974,16 +1962,12 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 				};
 				text += '|area=' + (params.indefinite ? 'certain ' : 'from certain ');
 				if (params.pagerestrictions.length) {
-					text += 'pages (' + makeSentence(params.pagerestrictions.map((p) => {
-						return '[[:' + p + ']]';
-					}));
+					text += 'pages (' + makeSentence(params.pagerestrictions.map((p) => '[[:' + p + ']]'));
 					text += params.namespacerestrictions.length ? ') and certain ' : ')';
 				}
 				if (params.namespacerestrictions.length) {
 					// 1 => Talk, 2 => User, etc.
-					const namespaceNames = params.namespacerestrictions.map((id) => {
-						return menuFormattedNamespaces[id];
-					});
+					const namespaceNames = params.namespacerestrictions.map((id) => menuFormattedNamespaces[id]);
 					text += '[[Wikipedia:Namespace|namespaces]] (' + makeSentence(namespaceNames) + ')';
 				}
 			} else if (params.area) {
