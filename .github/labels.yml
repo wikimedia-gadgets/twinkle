@@ -18,12 +18,12 @@
   - modules/twinkleconfig.js
 "Module: diff":
   - modules/twinklediff.js
-"Module: fluff":
-  - modules/twinklefluff.js
 "Module: prod":
   - modules/twinkleprod.js
 "Module: protect":
   - modules/twinkleprotect.js
+"Module: rollback":
+  - modules/twinklerollback.js
 "Module: speedy":
   - modules/twinklespeedy.js
   - modules/twinkleimage.js
