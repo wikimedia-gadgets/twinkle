@@ -494,7 +494,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				alert('You must specify some reason');
 				return;
 			}
-			
+
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
 
