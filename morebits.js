@@ -217,7 +217,7 @@ Morebits.createHtml = function(input) {
 		if (input[i] instanceof Node) {
 			fragment.appendChild(input[i]);
 		} else {
-			$.parseHTML(Morebits.createHtml.renderWikilinks(input[i])).forEach(function(node) {
+			$.parseHTML(Morebits.createHtml.renderWikilinks(input[i])).forEach((node) => {
 				fragment.appendChild(node);
 			});
 		}
@@ -236,7 +236,7 @@ Morebits.createHtml.renderWikilinks = function (text) {
 	ub.unbind('<code>', '</code>');
 	ub.content = ub.content.replace(
 		/\[\[:?(?:([^|\]]+?)\|)?([^\]|]+?)\]\]/g,
-		function(_, target, text) {
+		(_, target, text) => {
 			if (!target) {
 				target = text;
 			}
@@ -266,12 +266,12 @@ Morebits.namespaceRegex = function(namespaces) {
 		namespaces = [namespaces];
 	}
 	let aliases = [], regex;
-	$.each(mw.config.get('wgNamespaceIds'), function(name, number) {
+	$.each(mw.config.get('wgNamespaceIds'), (name, number) => {
 		if (namespaces.indexOf(number) !== -1) {
 			// Namespaces are completely agnostic as to case,
 			// and a regex string is more useful/compatible than a RegExp object,
 			// so we accept any casing for any letter.
-			aliases.push(name.split('').map(function(char) {
+			aliases.push(name.split('').map((char) => {
 				return Morebits.pageNameRegex(char);
 			}).join(''));
 		}
@@ -603,7 +603,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 							type: 'div',
 							id: id + '_' + i + '_subgroup'
 						});
-						$.each(tmpgroup, function(idx, el) {
+						$.each(tmpgroup, (idx, el) => {
 							const newEl = $.extend({}, el);
 							if (!newEl.type) {
 								newEl.type = data.type;
@@ -679,19 +679,19 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				subnode.setAttribute('type', 'text');
 			} else {
 				subnode.setAttribute('type', 'number');
-				['min', 'max', 'step', 'list'].forEach(function(att) {
+				['min', 'max', 'step', 'list'].forEach((att) => {
 					if (data[att]) {
 						subnode.setAttribute(att, data[att]);
 					}
 				});
 			}
 
-			['value', 'size', 'placeholder', 'maxlength'].forEach(function(att) {
+			['value', 'size', 'placeholder', 'maxlength'].forEach((att) => {
 				if (data[att]) {
 					subnode.setAttribute(att, data[att]);
 				}
 			});
-			['disabled', 'required', 'readonly'].forEach(function(att) {
+			['disabled', 'required', 'readonly'].forEach((att) => {
 				if (data[att]) {
 					subnode.setAttribute(att, att);
 				}
@@ -760,7 +760,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 		case '_dyninput_row': // Private
 			node = document.createElement('div');
 
-			data.inputs.forEach(function(subdata) {
+			data.inputs.forEach((subdata) => {
 				const cell = new Morebits.quickForm.element($.extend(subdata, { type: '_dyninput_cell' }));
 				node.appendChild(cell.render());
 			});
@@ -1047,7 +1047,7 @@ Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) 
  * @returns {HTMLInputElement}
  */
 Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(elementArray, value) {
-	const found = $.grep(elementArray, function(el) {
+	const found = $.grep(elementArray, (el) => {
 		return el.value === value;
 	});
 	if (found.length > 0) {
@@ -1598,7 +1598,7 @@ Morebits.array = {
 		if (!Array.isArray(arr)) {
 			throw 'A non-array object passed to Morebits.array.uniq';
 		}
-		return arr.filter(function(item, idx) {
+		return arr.filter((item, idx) => {
 			return arr.indexOf(item) === idx;
 		});
 	},
@@ -1615,7 +1615,7 @@ Morebits.array = {
 		if (!Array.isArray(arr)) {
 			throw 'A non-array object passed to Morebits.array.dups';
 		}
-		return arr.filter(function(item, idx) {
+		return arr.filter((item, idx) => {
 			return arr.indexOf(item) !== idx;
 		});
 	},
@@ -2091,7 +2091,7 @@ Morebits.date.prototype = {
 			 * Y{1,2}(Y{2})? matches exactly 1, 2 or 4 occurrences of 'Y'
 			 */
 			/H{1,2}|h{1,2}|m{1,2}|s{1,2}|SSS|d(d{2,3})?|D{1,2}|M{1,4}|Y{1,2}(Y{2})?|A/g,
-			function(match) {
+			(match) => {
 				return replacementMap[match];
 			}
 		);
@@ -2163,7 +2163,7 @@ Morebits.date.prototype = {
 };
 
 // Allow native Date.prototype methods to be used on Morebits.date objects
-Object.getOwnPropertyNames(Date.prototype).forEach(function(func) {
+Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
 	Morebits.date.prototype[func] = function() {
 		return this._d[func].apply(this._d, Array.prototype.slice.call(arguments));
 	};
@@ -2251,7 +2251,7 @@ Morebits.wiki.actionCompleted.event = function() {
 				Morebits.wiki.actionCompleted.redirect += '?redirect=no';
 			}
 		}
-		window.setTimeout(function() {
+		window.setTimeout(() => {
 			window.location = Morebits.wiki.actionCompleted.redirect;
 		}, Morebits.wiki.actionCompleted.timeOut);
 	}
@@ -2377,7 +2377,7 @@ Morebits.wiki.api.prototype = {
 
 		++Morebits.wiki.numberOfActionsLeft;
 
-		const queryString = $.map(this.query, function(val, i) {
+		const queryString = $.map(this.query, (val, i) => {
 			if (Array.isArray(val)) {
 				return encodeURIComponent(i) + '=' + val.map(encodeURIComponent).join('|');
 			} else if (val !== undefined) {
@@ -2452,10 +2452,10 @@ Morebits.wiki.api.prototype = {
 			this.badtokenRetry = true;
 			// Get a new CSRF token and retry. If the original action needs a different
 			// type of action than CSRF, we do one pointless retry before bailing out
-			return Morebits.wiki.api.getToken().then(function(token) {
+			return Morebits.wiki.api.getToken().then((token) => {
 				this.query.token = token;
 				return this.post(callerAjaxParameters);
-			}.bind(this));
+			});
 		}
 
 		this.statelem.error(this.errorText + ' (' + this.errorCode + ')');
@@ -2506,7 +2506,7 @@ Morebits.wiki.getCachedJson = function(title) {
 		smaxage: '86400', // cache for 1 day
 		maxage: '86400' // cache for 1 day
 	};
-	return new Morebits.wiki.api('', query).post().then(function(apiobj) {
+	return new Morebits.wiki.api('', query).post().then((apiobj) => {
 		apiobj.getStatusElement().unlink();
 		const response = apiobj.getResponse();
 		const wikitext = response.query.pages[0].revisions[0].slots.main.content;
@@ -2558,7 +2558,7 @@ Morebits.wiki.api.getToken = function() {
 		type: 'csrf',
 		format: 'json'
 	});
-	return tokenApi.post().then(function(apiobj) {
+	return tokenApi.post().then((apiobj) => {
 		return apiobj.response.query.tokens.csrftoken;
 	});
 };
@@ -3895,7 +3895,7 @@ Morebits.wiki.page = function(pageName, status) {
 		// extract protection info, to alert admins when they are about to edit a protected page
 		// Includes cascading protection
 		if (Morebits.userIsSysop) {
-			const editProt = page.protection.filter(function(pr) {
+			const editProt = page.protection.filter((pr) => {
 				return pr.type === 'edit' && pr.level === 'sysop';
 			}).pop();
 			if (editProt) {
@@ -3909,7 +3909,7 @@ Morebits.wiki.page = function(pageName, status) {
 
 		const testactions = page.actions;
 		ctx.testActions = []; // was null
-		Object.keys(testactions).forEach(function(action) {
+		Object.keys(testactions).forEach((action) => {
 			if (testactions[action]) {
 				ctx.testActions.push(action);
 			}
@@ -4077,7 +4077,7 @@ Morebits.wiki.page = function(pageName, status) {
 				titles: ctx.pageName  // redirects are already resolved
 			};
 
-			const purgeApi = new Morebits.wiki.api(msg('editconflict-purging', 'Edit conflict detected, purging server cache'), purgeQuery, function() {
+			const purgeApi = new Morebits.wiki.api(msg('editconflict-purging', 'Edit conflict detected, purging server cache'), purgeQuery, (() => {
 				--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 
 				ctx.statusElement.info(msg('editconflict-retrying', 'Edit conflict detected, reapplying edit'));
@@ -4086,7 +4086,7 @@ Morebits.wiki.page = function(pageName, status) {
 				} else {
 					ctx.loadApi.post(); // reload the page and reapply the edit
 				}
-			}, ctx.statusElement);
+			}), ctx.statusElement);
 			purgeApi.post();
 
 		// check for network or server error
@@ -4097,7 +4097,7 @@ Morebits.wiki.page = function(pageName, status) {
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 
 			// wait for sometime for client to regain connectivity
-			sleep(2000).then(function() {
+			sleep(2000).then(() => {
 				ctx.saveApi.post(); // give it another go!
 			});
 
@@ -4145,7 +4145,7 @@ Morebits.wiki.page = function(pageName, status) {
 		if (!text) { // no text - content empty or inaccessible (revdelled or suppressed)
 			return false;
 		}
-		return Morebits.l10n.redirectTagAliases.some(function(tag) {
+		return Morebits.l10n.redirectTagAliases.some((tag) => {
 			return new RegExp('^\\s*' + tag + '\\W', 'i').test(text);
 		});
 	};
@@ -4279,11 +4279,11 @@ Morebits.wiki.page = function(pageName, status) {
 		// extract protection info
 		let editprot;
 		if (action === 'undelete') {
-			editprot = response.pages[0].protection.filter(function(pr) {
+			editprot = response.pages[0].protection.filter((pr) => {
 				return pr.type === 'create' && pr.level === 'sysop';
 			}).pop();
 		} else if (action === 'delete' || action === 'move') {
-			editprot = response.pages[0].protection.filter(function(pr) {
+			editprot = response.pages[0].protection.filter((pr) => {
 				return pr.type === 'edit' && pr.level === 'sysop';
 			}).pop();
 		}
@@ -4608,7 +4608,7 @@ Morebits.wiki.page = function(pageName, status) {
 		// Fetch existing protection levels
 		const prs = response.pages[0].protection;
 		let editprot, moveprot, createprot;
-		prs.forEach(function(pr) {
+		prs.forEach((pr) => {
 			// Filter out protection from cascading
 			if (pr.type === 'edit' && !pr.source) {
 				editprot = pr;
@@ -4633,7 +4633,7 @@ Morebits.wiki.page = function(pageName, status) {
 
 		// Default to pre-existing cascading protection if unchanged (similar to above)
 		if (ctx.protectCascade === null) {
-			ctx.protectCascade = !!prs.filter(function(pr) {
+			ctx.protectCascade = !!prs.filter((pr) => {
 				return pr.cascade;
 			}).length;
 		}
@@ -5206,7 +5206,7 @@ Morebits.userspaceLogger = function(logPageName) {
 		}
 		const page = new Morebits.wiki.page('User:' + mw.config.get('wgUserName') + '/' + logPageName,
 			'Adding entry to userspace log'); // make this '... to ' + logPageName ?
-		page.load(function(pageobj) {
+		page.load((pageobj) => {
 			// add blurb if log page doesn't exist or is blank
 			let text = pageobj.getPageText() || this.initialText;
 
@@ -5221,7 +5221,7 @@ Morebits.userspaceLogger = function(logPageName) {
 			pageobj.setChangeTags(this.changeTags);
 			pageobj.setCreateOption('recreate');
 			pageobj.save(def.resolve, def.reject);
-		}.bind(this));
+		});
 		return def;
 	};
 };
@@ -5707,7 +5707,7 @@ Morebits.batchOperation = function(currentAction) {
 
 		// start workers for the current chunk
 		ctx.countStarted += chunk.length;
-		chunk.forEach(function(page) {
+		chunk.forEach((page) => {
 			ctx.worker(page, thisProxy);
 		});
 	};
@@ -5780,7 +5780,7 @@ Morebits.taskManager = function(context) {
 	 */
 	this.add = function(func, deps, onFailure) {
 		this.taskDependencyMap.set(func, deps);
-		this.failureCallbackMap.set(func, onFailure || function() {});
+		this.failureCallbackMap.set(func, onFailure || (() => {}));
 		const deferred = $.Deferred();
 		this.deferreds.set(func, deferred);
 	};
@@ -5792,8 +5792,8 @@ Morebits.taskManager = function(context) {
 	 */
 	this.execute = function() {
 		const self = this; // proxy for `this` for use inside functions where `this` is something else
-		this.taskDependencyMap.forEach(function(deps, task) {
-			const dependencyPromisesArray = deps.map(function(dep) {
+		this.taskDependencyMap.forEach((deps, task) => {
+			const dependencyPromisesArray = deps.map((dep) => {
 				return self.deferreds.get(dep);
 			});
 			$.when.apply(self.context, dependencyPromisesArray).then(function() {
@@ -5869,7 +5869,7 @@ Morebits.simpleWindow = function SimpleWindow(width, height) {
 	const $widget = $(this.content).dialog('widget');
 
 	// delete the placeholder button (it's only there so the buttonpane gets created)
-	$widget.find('button').each(function(key, value) {
+	$widget.find('button').each((key, value) => {
 		value.parentNode.removeChild(value);
 	});
 
@@ -6027,7 +6027,7 @@ Morebits.simpleWindow.prototype = {
 
 		// look for submit buttons in the content, hide them, and add a proxy button to the button pane
 		const thisproxy = this;
-		$(this.content).find('input[type="submit"], button[type="submit"]').each(function(key, value) {
+		$(this.content).find('input[type="submit"], button[type="submit"]').each((key, value) => {
 			value.style.display = 'none';
 			const button = document.createElement('button');
 
@@ -6041,7 +6041,7 @@ Morebits.simpleWindow.prototype = {
 
 			button.className = value.className || 'submitButtonProxy';
 			// here is an instance of cheap coding, probably a memory-usage hit in using a closure here
-			button.addEventListener('click', function() {
+			button.addEventListener('click', () => {
 				value.click();
 			}, false);
 			thisproxy.buttons.push(button);

@@ -127,9 +127,9 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 		list: 'logevents',
 		letitle: pageName,
 		letype: protType
-	}).then(function(data) {
+	}).then((data) => {
 		// don't check log entries that have already been checked (e.g. don't go into an infinite loop!)
-		const event = data.query ? $.grep(data.query.logevents, function(le) {
+		const event = data.query ? $.grep(data.query.logevents, (le) => {
 			return $.inArray(le.logid, logIds);
 		})[0] : null;
 		if (!event) {
@@ -169,7 +169,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		earlyDecision.push(stableDeferred);
 	}
 
-	$.when.apply($, earlyDecision).done(function(protectData, stableData) {
+	$.when.apply($, earlyDecision).done((protectData, stableData) => {
 		// $.when.apply is supposed to take an unknown number of promises
 		// via an array, which it does, but the type of data returned varies.
 		// If there are two or more deferreds, it returns an array (of objects),
@@ -184,7 +184,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		// Save requested page's watched status for later in case needed when filing request
 		Twinkle.protect.watched = page.watchlistexpiry || page.watched === '';
 
-		$.each(page.protection, function(index, protection) {
+		$.each(page.protection, (index, protection) => {
 			// Don't overwrite actual page protection with cascading protection
 			if (!protection.source) {
 				current[protection.type] = {
@@ -222,9 +222,9 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		Twinkle.protect.currentProtectionLevels = current;
 
 		if (adminEditDeferred) {
-			adminEditDeferred.done(function(admin) {
+			adminEditDeferred.done((admin) => {
 				if (admin) {
-					$.each(['edit', 'move', 'create', 'stabilize', 'cascading'], function(i, type) {
+					$.each(['edit', 'move', 'create', 'stabilize', 'cascading'], (i, type) => {
 						if (Twinkle.protect.currentProtectionLevels[type]) {
 							Twinkle.protect.currentProtectionLevels[type].admin = admin;
 						}
@@ -281,7 +281,7 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 	let protectionNode = [], statusLevel = 'info';
 
 	if (currentlyProtected) {
-		$.each(Twinkle.protect.currentProtectionLevels, function(type, settings) {
+		$.each(Twinkle.protect.currentProtectionLevels, (type, settings) => {
 			let label = type === 'stabilize' ? 'Pending Changes' : Morebits.string.toUpperCaseFirstChar(type);
 
 			if (type === 'cascading') { // Covered by another page
@@ -358,7 +358,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'editlevel',
 					label: 'Who can edit:',
 					event: Twinkle.protect.formevents.editlevel,
-					list: Twinkle.protect.protectionLevels.filter(function(level) {
+					list: Twinkle.protect.protectionLevels.filter((level) => {
 						// Filter TE outside of templates and modules
 						return isTemplate || level.value !== 'templateeditor';
 					})
@@ -392,7 +392,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'movelevel',
 					label: 'Who can move:',
 					event: Twinkle.protect.formevents.movelevel,
-					list: Twinkle.protect.protectionLevels.filter(function(level) {
+					list: Twinkle.protect.protectionLevels.filter((level) => {
 						// Autoconfirmed is required for a move, redundant
 						return level.value !== 'autoconfirmed' && (isTemplate || level.value !== 'templateeditor');
 					})
@@ -451,7 +451,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'createlevel',
 					label: 'Create protection:',
 					event: Twinkle.protect.formevents.createlevel,
-					list: Twinkle.protect.protectionLevels.filter(function(level) {
+					list: Twinkle.protect.protectionLevels.filter((level) => {
 						// Filter TE always, and autoconfirmed in mainspace, redundant since WP:ACPERM
 						return level.value !== 'templateeditor' && (mw.config.get('wgNamespaceNumber') !== 0 || level.value !== 'autoconfirmed');
 					})
@@ -758,7 +758,7 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
 		]
 	}
-].filter(function(type) {
+].filter((type) => {
 	// Filter for templates and flaggedrevs
 	return (isTemplate || type.label !== 'Template protection') && (hasFlaggedRevs || type.label !== 'Pending changes');
 });
@@ -1001,7 +1001,7 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-move}}: other', value: 'pp-move' }
 		]
 	}
-].filter(function(type) {
+].filter((type) => {
 	// Filter FlaggedRevs
 	return hasFlaggedRevs || type.label !== 'Pending changes templates';
 });
@@ -1204,7 +1204,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				}
 
 				thispage.setWatchlist(Twinkle.getPref('watchProtectedPages'));
-				thispage.stabilize(allDone, function(error) {
+				thispage.stabilize(allDone, (error) => {
 					if (error.errorCode === 'stabilize_denied') { // [[phab:T234743]]
 						thispage.getStatusElement().error('Failed trying to modify pending changes settings, likely due to a mediawiki bug. Other actions (tagging or regular protection) may have taken place. Please reload the page and try again.');
 					}
@@ -1287,7 +1287,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					typename = 'create protection';
 					break;
 				case 'unprotect':
-					var admins = $.map(Twinkle.protect.currentProtectionLevels, function(pl) {
+					var admins = $.map(Twinkle.protect.currentProtectionLevels, (pl) => {
 						if (!pl.admin || Twinkle.protect.trustedBots.indexOf(pl.admin) !== -1) {
 							return null;
 						}
@@ -1415,7 +1415,7 @@ Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallback
 			$(form.protectReason_notes_rfppRevid).parent().hide();
 		}
 	} else if (this.name === 'protectReason_notes_rfppRevid') {
-		Twinkle.protect.protectReasonAnnotations = Twinkle.protect.protectReasonAnnotations.filter(function(el) {
+		Twinkle.protect.protectReasonAnnotations = Twinkle.protect.protectReasonAnnotations.filter((el) => {
 			return el.indexOf('[[Special:Permalink') === -1;
 		});
 		if (e.target.value.length) {
@@ -1516,7 +1516,7 @@ Twinkle.protect.callbacks = {
 	fileRequest: function(rppPage) {
 
 		const rppPage2 = new Morebits.wiki.page('Wikipedia:Requests for page protection/Decrease', 'Loading requests pages');
-		rppPage2.load(function() {
+		rppPage2.load(() => {
 			const params = rppPage.getCallbackParameters();
 			let text = rppPage.getPageText();
 			const statusElement = rppPage.getStatusElement();
@@ -1608,7 +1608,7 @@ Twinkle.protect.callbacks = {
 				rppPage.setChangeTags(Twinkle.changeTags);
 				rppPage.setPageText(text);
 				rppPage.setCreateOption('recreate');
-				rppPage.save(function() {
+				rppPage.save(() => {
 					// Watch the page being requested
 					const watchPref = Twinkle.getPref('watchRequestedPages');
 					// action=watch has no way to rely on user preferences (T262912), so we do it manually.
@@ -1644,7 +1644,7 @@ Twinkle.protect.callbacks = {
 				rppPage2.setChangeTags(Twinkle.changeTags);
 				rppPage2.setPageText(text2);
 				rppPage2.setCreateOption('recreate');
-				rppPage2.save(function() {
+				rppPage2.save(() => {
 					// Watch the page being requested
 					const watchPref = Twinkle.getPref('watchRequestedPages');
 					// action=watch has no way to rely on user preferences (T262912), so we do it manually.

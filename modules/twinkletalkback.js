@@ -63,7 +63,7 @@ Twinkle.talkback.callback = function() {
 	});
 
 	const previewlink = document.createElement('a');
-	$(previewlink).click(function() {
+	$(previewlink).click(() => {
 		Twinkle.talkback.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
@@ -179,7 +179,7 @@ Twinkle.talkback.changeTarget = function(e) {
 				}
 			});
 
-			$.each(Twinkle.talkback.noticeboards, function(value, data) {
+			$.each(Twinkle.talkback.noticeboards, (value, data) => {
 				noticeboard.append({
 					type: 'option',
 					label: data.label,

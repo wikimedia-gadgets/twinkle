@@ -52,7 +52,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 			action: 'pagetriagelist',
 			format: 'json',
 			page_id: mw.config.get('wgArticleId')
-		}).then(function(response) {
+		}).then((response) => {
 			// Figure out whether the article is marked as reviewed in PageTriage.
 			// Recent articles will have a patrol_status that we can read.
 			// For articles that have been out of the new pages feed for awhile, pages[0] will be undefined.
@@ -87,7 +87,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 		size: '30',
 		event: function twinkletagquickfilter() {
 			// flush the DOM of all existing underline spans
-			$allCheckboxDivs.find('.search-hit').each(function(i, e) {
+			$allCheckboxDivs.find('.search-hit').each((i, e) => {
 				const label_element = e.parentElement;
 				// This would convert <label>Hello <span class=search-hit>wo</span>rld</label>
 				// to <label>Hello world</label>
@@ -128,10 +128,10 @@ Twinkle.tag.callback = function twinkletagCallback() {
 			// Build sorting and lookup object flatObject, which is always
 			// needed but also used to generate the alphabetical list
 			Twinkle.tag.article.flatObject = {};
-			Object.values(Twinkle.tag.article.tagList).forEach(function (group) {
-				Object.values(group).forEach(function (subgroup) {
+			Object.values(Twinkle.tag.article.tagList).forEach((group) => {
+				Object.values(group).forEach((subgroup) => {
 					if (Array.isArray(subgroup)) {
-						subgroup.forEach(function (item) {
+						subgroup.forEach((item) => {
 							Twinkle.tag.article.flatObject[item.tag] = item;
 						});
 					} else {
@@ -197,7 +197,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 		case 'file':
 			Window.setTitle('File maintenance tagging');
 
-			$.each(Twinkle.tag.fileList, function(groupName, group) {
+			$.each(Twinkle.tag.fileList, (groupName, group) => {
 				form.append({ type: 'header', label: groupName });
 				form.append({ type: 'checkbox', name: 'tags', list: group });
 			});
@@ -247,19 +247,19 @@ Twinkle.tag.callback = function twinkletagCallback() {
 
 			// Generate the HTML form with the list of redirect tags that the user can choose to apply.
 			var i = 1;
-			$.each(Twinkle.tag.redirectList, function(groupName, group) {
+			$.each(Twinkle.tag.redirectList, (groupName, group) => {
 				form.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
 				const subdiv = form.append({ type: 'div', id: 'tagSubdiv' + i++ });
-				$.each(group, function(subgroupName, subgroup) {
+				$.each(group, (subgroupName, subgroup) => {
 					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
 					subdiv.append({
 						type: 'checkbox',
 						name: 'tags',
 						list: subgroup
-							.filter(function(item) {
+							.filter((item) => {
 								return !isRestricted(item);
 							})
-							.map(function (item) {
+							.map((item) => {
 								return { value: item.tag, label: '{{' + item.tag + '}}: ' + item.description, subgroup: item.subgroup };
 							})
 					});
@@ -288,7 +288,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 	$allHeaders = $(result).find('h5, .quickformDescription');
 	result.quickfilter.focus();  // place cursor in the quick filter field as soon as window is opened
 	result.quickfilter.autocomplete = 'off'; // disable browser suggestions
-	result.quickfilter.addEventListener('keypress', function(e) {
+	result.quickfilter.addEventListener('keypress', (e) => {
 		if (e.keyCode === 13) { // prevent enter key from accidentally submitting the form
 			e.preventDefault();
 			return false;
@@ -304,7 +304,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 
 			// All tags are HTML table elements that are direct children of .mw-parser-output,
 			// except when they are within {{multiple issues}}
-			$('.mw-parser-output').children().each(function parsehtml(i, e) {
+			$('.mw-parser-output').children().each((i, e) => {
 
 				// break out on encountering the first heading, which means we are no
 				// longer in the lead section
@@ -319,7 +319,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 				// All tags have their first class name as "box-" + template name
 				if (e.className.indexOf('box-') === 0) {
 					if (e.classList[0] === 'box-Multiple_issues') {
-						$(e).find('.ambox').each(function(idx, e) {
+						$(e).find('.ambox').each((idx, e) => {
 							if (e.classList[0].indexOf('box-') === 0) {
 								const tag = e.classList[0].slice('box-'.length).replace(/_/g, ' ');
 								Twinkle.tag.alreadyPresentTags.push(tag);
@@ -393,7 +393,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		const subdiv = container.append({ type: 'div', id: 'tagSubdiv0' });
 		const checkboxes = [];
 		const unCheckedTags = e.target.form.getUnchecked('existingTags');
-		Twinkle.tag.alreadyPresentTags.forEach(function(tag) {
+		Twinkle.tag.alreadyPresentTags.forEach((tag) => {
 			const checkbox =
 				{
 					value: tag,
@@ -416,7 +416,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		// function to iterate through the tags and create a checkbox for each one
 		const doCategoryCheckboxes = function(subdiv, subgroup) {
 			const checkboxes = [];
-			$.each(subgroup, function(k, item) {
+			$.each(subgroup, (k, item) => {
 				if (Twinkle.tag.alreadyPresentTags.indexOf(item.tag) === -1) {
 					checkboxes.push(makeCheckbox(item));
 				}
@@ -433,13 +433,13 @@ Twinkle.tag.updateSortOrder = function(e) {
 		}
 		let i = 1;
 		// go through each category and sub-category and append lists of checkboxes
-		$.each(Twinkle.tag.article.tagList, function(groupName, group) {
+		$.each(Twinkle.tag.article.tagList, (groupName, group) => {
 			container.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
 			const subdiv = container.append({ type: 'div', id: 'tagSubdiv' + i++ });
 			if (Array.isArray(group)) {
 				doCategoryCheckboxes(subdiv, group);
 			} else {
-				$.each(group, function(subgroupName, subgroup) {
+				$.each(group, (subgroupName, subgroup) => {
 					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
 					doCategoryCheckboxes(subdiv, subgroup);
 				});
@@ -454,7 +454,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		// Avoid repeatedly resorting
 		Twinkle.tag.article.alphabeticalList = Twinkle.tag.article.alphabeticalList || Object.keys(Twinkle.tag.article.flatObject).sort();
 		const checkboxes = [];
-		Twinkle.tag.article.alphabeticalList.forEach(function(tag) {
+		Twinkle.tag.article.alphabeticalList.forEach((tag) => {
 			if (Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
 				checkboxes.push(makeCheckbox(Twinkle.tag.article.flatObject[tag]));
 			}
@@ -470,7 +470,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	if (Twinkle.getPref('customTagList').length) {
 		container.append({ type: 'header', label: 'Custom tags' });
 		container.append({ type: 'checkbox', name: 'tags',
-			list: Twinkle.getPref('customTagList').map(function(el) {
+			list: Twinkle.getPref('customTagList').map((el) => {
 				el.checked = Twinkle.tag.checkedTags.indexOf(el.value) !== -1;
 				return el;
 			})
@@ -1333,7 +1333,7 @@ Twinkle.tag.fileList = {
 		{ label: '{{Vector version available}}', value: 'Vector version available' }
 	]
 };
-Twinkle.tag.fileList['Replacement tags'].forEach(function(el) {
+Twinkle.tag.fileList['Replacement tags'].forEach((el) => {
 	el.subgroup = {
 		type: 'input',
 		label: 'Replacement file:',
@@ -1407,7 +1407,7 @@ Twinkle.tag.callbacks = {
 			}
 			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
 			pageobj.setCreateOption('nocreate');
-			pageobj.save(function() {
+			pageobj.save(() => {
 				// COI: Start the discussion on the talk page (mainspace only)
 				if (params.coiReason) {
 					const coiTalkPage = new Morebits.wiki.page('Talk:' + Morebits.pageNameNorm, 'Starting discussion on talk page');
@@ -1459,7 +1459,7 @@ Twinkle.tag.callbacks = {
 					const pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English',
 						'Listing article at Wikipedia:Pages needing translation into English');
 					pntPage.setFollowRedirect(true);
-					pntPage.load(function twinkletagCallbacksTranslationListPage(pageobj) {
+					pntPage.load((pageobj) => {
 						const old_text = pageobj.getPageText();
 
 						const lang = params.translationLanguage;
@@ -1496,7 +1496,7 @@ Twinkle.tag.callbacks = {
 				}
 				// Notify the user ({{Not English}} only)
 				if (params.translationNotify) {
-					new Morebits.wiki.page(Morebits.pageNameNorm).lookupCreation(function(innerPageobj) {
+					new Morebits.wiki.page(Morebits.pageNameNorm).lookupCreation((innerPageobj) => {
 						const initialContrib = innerPageobj.getCreator();
 
 						// Disallow warning yourself
@@ -1542,7 +1542,7 @@ Twinkle.tag.callbacks = {
 			// Remove the tags from the page text, if found in its proper name,
 			// otherwise moves it to `getRedirectsFor` array earmarking it for
 			// later removal
-			params.tagsToRemove.forEach(function removeTag(tag) {
+			params.tagsToRemove.forEach((tag) => {
 				const tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
 
 				if (tag_re.test(pageText)) {
@@ -1567,13 +1567,13 @@ Twinkle.tag.callbacks = {
 				lhshow: 'redirect',
 				lhlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
-			}, function removeRedirectTag(apiobj) {
-				const pages = apiobj.getResponse().query.pages.filter(function(p) {
+			}, ((apiobj) => {
+				const pages = apiobj.getResponse().query.pages.filter((p) => {
 					return !p.missing && !!p.linkshere;
 				});
-				pages.forEach(function(page) {
+				pages.forEach((page) => {
 					let removed = false;
-					page.linkshere.concat({title: page.title}).forEach(function(el) {
+					page.linkshere.concat({title: page.title}).forEach((el) => {
 						const tag = el.title.slice(9);
 						const tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
 						if (tag_re.test(pageText)) {
@@ -1591,7 +1591,7 @@ Twinkle.tag.callbacks = {
 
 				postRemoval();
 
-			});
+			}));
 			api.post();
 
 		};
@@ -1621,7 +1621,7 @@ Twinkle.tag.callbacks = {
 					Twinkle.tag.article.flatObject[tagName].subgroup;
 				if (subgroupObj) {
 					const subgroups = Array.isArray(subgroupObj) ? subgroupObj : [ subgroupObj ];
-					subgroups.forEach(function(gr) {
+					subgroups.forEach((gr) => {
 						if (gr.parameter && (params[gr.name] || gr.required)) {
 							currentTag += '|' + gr.parameter + '=' + (params[gr.name] || '');
 						}
@@ -1697,7 +1697,7 @@ Twinkle.tag.callbacks = {
 		};
 
 		// Separate tags into groupable ones (`groupableTags`) and non-groupable ones (`tags`)
-		params.tags.forEach(function(tag) {
+		params.tags.forEach((tag) => {
 			tagRe = new RegExp('\\{\\{' + tag + '(\\||\\}\\})', 'im');
 			// regex check for preexistence of tag can be skipped if in canRemove mode
 			if (Twinkle.tag.canRemove || !tagRe.exec(pageText)) {
@@ -1723,7 +1723,7 @@ Twinkle.tag.callbacks = {
 		});
 
 		// To-be-retained existing tags that are groupable
-		params.tagsToRemain.forEach(function(tag) {
+		params.tagsToRemain.forEach((tag) => {
 			// If the tag is unknown to us, we consider it non-groupable
 			if (Twinkle.tag.article.flatObject[tag] && !Twinkle.tag.article.flatObject[tag].excludeMI) {
 				groupableExistingTags.push(tag);
@@ -1764,7 +1764,7 @@ Twinkle.tag.callbacks = {
 
 			// Reposition the tags on the page into {{multiple issues}}, if found with its
 			// proper name, else moves it to `getRedirectsFor` array to be handled later
-			groupableExistingTags.forEach(function repositionTagIntoMI(tag) {
+			groupableExistingTags.forEach((tag) => {
 				const tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?)');
 				if (tag_re.test(pageText)) {
 					tagText += tag_re.exec(pageText)[1];
@@ -1788,13 +1788,13 @@ Twinkle.tag.callbacks = {
 				lhshow: 'redirect',
 				lhlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
-			}, function replaceRedirectTag(apiobj) {
-				const pages = apiobj.getResponse().query.pages.filter(function(p) {
+			}, ((apiobj) => {
+				const pages = apiobj.getResponse().query.pages.filter((p) => {
 					return !p.missing && !!p.linkshere;
 				});
-				pages.forEach(function(page) {
+				pages.forEach((page) => {
 					let found = false;
-					page.linkshere.forEach(function(el) {
+					page.linkshere.forEach((el) => {
 						const tag = el.title.slice(9);
 						const tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?)');
 						if (tag_re.test(pageText)) {
@@ -1810,7 +1810,7 @@ Twinkle.tag.callbacks = {
 					}
 				});
 				addNewTagsToMI();
-			});
+			}));
 			api.post();
 
 		} else {
@@ -1877,7 +1877,7 @@ Twinkle.tag.callbacks = {
 			const pageTags = pageText.match(/\s*{{R(?:edirect)? .*?}}/img);
 			let oldPageTags = '';
 			if (pageTags) {
-				pageTags.forEach(function(pageTag) {
+				pageTags.forEach((pageTag) => {
 					const pageRe = new RegExp(Morebits.string.escapeRegExp(pageTag), 'img');
 					pageText = pageText.replace(pageRe, '');
 					pageTag = pageTag.trim();
@@ -1918,7 +1918,7 @@ Twinkle.tag.callbacks = {
 		if (params.tags.length) {
 
 			let tagtext = '', currentTag;
-			$.each(params.tags, function(k, tag) {
+			$.each(params.tags, (k, tag) => {
 				// when other commons-related tags are placed, remove "move to Commons" tag
 				if (['Keep local', 'Now Commons', 'Do not move to Commons'].indexOf(tag) !== -1) {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
@@ -2037,7 +2037,7 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 
 	// Given an array of incompatible tags, check if we have two or more selected
 	const checkIncompatible = function(conflicts, extra) {
-		const count = conflicts.reduce(function(sum, tag) {
+		const count = conflicts.reduce((sum, tag) => {
 			return sum += params.tags.indexOf(tag) !== -1;
 		}, 0);
 		if (count > 1) {

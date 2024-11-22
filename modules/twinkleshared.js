@@ -15,7 +15,7 @@
 Twinkle.shared = function twinkleshared() {
 	if (mw.config.get('wgNamespaceNumber') === 3 && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
 		const username = mw.config.get('wgRelevantUserName');
-		Twinkle.addPortletLink(function() {
+		Twinkle.addPortletLink(() => {
 			Twinkle.shared.callback(username);
 		}, 'Shared IP', 'twinkle-shared', 'Shared IP tagging');
 	}
@@ -72,7 +72,7 @@ Twinkle.shared.callback = function twinklesharedCallback() {
 	);
 
 	const previewlink = document.createElement('a');
-	$(previewlink).click(function() {
+	$(previewlink).click(() => {
 		Twinkle.shared.preview(result);
 	});
 	previewlink.style.cursor = 'pointer';
@@ -189,7 +189,7 @@ Twinkle.shared.preview = function(form) {
 
 		previewDialog.display();
 
-		$(submit).click(function() {
+		$(submit).click(() => {
 			previewDialog.close();
 		});
 	}

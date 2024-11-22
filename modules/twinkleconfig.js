@@ -1015,7 +1015,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		toctable.appendChild(toctitle);
 		// create item container: this is what we add stuff to
 		const tocul = document.createElement('ul');
-		toctogglelink.addEventListener('click', function twinkleconfigTocToggle() {
+		toctogglelink.addEventListener('click', () => {
 			const $tocul = $(tocul);
 			$tocul.toggle();
 			if ($tocul.find(':visible').length) {
@@ -1036,7 +1036,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		container.style.width = '100%';
 		contentform.appendChild(container);
 
-		$(Twinkle.config.sections).each(function(sectionkey, section) {
+		$(Twinkle.config.sections).each((sectionkey, section) => {
 			if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
 				return true;  // i.e. "continue" in this context
 			}
@@ -1065,7 +1065,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			let rowcount = 1;  // for row banding
 
 			// add each of the preferences to the form
-			$(section.preferences).each(function(prefkey, pref) {
+			$(section.preferences).each((prefkey, pref) => {
 				if (pref.adminOnly && !Morebits.userIsSysop) {
 					return true;  // i.e. "continue" in this context
 				}
@@ -1143,7 +1143,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						input = document.createElement('select');
 						input.setAttribute('id', pref.name);
 						input.setAttribute('name', pref.name);
-						$.each(pref.enumValues, function(enumvalue, enumdisplay) {
+						$.each(pref.enumValues, (enumvalue, enumdisplay) => {
 							const option = document.createElement('option');
 							option.setAttribute('value', enumvalue);
 							if ((gotPref === enumvalue) ||
@@ -1192,7 +1192,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						};
 						if (pref.setDisplayOrder) {
 							// add check boxes according to the given display order
-							$.each(pref.setDisplayOrder, function(itemkey, item) {
+							$.each(pref.setDisplayOrder, (itemkey, item) => {
 								worker(item, pref.setValues[item]);
 							});
 						} else {
@@ -1345,7 +1345,7 @@ Twinkle.config.listDialog.addRow = function twinkleconfigListDialogAddRow($dlgta
 			$('<td>').append(
 				$('<button>')
 					.attr('type', 'button')
-					.on('click', function () {
+					.on('click', () => {
 						$contenttr.remove();
 					})
 					.text('Remove')
@@ -1416,7 +1416,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 										.text('Add')
 										.css('min-width', '8em')
 										.attr('type', 'button')
-										.on('click', function () {
+										.on('click', () => {
 											Twinkle.config.listDialog.addRow($dlgtbody);
 										})
 								)
@@ -1426,20 +1426,20 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 			$('<button>')
 				.text('Save changes')
 				.attr('type', 'submit') // so Morebits.simpleWindow puts the button in the button pane
-				.on('click', function () {
+				.on('click', () => {
 					Twinkle.config.listDialog.save($prefbutton, $dlgtbody);
 					dialog.close();
 				}),
 			$('<button>')
 				.text('Reset')
 				.attr('type', 'submit')
-				.on('click', function () {
+				.on('click', () => {
 					Twinkle.config.listDialog.reset($prefbutton, $dlgtbody);
 				}),
 			$('<button>')
 				.text('Cancel')
 				.attr('type', 'submit')
-				.on('click', function () {
+				.on('click', () => {
 					dialog.close();
 				})
 		)[0]
@@ -1447,7 +1447,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 
 	// content rows
 	let gotRow = false;
-	$.each(curvalue, function(k, v) {
+	$.each(curvalue, (k, v) => {
 		gotRow = true;
 		Twinkle.config.listDialog.addRow($dlgtbody, v.value, v.label);
 	});
@@ -1471,7 +1471,7 @@ Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset($button,
 	$tbody.find('tr').slice(1).remove();  // all rows except the first (header) row
 	// add the new values
 	const curvalue = $button.data('value');
-	$.each(curvalue, function(k, v) {
+	$.each(curvalue, (k, v) => {
 		Twinkle.config.listDialog.addRow($tbody, v.value, v.label);
 	});
 
@@ -1482,7 +1482,7 @@ Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset($button,
 Twinkle.config.listDialog.save = function twinkleconfigListDialogSave($button, $tbody) {
 	const result = [];
 	let current = {};
-	$tbody.find('input[type="text"]').each(function(inputkey, input) {
+	$tbody.find('input[type="text"]').each((inputkey, input) => {
 		if ($(input).hasClass('twinkle-config-customlist-value')) {
 			current = { value: input.value };
 		} else {
@@ -1502,14 +1502,14 @@ Twinkle.config.resetPrefLink = function twinkleconfigResetPrefLink(e) {
 	const wantedpref = e.target.id.substring(21); // "twinkle-config-reset-" prefix is stripped
 
 	// search tactics
-	$(Twinkle.config.sections).each(function(sectionkey, section) {
+	$(Twinkle.config.sections).each((sectionkey, section) => {
 		if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
 			return true;  // continue: skip impossibilities
 		}
 
 		let foundit = false;
 
-		$(section.preferences).each(function(prefkey, pref) {
+		$(section.preferences).each((prefkey, pref) => {
 			if (pref.name !== wantedpref) {
 				return true;  // continue
 			}
@@ -1539,7 +1539,7 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
 			break;
 
 		case 'set':
-			$.each(pref.setValues, function(itemkey) {
+			$.each(pref.setValues, (itemkey) => {
 				if (document.getElementById(pref.name + '_' + itemkey)) {
 					document.getElementById(pref.name + '_' + itemkey).checked = Twinkle.defaultConfig[pref.name].indexOf(itemkey) !== -1;
 				}
@@ -1558,11 +1558,11 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
 
 Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 	// no confirmation message - the user can just refresh/close the page to abort
-	$(Twinkle.config.sections).each(function(sectionkey, section) {
+	$(Twinkle.config.sections).each((sectionkey, section) => {
 		if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
 			return true;  // continue: skip impossibilities
 		}
-		$(section.preferences).each(function(prefkey, pref) {
+		$(section.preferences).each((prefkey, pref) => {
 			if (!pref.adminOnly || Morebits.userIsSysop) {
 				Twinkle.config.resetPref(pref);
 			}
@@ -1616,13 +1616,13 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 
 	};
 
-	$(Twinkle.config.sections).each(function(sectionkey, section) {
+	$(Twinkle.config.sections).each((sectionkey, section) => {
 		if (section.adminOnly && !Morebits.userIsSysop) {
 			return;  // i.e. "continue" in this context
 		}
 
 		// reach each of the preferences from the form
-		$(section.preferences).each(function(prefkey, pref) {
+		$(section.preferences).each((prefkey, pref) => {
 			let userValue;  // = undefined
 
 			// only read form values for those prefs that have them
@@ -1650,14 +1650,14 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 							userValue = [];
 							if (pref.setDisplayOrder) {
 							// read only those keys specified in the display order
-								$.each(pref.setDisplayOrder, function(itemkey, item) {
+								$.each(pref.setDisplayOrder, (itemkey, item) => {
 									if (form[pref.name + '_' + item].checked) {
 										userValue.push(item);
 									}
 								});
 							} else {
 							// read all the keys in the list of values
-								$.each(pref.setValues, function(itemkey) {
+								$.each(pref.setValues, (itemkey) => {
 									if (form[pref.name + '_' + itemkey].checked) {
 										userValue.push(itemkey);
 									}
@@ -1721,7 +1721,7 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticebox.className = 'cdx-message cdx-message--success';
 	noticebox.style.fontSize = '100%';
 	noticebox.innerHTML = '<p><b>Your Twinkle preferences have been saved.</b> To see the changes, you will need to clear your browser cache entirely (see <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> for instructions).</p>';
-	mw.loader.using('mediawiki.htmlform.codex.styles', function() {
+	mw.loader.using('mediawiki.htmlform.codex.styles', () => {
 		Morebits.status.root.appendChild(noticebox);
 	});
 	const noticeclear = document.createElement('br');

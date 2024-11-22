@@ -64,16 +64,16 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 		format: 'json'
 	};
 	const statelem = new Morebits.status('Grabbing list of pages');
-	const wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
+	const wikipedia_api = new Morebits.wiki.api('loading...', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		let pages = (response.query && response.query.pages) || [];
-		pages = pages.filter(function(page) {
+		pages = pages.filter((page) => {
 			return page.missing;
 		});
 		const list = [];
 		pages.sort(Twinkle.sortByNamespace);
-		pages.forEach(function(page) {
-			const editProt = page.protection.filter(function(pr) {
+		pages.forEach((page) => {
+			const editProt = page.protection.filter((pr) => {
 				return pr.type === 'create' && pr.level === 'sysop';
 			}).pop();
 
@@ -114,7 +114,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 
 		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
 
-	}, statelem);
+	}), statelem);
 	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
 };
@@ -122,7 +122,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 Twinkle.batchundelete.callback.evaluate = function(event) {
 	Morebits.wiki.actionCompleted.notice = 'Batch undeletion is now complete';
 
-	const numProtected = Morebits.quickForm.getElements(event.target, 'pages').filter(function(element) {
+	const numProtected = Morebits.quickForm.getElements(event.target, 'pages').filter((element) => {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
 	if (numProtected > 0 && !confirm('You are about to undelete ' + numProtected + ' fully create protected page(s). Are you sure?')) {
@@ -147,7 +147,7 @@ Twinkle.batchundelete.callback.evaluate = function(event) {
 	pageUndeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 	pageUndeleter.setOption('preserveIndividualStatusLines', true);
 	pageUndeleter.setPageList(input.pages);
-	pageUndeleter.run(function(pageName) {
+	pageUndeleter.run((pageName) => {
 		const params = {
 			page: pageName,
 			undel_talk: input.undel_talk,

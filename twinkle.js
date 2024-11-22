@@ -279,7 +279,7 @@ Twinkle.addPortletLink = function(task, text, id, tooltip) {
 
 	// Add a click listener for the portlet link
 	if (typeof task === 'function') {
-		$(link).click(function (ev) {
+		$(link).click((ev) => {
 			task();
 			ev.preventDefault();
 		});
@@ -307,10 +307,10 @@ $.ajax({
 	url: scriptpathbefore + 'User:' + encodeURIComponent(mw.config.get('wgUserName')) + '/twinkleoptions.js' + scriptpathafter,
 	dataType: 'text'
 })
-	.fail(function () {
+	.fail(() => {
 		console.log('Could not load your Twinkle preferences, resorting to default preferences'); // eslint-disable-line no-console
 	})
-	.done(function (optionsText) {
+	.done((optionsText) => {
 
 		// Quick pass if user has no options
 		if (optionsText === '') {
@@ -340,7 +340,7 @@ $.ajax({
 			mw.notify('Could not parse your Twinkle preferences', {type: 'error'});
 		}
 	})
-	.always(function () {
+	.always(() => {
 		$(Twinkle.load);
 	});
 
@@ -377,7 +377,7 @@ Twinkle.load = function () {
 		}
 	};
 	// Initialise modules that were saved in initCallbacks array
-	Twinkle.initCallbacks.forEach(function(module) {
+	Twinkle.initCallbacks.forEach((module) => {
 		Twinkle.addInitCallback(module.func, module.name);
 	});
 
@@ -442,7 +442,7 @@ Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
 	}
 	if (!Twinkle.findSources) {
 		const parser = new Morebits.wiki.preview($(divID)[0]);
-		parser.beginRender('({{Find sources|' + Morebits.pageNameNorm + '}})', 'WP:AFD').then(function() {
+		parser.beginRender('({{Find sources|' + Morebits.pageNameNorm + '}})', 'WP:AFD').then(() => {
 			// Save for second-time around
 			Twinkle.findSources = parser.previewbox.innerHTML;
 			$(divID).removeClass('morebits-previewbox');

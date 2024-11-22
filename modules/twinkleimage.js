@@ -334,7 +334,7 @@ Twinkle.image.callbacks = {
 
 		let appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ': DI [[WP:CSD#' + params.normalized.toUpperCase() + '|CSD ' + params.normalized.toUpperCase() + ']] ({{tl|di-' + params.templatename + '}})';
 
-		['reason', 'replacement', 'source'].forEach(function(item) {
+		['reason', 'replacement', 'source'].forEach((item) => {
 			if (params[item]) {
 				extraInfo += formatParamLog(params.normalized.toUpperCase(), item, params[item]);
 				return false;

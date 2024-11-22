@@ -54,13 +54,13 @@ Twinkle.deprod.callback = function() {
 	};
 
 	const statelem = new Morebits.status('Grabbing list of pages');
-	const wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
+	const wikipedia_api = new Morebits.wiki.api('loading...', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		const pages = (response.query && response.query.pages) || [];
 		const list = [];
 		const re = /\{\{Proposed deletion/;
 		pages.sort(Twinkle.sortByNamespace);
-		pages.forEach(function(page) {
+		pages.forEach((page) => {
 			const metadata = [];
 
 			const content = page.revisions[0].content;
@@ -72,7 +72,7 @@ Twinkle.deprod.callback = function() {
 				metadata.push(concerns[title]);
 			}
 
-			const editProt = page.protection.filter(function(pr) {
+			const editProt = page.protection.filter((pr) => {
 				return pr.type === 'edit' && pr.level === 'sysop';
 			}).pop();
 			if (editProt) {
@@ -114,7 +114,7 @@ Twinkle.deprod.callback = function() {
 		const rendered = apiobj.params.form.render();
 		apiobj.params.Window.setContent(rendered);
 		Morebits.quickForm.getElements(rendered, 'pages').forEach(Twinkle.generateBatchPageLinks);
-	}, statelem);
+	}), statelem);
 
 	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
@@ -128,7 +128,7 @@ var callback_commit = function(event) {
 		batchOperation.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		batchOperation.setOption('preserveIndividualStatusLines', true);
 		batchOperation.setPageList(pages);
-		batchOperation.run(function(pageName) {
+		batchOperation.run((pageName) => {
 			const params = { page: pageName, reason: concerns[page] };
 
 			let query = {
@@ -178,7 +178,7 @@ var callback_commit = function(event) {
 	callback_deleteRedirects = function(apiobj) {
 		const response = apiobj.getResponse();
 		const redirects = response.query.pages[0].redirects || [];
-		redirects.forEach(function(rd) {
+		redirects.forEach((rd) => {
 			const title = rd.title;
 			const page = new Morebits.wiki.page(title, 'Deleting redirecting page ' + title);
 			page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"');

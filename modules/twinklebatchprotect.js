@@ -82,7 +82,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		name: 'movelevel',
 		label: 'Move protection:',
 		event: Twinkle.protect.formevents.movelevel,
-		list: Twinkle.protect.protectionLevels.filter(function(level) {
+		list: Twinkle.protect.protectionLevels.filter((level) => {
 			// Autoconfirmed is required for a move, redundant
 			return level.value !== 'autoconfirmed';
 		})
@@ -178,18 +178,18 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 	const statelem = new Morebits.status('Grabbing list of pages');
 
-	const wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
+	const wikipedia_api = new Morebits.wiki.api('loading...', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		const pages = (response.query && response.query.pages) || [];
 		const list = [];
 		pages.sort(Twinkle.sortByNamespace);
-		pages.forEach(function(page) {
+		pages.forEach((page) => {
 			const metadata = [];
 			let missing = !!page.missing, editProt;
 
 			if (missing) {
 				metadata.push('page does not exist');
-				editProt = page.protection.filter(function(pr) {
+				editProt = page.protection.filter((pr) => {
 					return pr.type === 'create' && pr.level === 'sysop';
 				}).pop();
 			} else {
@@ -204,7 +204,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 					metadata.push(mw.language.convertNumber(page.revisions[0].size) + ' bytes');
 				}
 
-				editProt = page.protection.filter(function(pr) {
+				editProt = page.protection.filter((pr) => {
 					return pr.type === 'edit' && pr.level === 'sysop';
 				}).pop();
 			}
@@ -249,7 +249,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 		Morebits.quickForm.getElements(result, 'pages').forEach(Twinkle.generateArrowLinks);
 
-	}, statelem);
+	}), statelem);
 
 	wikipedia_api.post();
 };
@@ -261,7 +261,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 
 	const form = event.target;
 
-	const numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter(function(index, element) {
+	const numProtected = $(Morebits.quickForm.getElements(form, 'pages')).filter((index, element) => {
 		return element.checked && element.nextElementSibling.style.color === 'red';
 	}).length;
 	if (numProtected > 0 && !confirm('You are about to act on ' + mw.language.convertNumber(numProtected) + ' fully protected page(s). Are you sure?')) {
@@ -287,7 +287,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 	batchOperation.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 	batchOperation.setOption('preserveIndividualStatusLines', true);
 	batchOperation.setPageList(input.pages);
-	batchOperation.run(function(pageName) {
+	batchOperation.run((pageName) => {
 		const query = {
 			action: 'query',
 			titles: pageName,

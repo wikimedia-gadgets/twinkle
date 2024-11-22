@@ -90,7 +90,7 @@ Twinkle.welcome.normal = function() {
 	}
 	// Users and IPs but not IP ranges
 	if (mw.config.exists('wgRelevantUserName') && !Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
-		Twinkle.addPortletLink(function() {
+		Twinkle.addPortletLink(() => {
 			Twinkle.welcome.callback(mw.config.get('wgRelevantUserName'));
 		}, 'Wel', 'twinkle-welcome', 'Welcome user');
 	}
@@ -159,7 +159,7 @@ Twinkle.welcome.callback = function twinklewelcomeCallback(uid) {
 	});
 
 	const previewlink = document.createElement('a');
-	$(previewlink).click(function() {
+	$(previewlink).click(() => {
 		Twinkle.welcome.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
@@ -196,12 +196,12 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 	}
 
 	const sets = Twinkle.welcome.templates[type];
-	$.each(sets, function(label, templates) {
+	$.each(sets, (label, templates) => {
 		container.append({ type: 'header', label: label });
 		container.append({
 			type: 'radio',
 			name: 'template',
-			list: $.map(templates, function(properties, template) {
+			list: $.map(templates, (properties, template) => {
 				return {
 					value: template,
 					label: '{{' + template + '}}: ' + properties.description + (properties.linkedArticle ? '\u00A0*' : ''),  // U+00A0 NO-BREAK SPACE
@@ -652,7 +652,7 @@ Twinkle.welcome.templates = {
 Twinkle.welcome.getTemplateWikitext = function(type, template, article) {
 	// the iteration is required as the type=standard has two groups
 	let properties;
-	$.each(Twinkle.welcome.templates[type], function(label, templates) {
+	$.each(Twinkle.welcome.templates[type], (label, templates) => {
 		properties = templates[template];
 		if (properties) {
 			return false; // break
@@ -692,7 +692,7 @@ Twinkle.welcome.callbacks = {
 
 		previewDialog.display();
 
-		$(submit).click(function() {
+		$(submit).click(() => {
 			previewDialog.close();
 		});
 	},
