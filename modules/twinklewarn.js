@@ -143,7 +143,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		var query = {};
 
 		// If you tried reverting, check if *you* actually reverted
-		if (!Twinkle.getPrefill('noautowarn') && Twinkle.getPrefill('vanarticle')) { // Via fluff link
+		if (!Twinkle.getPrefill('noautowarn') && Twinkle.getPrefill('vanarticle')) { // Via rollback link
 			query = {
 				action: 'query',
 				titles: Twinkle.getPrefill('vanarticle'),
@@ -177,7 +177,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		};
 
 		var vantimestamp = Twinkle.getPrefill('vantimestamp');
-		// Provided from a fluff module-based revert, no API lookup necessary
+		// If from a rollback module-based revert, no API lookup necessary
 		if (vantimestamp) {
 			checkStale(vantimestamp);
 		} else {
