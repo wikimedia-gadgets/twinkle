@@ -23,25 +23,25 @@ Twinkle.deprod = function() {
 	Twinkle.addPortletLink(Twinkle.deprod.callback, 'Deprod', 'tw-deprod', 'Delete prod pages found in this category');
 };
 
-let concerns = {};
+const concerns = {};
 
 Twinkle.deprod.callback = function() {
-	let Window = new Morebits.simpleWindow(800, 400);
+	const Window = new Morebits.simpleWindow(800, 400);
 	Window.setTitle('PROD cleaning');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Proposed deletion', 'WP:PROD');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#deprod');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	let form = new Morebits.quickForm(callback_commit);
+	const form = new Morebits.quickForm(callback_commit);
 
-	let statusdiv = document.createElement('div');
+	const statusdiv = document.createElement('div');
 	statusdiv.style.padding = '15px';  // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
 	Window.display();
 
-	let query = {
+	const query = {
 		action: 'query',
 		generator: 'categorymembers',
 		gcmtitle: mw.config.get('wgPageName'),
@@ -53,26 +53,26 @@ Twinkle.deprod.callback = function() {
 		format: 'json'
 	};
 
-	let statelem = new Morebits.status('Grabbing list of pages');
-	let wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
-		let response = apiobj.getResponse();
-		let pages = (response.query && response.query.pages) || [];
-		let list = [];
-		let re = /\{\{Proposed deletion/;
+	const statelem = new Morebits.status('Grabbing list of pages');
+	const wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
+		const response = apiobj.getResponse();
+		const pages = (response.query && response.query.pages) || [];
+		const list = [];
+		const re = /\{\{Proposed deletion/;
 		pages.sort(Twinkle.sortByNamespace);
 		pages.forEach(function(page) {
-			let metadata = [];
+			const metadata = [];
 
-			let content = page.revisions[0].content;
-			let res = re.exec(content);
-			let title = page.title;
+			const content = page.revisions[0].content;
+			const res = re.exec(content);
+			const title = page.title;
 			if (res) {
-				let parsed = Morebits.wikitext.parseTemplate(content, res.index);
+				const parsed = Morebits.wikitext.parseTemplate(content, res.index);
 				concerns[title] = parsed.parameters.concern || '';
 				metadata.push(concerns[title]);
 			}
 
-			let editProt = page.protection.filter(function(pr) {
+			const editProt = page.protection.filter(function(pr) {
 				return pr.type === 'edit' && pr.level === 'sysop';
 			}).pop();
 			if (editProt) {
@@ -111,7 +111,7 @@ Twinkle.deprod.callback = function() {
 			type: 'submit'
 		});
 
-		let rendered = apiobj.params.form.render();
+		const rendered = apiobj.params.form.render();
 		apiobj.params.Window.setContent(rendered);
 		Morebits.quickForm.getElements(rendered, 'pages').forEach(Twinkle.generateBatchPageLinks);
 	}, statelem);
@@ -121,15 +121,15 @@ Twinkle.deprod.callback = function() {
 };
 
 var callback_commit = function(event) {
-		let pages = Morebits.quickForm.getInputData(event.target).pages;
+		const pages = Morebits.quickForm.getInputData(event.target).pages;
 		Morebits.status.init(event.target);
 
-		let batchOperation = new Morebits.batchOperation('Deleting pages');
+		const batchOperation = new Morebits.batchOperation('Deleting pages');
 		batchOperation.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		batchOperation.setOption('preserveIndividualStatusLines', true);
 		batchOperation.setPageList(pages);
 		batchOperation.run(function(pageName) {
-			let params = { page: pageName, reason: concerns[page] };
+			const params = { page: pageName, reason: concerns[page] };
 
 			let query = {
 				action: 'query',
@@ -142,7 +142,7 @@ var callback_commit = function(event) {
 			wikipedia_api.params = params;
 			wikipedia_api.post();
 
-			let pageTitle = mw.Title.newFromText(pageName);
+			const pageTitle = mw.Title.newFromText(pageName);
 			// Don't delete user talk pages, limiting this to Talk: pages since only article and user pages appear in deprod
 			if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
 				pageTitle.namespace++;  // now pageTitle is the talk page title!
@@ -170,17 +170,17 @@ var callback_commit = function(event) {
 			return;
 		}
 
-		let page = new Morebits.wiki.page('Talk:' + apiobj.params.page, 'Deleting talk page of page ' + apiobj.params.page);
+		const page = new Morebits.wiki.page('Talk:' + apiobj.params.page, 'Deleting talk page of page ' + apiobj.params.page);
 		page.setEditSummary('[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page "' + apiobj.params.page + '"');
 		page.setChangeTags(Twinkle.changeTags);
 		page.deletePage();
 	},
 	callback_deleteRedirects = function(apiobj) {
-		let response = apiobj.getResponse();
-		let redirects = response.query.pages[0].redirects || [];
+		const response = apiobj.getResponse();
+		const redirects = response.query.pages[0].redirects || [];
 		redirects.forEach(function(rd) {
-			let title = rd.title;
-			let page = new Morebits.wiki.page(title, 'Deleting redirecting page ' + title);
+			const title = rd.title;
+			const page = new Morebits.wiki.page(title, 'Deleting redirecting page ' + title);
 			page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"');
 			page.setChangeTags(Twinkle.changeTags);
 			page.deletePage();

@@ -38,11 +38,11 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		// no default
 	}
 
-	let Window = new Morebits.simpleWindow(800, 410);
+	const Window = new Morebits.simpleWindow(800, 410);
 	Window.setTitle('Proposed deletion (PROD)');
 	Window.setScriptName('Twinkle');
 
-	let form = new Morebits.quickForm(Twinkle.prod.callback.evaluate);
+	const form = new Morebits.quickForm(Twinkle.prod.callback.evaluate);
 
 	if (namespace === 'article') {
 		Window.addFooterLink('Proposed deletion policy', 'WP:PROD');
@@ -51,7 +51,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		Window.addFooterLink('Proposed deletion policy', 'WP:PROD');
 	}
 
-	let field = form.append({
+	const field = form.append({
 		type: 'field',
 		label: 'PROD type',
 		id: 'prodtype_fieldset'
@@ -95,7 +95,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 
 	form.append({ type: 'submit', label: 'Propose deletion' });
 
-	let result = form.render();
+	const result = form.render();
 	Window.setContent(result);
 	Window.display();
 
@@ -105,7 +105,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	}
 
 	// Fake a change event on the first prod type radio, to initialize the type-dependent controls
-	let evt = document.createEvent('Event');
+	const evt = document.createEvent('Event');
 	evt.initEvent('change', true, true);
 	result.prodtype[0].dispatchEvent(evt);
 
@@ -114,7 +114,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 
 Twinkle.prod.callback.prodtypechanged = function(event) {
 	// prepare frame for prod type dependant controls
-	let field = new Morebits.quickForm.element({
+	const field = new Morebits.quickForm.element({
 		type: 'field',
 		label: 'Parameters',
 		name: 'parameters'
@@ -185,13 +185,13 @@ let params = {};
 
 Twinkle.prod.callbacks = {
 	checkPriors: function twinkleprodcheckPriors() {
-		let talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
+		const talk_title = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
 		// Talk page templates for PROD-able discussions
-		let blocking_templates = 'Template:Old XfD multi|Template:Old MfD|Template:Oldffdfull|' + // Common prior XfD talk page templates
+		const blocking_templates = 'Template:Old XfD multi|Template:Old MfD|Template:Oldffdfull|' + // Common prior XfD talk page templates
 			'Template:Oldpuffull|' + // Legacy prior XfD template
 			'Template:Olddelrev|' + // Prior DRV template
 			'Template:Old prod';
-		let query = {
+		const query = {
 			action: 'query',
 			titles: talk_title,
 			prop: 'templates',
@@ -199,15 +199,15 @@ Twinkle.prod.callbacks = {
 			format: 'json'
 		};
 
-		let wikipedia_api = new Morebits.wiki.api('Checking talk page for prior nominations', query);
+		const wikipedia_api = new Morebits.wiki.api('Checking talk page for prior nominations', query);
 		return wikipedia_api.post().then(function(apiobj) {
-			let statelem = apiobj.statelem;
+			const statelem = apiobj.statelem;
 
 			// Check talk page for templates indicating prior XfD or PROD
-			let templates = apiobj.getResponse().query.pages[0].templates;
-			let numTemplates = templates && templates.length;
+			const templates = apiobj.getResponse().query.pages[0].templates;
+			const numTemplates = templates && templates.length;
 			if (numTemplates) {
-				let template = templates[0].title;
+				const template = templates[0].title;
 				if (numTemplates === 1 && template === 'Template:Old prod') {
 					params.oldProdPresent = true; // Mark for reference later, when deciding if to endorse
 				// if there are multiple templates, at least one of them would be a prior xfd template
@@ -220,8 +220,8 @@ Twinkle.prod.callbacks = {
 	},
 
 	fetchCreationInfo: function twinkleprodFetchCreationInfo() {
-		let def = $.Deferred();
-		let ts = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Looking up page creator');
+		const def = $.Deferred();
+		const ts = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Looking up page creator');
 		ts.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
 		ts.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
 		ts.lookupCreation(function(pageobj) {
@@ -234,12 +234,12 @@ Twinkle.prod.callbacks = {
 	},
 
 	taggingPage: function twinkleprodTaggingPage() {
-		let def = $.Deferred();
+		const def = $.Deferred();
 
-		let wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
+		const wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
 		wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
 		wikipedia_page.load(function(pageobj) {
-			let statelem = pageobj.getStatusElement();
+			const statelem = pageobj.getStatusElement();
 
 			if (!pageobj.exists()) {
 				statelem.error("It seems that the page doesn't exist. Perhaps it has already been deleted.");
@@ -251,7 +251,7 @@ Twinkle.prod.callbacks = {
 			let text = pageobj.getPageText();
 
 			// Check for already existing deletion tags
-			let tag_re = /{{(?:article for deletion\/dated|AfDM|ffd\b)|#invoke:RfD/i;
+			const tag_re = /{{(?:article for deletion\/dated|AfDM|ffd\b)|#invoke:RfD/i;
 			if (tag_re.test(text)) {
 				statelem.warn('Page already tagged with a deletion template, aborting procedure');
 				return def.reject();
@@ -259,7 +259,7 @@ Twinkle.prod.callbacks = {
 
 			// Remove tags that become superfluous with this action
 			text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, '');
-			let prod_re = /{{\s*(?:Prod blp|Proposed deletion)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
+			const prod_re = /{{\s*(?:Prod blp|Proposed deletion)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 			let summaryText;
 
 			if (!prod_re.test(text)) {
@@ -288,11 +288,11 @@ Twinkle.prod.callbacks = {
 				}
 
 				// Insert tag after short description or any hatnotes
-				let wikipage = new Morebits.wikitext.page(text);
+				const wikipage = new Morebits.wikitext.page(text);
 				text = wikipage.insertAfterTemplates(tag + '\n', Twinkle.hatnoteRegex).getText();
 
 			} else {  // already tagged for PROD, so try endorsing it
-				let prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/i;
+				const prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/i;
 				if (prod2_re.test(text)) {
 					statelem.warn('Page already tagged with {{proposed deletion}} and {{proposed deletion endorsed}} templates, aborting procedure');
 					return def.reject();
@@ -331,16 +331,16 @@ Twinkle.prod.callbacks = {
 	},
 
 	addOldProd: function twinkleprodAddOldProd() {
-		let def = $.Deferred();
+		const def = $.Deferred();
 
 		if (params.oldProdPresent || params.blp) {
 			return def.resolve();
 		}
 
 		// Add {{Old prod}} to the talk page
-		let oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}}}\n';
-		let talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
-		let talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
+		const oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}}}\n';
+		const talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
+		const talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
 		talkpage.setPrependText(oldprodfull);
 		talkpage.setEditSummary('Adding {{Old prod}}');
 		talkpage.setChangeTags(Twinkle.changeTags);
@@ -351,7 +351,7 @@ Twinkle.prod.callbacks = {
 	},
 
 	notifyAuthor: function twinkleprodNotifyAuthor() {
-		let def = $.Deferred();
+		const def = $.Deferred();
 
 		if (!params.blp && !params.usertalk) {
 			return def.resolve();
@@ -369,9 +369,9 @@ Twinkle.prod.callbacks = {
 		} else {
 			notifyTemplate = 'proposed deletion notify';
 		}
-		let notifytext = '\n{{subst:' + notifyTemplate + '|1=' + Morebits.pageNameNorm + '|concern=' + params.reason + '}} ~~~~';
+		const notifytext = '\n{{subst:' + notifyTemplate + '|1=' + Morebits.pageNameNorm + '|concern=' + params.reason + '}} ~~~~';
 
-		let usertalkpage = new Morebits.wiki.page('User talk:' + params.initialContrib, 'Notifying initial contributor (' + params.initialContrib + ')');
+		const usertalkpage = new Morebits.wiki.page('User talk:' + params.initialContrib, 'Notifying initial contributor (' + params.initialContrib + ')');
 		usertalkpage.setAppendText(notifytext);
 		usertalkpage.setEditSummary('Notification: proposed deletion of [[:' + Morebits.pageNameNorm + ']].');
 		usertalkpage.setChangeTags(Twinkle.changeTags);
@@ -390,7 +390,7 @@ Twinkle.prod.callbacks = {
 		if (!Twinkle.getPref('logProdPages')) {
 			return $.Deferred().resolve();
 		}
-		let usl = new Morebits.userspaceLogger(Twinkle.getPref('prodLogPageName'));
+		const usl = new Morebits.userspaceLogger(Twinkle.getPref('prodLogPageName'));
 		usl.initialText =
 			"This is a log of all [[WP:PROD|proposed deletion]] tags applied or endorsed by this user using [[WP:TW|Twinkle]]'s PROD module.\n\n" +
 			'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
@@ -425,8 +425,8 @@ Twinkle.prod.callbacks = {
 };
 
 Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
-	let form = e.target;
-	let input = Morebits.quickForm.getInputData(form);
+	const form = e.target;
+	const input = Morebits.quickForm.getInputData(form);
 
 	params = {
 		usertalk: input.notify || input.prodtype === 'prodblp',
@@ -443,8 +443,8 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(form);
 
-	let tm = new Morebits.taskManager();
-	let cbs = Twinkle.prod.callbacks; // shortcut reference, cbs for `callbacks`
+	const tm = new Morebits.taskManager();
+	const cbs = Twinkle.prod.callbacks; // shortcut reference, cbs for `callbacks`
 
 	// Disable Morebits.wiki.numberOfActionsLeft system
 	Morebits.wiki.numberOfActionsLeft = 1000;

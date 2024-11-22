@@ -14,7 +14,7 @@
 
 Twinkle.shared = function twinkleshared() {
 	if (mw.config.get('wgNamespaceNumber') === 3 && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
-		let username = mw.config.get('wgRelevantUserName');
+		const username = mw.config.get('wgRelevantUserName');
 		Twinkle.addPortletLink(function() {
 			Twinkle.shared.callback(username);
 		}, 'Shared IP', 'twinkle-shared', 'Shared IP tagging');
@@ -22,16 +22,16 @@ Twinkle.shared = function twinkleshared() {
 };
 
 Twinkle.shared.callback = function twinklesharedCallback() {
-	let Window = new Morebits.simpleWindow(600, 450);
+	const Window = new Morebits.simpleWindow(600, 450);
 	Window.setTitle('Shared IP address tagging');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Shared prefs', 'WP:TW/PREF#shared');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#shared');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	let form = new Morebits.quickForm(Twinkle.shared.callback.evaluate);
+	const form = new Morebits.quickForm(Twinkle.shared.callback.evaluate);
 
-	let div = form.append({
+	const div = form.append({
 		type: 'div',
 		id: 'sharedip-templatelist',
 		className: 'morebits-scrollbox'
@@ -45,7 +45,7 @@ Twinkle.shared.callback = function twinklesharedCallback() {
 		}
 	});
 
-	let org = form.append({ type: 'field', label: 'Fill in other details (optional) and click "Submit"' });
+	const org = form.append({ type: 'field', label: 'Fill in other details (optional) and click "Submit"' });
 	org.append({
 		type: 'input',
 		name: 'organization',
@@ -71,7 +71,7 @@ Twinkle.shared.callback = function twinklesharedCallback() {
 	}
 	);
 
-	let previewlink = document.createElement('a');
+	const previewlink = document.createElement('a');
 	$(previewlink).click(function() {
 		Twinkle.shared.preview(result);
 	});
@@ -137,12 +137,12 @@ Twinkle.shared.callback.change_shared = function twinklesharedCallbackChangeShar
 
 Twinkle.shared.callbacks = {
 	main: function(pageobj) {
-		let params = pageobj.getCallbackParameters();
-		let pageText = pageobj.getPageText();
+		const params = pageobj.getCallbackParameters();
+		const pageText = pageobj.getPageText();
 		let found = false;
 
 		for (let i = 0; i < Twinkle.shared.standardList.length; i++) {
-			let tagRe = new RegExp('(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im');
+			const tagRe = new RegExp('(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im');
 			if (tagRe.exec(pageText)) {
 				Morebits.status.warn('Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting');
 				found = true;
@@ -154,9 +154,9 @@ Twinkle.shared.callbacks = {
 		}
 
 		Morebits.status.info('Info', 'Will add the shared IP address template to the top of the user\'s talk page.');
-		let text = Twinkle.shared.getTemplateWikitext(params);
+		const text = Twinkle.shared.getTemplateWikitext(params);
 
-		let summaryText = 'Added {{[[Template:' + params.template + '|' + params.template + ']]}} template.';
+		const summaryText = 'Added {{[[Template:' + params.template + '|' + params.template + ']]}} template.';
 		pageobj.setPageText(text + pageText);
 		pageobj.setEditSummary(summaryText);
 		pageobj.setChangeTags(Twinkle.changeTags);
@@ -167,22 +167,22 @@ Twinkle.shared.callbacks = {
 };
 
 Twinkle.shared.preview = function(form) {
-	let input = Morebits.quickForm.getInputData(form);
+	const input = Morebits.quickForm.getInputData(form);
 	if (input.template) {
-		let previewDialog = new Morebits.simpleWindow(700, 500);
+		const previewDialog = new Morebits.simpleWindow(700, 500);
 		previewDialog.setTitle('Shared IP template preview');
 		previewDialog.setScriptName('Add Shared IP template');
 		previewDialog.setModality(true);
 
-		let previewdiv = document.createElement('div');
+		const previewdiv = document.createElement('div');
 		previewdiv.style.marginLeft = previewdiv.style.marginRight = '0.5em';
 		previewdiv.style.fontSize = 'small';
 		previewDialog.setContent(previewdiv);
 
-		let previewer = new Morebits.wiki.preview(previewdiv);
+		const previewer = new Morebits.wiki.preview(previewdiv);
 		previewer.beginRender(Twinkle.shared.getTemplateWikitext(input), mw.config.get('wgPageName'));
 
-		let submit = document.createElement('input');
+		const submit = document.createElement('input');
 		submit.setAttribute('type', 'submit');
 		submit.setAttribute('value', 'Close');
 		previewDialog.addContent(submit);
@@ -208,7 +208,7 @@ Twinkle.shared.getTemplateWikitext = function(input) {
 };
 
 Twinkle.shared.callback.evaluate = function twinklesharedCallbackEvaluate(e) {
-	let params = Morebits.quickForm.getInputData(e.target);
+	const params = Morebits.quickForm.getInputData(e.target);
 	if (!params.template) {
 		alert('You must select a shared IP address template to use!');
 		return;
@@ -224,7 +224,7 @@ Twinkle.shared.callback.evaluate = function twinklesharedCallbackEvaluate(e) {
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = 'Tagging complete, reloading talk page in a few seconds';
 
-	let wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'User talk page modification');
+	const wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'User talk page modification');
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.shared.callbacks.main);

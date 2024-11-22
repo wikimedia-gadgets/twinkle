@@ -24,7 +24,7 @@ Twinkle.protect = function twinkleprotect() {
 };
 
 Twinkle.protect.callback = function twinkleprotectCallback() {
-	let Window = new Morebits.simpleWindow(620, 530);
+	const Window = new Morebits.simpleWindow(620, 530);
 	Window.setTitle(Morebits.userIsSysop ? 'Apply, request or tag page protection' : 'Request or tag page protection');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Protection templates', 'Template:Protection templates');
@@ -32,8 +32,8 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#protect');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	let form = new Morebits.quickForm(Twinkle.protect.callback.evaluate);
-	let actionfield = form.append({
+	const form = new Morebits.quickForm(Twinkle.protect.callback.evaluate);
+	const actionfield = form.append({
 		type: 'field',
 		label: 'Type of action'
 	});
@@ -78,12 +78,12 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 
 	form.append({ type: 'submit' });
 
-	let result = form.render();
+	const result = form.render();
 	Window.setContent(result);
 	Window.display();
 
 	// We must init the controls
-	let evt = document.createEvent('Event');
+	const evt = document.createEvent('Event');
 	evt.initEvent('change', true, true);
 	result.actiontype[0].dispatchEvent(evt);
 
@@ -104,11 +104,11 @@ Twinkle.protect.trustedBots = ['MusikBot II', 'TFA Protector Bot'];
 // FlaggedRevs extension is not registered.  Previously, this was done with
 // wgFlaggedRevsParams, but after 1.34-wmf4 it is no longer exported if empty
 // (https://gerrit.wikimedia.org/r/c/mediawiki/extensions/FlaggedRevs/+/508427)
-let hasFlaggedRevs = mw.loader.getState('ext.flaggedRevs.review') &&
+const hasFlaggedRevs = mw.loader.getState('ext.flaggedRevs.review') &&
 // FlaggedRevs only valid in some namespaces, hardcoded until [[phab:T218479]]
 (mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 4);
 // Limit template editor; a Twinkle restriction, not a site setting
-let isTemplate = mw.config.get('wgNamespaceNumber') === 10 || mw.config.get('wgNamespaceNumber') === 828;
+const isTemplate = mw.config.get('wgNamespaceNumber') === 10 || mw.config.get('wgNamespaceNumber') === 828;
 
 
 // Contains the current protection level in an object
@@ -129,7 +129,7 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 		letype: protType
 	}).then(function(data) {
 		// don't check log entries that have already been checked (e.g. don't go into an infinite loop!)
-		let event = data.query ? $.grep(data.query.logevents, function(le) {
+		const event = data.query ? $.grep(data.query.logevents, function(le) {
 			return $.inArray(le.logid, logIds);
 		})[0] : null;
 		if (!event) {
@@ -144,8 +144,8 @@ Twinkle.protect.fetchProtectingAdmin = function twinkleprotectFetchProtectingAdm
 
 Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLevel() {
 
-	let api = new mw.Api();
-	let protectDeferred = api.get({
+	const api = new mw.Api();
+	const protectDeferred = api.get({
 		format: 'json',
 		indexpageids: true,
 		action: 'query',
@@ -156,7 +156,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		inprop: 'protection|watched',
 		titles: mw.config.get('wgPageName')
 	});
-	let stableDeferred = api.get({
+	const stableDeferred = api.get({
 		format: 'json',
 		action: 'query',
 		list: 'logevents',
@@ -164,7 +164,7 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		letitle: mw.config.get('wgPageName')
 	});
 
-	let earlyDecision = [protectDeferred];
+	const earlyDecision = [protectDeferred];
 	if (hasFlaggedRevs) {
 		earlyDecision.push(stableDeferred);
 	}
@@ -177,8 +177,8 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 		// This is annoying.
 		protectData = $(protectData).toArray();
 
-		let pageid = protectData[0].query.pageids[0];
-		let page = protectData[0].query.pages[pageid];
+		const pageid = protectData[0].query.pageids[0];
+		const page = protectData[0].query.pages[pageid];
 		let current = {}, adminEditDeferred;
 
 		// Save requested page's watched status for later in case needed when filing request
@@ -239,16 +239,16 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 };
 
 Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectCallbackShowLogAndCurrentProtectInfo() {
-	let currentlyProtected = !$.isEmptyObject(Twinkle.protect.currentProtectionLevels);
+	const currentlyProtected = !$.isEmptyObject(Twinkle.protect.currentProtectionLevels);
 
 	if (Twinkle.protect.hasProtectLog || Twinkle.protect.hasStableLog) {
-		let $linkMarkup = $('<span>');
+		const $linkMarkup = $('<span>');
 
 		if (Twinkle.protect.hasProtectLog) {
 			$linkMarkup.append(
 				$('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'protect'}) + '">protection log</a>'));
 			if (!currentlyProtected || (!Twinkle.protect.currentProtectionLevels.edit && !Twinkle.protect.currentProtectionLevels.move)) {
-				let lastProtectAction = Twinkle.protect.protectLog[0];
+				const lastProtectAction = Twinkle.protect.protectLog[0];
 				if (lastProtectAction.action === 'unprotect') {
 					$linkMarkup.append(' (unprotected ' + new Morebits.date(lastProtectAction.timestamp).calendar('utc') + ')');
 				} else { // protect or modify
@@ -261,7 +261,7 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 		if (Twinkle.protect.hasStableLog) {
 			$linkMarkup.append($('<a target="_blank" href="' + mw.util.getUrl('Special:Log', {action: 'view', page: mw.config.get('wgPageName'), type: 'stable'}) + '">pending changes log</a>)'));
 			if (!currentlyProtected || !Twinkle.protect.currentProtectionLevels.stabilize) {
-				let lastStabilizeAction = Twinkle.protect.stableLog[0];
+				const lastStabilizeAction = Twinkle.protect.stableLog[0];
 				if (lastStabilizeAction.action === 'reset') {
 					$linkMarkup.append(' (reset ' + new Morebits.date(lastStabilizeAction.timestamp).calendar('utc') + ')');
 				} else { // config or modify
@@ -288,7 +288,7 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 				label = 'Cascading protection ';
 				protectionNode.push($('<b>' + label + '</b>')[0]);
 				if (settings.source) { // Should by definition exist
-					let sourceLink = '<a target="_blank" href="' + mw.util.getUrl(settings.source) + '">' + settings.source + '</a>';
+					const sourceLink = '<a target="_blank" href="' + mw.util.getUrl(settings.source) + '">' + settings.source + '</a>';
 					protectionNode.push($('<span>from ' + sourceLink + '</span>')[0]);
 				}
 			} else {
@@ -306,7 +306,7 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 				protectionNode.push(' (expires ' + new Morebits.date(settings.expiry).calendar('utc') + ') ');
 			}
 			if (settings.admin) {
-				let adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' + settings.admin + '</a>';
+				const adminLink = '<a target="_blank" href="' + mw.util.getUrl('User talk:' + settings.admin) + '">' + settings.admin + '</a>';
 				protectionNode.push($('<span>by ' + adminLink + '</span>')[0]);
 			}
 			protectionNode.push($('<span> \u2022 </span>')[0]);
@@ -597,7 +597,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 	if (e.target.values === 'protect') {
 		// fake a change event on the preset dropdown
-		let evt = document.createEvent('Event');
+		const evt = document.createEvent('Event');
 		evt.initEvent('change', true, true);
 		e.target.form.category.dispatchEvent(evt);
 
@@ -653,9 +653,9 @@ Twinkle.protect.formevents = {
 };
 
 Twinkle.protect.doCustomExpiry = function twinkleprotectDoCustomExpiry(target) {
-	let custom = prompt('Enter a custom expiry time.  \nYou can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011405" is Feb 1, 2006, at 14:05 UTC).', '');
+	const custom = prompt('Enter a custom expiry time.  \nYou can use relative times, like "1 minute" or "19 days", or absolute timestamps, "yyyymmddhhmm" (e.g. "200602011405" is Feb 1, 2006, at 14:05 UTC).', '');
 	if (custom) {
-		let option = document.createElement('option');
+		const option = document.createElement('option');
 		option.setAttribute('value', custom);
 		option.textContent = custom;
 		target.appendChild(option);
@@ -1007,9 +1007,9 @@ Twinkle.protect.protectionTags = [
 });
 
 Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
-	let form = e.target.form;
+	const form = e.target.form;
 
-	let actiontypes = form.actiontype;
+	const actiontypes = form.actiontype;
 	let actiontype;
 	for (let i = 0; i < actiontypes.length; i++) {
 		if (!actiontypes[i].checked) {
@@ -1020,7 +1020,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 	}
 
 	if (actiontype === 'protect') {  // actually protecting the page
-		let item = Twinkle.protect.protectionPresetsInfo[form.category.value];
+		const item = Twinkle.protect.protectionPresetsInfo[form.category.value];
 
 		if (mw.config.get('wgArticleId')) {
 			if (item.edit) {
@@ -1066,7 +1066,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			form.createexpiry.value = item.expiry || 'infinity';
 		}
 
-		let reasonField = actiontype === 'protect' ? form.protectReason : form.reason;
+		const reasonField = actiontype === 'protect' ? form.protectReason : form.reason;
 		if (item.reason) {
 			reasonField.value = item.reason;
 		} else {
@@ -1085,10 +1085,10 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			Twinkle.protect.formevents.tagtype({ target: form.tagtype });
 
 			// Default settings for adding <noinclude> tags to protection templates
-			let isTemplateEditorProtection = form.category.value === 'pp-template';
-			let isAFD = Morebits.pageNameNorm.startsWith('Wikipedia:Articles for deletion/');
-			let isNotTemplateNamespace = mw.config.get('wgNamespaceNumber') !== 10;
-			let isCode = ['javascript', 'css', 'sanitized-css'].includes(mw.config.get('wgPageContentModel'));
+			const isTemplateEditorProtection = form.category.value === 'pp-template';
+			const isAFD = Morebits.pageNameNorm.startsWith('Wikipedia:Articles for deletion/');
+			const isNotTemplateNamespace = mw.config.get('wgNamespaceNumber') !== 10;
+			const isCode = ['javascript', 'css', 'sanitized-css'].includes(mw.config.get('wgPageContentModel'));
 			if ((isTemplateEditorProtection || isAFD) && !isCode) {
 				form.noinclude.checked = true;
 			} else if (isCode || isNotTemplateNamespace) {
@@ -1108,8 +1108,8 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 };
 
 Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
-	let form = e.target;
-	let input = Morebits.quickForm.getInputData(form);
+	const form = e.target;
+	const input = Morebits.quickForm.getInputData(form);
 
 	let tagparams;
 	if (input.actiontype === 'tag' || (input.actiontype === 'protect' && mw.config.get('wgArticleId') && mw.config.get('wgPageContentModel') !== 'Scribunto' && mw.config.get('wgNamespaceNumber') !== 710 /* TimedText */)) {
@@ -1402,8 +1402,8 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 
 Twinkle.protect.protectReasonAnnotations = [];
 Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallbackAnnotateProtectReason(e) {
-	let form = e.target.form;
-	let protectReason = form.protectReason.value.replace(new RegExp('(?:; )?' + mw.util.escapeRegExp(Twinkle.protect.protectReasonAnnotations.join(': '))), '');
+	const form = e.target.form;
+	const protectReason = form.protectReason.value.replace(new RegExp('(?:; )?' + mw.util.escapeRegExp(Twinkle.protect.protectReasonAnnotations.join(': '))), '');
 
 	if (this.name === 'protectReason_notes_rfpp') {
 		if (this.checked) {
@@ -1419,7 +1419,7 @@ Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallback
 			return el.indexOf('[[Special:Permalink') === -1;
 		});
 		if (e.target.value.length) {
-			let permalink = '[[Special:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + ']]';
+			const permalink = '[[Special:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + ']]';
 			Twinkle.protect.protectReasonAnnotations.push(permalink);
 		}
 	}
@@ -1438,17 +1438,17 @@ Twinkle.protect.callbacks = {
 			return;
 		}
 
-		let protectedPage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
+		const protectedPage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
 		protectedPage.setCallbackParameters(tagparams);
 		protectedPage.load(Twinkle.protect.callbacks.taggingPage);
 	},
 	taggingPage: function(protectedPage) {
-		let params = protectedPage.getCallbackParameters();
+		const params = protectedPage.getCallbackParameters();
 		let text = protectedPage.getPageText();
 		let tag, summary;
 
-		let oldtag_re = /(?:\/\*)?\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*(?:\*\/)?\s*/gi;
-		let re_result = oldtag_re.exec(text);
+		const oldtag_re = /(?:\/\*)?\s*(?:<noinclude>)?\s*\{\{\s*(pp-[^{}]*?|protected|(?:t|v|s|p-|usertalk-v|usertalk-s|sb|move)protected(?:2)?|protected template|privacy protection)\s*?\}\}\s*(?:<\/noinclude>)?\s*(?:\*\/)?\s*/gi;
+		const re_result = oldtag_re.exec(text);
 		if (re_result) {
 			if (params.tag === 'none' || confirm('{{' + re_result[1] + '}} was found on the page. \nClick OK to remove it, or click Cancel to leave it there.')) {
 				text = text.replace(oldtag_re, '');
@@ -1475,7 +1475,7 @@ Twinkle.protect.callbacks = {
 					return;
 				}
 			} else {
-				let needsTagToBeCommentedOut = ['javascript', 'css', 'sanitized-css'].indexOf(protectedPage.getContentModel()) !== -1;
+				const needsTagToBeCommentedOut = ['javascript', 'css', 'sanitized-css'].indexOf(protectedPage.getContentModel()) !== -1;
 				if (needsTagToBeCommentedOut) {
 					if (params.noinclude) {
 						tag = '/* <noinclude>{{' + tag + '}}</noinclude> */';
@@ -1497,7 +1497,7 @@ Twinkle.protect.callbacks = {
 					}
 
 					// Insert tag after short description or any hatnotes
-					let wikipage = new Morebits.wikitext.page(text);
+					const wikipage = new Morebits.wikitext.page(text);
 					text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
 				}
 			}
@@ -1515,17 +1515,17 @@ Twinkle.protect.callbacks = {
 
 	fileRequest: function(rppPage) {
 
-		let rppPage2 = new Morebits.wiki.page('Wikipedia:Requests for page protection/Decrease', 'Loading requests pages');
+		const rppPage2 = new Morebits.wiki.page('Wikipedia:Requests for page protection/Decrease', 'Loading requests pages');
 		rppPage2.load(function() {
-			let params = rppPage.getCallbackParameters();
+			const params = rppPage.getCallbackParameters();
 			let text = rppPage.getPageText();
-			let statusElement = rppPage.getStatusElement();
+			const statusElement = rppPage.getStatusElement();
 			let text2 = rppPage2.getPageText();
 
-			let rppRe = new RegExp('===\\s*(\\[\\[)?\\s*:?\\s*' + Morebits.string.escapeRegExp(Morebits.pageNameNorm) + '\\s*(\\]\\])?\\s*===', 'm');
-			let tag = rppRe.exec(text) || rppRe.exec(text2);
+			const rppRe = new RegExp('===\\s*(\\[\\[)?\\s*:?\\s*' + Morebits.string.escapeRegExp(Morebits.pageNameNorm) + '\\s*(\\]\\])?\\s*===', 'm');
+			const tag = rppRe.exec(text) || rppRe.exec(text2);
 
-			let rppLink = document.createElement('a');
+			const rppLink = document.createElement('a');
 			rppLink.setAttribute('href', mw.util.getUrl('Wikipedia:Requests for page protection'));
 			rppLink.appendChild(document.createTextNode('Wikipedia:Requests for page protection'));
 
@@ -1562,10 +1562,10 @@ Twinkle.protect.callbacks = {
 			// If either protection type results in a increased status, then post it under increase
 			// else we post it under decrease
 			let increase = false;
-			let protInfo = Twinkle.protect.protectionPresetsInfo[params.category];
+			const protInfo = Twinkle.protect.protectionPresetsInfo[params.category];
 
 			// function to compute protection weights (see comment at Twinkle.protect.protectionWeight)
-			let computeWeight = function(mainLevel, stabilizeLevel) {
+			const computeWeight = function(mainLevel, stabilizeLevel) {
 				let result = Twinkle.protect.protectionWeight[mainLevel || 'all'];
 				if (stabilizeLevel) {
 					if (result) {
@@ -1580,7 +1580,7 @@ Twinkle.protect.callbacks = {
 			};
 
 			// compare the page's current protection weights with the protection we are requesting
-			let editWeight = computeWeight(Twinkle.protect.currentProtectionLevels.edit &&
+			const editWeight = computeWeight(Twinkle.protect.currentProtectionLevels.edit &&
 				Twinkle.protect.currentProtectionLevels.edit.level,
 			Twinkle.protect.currentProtectionLevels.stabilize &&
 				Twinkle.protect.currentProtectionLevels.stabilize.level);
@@ -1593,10 +1593,10 @@ Twinkle.protect.callbacks = {
 			}
 
 			if (increase) {
-				let originalTextLength = text.length;
+				const originalTextLength = text.length;
 				text += '\n' + newtag;
 				if (text.length === originalTextLength) {
-					let linknode = document.createElement('a');
+					const linknode = document.createElement('a');
 					linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
 					linknode.appendChild(document.createTextNode('How to fix RPP'));
 					statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ]);
@@ -1610,13 +1610,13 @@ Twinkle.protect.callbacks = {
 				rppPage.setCreateOption('recreate');
 				rppPage.save(function() {
 					// Watch the page being requested
-					let watchPref = Twinkle.getPref('watchRequestedPages');
+					const watchPref = Twinkle.getPref('watchRequestedPages');
 					// action=watch has no way to rely on user preferences (T262912), so we do it manually.
 					// The watchdefault pref appears to reliably return '1' (string),
 					// but that's not consistent among prefs so might as well be "correct"
-					let watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
+					const watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
 					if (watch) {
-						let watch_query = {
+						const watch_query = {
 							action: 'watch',
 							titles: mw.config.get('wgPageName'),
 							token: mw.user.tokens.get('watchToken')
@@ -1629,10 +1629,10 @@ Twinkle.protect.callbacks = {
 					}
 				});
 			} else {
-				let originalTextLength2 = text2.length;
+				const originalTextLength2 = text2.length;
 				text2 += '\n' + newtag;
 				if (text2.length === originalTextLength2) {
-					let linknode2 = document.createElement('a');
+					const linknode2 = document.createElement('a');
 					linknode2.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
 					linknode2.appendChild(document.createTextNode('How to fix RPP'));
 					statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode2, '.' ]);
@@ -1646,13 +1646,13 @@ Twinkle.protect.callbacks = {
 				rppPage2.setCreateOption('recreate');
 				rppPage2.save(function() {
 					// Watch the page being requested
-					let watchPref = Twinkle.getPref('watchRequestedPages');
+					const watchPref = Twinkle.getPref('watchRequestedPages');
 					// action=watch has no way to rely on user preferences (T262912), so we do it manually.
 					// The watchdefault pref appears to reliably return '1' (string),
 					// but that's not consistent among prefs so might as well be "correct"
-					let watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
+					const watch = watchPref !== 'no' && (watchPref !== 'default' || !!parseInt(mw.user.options.get('watchdefault'), 10));
 					if (watch) {
-						let watch_query = {
+						const watch_query = {
 							action: 'watch',
 							titles: mw.config.get('wgPageName'),
 							token: mw.user.tokens.get('watchToken')
