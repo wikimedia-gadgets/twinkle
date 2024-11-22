@@ -488,7 +488,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 		case 'aiv':
 			/* falls through */
 		default:
-			reason = Twinkle.arv.callback.getAivReasonOnlyWikitext(input);
+			reason = Twinkle.arv.callback.getAivReasonWikitext(input);
 
 			if (reason === null) {
 				alert('You must specify some reason');
@@ -768,7 +768,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 	}
 };
 
-Twinkle.arv.callback.getAivReasonOnlyWikitext = function(input) {
+Twinkle.arv.callback.getAivReasonWikitext = function(input) {
 	var text = '';
 	var type = input.arvtype;
 
@@ -827,7 +827,7 @@ Twinkle.arv.callback.getAivReasonOnlyWikitext = function(input) {
 };
 
 Twinkle.arv.callback.buildAivReport = function(input) {
-	return '\n*{{vandal|' + (/=/.test(input.uid) ? '1=' : '') + input.uid + '}} &ndash; ' + Twinkle.arv.callback.getAivReasonOnlyWikitext(input);
+	return '\n*{{vandal|' + (/=/.test(input.uid) ? '1=' : '') + input.uid + '}} &ndash; ' + Twinkle.arv.callback.getAivReasonWikitext(input);
 };
 
 Twinkle.arv.processSock = function(params) {
