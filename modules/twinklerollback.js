@@ -844,7 +844,7 @@ Twinkle.rollback.formatSummary = function(builtInString, userName, customString)
 };
 
 Twinkle.addInitCallback(Twinkle.rollback, 'rollback');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

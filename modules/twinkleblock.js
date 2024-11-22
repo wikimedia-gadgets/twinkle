@@ -2059,7 +2059,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 };
 
 Twinkle.addInitCallback(Twinkle.block, 'block');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

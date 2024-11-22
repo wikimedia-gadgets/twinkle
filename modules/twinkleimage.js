@@ -357,7 +357,7 @@ Twinkle.image.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.image, 'image');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

@@ -1670,7 +1670,7 @@ Twinkle.protect.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.protect, 'protect');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

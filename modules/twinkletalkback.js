@@ -413,7 +413,7 @@ Twinkle.talkback.callbacks = {
 	}
 };
 Twinkle.addInitCallback(Twinkle.talkback, 'talkback');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

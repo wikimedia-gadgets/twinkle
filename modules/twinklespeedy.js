@@ -2005,7 +2005,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 };
 
 Twinkle.addInitCallback(Twinkle.speedy, 'speedy');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>
