@@ -33,18 +33,18 @@ Twinkle.diff = function twinklediff() {
 
 Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 
-	var user;
+	let user;
 	if (me) {
 		user = mw.config.get('wgUserName');
 	} else {
-		var node = document.getElementById('mw-diff-ntitle2');
+		let node = document.getElementById('mw-diff-ntitle2');
 		if (!node) {
 			// nothing to do?
 			return;
 		}
 		user = $(node).find('a').first().text();
 	}
-	var query = {
+	let query = {
 		prop: 'revisions',
 		action: 'query',
 		titles: mw.config.get('wgPageName'),
@@ -55,15 +55,15 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 		format: 'json'
 	};
 	Morebits.status.init(document.getElementById('mw-content-text'));
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main);
+	let wikipedia_api = new Morebits.wiki.api('Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main);
 	wikipedia_api.params = { user: user };
 	wikipedia_api.post();
 };
 
 Twinkle.diff.callbacks = {
 	main: function(self) {
-		var rev = self.response.query.pages[0].revisions;
-		var revid = rev && rev[0].revid;
+		let rev = self.response.query.pages[0].revisions;
+		let revid = rev && rev[0].revid;
 
 		if (!revid) {
 			self.statelem.error('no suitable earlier revision found, or ' + self.params.user + ' is the only contributor. Aborting.');

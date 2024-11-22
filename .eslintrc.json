@@ -73,7 +73,6 @@
 		"operator-linebreak": "warn",
 		"prefer-arrow-callback": "warn",
 		"prefer-const": "warn",
-		"quote-props": "warn",
-		"wrap-iife": "off"
+		"quote-props": "warn"
 	}
 }
