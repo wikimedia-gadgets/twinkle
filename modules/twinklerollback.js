@@ -673,9 +673,12 @@ Twinkle.rollback.callbacks = {
 				break;
 		}
 
-		if ((Twinkle.getPref('confirmOnRollback') ||
-			// Mobile user agent taken from [[en:MediaWiki:Gadget-confirmationRollback-mobile.js]]
-			(Twinkle.getPref('confirmOnMobileRollback') && /Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|Opera Mini/i.test(navigator.userAgent))) &&
+		// Preferences confirmOnRollback and confirmOnMobileRollback were formerly named
+		// confirmOnFluff and confirmOnMobileFluff, respectively. Check both variations for now.
+		if ((Twinkle.getPref('confirmOnRollback') || Twinkle.getPref('confirmOnFluff') ||
+			((Twinkle.getPref('confirmOnMobileRollback') || Twinkle.getPref('confirmOnMobileFluff')) &&
+				// Mobile user agent taken from [[en:MediaWiki:Gadget-confirmationRollback-mobile.js]]
+				/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|Opera Mini/i.test(navigator.userAgent))) &&
 			!userHasAlreadyConfirmedAction && !confirm('Reverting page: are you sure?')) {
 			statelem.error('Aborted by user.');
 			return;
