@@ -356,7 +356,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'editlevel',
 					label: 'Who can edit:',
 					event: Twinkle.protect.formevents.editlevel,
-					list: Twinkle.protect.protectionLevels.filter((level) => /* Filter TE outside of templates and modules */ isTemplate || level.value !== 'templateeditor')
+					// Filter TE outside of templates and modules
+					list: Twinkle.protect.protectionLevels.filter((level) => isTemplate || level.value !== 'templateeditor')
 				});
 				field2.append({
 					type: 'select',
@@ -387,7 +388,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'movelevel',
 					label: 'Who can move:',
 					event: Twinkle.protect.formevents.movelevel,
-					list: Twinkle.protect.protectionLevels.filter((level) => /* Autoconfirmed is required for a move, redundant */ level.value !== 'autoconfirmed' && (isTemplate || level.value !== 'templateeditor'))
+					// Autoconfirmed is required for a move, redundant
+					list: Twinkle.protect.protectionLevels.filter((level) => level.value !== 'autoconfirmed' && (isTemplate || level.value !== 'templateeditor'))
 				});
 				field2.append({
 					type: 'select',
@@ -443,7 +445,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 					name: 'createlevel',
 					label: 'Create protection:',
 					event: Twinkle.protect.formevents.createlevel,
-					list: Twinkle.protect.protectionLevels.filter((level) => /* Filter TE always, and autoconfirmed in mainspace, redundant since WP:ACPERM */ level.value !== 'templateeditor' && (mw.config.get('wgNamespaceNumber') !== 0 || level.value !== 'autoconfirmed'))
+					// Filter TE always, and autoconfirmed in mainspace, redundant since WP:ACPERM
+					list: Twinkle.protect.protectionLevels.filter((level) => level.value !== 'templateeditor' && (mw.config.get('wgNamespaceNumber') !== 0 || level.value !== 'autoconfirmed'))
 				});
 				field2.append({
 					type: 'select',
@@ -747,8 +750,9 @@ Twinkle.protect.protectionTypes = [
 			{ label: 'Highly visible page (move)', value: 'pp-move-indef' }
 		]
 	}
-].filter((type) => /* Filter for templates and flaggedrevs */ (isTemplate || type.label !== 'Template protection') && (hasFlaggedRevs || type.label !== 'Pending changes')
-);
+]
+// Filter for templates and flaggedrevs
+.filter((type) => (isTemplate || type.label !== 'Template protection') && (hasFlaggedRevs || type.label !== 'Pending changes'));
 
 Twinkle.protect.protectionTypesCreate = [
 	{ label: 'Unprotection', value: 'unprotect' },
@@ -988,7 +992,9 @@ Twinkle.protect.protectionTags = [
 			{ label: '{{pp-move}}: other', value: 'pp-move' }
 		]
 	}
-].filter((type) => /* Filter FlaggedRevs */ hasFlaggedRevs || type.label !== 'Pending changes templates');
+]
+// Filter FlaggedRevs
+.filter((type) => hasFlaggedRevs || type.label !== 'Pending changes templates');
 
 Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
 	const form = e.target.form;
