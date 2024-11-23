@@ -23,25 +23,25 @@ Twinkle.deprod = function() {
 	Twinkle.addPortletLink(Twinkle.deprod.callback, 'Deprod', 'tw-deprod', 'Delete prod pages found in this category');
 };
 
-var concerns = {};
+const concerns = {};
 
 Twinkle.deprod.callback = function() {
-	var Window = new Morebits.simpleWindow(800, 400);
+	const Window = new Morebits.simpleWindow(800, 400);
 	Window.setTitle('PROD cleaning');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Proposed deletion', 'WP:PROD');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#deprod');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	var form = new Morebits.quickForm(callback_commit);
+	const form = new Morebits.quickForm(callback_commit);
 
-	var statusdiv = document.createElement('div');
+	const statusdiv = document.createElement('div');
 	statusdiv.style.padding = '15px';  // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
 	Window.display();
 
-	var query = {
+	const query = {
 		action: 'query',
 		generator: 'categorymembers',
 		gcmtitle: mw.config.get('wgPageName'),
@@ -53,28 +53,26 @@ Twinkle.deprod.callback = function() {
 		format: 'json'
 	};
 
-	var statelem = new Morebits.status('Grabbing list of pages');
-	var wikipedia_api = new Morebits.wiki.api('loading...', query, function(apiobj) {
-		var response = apiobj.getResponse();
-		var pages = (response.query && response.query.pages) || [];
-		var list = [];
-		var re = /\{\{Proposed deletion/;
+	const statelem = new Morebits.status('Grabbing list of pages');
+	const wikipedia_api = new Morebits.wiki.api('loading...', query, ((apiobj) => {
+		const response = apiobj.getResponse();
+		const pages = (response.query && response.query.pages) || [];
+		const list = [];
+		const re = /\{\{Proposed deletion/;
 		pages.sort(Twinkle.sortByNamespace);
-		pages.forEach(function(page) {
-			var metadata = [];
+		pages.forEach((page) => {
+			const metadata = [];
 
-			var content = page.revisions[0].content;
-			var res = re.exec(content);
-			var title = page.title;
+			const content = page.revisions[0].content;
+			const res = re.exec(content);
+			const title = page.title;
 			if (res) {
-				var parsed = Morebits.wikitext.parseTemplate(content, res.index);
+				const parsed = Morebits.wikitext.parseTemplate(content, res.index);
 				concerns[title] = parsed.parameters.concern || '';
 				metadata.push(concerns[title]);
 			}
 
-			var editProt = page.protection.filter(function(pr) {
-				return pr.type === 'edit' && pr.level === 'sysop';
-			}).pop();
+			const editProt = page.protection.filter((pr) => pr.type === 'edit' && pr.level === 'sysop').pop();
 			if (editProt) {
 				metadata.push('fully protected' +
 					(editProt.expiry === 'infinity' ? ' indefinitely' : ', expires ' + editProt.expiry));
@@ -111,38 +109,38 @@ Twinkle.deprod.callback = function() {
 			type: 'submit'
 		});
 
-		var rendered = apiobj.params.form.render();
+		const rendered = apiobj.params.form.render();
 		apiobj.params.Window.setContent(rendered);
 		Morebits.quickForm.getElements(rendered, 'pages').forEach(Twinkle.generateBatchPageLinks);
-	}, statelem);
+	}), statelem);
 
 	wikipedia_api.params = { form: form, Window: Window };
 	wikipedia_api.post();
 };
 
 var callback_commit = function(event) {
-		var pages = Morebits.quickForm.getInputData(event.target).pages;
+		const pages = Morebits.quickForm.getInputData(event.target).pages;
 		Morebits.status.init(event.target);
 
-		var batchOperation = new Morebits.batchOperation('Deleting pages');
+		const batchOperation = new Morebits.batchOperation('Deleting pages');
 		batchOperation.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		batchOperation.setOption('preserveIndividualStatusLines', true);
 		batchOperation.setPageList(pages);
-		batchOperation.run(function(pageName) {
-			var params = { page: pageName, reason: concerns[page] };
+		batchOperation.run((pageName) => {
+			const params = { page: pageName, reason: concerns[page] };
 
-			var query = {
+			let query = {
 				action: 'query',
 				titles: pageName,
 				prop: 'redirects',
 				rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
 			};
-			var wikipedia_api = new Morebits.wiki.api('Grabbing redirects', query, callback_deleteRedirects);
+			let wikipedia_api = new Morebits.wiki.api('Grabbing redirects', query, callback_deleteRedirects);
 			wikipedia_api.params = params;
 			wikipedia_api.post();
 
-			var pageTitle = mw.Title.newFromText(pageName);
+			const pageTitle = mw.Title.newFromText(pageName);
 			// Don't delete user talk pages, limiting this to Talk: pages since only article and user pages appear in deprod
 			if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
 				pageTitle.namespace++;  // now pageTitle is the talk page title!
@@ -170,17 +168,17 @@ var callback_commit = function(event) {
 			return;
 		}
 
-		var page = new Morebits.wiki.page('Talk:' + apiobj.params.page, 'Deleting talk page of page ' + apiobj.params.page);
+		const page = new Morebits.wiki.page('Talk:' + apiobj.params.page, 'Deleting talk page of page ' + apiobj.params.page);
 		page.setEditSummary('[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page "' + apiobj.params.page + '"');
 		page.setChangeTags(Twinkle.changeTags);
 		page.deletePage();
 	},
 	callback_deleteRedirects = function(apiobj) {
-		var response = apiobj.getResponse();
-		var redirects = response.query.pages[0].redirects || [];
-		redirects.forEach(function(rd) {
-			var title = rd.title;
-			var page = new Morebits.wiki.page(title, 'Deleting redirecting page ' + title);
+		const response = apiobj.getResponse();
+		const redirects = response.query.pages[0].redirects || [];
+		redirects.forEach((rd) => {
+			const title = rd.title;
+			const page = new Morebits.wiki.page(title, 'Deleting redirecting page ' + title);
 			page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"');
 			page.setChangeTags(Twinkle.changeTags);
 			page.deletePage();
@@ -188,7 +186,7 @@ var callback_commit = function(event) {
 	};
 
 Twinkle.addInitCallback(Twinkle.deprod, 'deprod');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

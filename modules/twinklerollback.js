@@ -26,7 +26,7 @@ Twinkle.rollback = function twinklerollback() {
 		// wgDiffOldId included for clarity in if else loop [[phab:T214985]]
 		if (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId')) {
 			// Reload alongside the revision slider
-			mw.hook('wikipage.diff').add(function () {
+			mw.hook('wikipage.diff').add(() => {
 				Twinkle.rollback.addLinks.diff();
 			});
 		} else if (mw.config.get('wgAction') === 'view' && mw.config.get('wgRevisionId') && mw.config.get('wgCurRevisionId') !== mw.config.get('wgRevisionId')) {
@@ -43,7 +43,7 @@ Twinkle.rollback = function twinklerollback() {
 		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Recentchanges' || mw.config.get('wgCanonicalSpecialPageName') === 'Recentchangeslinked') {
 			// Reload with recent changes updates
 			// structuredChangeFilters.ui.initialized is just on load
-			mw.hook('wikipage.content').add(function(item) {
+			mw.hook('wikipage.content').add((item) => {
 				if (item.is('div')) {
 					Twinkle.rollback.addLinks.recentchanges();
 				}
@@ -67,14 +67,14 @@ Twinkle.rollback.hiddenName = 'an unknown user';
 // Consolidated construction of rollback links
 Twinkle.rollback.linkBuilder = {
 	spanTag: function(color, content) {
-		var span = document.createElement('span');
+		const span = document.createElement('span');
 		span.style.color = color;
 		span.appendChild(document.createTextNode(content));
 		return span;
 	},
 
 	buildLink: function(color, text) {
-		var link = document.createElement('a');
+		const link = document.createElement('a');
 		link.appendChild(Twinkle.rollback.linkBuilder.spanTag('Black', '['));
 		link.appendChild(Twinkle.rollback.linkBuilder.spanTag(color, text));
 		link.appendChild(Twinkle.rollback.linkBuilder.spanTag('Black', ']'));
@@ -93,8 +93,8 @@ Twinkle.rollback.linkBuilder = {
 	rollbackLinks: function(vandal, inline, rev, page) {
 		vandal = vandal || null;
 
-		var elem = inline ? 'span' : 'div';
-		var revNode = document.createElement(elem);
+		const elem = inline ? 'span' : 'div';
+		const revNode = document.createElement(elem);
 
 		rev = parseInt(rev, 10);
 		if (rev) {
@@ -103,29 +103,29 @@ Twinkle.rollback.linkBuilder = {
 			revNode.setAttribute('id', 'tw-revert');
 		}
 
-		var separator = inline ? ' ' : ' || ';
-		var sepNode1 = document.createElement('span');
-		var sepText = document.createTextNode(separator);
+		const separator = inline ? ' ' : ' || ';
+		const sepNode1 = document.createElement('span');
+		const sepText = document.createTextNode(separator);
 		sepNode1.setAttribute('class', 'tw-rollback-link-separator');
 		sepNode1.appendChild(sepText);
 
-		var sepNode2 = sepNode1.cloneNode(true);
+		const sepNode2 = sepNode1.cloneNode(true);
 
-		var normNode = document.createElement('span');
-		var vandNode = document.createElement('span');
+		const normNode = document.createElement('span');
+		const vandNode = document.createElement('span');
 
-		var normLink = Twinkle.rollback.linkBuilder.buildLink('SteelBlue', 'rollback');
-		var vandLink = Twinkle.rollback.linkBuilder.buildLink('Red', 'vandalism');
+		const normLink = Twinkle.rollback.linkBuilder.buildLink('SteelBlue', 'rollback');
+		const vandLink = Twinkle.rollback.linkBuilder.buildLink('Red', 'vandalism');
 
 		normLink.style.fontWeight = 'bold';
 		vandLink.style.fontWeight = 'bold';
 
-		$(normLink).click(function(e) {
+		$(normLink).click((e) => {
 			e.preventDefault();
 			Twinkle.rollback.revert('norm', vandal, rev, page);
 			Twinkle.rollback.disableLinks(revNode);
 		});
-		$(vandLink).click(function(e) {
+		$(vandLink).click((e) => {
 			e.preventDefault();
 			Twinkle.rollback.revert('vand', vandal, rev, page);
 			Twinkle.rollback.disableLinks(revNode);
@@ -141,9 +141,9 @@ Twinkle.rollback.linkBuilder = {
 		vandNode.appendChild(vandLink);
 
 		if (!inline) {
-			var agfNode = document.createElement('span');
-			var agfLink = Twinkle.rollback.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
-			$(agfLink).click(function(e) {
+			const agfNode = document.createElement('span');
+			const agfLink = Twinkle.rollback.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
+			$(agfLink).click((e) => {
 				e.preventDefault();
 				Twinkle.rollback.revert('agf', vandal, rev, page);
 				// Twinkle.rollback.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
@@ -165,14 +165,14 @@ Twinkle.rollback.linkBuilder = {
 		// If not a specific revision number, should be wgDiffNewId/wgDiffOldId/wgRevisionId
 		revisionRef = typeof revisionRef === 'number' ? revisionRef : mw.config.get(revisionRef);
 
-		var elem = inline ? 'span' : 'div';
-		var revertToRevisionNode = document.createElement(elem);
+		const elem = inline ? 'span' : 'div';
+		const revertToRevisionNode = document.createElement(elem);
 
 		revertToRevisionNode.setAttribute('id', 'tw-revert-to-' + revisionRef);
 		revertToRevisionNode.style.fontWeight = 'bold';
 
-		var revertToRevisionLink = Twinkle.rollback.linkBuilder.buildLink('SaddleBrown', 'restore this version');
-		$(revertToRevisionLink).click(function(e) {
+		const revertToRevisionLink = Twinkle.rollback.linkBuilder.buildLink('SaddleBrown', 'restore this version');
+		$(revertToRevisionLink).click((e) => {
 			e.preventDefault();
 			Twinkle.rollback.revertToRevision(revisionRef);
 		});
@@ -191,19 +191,19 @@ Twinkle.rollback.addLinks = {
 		// $('sp-contributions-footer-anon-range') relies on the fmbox
 		// id in [[MediaWiki:Sp-contributions-footer-anon-range]] and
 		// is used to show rollback/vandalism links for IP ranges
-		var isRange = !!$('#sp-contributions-footer-anon-range')[0];
+		const isRange = !!$('#sp-contributions-footer-anon-range')[0];
 		if (mw.config.exists('wgRelevantUserName') || isRange) {
 			// Get the username these contributions are for
-			var username = mw.config.get('wgRelevantUserName');
+			let username = mw.config.get('wgRelevantUserName');
 			if (Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
 				(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1) ||
 				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
-				var $list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
+				const $list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
 
-				$list.each(function(key, current) {
+				$list.each((key, current) => {
 					// revid is also available in the href of both
 					// .mw-changeslist-date or .mw-changeslist-diff
-					var page = $(current).find('.mw-contributions-title').text();
+					const page = $(current).find('.mw-contributions-title').text();
 
 					// Get username for IP ranges (wgRelevantUserName is null)
 					if (isRange) {
@@ -223,18 +223,18 @@ Twinkle.rollback.addLinks = {
 	recentchanges: function() {
 		if (Twinkle.getPref('showRollbackLinks').indexOf('recent') !== -1) {
 			// Latest and revertable (not page creations, logs, categorizations, etc.)
-			var $list = $('.mw-changeslist .mw-changeslist-last.mw-changeslist-src-mw-edit');
+			let $list = $('.mw-changeslist .mw-changeslist-last.mw-changeslist-src-mw-edit');
 			// Exclude top-level header if "group changes" preference is used
 			// and find only individual lines or nested lines
 			$list = $list.not('.mw-rcfilters-ui-highlights-enhanced-toplevel').find('.mw-changeslist-line-inner, td.mw-enhanced-rc-nested');
 
-			$list.each(function(key, current) {
+			$list.each((key, current) => {
 				// The :not is possibly unnecessary, as it appears that
 				// .mw-userlink is simply not present if the username is hidden
-				var vandal = $(current).find('.mw-userlink:not(.history-deleted)').text();
-				var href = $(current).find('.mw-changeslist-diff').attr('href');
-				var rev = mw.util.getParamValue('diff', href);
-				var page = current.dataset.targetPage;
+				const vandal = $(current).find('.mw-userlink:not(.history-deleted)').text();
+				const href = $(current).find('.mw-changeslist-diff').attr('href');
+				const rev = mw.util.getParamValue('diff', href);
+				const page = current.dataset.targetPage;
 				current.appendChild(Twinkle.rollback.linkBuilder.rollbackLinks(vandal, true, rev, page));
 			});
 		}
@@ -243,19 +243,19 @@ Twinkle.rollback.addLinks = {
 	history: function() {
 		if (Twinkle.getPref('showRollbackLinks').indexOf('history') !== -1) {
 			// All revs
-			var histList = $('#pagehistory li').toArray();
+			const histList = $('#pagehistory li').toArray();
 
 			// On first page of results, so add revert/rollback
 			// links to the top revision
 			if (!$('a.mw-firstlink').length) {
-				var firstRow = histList.shift();
-				var firstUser = $(firstRow).find('.mw-userlink:not(.history-deleted)').text();
+				const firstRow = histList.shift();
+				const firstUser = $(firstRow).find('.mw-userlink:not(.history-deleted)').text();
 
 				// Check for first username different than the top user,
 				// only apply rollback links if/when found
 				// for() faster than every()
-				for (var i = 0; i < histList.length; i++) {
-					var hasMoreThanOneUser = $(histList[i]).find('.mw-userlink').text() !== firstUser;
+				for (let i = 0; i < histList.length; i++) {
+					const hasMoreThanOneUser = $(histList[i]).find('.mw-userlink').text() !== firstUser;
 					if (hasMoreThanOneUser) {
 						firstRow.appendChild(Twinkle.rollback.linkBuilder.rollbackLinks(firstUser, true));
 						break;
@@ -264,12 +264,12 @@ Twinkle.rollback.addLinks = {
 			}
 
 			// oldid
-			histList.forEach(function(rev) {
+			histList.forEach((rev) => {
 				// From restoreThisRevision, non-transferable
 				// If the text has been revdel'd, it gets wrapped in a span with .history-deleted,
 				// and href will be undefined (and thus oldid is NaN)
-				var href = rev.querySelector('.mw-changeslist-date').href;
-				var oldid = parseInt(mw.util.getParamValue('oldid', href), 10);
+				const href = rev.querySelector('.mw-changeslist-date').href;
+				const oldid = parseInt(mw.util.getParamValue('oldid', href), 10);
 				if (!isNaN(oldid)) {
 					rev.appendChild(Twinkle.rollback.linkBuilder.restoreThisRevisionLink(oldid, true));
 				}
@@ -281,15 +281,15 @@ Twinkle.rollback.addLinks = {
 
 	diff: function() {
 		// Autofill user talk links on diffs with vanarticle for easy warning, but don't autowarn
-		var warnFromTalk = function(xtitle) {
-			var talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
+		const warnFromTalk = function(xtitle) {
+			const talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
 			if (talkLink.length) {
-				var extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
+				let extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
 				// diffIDs for vanarticlerevid
 				extraParams += '&vanarticlerevid=';
 				extraParams += xtitle === 'otitle' ? mw.config.get('wgDiffOldId') : mw.config.get('wgDiffNewId');
 
-				var href = talkLink.attr('href');
+				const href = talkLink.attr('href');
 				if (href.indexOf('?') === -1) {
 					talkLink.attr('href', href + '?' + extraParams);
 				} else {
@@ -303,7 +303,7 @@ Twinkle.rollback.addLinks = {
 		// Don't load if there's a single revision or weird diff (cur on latest)
 		if (mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId'))) {
 			// Add a [restore this revision] link to the older revision
-			var oldTitle = document.getElementById('mw-diff-otitle1').parentNode;
+			const oldTitle = document.getElementById('mw-diff-otitle1').parentNode;
 			oldTitle.insertBefore(Twinkle.rollback.linkBuilder.restoreThisRevisionLink('wgDiffOldId'), oldTitle.firstChild);
 		}
 
@@ -313,7 +313,7 @@ Twinkle.rollback.addLinks = {
 		// Don't show if there's a single revision or weird diff (prev on first)
 		if (document.getElementById('differences-nextlink')) {
 			// Not latest revision, add [restore this revision] link to newer revision
-			var newTitle = document.getElementById('mw-diff-ntitle1').parentNode;
+			const newTitle = document.getElementById('mw-diff-ntitle1').parentNode;
 			newTitle.insertBefore(Twinkle.rollback.linkBuilder.restoreThisRevisionLink('wgDiffNewId'), newTitle.firstChild);
 		} else if (Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 && mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId') || document.getElementById('differences-prevlink'))) {
 			// Normally .mw-userlink is a link, but if the
@@ -329,26 +329,26 @@ Twinkle.rollback.addLinks = {
 			// &unhide=1), since the username will be available by
 			// checking a.mw-userlink instead, but revert() will
 			// need reworking around userHidden
-			var vandal = $('#mw-diff-ntitle2').find('.mw-userlink')[0];
+			let vandal = $('#mw-diff-ntitle2').find('.mw-userlink')[0];
 			// See #1337
 			vandal = vandal ? vandal.text : '';
-			var ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
+			const ntitle = document.getElementById('mw-diff-ntitle1').parentNode;
 
 			ntitle.insertBefore(Twinkle.rollback.linkBuilder.rollbackLinks(vandal), ntitle.firstChild);
 		}
 	},
 
 	oldid: function() { // Add a [restore this revision] link on old revisions
-		var revisionInfo = document.getElementById('mw-revision-info');
+		const revisionInfo = document.getElementById('mw-revision-info');
 		if (revisionInfo) {
-			var title = revisionInfo.parentNode;
+			const title = revisionInfo.parentNode;
 			title.insertBefore(Twinkle.rollback.linkBuilder.restoreThisRevisionLink('wgRevisionId'), title.firstChild);
 		}
 	}
 };
 
 Twinkle.rollback.disableLinks = function disablelinks(parentNode) {
-	$(parentNode).children().each(function(_ix, node) {
+	$(parentNode).children().each((_ix, node) => {
 		node.innerHTML = node.textContent; // Feels like cheating
 		$(node).css('font-weight', 'normal').css('color', 'darkgray');
 	});
@@ -360,11 +360,11 @@ Twinkle.rollback.revert = function revertPage(type, vandal, rev, page) {
 		vandal = Morebits.ip.sanitizeIPv6(vandal);
 	}
 
-	var pagename = page || mw.config.get('wgPageName');
-	var revid = rev || mw.config.get('wgCurRevisionId');
+	const pagename = page || mw.config.get('wgPageName');
+	const revid = rev || mw.config.get('wgCurRevisionId');
 
 	if (Twinkle.rollback.rollbackInPlace) {
-		var notifyStatus = document.createElement('span');
+		const notifyStatus = document.createElement('span');
 		mw.notify(notifyStatus, {
 			autoHide: false,
 			title: 'Rollback on ' + page,
@@ -376,7 +376,7 @@ Twinkle.rollback.revert = function revertPage(type, vandal, rev, page) {
 		$('#catlinks').remove();
 	}
 
-	var params = {
+	const params = {
 		type: type,
 		user: vandal,
 		userHidden: !vandal, // Keep track of whether the username was hidden
@@ -384,7 +384,7 @@ Twinkle.rollback.revert = function revertPage(type, vandal, rev, page) {
 		revid: revid
 	};
 
-	var query = {
+	const query = {
 		action: 'query',
 		prop: ['info', 'revisions', 'flagged'],
 		titles: pagename,
@@ -397,7 +397,7 @@ Twinkle.rollback.revert = function revertPage(type, vandal, rev, page) {
 		type: 'csrf',
 		format: 'json'
 	};
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of earlier revisions', query, Twinkle.rollback.callbacks.main);
+	const wikipedia_api = new Morebits.wiki.api('Grabbing data of earlier revisions', query, Twinkle.rollback.callbacks.main);
 	wikipedia_api.params = params;
 	wikipedia_api.post();
 };
@@ -406,7 +406,7 @@ Twinkle.rollback.revertToRevision = function revertToRevision(oldrev) {
 
 	Morebits.status.init(document.getElementById('mw-content-text'));
 
-	var query = {
+	const query = {
 		action: 'query',
 		prop: ['info', 'revisions'],
 		titles: mw.config.get('wgPageName'),
@@ -419,42 +419,42 @@ Twinkle.rollback.revertToRevision = function revertToRevision(oldrev) {
 		type: 'csrf',
 		format: 'json'
 	};
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of the earlier revision', query, Twinkle.rollback.callbacks.toRevision);
+	const wikipedia_api = new Morebits.wiki.api('Grabbing data of the earlier revision', query, Twinkle.rollback.callbacks.toRevision);
 	wikipedia_api.params = { rev: oldrev };
 	wikipedia_api.post();
 };
 
 Twinkle.rollback.callbacks = {
 	toRevision: function(apiobj) {
-		var response = apiobj.getResponse();
+		const response = apiobj.getResponse();
 
-		var loadtimestamp = response.curtimestamp;
-		var csrftoken = response.query.tokens.csrftoken;
+		const loadtimestamp = response.curtimestamp;
+		const csrftoken = response.query.tokens.csrftoken;
 
-		var page = response.query.pages[0];
-		var lastrevid = parseInt(page.lastrevid, 10);
-		var touched = page.touched;
+		const page = response.query.pages[0];
+		const lastrevid = parseInt(page.lastrevid, 10);
+		const touched = page.touched;
 
-		var rev = page.revisions[0];
-		var revertToRevID = parseInt(rev.revid, 10);
-		var revertToUser = rev.user;
-		var revertToUserHidden = !!rev.userhidden;
+		const rev = page.revisions[0];
+		const revertToRevID = parseInt(rev.revid, 10);
+		const revertToUser = rev.user;
+		const revertToUserHidden = !!rev.userhidden;
 
 		if (revertToRevID !== apiobj.params.rev) {
 			apiobj.statelem.error('The retrieved revision does not match the requested revision. Stopping revert.');
 			return;
 		}
 
-		var optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
+		const optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
 		if (optional_summary === null) {
 			apiobj.statelem.error('Aborted by user.');
 			return;
 		}
 
-		var summary = Twinkle.rollback.formatSummary('Restored revision ' + revertToRevID + ' by $USER',
+		const summary = Twinkle.rollback.formatSummary('Restored revision ' + revertToRevID + ' by $USER',
 			revertToUserHidden ? null : revertToUser, optional_summary);
 
-		var query = {
+		const query = {
 			action: 'edit',
 			title: mw.config.get('wgPageName'),
 			summary: summary,
@@ -469,7 +469,7 @@ Twinkle.rollback.callbacks = {
 		};
 		// Handle watching, possible expiry
 		if (Twinkle.getPref('watchRevertedPages').indexOf('torev') !== -1) {
-			var watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
+			const watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
 
 			if (!watchOrExpiry || watchOrExpiry === 'no') {
 				query.watchlist = 'nochange';
@@ -487,36 +487,36 @@ Twinkle.rollback.callbacks = {
 		Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
 
-		var wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.rollback.callbacks.complete, apiobj.statelem);
+		const wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.rollback.callbacks.complete, apiobj.statelem);
 		wikipedia_api.params = apiobj.params;
 		wikipedia_api.post();
 	},
 	main: function(apiobj) {
-		var response = apiobj.getResponse();
+		const response = apiobj.getResponse();
 
-		var loadtimestamp = response.curtimestamp;
-		var csrftoken = response.query.tokens.csrftoken;
+		const loadtimestamp = response.curtimestamp;
+		const csrftoken = response.query.tokens.csrftoken;
 
-		var page = response.query.pages[0];
+		const page = response.query.pages[0];
 		if (!page.actions.edit) {
 			apiobj.statelem.error("Unable to edit the page, it's probably protected.");
 			return;
 		}
 
-		var lastrevid = parseInt(page.lastrevid, 10);
-		var touched = page.touched;
+		const lastrevid = parseInt(page.lastrevid, 10);
+		const touched = page.touched;
 
-		var revs = page.revisions;
+		const revs = page.revisions;
 
-		var statelem = apiobj.statelem;
-		var params = apiobj.params;
+		const statelem = apiobj.statelem;
+		const params = apiobj.params;
 
 		if (revs.length < 1) {
 			statelem.error('We have less than one additional revision, thus impossible to revert.');
 			return;
 		}
-		var top = revs[0];
-		var lastuser = top.user;
+		const top = revs[0];
+		const lastuser = top.user;
 
 		if (lastrevid < params.revid) {
 			Morebits.status.error('Error', [ 'The most recent revision ID received from the server, ', Morebits.htmlNode('strong', lastrevid), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Stopping revert.' ]);
@@ -524,8 +524,8 @@ Twinkle.rollback.callbacks = {
 		}
 
 		// Used for user-facing alerts, messages, etc., not edits or summaries
-		var userNorm = params.user || Twinkle.rollback.hiddenName;
-		var index = 1;
+		let userNorm = params.user || Twinkle.rollback.hiddenName;
+		let index = 1;
 		if (params.revid !== lastrevid) {
 			Morebits.status.warn('Warning', [ 'Latest revision ', Morebits.htmlNode('strong', lastrevid), ' doesn\'t equal our revision ', Morebits.htmlNode('strong', params.revid) ]);
 			// Treat ipv6 users on same 64 block as the same
@@ -589,11 +589,11 @@ Twinkle.rollback.callbacks = {
 					break;
 			}
 		}
-		var found = false;
-		var count = 0;
-		var seen64 = false;
+		let found = false;
+		let count = 0;
+		let seen64 = false;
 
-		for (var i = index; i < revs.length; ++i) {
+		for (let i = index; i < revs.length; ++i) {
 			++count;
 			if (revs[i].user !== params.user) {
 				// Treat ipv6 users on same 64 block as the same
@@ -619,8 +619,8 @@ Twinkle.rollback.callbacks = {
 			return;
 		}
 
-		var good_revision = revs[found];
-		var userHasAlreadyConfirmedAction = false;
+		const good_revision = revs[found];
+		let userHasAlreadyConfirmedAction = false;
 		if (params.type !== 'vand' && count > 1) {
 			if (!confirm(userNorm + ' has made ' + mw.language.convertNumber(count) + ' edits in a row. Are you sure you want to revert them all?')) {
 				Morebits.status.info('Notice', 'Stopping revert.');
@@ -637,7 +637,7 @@ Twinkle.rollback.callbacks = {
 
 		statelem.status([ ' revision ', Morebits.htmlNode('strong', params.goodid), ' that was made ', Morebits.htmlNode('strong', mw.language.convertNumber(count)), ' revisions ago by ', Morebits.htmlNode('strong', params.gooduserHidden ? Twinkle.rollback.hiddenName : params.gooduser) ]);
 
-		var summary, extra_summary;
+		let summary, extra_summary;
 		switch (params.type) {
 			case 'agf':
 				extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
@@ -673,13 +673,18 @@ Twinkle.rollback.callbacks = {
 				break;
 		}
 
-		// Preferences confirmOnRollback and confirmOnMobileRollback were formerly named
-		// confirmOnFluff and confirmOnMobileFluff, respectively. Check both variations for now.
-		if ((Twinkle.getPref('confirmOnRollback') || Twinkle.getPref('confirmOnFluff') ||
-			((Twinkle.getPref('confirmOnMobileRollback') || Twinkle.getPref('confirmOnMobileFluff')) &&
-				// Mobile user agent taken from [[en:MediaWiki:Gadget-confirmationRollback-mobile.js]]
-				/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|Opera Mini/i.test(navigator.userAgent))) &&
-			!userHasAlreadyConfirmedAction && !confirm('Reverting page: are you sure?')) {
+		const needToDisplayConfirmation =
+			(
+				Twinkle.getPref('confirmOnRollback') ||
+				(
+					Twinkle.getPref('confirmOnMobileRollback') &&
+					// Mobile user agent taken from [[en:MediaWiki:Gadget-confirmationRollback-mobile.js]]
+					/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|Opera Mini/i.test(navigator.userAgent)
+				)
+			) &&
+			!userHasAlreadyConfirmedAction;
+
+		if (needToDisplayConfirmation && !confirm('Reverting page: are you sure?')) {
 			statelem.error('Aborted by user.');
 			return;
 		}
@@ -693,7 +698,7 @@ Twinkle.rollback.callbacks = {
 		}
 
 		// figure out whether we need to/can review the edit
-		var flagged = page.flagged;
+		const flagged = page.flagged;
 		if ((Morebits.userIsInGroup('reviewer') || Morebits.userIsSysop) &&
 				!!flagged &&
 				flagged.stable_revid >= params.goodid &&
@@ -702,7 +707,7 @@ Twinkle.rollback.callbacks = {
 			params.csrftoken = csrftoken;
 		}
 
-		var query = {
+		const query = {
 			action: 'edit',
 			title: params.pagename,
 			summary: summary,
@@ -717,7 +722,7 @@ Twinkle.rollback.callbacks = {
 		};
 		// Handle watching, possible expiry
 		if (Twinkle.getPref('watchRevertedPages').indexOf(params.type) !== -1) {
-			var watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
+			const watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
 
 			if (!watchOrExpiry || watchOrExpiry === 'no') {
 				query.watchlist = 'nochange';
@@ -737,15 +742,15 @@ Twinkle.rollback.callbacks = {
 		}
 		Morebits.wiki.actionCompleted.notice = 'Reversion completed';
 
-		var wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.rollback.callbacks.complete, statelem);
+		const wikipedia_api = new Morebits.wiki.api('Saving reverted contents', query, Twinkle.rollback.callbacks.complete, statelem);
 		wikipedia_api.params = params;
 		wikipedia_api.post();
 
 	},
 	complete: function (apiobj) {
 		// TODO Most of this is copy-pasted from Morebits.wiki.page#fnSaveSuccess. Unify it
-		var response = apiobj.getResponse();
-		var edit = response.edit;
+		const response = apiobj.getResponse();
+		const edit = response.edit;
 
 		if (edit.captcha) {
 			apiobj.statelem.error('Could not rollback, because the wiki server wanted you to fill out a CAPTCHA.');
@@ -753,12 +758,12 @@ Twinkle.rollback.callbacks = {
 			apiobj.statelem.error('Revision we are reverting to is identical to current revision, stopping revert.');
 		} else {
 			apiobj.statelem.info('done');
-			var params = apiobj.params;
+			const params = apiobj.params;
 
 			if (params.notifyUser && !params.userHidden) { // notifyUser only from main, not from toRevision
 				Morebits.status.info('Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode('strong', params.user) ]);
 
-				var url = mw.util.getUrl('User talk:' + params.user, {
+				const url = mw.util.getUrl('User talk:' + params.user, {
 					action: 'edit',
 					preview: 'yes',
 					vanarticle: params.pagename.replace(/_/g, ' '),
@@ -796,14 +801,14 @@ Twinkle.rollback.callbacks = {
 
 			// review the revert, if needed
 			if (apiobj.params.reviewRevert) {
-				var query = {
+				const query = {
 					action: 'review',
 					revid: edit.newrevid,
 					token: apiobj.params.csrftoken,
 					comment: 'Automatically reviewing reversion' + Twinkle.summaryAd // until the below
 					// 'tags': Twinkle.changeTags // flaggedrevs tag support: [[phab:T247721]]
 				};
-				var wikipedia_api = new Morebits.wiki.api('Automatically accepting your changes', query);
+				const wikipedia_api = new Morebits.wiki.api('Automatically accepting your changes', query);
 				wikipedia_api.post();
 			}
 		}
@@ -813,7 +818,7 @@ Twinkle.rollback.callbacks = {
 // If builtInString contains the string "$USER", it will be replaced
 // by an appropriate user link if a user name is provided
 Twinkle.rollback.formatSummary = function(builtInString, userName, customString) {
-	var result = builtInString;
+	let result = builtInString;
 
 	// append user's custom reason
 	if (customString) {
@@ -825,11 +830,11 @@ Twinkle.rollback.formatSummary = function(builtInString, userName, customString)
 	// over the 499-byte limit
 	if (/\$USER/.test(builtInString)) {
 		if (userName) {
-			var resultLen = unescape(encodeURIComponent(result.replace('$USER', ''))).length;
-			var contribsLink = '[[Special:Contributions/' + userName + '|' + userName + ']]';
-			var contribsLen = unescape(encodeURIComponent(contribsLink)).length;
+			const resultLen = unescape(encodeURIComponent(result.replace('$USER', ''))).length;
+			const contribsLink = '[[Special:Contributions/' + userName + '|' + userName + ']]';
+			const contribsLen = unescape(encodeURIComponent(contribsLink)).length;
 			if (resultLen + contribsLen <= 499) {
-				var talkLink = ' ([[User talk:' + userName + '|talk]])';
+				const talkLink = ' ([[User talk:' + userName + '|talk]])';
 				if (resultLen + contribsLen + unescape(encodeURIComponent(talkLink)).length <= 499) {
 					result = Morebits.string.safeReplace(result, '$USER', contribsLink + talkLink);
 				} else {
@@ -847,7 +852,7 @@ Twinkle.rollback.formatSummary = function(builtInString, userName, customString)
 };
 
 Twinkle.addInitCallback(Twinkle.rollback, 'rollback');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

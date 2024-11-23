@@ -10,7 +10,6 @@
 		"mw": "readonly",
 		"Map": "readonly"
 	},
-	"ignorePatterns": ["scripts/", "tests/", "lib/"],
 	"rules": {
 		"array-bracket-spacing": "off",
 		"camelcase": "off",
@@ -39,7 +38,6 @@
 			}
 		],
 
-		"arrow-parens": "warn",
 		"dot-location": "warn",
 		"es-x/no-array-prototype-includes": "warn",
 		"es-x/no-object-values": "warn",
@@ -72,9 +70,7 @@
 		"no-useless-concat": "warn",
 		"no-var": "warn",
 		"operator-linebreak": "warn",
-		"prefer-arrow-callback": "warn",
 		"prefer-const": "warn",
-		"quote-props": "warn",
-		"wrap-iife": "off"
+		"quote-props": "warn"
 	}
 }

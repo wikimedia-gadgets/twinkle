@@ -24,14 +24,14 @@ Twinkle.talkback.callback = function() {
 		return;
 	}
 
-	var Window = new Morebits.simpleWindow(600, 350);
+	const Window = new Morebits.simpleWindow(600, 350);
 	Window.setTitle('Talkback');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Talkback prefs', 'WP:TW/PREF#talkback');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#talkback');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	var form = new Morebits.quickForm(Twinkle.talkback.evaluate);
+	const form = new Morebits.quickForm(Twinkle.talkback.evaluate);
 
 	form.append({ type: 'radio', name: 'tbtarget',
 		list: [
@@ -62,8 +62,8 @@ Twinkle.talkback.callback = function() {
 		name: 'work_area'
 	});
 
-	var previewlink = document.createElement('a');
-	$(previewlink).click(function() {
+	const previewlink = document.createElement('a');
+	$(previewlink).click(() => {
 		Twinkle.talkback.callbacks.preview(result);  // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
@@ -79,12 +79,12 @@ Twinkle.talkback.callback = function() {
 	result.previewer = new Morebits.wiki.preview($(result).find('div#twinkletalkback-previewbox').last()[0]);
 
 	// We must init the
-	var evt = document.createEvent('Event');
+	const evt = document.createEvent('Event');
 	evt.initEvent('change', true, true);
 	result.tbtarget[0].dispatchEvent(evt);
 
 	// Check whether the user has opted out from talkback
-	var query = {
+	const query = {
 		action: 'query',
 		prop: 'extlinks',
 		titles: 'User talk:' + mw.config.get('wgRelevantUserName'),
@@ -92,32 +92,32 @@ Twinkle.talkback.callback = function() {
 		ellimit: '1',
 		format: 'json'
 	};
-	var wpapi = new Morebits.wiki.api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
+	const wpapi = new Morebits.wiki.api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
 	wpapi.post();
 };
 
 Twinkle.talkback.optout = '';
 
 Twinkle.talkback.callback.optoutStatus = function(apiobj) {
-	var el = apiobj.getResponse().query.pages[0].extlinks;
+	const el = apiobj.getResponse().query.pages[0].extlinks;
 	if (el && el.length) {
 		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks';
-		var url = el[0].url;
-		var reason = mw.util.getParamValue('reason', url);
+		const url = el[0].url;
+		const reason = mw.util.getParamValue('reason', url);
 		Twinkle.talkback.optout += reason ? ': ' + reason : '.';
 	}
 	$('#twinkle-talkback-optout-message').text(Twinkle.talkback.optout);
 };
 
-var prev_page = '';
-var prev_section = '';
-var prev_message = '';
+let prev_page = '';
+let prev_section = '';
+let prev_message = '';
 
 Twinkle.talkback.changeTarget = function(e) {
-	var value = e.target.values;
-	var root = e.target.form;
+	const value = e.target.values;
+	const root = e.target.form;
 
-	var old_area = Morebits.quickForm.getElements(root, 'work_area')[0];
+	const old_area = Morebits.quickForm.getElements(root, 'work_area')[0];
 
 	if (root.section) {
 		prev_section = root.section.value;
@@ -129,7 +129,7 @@ Twinkle.talkback.changeTarget = function(e) {
 		prev_page = root.page.value;
 	}
 
-	var work_area = new Morebits.quickForm.element({
+	let work_area = new Morebits.quickForm.element({
 		type: 'field',
 		label: 'Talkback information',
 		name: 'work_area'
@@ -179,7 +179,7 @@ Twinkle.talkback.changeTarget = function(e) {
 				}
 			});
 
-			$.each(Twinkle.talkback.noticeboards, function(value, data) {
+			$.each(Twinkle.talkback.noticeboards, (value, data) => {
 				noticeboard.append({
 					type: 'option',
 					label: data.label,
@@ -306,10 +306,10 @@ Twinkle.talkback.noticeboards = {
 };
 
 Twinkle.talkback.evaluate = function(e) {
-	var input = Morebits.quickForm.getInputData(e.target);
+	const input = Morebits.quickForm.getInputData(e.target);
 
-	var fullUserTalkPageName = new mw.Title(mw.config.get('wgRelevantUserName'), 3).toText();
-	var talkpage = new Morebits.wiki.page(fullUserTalkPageName, 'Adding talkback');
+	const fullUserTalkPageName = new mw.Title(mw.config.get('wgRelevantUserName'), 3).toText();
+	const talkpage = new Morebits.wiki.page(fullUserTalkPageName, 'Adding talkback');
 
 	Morebits.simpleWindow.setButtonsEnabled(false);
 	Morebits.status.init(e.target);
@@ -354,7 +354,7 @@ Twinkle.talkback.callbacks = {
 		page = page || mw.config.get('wgUserName');
 
 		// Assume no prefix is a username, convert to user talk space
-		var normal = mw.Title.newFromText(page, 3);
+		let normal = mw.Title.newFromText(page, 3);
 		// Normalize erroneous or likely mis-entered items
 		if (normal) {
 			// Only allow talks and WPspace, as well as Template-space for DYK
@@ -367,18 +367,18 @@ Twinkle.talkback.callbacks = {
 	},
 
 	preview: function(form) {
-		var input = Morebits.quickForm.getInputData(form);
+		const input = Morebits.quickForm.getInputData(form);
 
 		if (input.tbtarget === 'talkback' || input.tbtarget === 'see') {
 			input.page = Twinkle.talkback.callbacks.normalizeTalkbackPage(input.page);
 		}
 
-		var noticetext = Twinkle.talkback.callbacks.getNoticeWikitext(input);
+		const noticetext = Twinkle.talkback.callbacks.getNoticeWikitext(input);
 		form.previewer.beginRender(noticetext, 'User talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
 	},
 
 	getNoticeWikitext: function(input) {
-		var text;
+		let text;
 
 		switch (input.tbtarget) {
 			case 'notice':
@@ -413,7 +413,7 @@ Twinkle.talkback.callbacks = {
 	}
 };
 Twinkle.addInitCallback(Twinkle.talkback, 'talkback');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>
