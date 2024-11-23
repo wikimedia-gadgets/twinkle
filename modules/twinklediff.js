@@ -20,10 +20,10 @@ Twinkle.diff = function twinklediff() {
 
 	// Show additional tabs only on diff pages
 	if (mw.config.get('wgDiffNewId')) {
-		Twinkle.addPortletLink(function() {
+		Twinkle.addPortletLink(() => {
 			Twinkle.diff.evaluate(false);
 		}, 'Since', 'tw-since', 'Show difference between last diff and the revision made by previous user');
-		Twinkle.addPortletLink(function() {
+		Twinkle.addPortletLink(() => {
 			Twinkle.diff.evaluate(true);
 		}, 'Since mine', 'tw-sincemine', 'Show difference between last diff and my last revision');
 
@@ -33,18 +33,18 @@ Twinkle.diff = function twinklediff() {
 
 Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 
-	var user;
+	let user;
 	if (me) {
 		user = mw.config.get('wgUserName');
 	} else {
-		var node = document.getElementById('mw-diff-ntitle2');
+		const node = document.getElementById('mw-diff-ntitle2');
 		if (!node) {
 			// nothing to do?
 			return;
 		}
 		user = $(node).find('a').first().text();
 	}
-	var query = {
+	const query = {
 		prop: 'revisions',
 		action: 'query',
 		titles: mw.config.get('wgPageName'),
@@ -55,15 +55,15 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 		format: 'json'
 	};
 	Morebits.status.init(document.getElementById('mw-content-text'));
-	var wikipedia_api = new Morebits.wiki.api('Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main);
+	const wikipedia_api = new Morebits.wiki.api('Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main);
 	wikipedia_api.params = { user: user };
 	wikipedia_api.post();
 };
 
 Twinkle.diff.callbacks = {
 	main: function(self) {
-		var rev = self.response.query.pages[0].revisions;
-		var revid = rev && rev[0].revid;
+		const rev = self.response.query.pages[0].revisions;
+		const revid = rev && rev[0].revid;
 
 		if (!revid) {
 			self.statelem.error('no suitable earlier revision found, or ' + self.params.user + ' is the only contributor. Aborting.');
@@ -77,7 +77,7 @@ Twinkle.diff.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.diff, 'diff');
-})(jQuery);
+}(jQuery));
 
 
 // </nowiki>

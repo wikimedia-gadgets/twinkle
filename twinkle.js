@@ -24,7 +24,7 @@ if (!Morebits.userIsInGroup('autoconfirmed') && !Morebits.userIsInGroup('confirm
 	return;
 }
 
-var Twinkle = {};
+const Twinkle = {};
 window.Twinkle = Twinkle;  // allow global access
 
 Twinkle.initCallbacks = [];
@@ -242,13 +242,13 @@ Twinkle.addPortlet = function() {
 	}
 
 	// make sure navigation is a valid CSS selector
-	var root = document.querySelector(navigation);
+	const root = document.querySelector(navigation);
 	if (!root) {
 		return id;
 	}
 
 	// if we already created the portlet, return early. we don't want to create it again.
-	var item = document.getElementById(id);
+	const item = document.getElementById(id);
 	if (item) {
 		return id;
 	}
@@ -259,7 +259,7 @@ Twinkle.addPortlet = function() {
 	if (mw.config.get('skin') === 'vector') {
 		$('#p-twinkle').insertAfter('#p-cactions');
 	} else if (mw.config.get('skin') === 'vector-2022') {
-		var $landmark = $('#right-navigation > .vector-page-tools-landmark');
+		const $landmark = $('#right-navigation > .vector-page-tools-landmark');
 		$('#p-twinkle-dropdown').insertAfter($landmark);
 
 		// .vector-page-tools-landmark is unstable and could change. If so, log it to console, to hopefully get someone's attention.
@@ -281,14 +281,14 @@ Twinkle.addPortletLink = function(task, text, id, tooltip) {
 	const portletId = Twinkle.addPortlet();
 
 	// Create a portlet link and add it to the portlet.
-	var link = mw.util.addPortletLink(portletId, typeof task === 'string' ? task : '#', text, id, tooltip);
+	const link = mw.util.addPortletLink(portletId, typeof task === 'string' ? task : '#', text, id, tooltip);
 
 	// Related to the hidden peer gadget that prevents jumpiness when the page first loads
 	$('.client-js .skin-vector #p-cactions').css('margin-right', 'initial');
 
 	// Add a click listener for the portlet link
 	if (typeof task === 'function') {
-		$(link).click(function (ev) {
+		$(link).click((ev) => {
 			task();
 			ev.preventDefault();
 		});
@@ -308,7 +308,7 @@ Twinkle.addPortletLink = function(task, text, id, tooltip) {
  * **************** General initialization code ****************
  */
 
-var scriptpathbefore = mw.util.wikiScript('index') + '?title=',
+const scriptpathbefore = mw.util.wikiScript('index') + '?title=',
 	scriptpathafter = '&action=raw&ctype=text/javascript&happy=yes';
 
 // Retrieve the user's Twinkle preferences
@@ -316,10 +316,10 @@ $.ajax({
 	url: scriptpathbefore + 'User:' + encodeURIComponent(mw.config.get('wgUserName')) + '/twinkleoptions.js' + scriptpathafter,
 	dataType: 'text'
 })
-	.fail(function () {
+	.fail(() => {
 		console.log('Could not load your Twinkle preferences, resorting to default preferences'); // eslint-disable-line no-console
 	})
-	.done(function (optionsText) {
+	.done((optionsText) => {
 
 		// Quick pass if user has no options
 		if (optionsText === '') {
@@ -335,7 +335,7 @@ $.ajax({
 		}
 
 		try {
-			var options = JSON.parse(optionsText);
+			const options = JSON.parse(optionsText);
 			if (options) {
 				if (options.twinkle || options.friendly) { // Old preferences format
 					Twinkle.prefs = $.extend(options.twinkle, options.friendly);
@@ -349,7 +349,7 @@ $.ajax({
 			mw.notify('Could not parse your Twinkle preferences', {type: 'error'});
 		}
 	})
-	.always(function () {
+	.always(() => {
 		$(Twinkle.load);
 	});
 
@@ -359,7 +359,7 @@ $.ajax({
 Twinkle.load = function () {
 	// Don't activate on special pages other than those listed here, so
 	// that others load faster, especially the watchlist.
-	var activeSpecialPageList = [ 'Block', 'Contributions', 'Recentchanges', 'Recentchangeslinked' ]; // wgRelevantUserName defined for non-sysops on Special:Block
+	let activeSpecialPageList = [ 'Block', 'Contributions', 'Recentchanges', 'Recentchangeslinked' ]; // wgRelevantUserName defined for non-sysops on Special:Block
 	if (Morebits.userIsSysop) {
 		activeSpecialPageList = activeSpecialPageList.concat([ 'DeletedContributions', 'Prefixindex' ]);
 	}
@@ -386,7 +386,7 @@ Twinkle.load = function () {
 		}
 	};
 	// Initialise modules that were saved in initCallbacks array
-	Twinkle.initCallbacks.forEach(function(module) {
+	Twinkle.initCallbacks.forEach((module) => {
 		Twinkle.addInitCallback(module.func, module.name);
 	});
 
@@ -397,13 +397,13 @@ Twinkle.load = function () {
 	}
 
 	// Hide the lingering space if the TW menu is empty
-	var isVector = mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022';
+	const isVector = mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022';
 	if (isVector && Twinkle.getPref('portletType') === 'menu' && $('#p-twinkle').length === 0) {
 		$('#p-cactions').css('margin-right', 'initial');
 	}
 
 	// If using a skin with space for lots of modules, display a link to Twinkle Preferences
-	var usingSkinWithDropDownMenu = mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022' || mw.config.get('skin') === 'timeless';
+	const usingSkinWithDropDownMenu = mw.config.get('skin') === 'vector' || mw.config.get('skin') === 'vector-2022' || mw.config.get('skin') === 'timeless';
 	if (usingSkinWithDropDownMenu) {
 		Twinkle.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Config', 'tw-config', 'Open Twinkle preferences page');
 	}
@@ -450,8 +450,8 @@ Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
 		return;
 	}
 	if (!Twinkle.findSources) {
-		var parser = new Morebits.wiki.preview($(divID)[0]);
-		parser.beginRender('({{Find sources|' + Morebits.pageNameNorm + '}})', 'WP:AFD').then(function() {
+		const parser = new Morebits.wiki.preview($(divID)[0]);
+		parser.beginRender('({{Find sources|' + Morebits.pageNameNorm + '}})', 'WP:AFD').then(() => {
 			// Save for second-time around
 			Twinkle.findSources = parser.previewbox.innerHTML;
 			$(divID).removeClass('morebits-previewbox');
@@ -470,7 +470,7 @@ Twinkle.sortByNamespace = function(first, second) {
 
 // Used in batch listings to link to the page in question with >
 Twinkle.generateArrowLinks = function (checkbox) {
-	var link = Morebits.htmlNode('a', ' >');
+	const link = Morebits.htmlNode('a', ' >');
 	link.setAttribute('class', 'tw-arrowpage-link');
 	link.setAttribute('href', mw.util.getUrl(checkbox.value));
 	link.setAttribute('target', '_blank');
@@ -479,8 +479,8 @@ Twinkle.generateArrowLinks = function (checkbox) {
 
 // Used in deprod and unlink listings to link the page title
 Twinkle.generateBatchPageLinks = function (checkbox) {
-	var $checkbox = $(checkbox);
-	var link = Morebits.htmlNode('a', $checkbox.val());
+	const $checkbox = $(checkbox);
+	const link = Morebits.htmlNode('a', $checkbox.val());
 	link.setAttribute('class', 'tw-batchpage-link');
 	link.setAttribute('href', mw.util.getUrl($checkbox.val()));
 	link.setAttribute('target', '_blank');
