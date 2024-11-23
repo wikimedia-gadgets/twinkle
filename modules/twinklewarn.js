@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -115,7 +113,6 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		id: 'twinkle-warn-warning-messages'
 	});
 
-
 	const more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
 	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
 
@@ -195,7 +192,6 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			})).post();
 		}
 	}
-
 
 	// We must init the first choice (General Note);
 	const evt = document.createEvent('Event');
@@ -1526,7 +1522,6 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 				Twinkle.warn.callback.postCategoryCleanup(e);
 			};
 
-
 			if (Twinkle.warn.talkpageObj) {
 				autolevelProc();
 			} else {
@@ -1984,7 +1979,6 @@ Twinkle.warn.callbacks = {
 		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setWatchlist(Twinkle.getPref('watchWarnings'));
 
-
 		// Get actual warning text
 		let warningText = Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
 			params.reason, params.main_group === 'custom');
@@ -2061,6 +2055,5 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 Twinkle.addInitCallback(Twinkle.warn, 'warn');
 }(jQuery));
-
 
 // </nowiki>

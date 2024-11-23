@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -185,7 +183,6 @@ Twinkle.rollback.linkBuilder = {
 	}
 };
 
-
 Twinkle.rollback.addLinks = {
 	contributions: function() {
 		// $('sp-contributions-footer-anon-range') relies on the fmbox
@@ -275,7 +272,6 @@ Twinkle.rollback.addLinks = {
 				}
 			});
 
-
 		}
 	},
 
@@ -353,7 +349,6 @@ Twinkle.rollback.disableLinks = function disablelinks(parentNode) {
 		$(node).css('font-weight', 'normal').css('color', 'darkgray');
 	});
 };
-
 
 Twinkle.rollback.revert = function revertPage(type, vandal, rev, page) {
 	if (mw.util.isIPv6Address(vandal)) {
@@ -853,6 +848,5 @@ Twinkle.rollback.formatSummary = function(builtInString, userName, customString)
 
 Twinkle.addInitCallback(Twinkle.rollback, 'rollback');
 }(jQuery));
-
 
 // </nowiki>

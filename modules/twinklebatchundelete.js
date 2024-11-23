@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -11,7 +9,6 @@
  * Mode of invocation:     Tab ("Und-batch")
  * Active on:              Existing user and project pages
  */
-
 
 Twinkle.batchundelete = function twinklebatchundelete() {
 	if (!Morebits.userIsSysop || !mw.config.get('wgArticleId') || (
@@ -208,6 +205,5 @@ Twinkle.batchundelete.callbacks = {
 
 Twinkle.addInitCallback(Twinkle.batchundelete, 'batchundelete');
 }(jQuery));
-
 
 // </nowiki>

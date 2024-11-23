@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -17,7 +15,6 @@
  questions, don't hesitate to ask me.  (This doesn't at all imply [[WP:OWN]]ership - it's just meant to
  point you in the right direction.)  -- TTO
  */
-
 
 Twinkle.config = {};
 
@@ -1731,6 +1728,5 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 
 Twinkle.addInitCallback(Twinkle.config.init);
 }(jQuery));
-
 
 // </nowiki>

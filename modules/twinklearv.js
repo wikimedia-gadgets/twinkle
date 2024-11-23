@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -124,7 +122,6 @@ Twinkle.arv.callback = function (uid, isIP) {
 			$('#twinkle-arv-blockwarning').text(message);
 		}
 	})).post();
-
 
 	// We must init the
 	const evt = document.createEvent('Event');
@@ -984,6 +981,5 @@ Twinkle.arv.processAN3 = function(params) {
 
 Twinkle.addInitCallback(Twinkle.arv, 'arv');
 }(jQuery));
-
 
 // </nowiki>

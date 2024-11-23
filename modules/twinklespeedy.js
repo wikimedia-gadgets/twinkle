@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -383,7 +381,6 @@ Twinkle.speedy.callback.priorDeletionCount = function () {
 		}
 	})).post();
 };
-
 
 Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mode) {
 
@@ -1459,7 +1456,6 @@ Twinkle.speedy.callbacks = {
 					text = wikipage.insertAfterTemplates(code + '\n', Twinkle.hatnoteRegex).getText();
 				}
 
-
 				pageobj.setPageText(text);
 				pageobj.setEditSummary(editsummary);
 				pageobj.setWatchlist(params.watch);
@@ -1990,6 +1986,5 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 
 Twinkle.addInitCallback(Twinkle.speedy, 'speedy');
 }(jQuery));
-
 
 // </nowiki>

@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
 ****************************************
@@ -187,6 +185,5 @@ var callback_commit = function(event) {
 
 Twinkle.addInitCallback(Twinkle.deprod, 'deprod');
 }(jQuery));
-
 
 // </nowiki>

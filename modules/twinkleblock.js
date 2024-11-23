@@ -1,6 +1,5 @@
 // <nowiki>
 
-
 (function($) {
 
 let api = new mw.Api(), relevantUserName, blockedUserName;
@@ -639,7 +638,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		oldfield.parentNode.replaceChild(field_block_options.render(), oldfield);
 		$form.find('fieldset[name="field_64"]').show();
 
-
 		$form.find('[name=pagerestrictions]').select2({
 			theme: 'default select2-morebits',
 			width: '100%',
@@ -753,7 +751,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		} else if (new Morebits.date(Twinkle.block.currentBlockInfo.expiry).isValid()) {
 			statusStr += ' (expires ' + new Morebits.date(Twinkle.block.currentBlockInfo.expiry).calendar('utc') + ')';
 		}
-
 
 		let infoStr = 'This form will';
 		if (sameUser) {
@@ -1442,7 +1439,6 @@ Twinkle.block.blockGroupsPartial = [
 	}
 ];
 
-
 Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(group, show_template) {
 	return $.map(group, (blockGroup) => {
 		const list = $.map(blockGroup.list, (blockPreset) => {
@@ -2044,6 +2040,5 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 
 Twinkle.addInitCallback(Twinkle.block, 'block');
 }(jQuery));
-
 
 // </nowiki>

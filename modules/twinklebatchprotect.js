@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -12,7 +10,6 @@
  * Active on:              Existing project pages and user pages; existing and
  *                         non-existing categories; Special:PrefixIndex
  */
-
 
 Twinkle.batchprotect = function twinklebatchprotect() {
 	if (Morebits.userIsSysop && ((mw.config.get('wgArticleId') > 0 && (mw.config.get('wgNamespaceNumber') === 2 ||
@@ -337,6 +334,5 @@ Twinkle.batchprotect.callbacks = {
 
 Twinkle.addInitCallback(Twinkle.batchprotect, 'batchprotect');
 }(jQuery));
-
 
 // </nowiki>

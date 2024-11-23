@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -693,6 +691,5 @@ Twinkle.batchdelete.callbacks = {
 
 Twinkle.addInitCallback(Twinkle.batchdelete, 'batchdelete');
 }(jQuery));
-
 
 // </nowiki>

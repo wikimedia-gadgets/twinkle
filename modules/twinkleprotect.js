@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -91,7 +89,6 @@ Twinkle.protect.callback = function twinkleprotectCallback() {
 	Twinkle.protect.fetchProtectionLevel();
 };
 
-
 // A list of bots who may be the protecting sysop, for whom we shouldn't
 // remind the user contact before requesting unprotection (evaluate)
 Twinkle.protect.trustedBots = ['MusikBot II', 'TFA Protector Bot'];
@@ -109,7 +106,6 @@ const hasFlaggedRevs = mw.loader.getState('ext.flaggedRevs.review') &&
 (mw.config.get('wgNamespaceNumber') === 0 || mw.config.get('wgNamespaceNumber') === 4);
 // Limit template editor; a Twinkle restriction, not a site setting
 const isTemplate = mw.config.get('wgNamespaceNumber') === 10 || mw.config.get('wgNamespaceNumber') === 828;
-
 
 // Contains the current protection level in an object
 // Once filled, it will look something like:
@@ -1035,7 +1031,6 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 
 			form.editexpiry.value = form.moveexpiry.value = item.expiry || '2 days';
 
-
 			if (form.pcmodify) {
 				if (item.stabilize) {
 					form.pcmodify.checked = true;
@@ -1659,6 +1654,5 @@ Twinkle.protect.callbacks = {
 
 Twinkle.addInitCallback(Twinkle.protect, 'protect');
 }(jQuery));
-
 
 // </nowiki>

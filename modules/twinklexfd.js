@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -48,7 +46,6 @@ Twinkle.xfd = function twinklexfd() {
 	}
 	Twinkle.addPortletLink(Twinkle.xfd.callback, 'XFD', 'tw-xfd', tooltip);
 };
-
 
 const utils = {
 	/** Get ordinal number figure */
@@ -749,7 +746,6 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 	form.notifycreator.checked = !form.notifycreator.disabled;
 };
 
-
 Twinkle.xfd.callbacks = {
 	// Requires having the tag text (params.tagText) set ahead of time
 	autoEditRequest: function(pageobj, params) {
@@ -1272,7 +1268,6 @@ Twinkle.xfd.callbacks = {
 		}
 	},
 
-
 	tfd: {
 		main: function(pageobj) {
 			const params = pageobj.getCallbackParameters();
@@ -1337,7 +1332,6 @@ Twinkle.xfd.callbacks = {
 				}
 				Twinkle.xfd.callbacks.tfd.taggingTemplate(pageobj);
 			}
-
 
 			// Updating data for the action completed event
 			Morebits.wiki.actionCompleted.redirect = params.logpage;
@@ -1481,7 +1475,6 @@ Twinkle.xfd.callbacks = {
 			});
 		}
 	},
-
 
 	mfd: {
 		main: function(apiobj) {
@@ -1646,7 +1639,6 @@ Twinkle.xfd.callbacks = {
 		}
 	},
 
-
 	ffd: {
 		taggingImage: function(pageobj) {
 			let text = pageobj.getPageText();
@@ -1718,7 +1710,6 @@ Twinkle.xfd.callbacks = {
 			});
 		}
 	},
-
 
 	cfd: {
 		main: function(pageobj) {
@@ -1826,7 +1817,6 @@ Twinkle.xfd.callbacks = {
 		}
 	},
 
-
 	cfds: {
 		taggingCategory: function(pageobj) {
 			const text = pageobj.getPageText();
@@ -1874,7 +1864,6 @@ Twinkle.xfd.callbacks = {
 			});
 		}
 	},
-
 
 	rfd: {
 		// This gets called both on submit and preview to determine the redirect target
@@ -2255,6 +2244,5 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 Twinkle.addInitCallback(Twinkle.xfd, 'xfd');
 }(jQuery));
-
 
 // </nowiki>

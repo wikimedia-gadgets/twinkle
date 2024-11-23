@@ -198,7 +198,6 @@ Twinkle.getPref = function twinkleGetPref(name) {
 	return Twinkle.defaultConfig[name];
 };
 
-
 /**
  * Adds a portlet menu to one of the navigation areas on the page.
  *
@@ -302,7 +301,6 @@ Twinkle.addPortletLink = function(task, text, id, tooltip) {
 
 	return link;
 };
-
 
 /**
  * **************** General initialization code ****************
@@ -408,7 +406,6 @@ Twinkle.load = function () {
 		Twinkle.addPortletLink(mw.util.getUrl('Wikipedia:Twinkle/Preferences'), 'Config', 'tw-config', 'Open Twinkle preferences page');
 	}
 };
-
 
 /**
  * Twinkle-specific data shared by multiple modules

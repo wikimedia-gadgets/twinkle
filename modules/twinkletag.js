@@ -2,7 +2,6 @@
 
 (function($) {
 
-
 /*
  ****************************************
  *** twinkletag.js: Tag module
@@ -140,7 +139,6 @@ Twinkle.tag.callback = function twinkletagCallback() {
 				});
 			});
 
-
 			form.append({
 				type: 'select',
 				name: 'sortorder',
@@ -152,7 +150,6 @@ Twinkle.tag.callback = function twinkletagCallback() {
 					{ type: 'option', value: 'alpha', label: 'In alphabetical order', selected: Twinkle.getPref('tagArticleSortOrder') === 'alpha' }
 				]
 			});
-
 
 			if (!Twinkle.tag.canRemove) {
 				const divElement = document.createElement('div');
@@ -361,7 +358,6 @@ Twinkle.tag.callback = function twinkletagCallback() {
 	}
 };
 
-
 // $allCheckboxDivs and $allHeaders are defined globally, rather than in the
 // quickfilter event function, to avoid having to recompute them on every keydown
 let $allCheckboxDivs, $allHeaders;
@@ -406,7 +402,6 @@ Twinkle.tag.updateSortOrder = function(e) {
 			list: checkboxes
 		});
 	};
-
 
 	if (sortorder === 'cat') { // categorical sort order
 		// function to iterate through the tags and create a checkbox for each one
@@ -523,7 +518,6 @@ var generateLinks = function(checkbox) {
 	link.setAttribute('target', '_blank');
 	$(checkbox).parent().append(['\u00A0', link]);
 };
-
 
 // Tags for ARTICLES start here
 Twinkle.tag.article = {};
@@ -1339,7 +1333,6 @@ Twinkle.tag.fileList['Replacement tags'].forEach((el) => {
 	};
 });
 
-
 Twinkle.tag.callbacks = {
 	article: function articleCallback(pageobj) {
 
@@ -1753,7 +1746,6 @@ Twinkle.tag.callbacks = {
 				addUngroupedTags();
 			};
 
-
 			const getRedirectsFor = [];
 
 			// Reposition the tags on the page into {{multiple issues}}, if found with its
@@ -2023,7 +2015,6 @@ Twinkle.tag.callbacks = {
 Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 	const form = e.target;
 	const params = Morebits.quickForm.getInputData(form);
-
 
 	// Validation
 

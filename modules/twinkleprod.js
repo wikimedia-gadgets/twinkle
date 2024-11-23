@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -110,7 +108,6 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	result.prodtype[0].dispatchEvent(evt);
 
 };
-
 
 Twinkle.prod.callback.prodtypechanged = function(event) {
 	// prepare frame for prod type dependant controls
@@ -476,6 +473,5 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 
 Twinkle.addInitCallback(Twinkle.prod, 'prod');
 }(jQuery));
-
 
 // </nowiki>

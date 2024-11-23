@@ -33,7 +33,6 @@
  * @namespace Morebits
  */
 
-
 (function (window, document, $) { // Wrap entire file with anonymous function
 
 /** @lends Morebits */
@@ -89,7 +88,6 @@ Morebits.i18n = {
 // shortcut
 const msg = Morebits.i18n.getMessage;
 
-
 /**
  * Wiki-specific configurations for Morebits
  */
@@ -123,7 +121,6 @@ Morebits.l10n = {
 		return [match[5], month, match[3], match[1], match[2]];
 	}
 };
-
 
 /**
  * Simple helper function to see what groups a user might belong.
@@ -175,7 +172,6 @@ Morebits.isPageRedirect = function() {
  * @type {string}
  */
 Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
-
 
 /**
  * Create a string for use in regex matching a page name.  Accounts for
@@ -287,7 +283,6 @@ Morebits.namespaceRegex = function(namespaces) {
 	}
 	return regex;
 };
-
 
 /* **************** Morebits.quickForm **************** */
 /**
@@ -430,7 +425,6 @@ Morebits.quickForm.element.prototype.render = function QuickFormElementRender(in
 	}
 	return currentNode[0];
 };
-
 
 /** @memberof Morebits.quickForm.element */
 Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(data, in_id) {
@@ -951,7 +945,6 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
 	});
 };
 
-
 // Some utility methods for manipulating quickForms after their creation:
 // (None of these work for "dyninput" type fields at present)
 
@@ -1014,7 +1007,6 @@ Morebits.quickForm.getInputData = function(form) {
 	}
 	return result;
 };
-
 
 /**
  * Returns all form elements with a given field name or ID.
@@ -1179,7 +1171,6 @@ Morebits.quickForm.setElementVisibility = function QuickFormSetElementVisibility
 Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementTooltipVisibility(element, visibility) {
 	$(Morebits.quickForm.getElementContainer(element)).find('.morebits-tooltipButton').toggle(visibility);
 };
-
 
 /**
  * @external HTMLFormElement
@@ -1412,7 +1403,6 @@ Morebits.ip = {
 	}
 };
 
-
 /**
  * Helper functions to manipulate strings.
  *
@@ -1574,7 +1564,6 @@ Morebits.string = {
 	}
 };
 
-
 /**
  * Helper functions to manipulate arrays.
  *
@@ -1610,7 +1599,6 @@ Morebits.array = {
 		}
 		return arr.filter((item, idx) => arr.indexOf(item) !== idx);
 	},
-
 
 	/**
 	 * Break up an array into smaller arrays.
@@ -1722,7 +1710,6 @@ Morebits.select2 = {
 
 };
 
-
 /**
  * Temporarily hide a part of a string while processing the rest of it.
  * Used by {@link Morebits.wikitext.page#commentOutImage|Morebits.wikitext.page.commentOutImage}.
@@ -1795,7 +1782,6 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
 		return current;
 	};
 };
-
 
 /* **************** Morebits.date **************** */
 /**
@@ -2157,7 +2143,6 @@ Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
 	};
 });
 
-
 /* **************** Morebits.wiki **************** */
 /**
  * Various objects for wiki editing and API access, including
@@ -2177,7 +2162,6 @@ Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
 	console.warn('NOTE: Morebits.wiki.isPageRedirect has been deprecated, use Morebits.isPageRedirect instead.'); // eslint-disable-line no-console
 	return Morebits.isPageRedirect();
 };
-
 
 /* **************** Morebits.wiki.actionCompleted **************** */
 /**
@@ -2263,7 +2247,6 @@ Morebits.wiki.removeCheckpoint = function() {
 		Morebits.wiki.actionCompleted.event();
 	}
 };
-
 
 /* **************** Morebits.wiki.api **************** */
 /**
@@ -2520,7 +2503,6 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
 	morebitsWikiApiUserAgent = (ua ? ua + ' ' : '') + 'morebits.js ([[w:WT:TW]])';
 };
 
-
 /**
  * Change/revision tag applied to Morebits actions when no other tags are specified.
  * Unused by default per {@link https://en.wikipedia.org/w/index.php?oldid=970618849#Adding_tags_to_Twinkle_edits_and_actions|EnWiki consensus}.
@@ -2530,7 +2512,6 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
  * @type {string}
  */
 var morebitsWikiChangeTag = '';
-
 
 /**
  * Get a new CSRF token on encountering token errors.
@@ -2547,7 +2528,6 @@ Morebits.wiki.api.getToken = function() {
 	});
 	return tokenApi.post().then((apiobj) => apiobj.response.query.tokens.csrftoken);
 };
-
 
 /* **************** Morebits.wiki.page **************** */
 /**
@@ -3031,7 +3011,6 @@ Morebits.wiki.page = function(pageName, status) {
 		ctx.newSectionTitle = newSectionTitle;
 	};
 
-
 	// Edit-related setter methods:
 	/**
 	 * Set the edit summary that will be used when `save()` is called.
@@ -3054,7 +3033,6 @@ Morebits.wiki.page = function(pageName, status) {
 	this.setChangeTags = function(tags) {
 		ctx.changeTags = tags;
 	};
-
 
 	/**
 	 * @param {string} [createOption=null] - Can take the following four values:
@@ -4595,7 +4573,6 @@ Morebits.wiki.page = function(pageName, status) {
 			}
 		});
 
-
 		// Fall back to current levels if not explicitly set
 		if (!ctx.protectEdit && editprot) {
 			ctx.protectEdit = { level: editprot.level, expiry: editprot.expiry };
@@ -4733,7 +4710,6 @@ Morebits.wiki.page = function(pageName, status) {
 * - Need to reset all parameters once done (e.g. edit summary, move destination, etc.)
 */
 
-
 /* **************** Morebits.wiki.preview **************** */
 /**
  * Use the API to parse a fragment of wikitext and render it as HTML.
@@ -4808,7 +4784,6 @@ Morebits.wiki.preview = function(previewbox) {
 		$(previewbox).empty().hide();
 	};
 };
-
 
 /* **************** Morebits.wikitext **************** */
 
@@ -5097,7 +5072,6 @@ Morebits.wikitext.page.prototype = {
 			preRegex = preRegex.join('|');
 		}
 
-
 		// Regex is extra complicated to allow for templates with
 		// parameters and to handle whitespace properly
 		this.text = this.text.replace(
@@ -5137,7 +5111,6 @@ Morebits.wikitext.page.prototype = {
 		return this.text;
 	}
 };
-
 
 /* *********** Morebits.userspaceLogger ************ */
 /**
@@ -5199,7 +5172,6 @@ Morebits.userspaceLogger = function(logPageName) {
 		return def;
 	};
 };
-
 
 /* **************** Morebits.status **************** */
 /**
@@ -5417,7 +5389,6 @@ Morebits.status.printUserText = function(comments, message) {
 	Morebits.status.root.appendChild(p);
 };
 
-
 /**
  * Simple helper function to create a simple node.
  *
@@ -5434,7 +5405,6 @@ Morebits.htmlNode = function (type, content, color) {
 	node.appendChild(document.createTextNode(content));
 	return node;
 };
-
 
 /**
  * Add shift-click support for checkboxes. The wikibits version
@@ -5492,7 +5462,6 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 
 	$(jQuerySelector, jQueryContext).click(clickHandler);
 };
-
 
 /* **************** Morebits.batchOperation **************** */
 /**
@@ -6106,9 +6075,7 @@ Morebits.simpleWindow.setButtonsEnabled = function(enabled) {
 	$('.morebits-dialog-buttons button').prop('disabled', !enabled);
 };
 
-
 }(window, document, jQuery)); // End wrap with anonymous function
-
 
 /**
  * If this script is being executed outside a ResourceLoader context, we add some
