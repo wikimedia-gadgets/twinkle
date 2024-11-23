@@ -1181,7 +1181,6 @@ Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementToo
 };
 
 
-
 /**
  * @external HTMLFormElement
  */
@@ -1796,7 +1795,6 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
 		return current;
 	};
 };
-
 
 
 /* **************** Morebits.date **************** */
@@ -2523,7 +2521,6 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
 };
 
 
-
 /**
  * Change/revision tag applied to Morebits actions when no other tags are specified.
  * Unused by default per {@link https://en.wikipedia.org/w/index.php?oldid=970618849#Adding_tags_to_Twinkle_edits_and_actions|EnWiki consensus}.
@@ -3033,7 +3030,6 @@ Morebits.wiki.page = function(pageName, status) {
 		ctx.editMode = 'new';
 		ctx.newSectionTitle = newSectionTitle;
 	};
-
 
 
 	// Edit-related setter methods:
@@ -5422,7 +5418,6 @@ Morebits.status.printUserText = function(comments, message) {
 };
 
 
-
 /**
  * Simple helper function to create a simple node.
  *
@@ -5439,7 +5434,6 @@ Morebits.htmlNode = function (type, content, color) {
 	node.appendChild(document.createTextNode(content));
 	return node;
 };
-
 
 
 /**
@@ -5498,7 +5492,6 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 
 	$(jQuerySelector, jQueryContext).click(clickHandler);
 };
-
 
 
 /* **************** Morebits.batchOperation **************** */
