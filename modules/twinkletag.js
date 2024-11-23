@@ -759,7 +759,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Overly detailed', description: 'excessive amount of intricate detail' },
 			{ tag: 'Undue weight', description: 'lends undue weight to certain ideas, incidents, or controversies' }
 		],
-		'Timeliness': [
+		Timeliness: [
 			{ tag: 'Current', description: 'documents a current event', excludeMI: true }, // Works but not intended for use in MI
 			{ tag: 'Current related', description: 'documents a topic affected by a current event', excludeMI: true }, // Works but not intended for use in MI
 			{ tag: 'Update', description: 'needs additional up-to-date information added',
@@ -837,11 +837,11 @@ Twinkle.tag.article.tagList = {
 		]
 	},
 	'Specific content issues': {
-		'Accessibility': [
+		Accessibility: [
 			{ tag: 'Cleanup colors', description: 'uses color as only way to convey information' },
 			{ tag: 'Overcoloured', description: 'overuses color'}
 		],
-		'Language': [
+		Language: [
 			{ tag: 'Not English', description: 'written in a language other than English and needs translation',
 				excludeMI: true,
 				subgroup: translationSubgroups.slice(0, 1).concat([{
@@ -883,7 +883,7 @@ Twinkle.tag.article.tagList = {
 				}]
 			}
 		],
-		'Links': [
+		Links: [
 			{ tag: 'Dead end', description: 'article has no links to other articles' },
 			{ tag: 'Orphan', description: 'linked to from no other articles' },
 			{ tag: 'Overlinked', description: 'too many duplicate and/or irrelevant links to other articles' },
@@ -896,12 +896,12 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' },
 			{ tag: 'Parenthetical referencing', description: 'uses parenthetical referencing, which is deprecated on Wikipedia' }
 		],
-		'Categories': [
+		Categories: [
 			{ tag: 'Improve categories', description: 'needs additional or more specific categories', excludeMI: true },
 			{ tag: 'Uncategorized', description: 'not added to any categories', excludeMI: true }
 		]
 	},
-	'Merging': [
+	Merging: [
 		{
 			tag: 'History merge',
 			description: 'another page should be history merged into this one',
@@ -938,7 +938,7 @@ Twinkle.tag.article.tagList = {
 		{ tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true,
 			subgroup: getMergeSubgroups('Merge to') }
 	],
-	'Informational': [
+	Informational: [
 		{ tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeMI: true },
 		{ tag: 'In use', description: 'undergoing a major edit for a short while', excludeMI: true },
 		{ tag: 'Under construction', description: 'in the process of an expansion or major restructuring', excludeMI: true }
@@ -950,7 +950,7 @@ Twinkle.tag.article.tagList = {
 // transclusions from Template:R template index
 Twinkle.tag.redirectList = {
 	'Grammar, punctuation, and spelling': {
-		'Abbreviation': [
+		Abbreviation: [
 			{ tag: 'R from acronym', description: 'redirect from an acronym (e.g. POTUS) to its expanded form', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from airport code', description: 'redirect from an airport\'s IATA or ICAO code to that airport\'s article', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from airline code', description: 'redirect from an airline\'s IATA or ICAO code to that airline\'s article', restriction: 'insideMainspaceOnly' },
@@ -958,7 +958,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from MathSciNet abbreviation', description: 'redirect from MathSciNet publication title abbreviation to the unabbreviated title', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from NLM abbreviation', description: 'redirect from a NLM publication title abbreviation to the unabbreviated title', restriction: 'insideMainspaceOnly' }
 		],
-		'Capitalisation': [
+		Capitalisation: [
 			{ tag: 'R from CamelCase', description: 'redirect from a CamelCase title' },
 			{ tag: 'R from other capitalisation', description: 'redirect from a title with another method of capitalisation', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from miscapitalisation', description: 'redirect from a capitalisation error' }
@@ -972,7 +972,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from verb', description: 'redirect from an English-language verb or verb phrase', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from adjective', description: 'redirect from an adjective (word or phrase that describes a noun)', restriction: 'insideMainspaceOnly' }
 		],
-		'Spelling': [
+		Spelling: [
 			{ tag: 'R from alternative spelling', description: 'redirect from a title with a different spelling' },
 			{ tag: 'R from alternative transliteration', description: 'redirect from an alternative English transliteration to a more common variation' },
 			{ tag: 'R from ASCII-only', description: 'redirect from a title in only basic ASCII to the formal title, with differences that are not diacritical marks or ligatures' },
@@ -1052,7 +1052,7 @@ Twinkle.tag.redirectList = {
 		]
 	},
 	'Navigation aids': {
-		'Navigation': [
+		Navigation: [
 			{ tag: 'R to anchor', description: 'redirect from a topic that does not have its own page to an anchored part of a page on the subject' },
 			{
 				tag: 'R avoided double redirect',
@@ -1072,7 +1072,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from shortcut', description: 'redirect from a Wikipedia shortcut' },
 			{ tag: 'R to subpage', description: 'redirect to a subpage' }
 		],
-		'Disambiguation': [
+		Disambiguation: [
 			{ tag: 'R from ambiguous term', description: 'redirect from an ambiguous page name to a page that disambiguates it. This template should never appear on a page that has "(disambiguation)" in its title, use R to disambiguation page instead' },
 			{ tag: 'R to disambiguation page', description: 'redirect to a disambiguation page', restriction: 'disambiguationPagesOnly' },
 			{ tag: 'R from incomplete disambiguation', description: 'redirect from a page name that is too ambiguous to be the title of an article and should redirect to an appropriate disambiguation page' },
@@ -1086,7 +1086,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from move', description: 'redirect from a page that has been moved/renamed' },
 			{ tag: 'R from merge', description: 'redirect from a merged page in order to preserve its edit history' }
 		],
-		'Namespace': [
+		Namespace: [
 			{ tag: 'R from remote talk page', description: 'redirect from a talk page in any talk namespace to a corresponding page that is more heavily watched', restriction: 'insideTalkNamespaceOnly' },
 			{ tag: 'R to category namespace', description: 'redirect from a page outside the category namespace to a category page' },
 			{ tag: 'R to help namespace', description: 'redirect from any page inside or outside of help namespace to a page in that namespace' },
@@ -1096,7 +1096,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R to user namespace', description: 'redirect from a page outside the user namespace to a user page (not to a user talk page)', restriction: 'outsideUserspaceOnly' }
 		]
 	},
-	'Media': {
+	Media: {
 		General: [
 			{ tag: 'R from album', description: 'redirect from an album to a related topic such as the recording artist or a list of albums', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from band name', description: 'redirect from a musical band or musical group name that redirects an article on a single person, i.e. the band or group leader' },
@@ -1118,7 +1118,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from fictional location', description: 'redirect from a fictional location or setting to a related fictional work or list of places', restriction: 'insideMainspaceOnly' }
 		]
 	},
-	'Miscellaneous': {
+	Miscellaneous: {
 		'Related information': [
 			{ tag: 'R to article without mention', description: 'redirect to an article without any mention of the redirected word or phrase', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R to decade', description: 'redirect from a year to the decade article', restriction: 'insideMainspaceOnly' },
@@ -1142,7 +1142,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from ISO 4 abbreviation', description: 'redirect from an ISO 4 publication title abbreviation to the unabbreviated title', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from ISO 639 code', description: 'redirect from a title that is an ISO 639 language code to an article about the language', restriction: 'insideMainspaceOnly' }
 		],
-		'Printworthiness': [
+		Printworthiness: [
 			{ tag: 'R printworthy', description: 'redirect from a title that would be helpful in a printed or CD/DVD version of Wikipedia', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R unprintworthy', description: 'redirect from a title that would NOT be helpful in a printed or CD/DVD version of Wikipedia', restriction: 'insideMainspaceOnly' }
 		]

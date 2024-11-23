@@ -2170,13 +2170,13 @@ Twinkle.xfd.callback.evaluate = function(e) {
 
 			// Used for customized actions in edit summaries and the notification template
 			var summaryActions = {
-				'cfd': 'deletion',
+				cfd: 'deletion',
 				'sfd-t': 'deletion',
-				'cfm': 'merging',
-				'cfr': 'renaming',
+				cfm: 'merging',
+				cfr: 'renaming',
 				'sfr-t': 'renaming',
-				'cfs': 'splitting',
-				'cfc': 'conversion'
+				cfs: 'splitting',
+				cfc: 'conversion'
 			};
 			params.action = summaryActions[params.xfdcat];
 

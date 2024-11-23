@@ -826,7 +826,7 @@ Twinkle.warn.messages = {
 				}
 			}
 		},
-		'Other': {
+		Other: {
 			'uw-attempt': {
 				level1: {
 					label: 'Triggering the edit filter',

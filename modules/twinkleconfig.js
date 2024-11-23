@@ -19,9 +19,9 @@
 Twinkle.config = {};
 
 Twinkle.config.watchlistEnums = {
-	'yes': 'Add to watchlist (indefinitely)',
-	'no': "Don't add to watchlist",
-	'default': 'Follow your site preferences',
+	yes: 'Add to watchlist (indefinitely)',
+	no: "Don't add to watchlist",
+	default: 'Follow your site preferences',
 	'1 week': 'Watch for 1 week',
 	'1 month': 'Watch for 1 month',
 	'3 months': 'Watch for 3 months',

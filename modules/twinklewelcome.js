@@ -231,7 +231,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 Twinkle.welcome.templates = {
 	standard: {
 		'General welcome templates': {
-			'welcome': {
+			welcome: {
 				description: 'standard welcome',
 				linkedArticle: true,
 				syntax: '{{subst:welcome|$USERNAME$|art=$ARTICLE$}} ~~~~'
@@ -249,7 +249,7 @@ Twinkle.welcome.templates = {
 				description: 'a welcome message with some helpful links and a plate of cookies',
 				syntax: '{{subst:welcome cookie}} ~~~~'
 			},
-			'welcoming': {
+			welcoming: {
 				description: 'welcome message with tutorial links and basic editing tips',
 				syntax: '{{subst:Welcoming}}'
 			}
@@ -314,31 +314,31 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}'
 			},
-			'welcomelaws': {
+			welcomelaws: {
 				description: 'welcome with information about copyrights, NPOV, the sandbox, and vandalism',
 				syntax: '{{subst:welcomelaws|$USERNAME$}} ~~~~'
 			},
-			'welcomenpov': {
+			welcomenpov: {
 				description: 'for someone whose initial efforts do not adhere to the neutral point of view policy',
 				linkedArticle: true,
 				syntax: '{{subst:welcomenpov|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
-			'welcomeunsourced': {
+			welcomeunsourced: {
 				description: 'for someone whose initial efforts are unsourced',
 				linkedArticle: true,
 				syntax: '{{subst:welcomeunsourced|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
-			'welcomevandal': {
+			welcomevandal: {
 				description: 'for someone whose initial efforts appear to be vandalism',
 				linkedArticle: true,
 				syntax: '{{subst:welcomevandal|$ARTICLE$|$USERNAME$}}'
 			},
-			'welcomespam': {
+			welcomespam: {
 				description: 'welcome with additional discussion of anti-spamming policies',
 				linkedArticle: true,
 				syntax: '{{subst:welcomespam|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
-			'welcometest': {
+			welcometest: {
 				description: 'for someone whose initial efforts appear to be tests',
 				linkedArticle: true,
 				syntax: '{{subst:welcometest|$ARTICLE$|$USERNAME$}} ~~~~'
@@ -353,7 +353,7 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcome-unregistered|art=$ARTICLE$}} ~~~~'
 			},
-			'thanks': {
+			thanks: {
 				description: 'for unregistered users; short; encourages creating an account',
 				linkedArticle: true,
 				syntax: '== Welcome! ==\n{{subst:thanks|page=$ARTICLE$}} ~~~~'
@@ -508,7 +508,7 @@ Twinkle.welcome.templates = {
 
 	nonEnglish: {
 		'Non-English welcome templates': {
-			'welcomeen': {
+			welcomeen: {
 				description: 'welcome for users whose first language is not listed here',
 				syntax: '{{subst:welcomeen}}'
 			},

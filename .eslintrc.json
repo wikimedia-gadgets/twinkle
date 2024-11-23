@@ -68,7 +68,6 @@
 		"no-useless-concat": "warn",
 		"no-var": "warn",
 		"operator-linebreak": "warn",
-		"prefer-const": "warn",
-		"quote-props": "warn"
+		"prefer-const": "warn"
 	}
 }

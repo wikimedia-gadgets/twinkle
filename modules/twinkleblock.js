@@ -828,7 +828,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   To disable, set 'hardblock' and 'disabletalk', respectively
  */
 Twinkle.block.blockPresetsInfo = {
-	'anonblock': {
+	anonblock: {
 		expiry: '31 hours',
 		forUnregisteredOnly: true,
 		nocreate: true,
@@ -878,14 +878,14 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{checkuserblock-wide}}',
 		sig: '~~~~'
 	},
-	'colocationwebhost': {
+	colocationwebhost: {
 		expiry: '1 year',
 		forUnregisteredOnly: true,
 		nonstandard: true,
 		reason: '{{colocationwebhost}}',
 		sig: null
 	},
-	'oversightblock': {
+	oversightblock: {
 		autoblock: true,
 		expiry: 'infinity',
 		nocreate: true,
@@ -900,28 +900,28 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{school block}}',
 		sig: '~~~~'
 	},
-	'spamblacklistblock': {
+	spamblacklistblock: {
 		forUnregisteredOnly: true,
 		expiry: '1 month',
 		disabletalk: true,
 		nocreate: true,
 		reason: '{{spamblacklistblock}} <!-- editor only attempts to add blacklisted links, see [[Special:Log/spamblacklist]] -->'
 	},
-	'rangeblock': {
+	rangeblock: {
 		reason: '{{rangeblock}}',
 		nocreate: true,
 		nonstandard: true,
 		forUnregisteredOnly: true,
 		sig: '~~~~'
 	},
-	'tor': {
+	tor: {
 		expiry: '1 year',
 		forUnregisteredOnly: true,
 		nonstandard: true,
 		reason: '{{Tor}}',
 		sig: null
 	},
-	'webhostblock': {
+	webhostblock: {
 		expiry: '1 year',
 		forUnregisteredOnly: true,
 		nonstandard: true,

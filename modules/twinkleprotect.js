@@ -928,7 +928,7 @@ Twinkle.protect.protectionPresetsInfo = {
 		expiry: 'infinity',
 		reason: '[[WP:MOVP|Highly visible page]]'
 	},
-	'unprotect': {
+	unprotect: {
 		edit: 'all',
 		move: 'all',
 		stabilize: 'none',
