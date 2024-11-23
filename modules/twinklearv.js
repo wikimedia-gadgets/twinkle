@@ -735,7 +735,7 @@ Twinkle.arv.callback.getAivReasonWikitext = function(input) {
 		return null;
 	}
 
-	type = type.map(function(v) {
+	type = type.map((v) => {
 		switch (v) {
 			case 'final':
 				return 'vandalism after final warning';
