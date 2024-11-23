@@ -39,7 +39,6 @@
 			}
 		],
 
-		"dot-location": "warn",
 		"es-x/no-array-prototype-includes": "warn",
 		"es-x/no-object-values": "warn",
 		"indent": "off",

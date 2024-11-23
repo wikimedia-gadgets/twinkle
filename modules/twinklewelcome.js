@@ -655,11 +655,11 @@ Twinkle.welcome.getTemplateWikitext = function(type, template, article) {
 		}
 	});
 	if (properties) {
-		return properties.syntax.
-			replace('$USERNAME$', Twinkle.getPref('insertUsername') ? mw.config.get('wgUserName') : '').
-			replace('$ARTICLE$', article ? article : '').
-			replace(/\$HEADER\$\s*/, '== Welcome ==\n\n').
-			replace('$EXTRA$', ''); // EXTRA is not implemented yet
+		return properties.syntax
+			.replace('$USERNAME$', Twinkle.getPref('insertUsername') ? mw.config.get('wgUserName') : '')
+			.replace('$ARTICLE$', article ? article : '')
+			.replace(/\$HEADER\$\s*/, '== Welcome ==\n\n')
+			.replace('$EXTRA$', ''); // EXTRA is not implemented yet
 	}
 	return '{{subst:' + template + (article ? '|art=' + article : '') + '}}' +
 			(Twinkle.getPref('customWelcomeSignature') ? ' ~~~~' : '');
