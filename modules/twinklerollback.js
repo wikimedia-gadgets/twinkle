@@ -673,14 +673,13 @@ Twinkle.rollback.callbacks = {
 				break;
 		}
 
-		// Mobile user agent taken from [[en:MediaWiki:Gadget-confirmationRollback-mobile.js]]
-		const isMobileUser = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|Opera Mini/i.test(navigator.userAgent);
 		const needToDisplayConfirmation =
 			(
 				Twinkle.getPref('confirmOnRollback') ||
 				(
 					Twinkle.getPref('confirmOnMobileRollback') &&
-					isMobileUser
+					// Mobile user agent taken from [[en:MediaWiki:Gadget-confirmationRollback-mobile.js]]
+					/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|Opera Mini/i.test(navigator.userAgent);
 				)
 			) &&
 			!userHasAlreadyConfirmedAction;
