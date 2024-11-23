@@ -679,7 +679,7 @@ Twinkle.rollback.callbacks = {
 				(
 					Twinkle.getPref('confirmOnMobileRollback') &&
 					// Mobile user agent taken from [[en:MediaWiki:Gadget-confirmationRollback-mobile.js]]
-					/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|Opera Mini/i.test(navigator.userAgent);
+					/Android|webOS|iPhone|iPad|iPod|BlackBerry|Mobile|Opera Mini/i.test(navigator.userAgent)
 				)
 			) &&
 			!userHasAlreadyConfirmedAction;
