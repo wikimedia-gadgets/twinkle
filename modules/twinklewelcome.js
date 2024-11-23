@@ -158,7 +158,7 @@ Twinkle.welcome.callback = function twinklewelcomeCallback(uid) {
 
 	const previewlink = document.createElement('a');
 	$(previewlink).click(() => {
-		Twinkle.welcome.callbacks.preview(result);  // |result| is defined below
+		Twinkle.welcome.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
@@ -201,8 +201,8 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			name: 'template',
 			list: $.map(templates, (properties, template) => ({
 					value: template,
-					label: '{{' + template + '}}: ' + properties.description + (properties.linkedArticle ? '\u00A0*' : ''),  // U+00A0 NO-BREAK SPACE
-					tooltip: properties.tooltip  // may be undefined
+					label: '{{' + template + '}}: ' + properties.description + (properties.linkedArticle ? '\u00A0*' : ''), // U+00A0 NO-BREAK SPACE
+					tooltip: properties.tooltip // may be undefined
 				})),
 			event: function(ev) {
 				ev.target.form.article.disabled = !templates[ev.target.value].linkedArticle;
@@ -659,7 +659,7 @@ Twinkle.welcome.getTemplateWikitext = function(type, template, article) {
 			replace('$USERNAME$', Twinkle.getPref('insertUsername') ? mw.config.get('wgUserName') : '').
 			replace('$ARTICLE$', article ? article : '').
 			replace(/\$HEADER\$\s*/, '== Welcome ==\n\n').
-			replace('$EXTRA$', '');  // EXTRA is not implemented yet
+			replace('$EXTRA$', ''); // EXTRA is not implemented yet
 	}
 	return '{{subst:' + template + (article ? '|art=' + article : '') + '}}' +
 			(Twinkle.getPref('customWelcomeSignature') ? ' ~~~~' : '');

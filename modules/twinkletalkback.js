@@ -62,7 +62,7 @@ Twinkle.talkback.callback = function() {
 
 	const previewlink = document.createElement('a');
 	$(previewlink).click(() => {
-		Twinkle.talkback.callbacks.preview(result);  // |result| is defined below
+		Twinkle.talkback.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
@@ -327,7 +327,7 @@ Twinkle.talkback.evaluate = function(e) {
 			talkpage.setEditSummary('Please check the discussion at [[:' + input.page +
 			(input.section ? '#' + input.section : '') + ']]');
 			break;
-		default:  // talkback
+		default: // talkback
 			input.page = Twinkle.talkback.callbacks.normalizeTalkbackPage(input.page);
 			talkpage.setEditSummary('Talkback ([[:' + input.page +
 			(input.section ? '#' + input.section : '') + ']])');
@@ -397,7 +397,7 @@ Twinkle.talkback.callbacks = {
 				text = '{{subst:Please see|location=' + input.page + (input.section ? '#' + input.section : '') +
 				'|more=' + input.message + '|heading=' + heading + '}}';
 				break;
-			default:  // talkback
+			default: // talkback
 				text = '==' + Twinkle.getPref('talkbackHeading') + '==\n' +
 					'{{talkback|' + input.page + (input.section ? '|' + input.section : '') + '|ts=~~~~~}}';
 

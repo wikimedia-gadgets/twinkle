@@ -57,7 +57,6 @@
 		"no-jquery/no-sizzle": "warn",
 		"no-jquery/variable-pattern": "warn",
 		"no-loop-func": "warn",
-		"no-multi-spaces": "warn",
 		"no-new": "warn",
 		"no-return-assign": "warn",
 		"no-script-url": "warn",

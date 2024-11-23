@@ -81,7 +81,7 @@ const utils = {
 	addNs: function(title, namespaceNumber) {
 		const title_obj = mw.Title.newFromUserInput(title, namespaceNumber);
 		if (!title_obj) {
-			return title;  // user entered invalid input; do nothing
+			return title; // user entered invalid input; do nothing
 		}
 		return title_obj.toText();
 	},
@@ -134,25 +134,25 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append({
 		type: 'option',
 		label: 'AfD (Articles for deletion)',
-		selected: namespace === 0,  // Main namespace
+		selected: namespace === 0, // Main namespace
 		value: 'afd'
 	});
 	categories.append({
 		type: 'option',
 		label: 'TfD (Templates for discussion)',
-		selected: [ 10, 828 ].indexOf(namespace) !== -1,  // Template and module namespaces
+		selected: [ 10, 828 ].indexOf(namespace) !== -1, // Template and module namespaces
 		value: 'tfd'
 	});
 	categories.append({
 		type: 'option',
 		label: 'FfD (Files for discussion)',
-		selected: namespace === 6,  // File namespace
+		selected: namespace === 6, // File namespace
 		value: 'ffd'
 	});
 	categories.append({
 		type: 'option',
 		label: 'CfD (Categories for discussion)',
-		selected: namespace === 14 || (namespace === 10 && /-stub$/.test(Morebits.pageNameNorm)),  // Category namespace and stub templates
+		selected: namespace === 14 || (namespace === 10 && /-stub$/.test(Morebits.pageNameNorm)), // Category namespace and stub templates
 		value: 'cfd'
 	});
 	categories.append({
@@ -206,7 +206,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 
 	const previewlink = document.createElement('a');
 	$(previewlink).click(() => {
-		Twinkle.xfd.callbacks.preview(result);  // |result| is defined below
+		Twinkle.xfd.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
@@ -764,7 +764,7 @@ Twinkle.xfd.callbacks = {
 			talk_page.setNewSectionText(editRequest);
 			talk_page.setCreateOption('recreate');
 			talk_page.setWatchlist(Twinkle.getPref('xfdWatchPage'));
-			talk_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
+			talk_page.setFollowRedirect(true); // should never be needed, but if the article is moved, we would want to follow the redirect
 			talk_page.setChangeTags(Twinkle.changeTags);
 			talk_page.setCallbackParameters(params);
 			talk_page.newSection(null, () => {
@@ -1118,7 +1118,7 @@ Twinkle.xfd.callbacks = {
 
 			// Tagging article
 			const wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Adding deletion tag to article');
-			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the article is moved, we would want to follow the redirect
+			wikipedia_page.setFollowRedirect(true); // should never be needed, but if the article is moved, we would want to follow the redirect
 			wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
 			wikipedia_page.setCallbackParameters(apiobj.params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.taggingArticle);
@@ -1212,7 +1212,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
 			pageobj.save(() => {
-				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 
 				// Actions that should wait on the discussion page actually being created
 				// and whose errors shouldn't output the user rationale
@@ -1238,7 +1238,7 @@ Twinkle.xfd.callbacks = {
 			if (!pageobj.exists()) {
 				text = '{{subst:AfD log}}\n' + added_data;
 			} else {
-				const old_text = pageobj.getPageText() + '\n';  // MW strips trailing blanks, but we like them, so we add a fake one
+				const old_text = pageobj.getPageText() + '\n'; // MW strips trailing blanks, but we like them, so we add a fake one
 
 				text = old_text.replace(/(<!-- Add new entries to the TOP of the following list -->\n+)/, '$1' + added_data);
 				if (text === old_text) {
@@ -1471,7 +1471,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(() => {
-				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});
 		}
 	},
@@ -1520,7 +1520,7 @@ Twinkle.xfd.callbacks = {
 			// Tagging page
 			if (mw.config.get('wgNamespaceNumber') !== 710) { // cannot tag TimedText pages
 				wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page with deletion tag');
-				wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
+				wikipedia_page.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
 				wikipedia_page.setCallbackParameters(apiobj.params);
 				wikipedia_page.load(Twinkle.xfd.callbacks.mfd.taggingPage);
 			}
@@ -1586,7 +1586,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
 			pageobj.save(() => {
-				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});
 		},
 		todaysList: function(pageobj) {
@@ -1656,7 +1656,7 @@ Twinkle.xfd.callbacks = {
 				pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
 				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
-				pageobj.setCreateOption('recreate');  // it might be possible for a file to exist without a description page
+				pageobj.setCreateOption('recreate'); // it might be possible for a file to exist without a description page
 				pageobj.save();
 			} else {
 				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
@@ -1706,7 +1706,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(() => {
-				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});
 		}
 	},
@@ -1780,7 +1780,7 @@ Twinkle.xfd.callbacks = {
 				pageobj.setEditSummary(editsummary);
 				pageobj.setChangeTags(Twinkle.changeTags);
 				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
-				pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
+				pageobj.setCreateOption('recreate'); // since categories can be populated without an actual page at that title
 				pageobj.save();
 			} else {
 				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
@@ -1812,7 +1812,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(() => {
-				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});
 		}
 	},
@@ -1832,7 +1832,7 @@ Twinkle.xfd.callbacks = {
 				pageobj.setEditSummary('Listed for speedy renaming; see [[WP:CFDS|Categories for discussion/Speedy]].');
 				pageobj.setChangeTags(Twinkle.changeTags);
 				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
-				pageobj.setCreateOption('recreate');  // since categories can be populated without an actual page at that title
+				pageobj.setCreateOption('recreate'); // since categories can be populated without an actual page at that title
 				pageobj.save(() => {
 					// No user notification for CfDS, so just add this nomination to the user's userspace log
 					Twinkle.xfd.callbacks.addToLog(params, null);
@@ -1860,7 +1860,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(() => {
-				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});
 		}
 	},
@@ -1984,7 +1984,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
 			pageobj.save(() => {
-				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});
 		},
 		sendNotifications: function(pageobj) {
@@ -2035,7 +2035,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setCreateOption('recreate'); // since the talk page need not exist
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.append(() => {
-				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 				// add this nomination to the user's userspace log
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
@@ -2056,7 +2056,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.save(() => {
-				Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
+				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 				// add this nomination to the user's userspace log
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
@@ -2127,7 +2127,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 					wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging template with deletion tag');
 				}
 			}
-			wikipedia_page.setFollowRedirect(true);  // should never be needed, but if the page is moved, we would want to follow the redirect
+			wikipedia_page.setFollowRedirect(true); // should never be needed, but if the page is moved, we would want to follow the redirect
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.tfd.main);
 			break;

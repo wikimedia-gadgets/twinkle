@@ -271,7 +271,7 @@ Twinkle.image.callbacks = {
 				tag += params.reason ? '|1=' + params.reason : '';
 				break;
 			default:
-				break;  // doesn't matter
+				break; // doesn't matter
 		}
 		tag += '|help=off}}\n';
 

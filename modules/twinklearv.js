@@ -777,7 +777,7 @@ Twinkle.arv.callback.getAivReasonWikitext = function(input) {
 	}
 
 	text += ' ~~~~';
-	text = text.replace(/\r?\n/g, '\n*:');  // indent newlines
+	text = text.replace(/\r?\n/g, '\n*:'); // indent newlines
 
 	return text;
 };
@@ -813,7 +813,7 @@ Twinkle.arv.callback.getUsernameReportWikitext = function(input) {
 		text += ' ';
 	}
 	text += '~~~~';
-	text = text.replace(/\r?\n/g, '\n*:');  // indent newlines
+	text = text.replace(/\r?\n/g, '\n*:'); // indent newlines
 
 	return text;
 };
@@ -843,7 +843,7 @@ Twinkle.arv.processSock = function(params) {
 	spiPage.setWatchlist(Twinkle.getPref('spiWatchReport'));
 	spiPage.append();
 
-	Morebits.wiki.removeCheckpoint();  // all page updates have been started
+	Morebits.wiki.removeCheckpoint(); // all page updates have been started
 };
 
 Twinkle.arv.processAN3 = function(params) {
@@ -973,7 +973,7 @@ Twinkle.arv.processAN3 = function(params) {
 		talkPage.setChangeTags(Twinkle.changeTags);
 		talkPage.setAppendText(notifyText);
 		talkPage.append();
-		Morebits.wiki.removeCheckpoint();  // all page updates have been started
+		Morebits.wiki.removeCheckpoint(); // all page updates have been started
 	}).fail((data) => {
 		console.log('API failed :(', data); // eslint-disable-line no-console
 	});

@@ -25,7 +25,7 @@ if (!Morebits.userIsInGroup('autoconfirmed') && !Morebits.userIsInGroup('confirm
 }
 
 const Twinkle = {};
-window.Twinkle = Twinkle;  // allow global access
+window.Twinkle = Twinkle; // allow global access
 
 Twinkle.initCallbacks = [];
 /**
@@ -167,7 +167,7 @@ Twinkle.defaultConfig = {
 
 	// Talkback
 	markTalkbackAsMinor: false,
-	insertTalkbackSignature: true,  // always sign talkback templates
+	insertTalkbackSignature: true, // always sign talkback templates
 	talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
 	mailHeading: "You've got mail!",
 

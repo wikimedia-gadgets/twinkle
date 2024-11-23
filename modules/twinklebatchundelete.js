@@ -46,7 +46,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	});
 
 	const statusdiv = document.createElement('div');
-	statusdiv.style.padding = '15px';  // just so it doesn't look broken
+	statusdiv.style.padding = '15px'; // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
 	Window.display();

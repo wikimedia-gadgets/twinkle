@@ -96,7 +96,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 			type: 'header',
 			label: 'Delete-related options'
 		});
-		if (mw.config.get('wgNamespaceNumber') % 2 === 0 && (mw.config.get('wgNamespaceNumber') !== 2 || (/\//).test(mw.config.get('wgTitle')))) {  // hide option for user pages, to avoid accidentally deleting user talk page
+		if (mw.config.get('wgNamespaceNumber') % 2 === 0 && (mw.config.get('wgNamespaceNumber') !== 2 || (/\//).test(mw.config.get('wgTitle')))) { // hide option for user pages, to avoid accidentally deleting user talk page
 			deleteOptions.append({
 				type: 'checkbox',
 				list: [
@@ -284,26 +284,26 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 
 	if (!Morebits.isPageRedirect()) {
 		switch (namespace) {
-			case 0:  // article
-			case 1:  // talk
+			case 0: // article
+			case 1: // talk
 				appendList('Articles', Twinkle.speedy.articleList);
 				break;
 
-			case 2:  // user
-			case 3:  // user talk
+			case 2: // user
+			case 3: // user talk
 				appendList('User pages', Twinkle.speedy.userList);
 				break;
 
-			case 6:  // file
-			case 7:  // file talk
+			case 6: // file
+			case 7: // file talk
 				appendList('Files', Twinkle.speedy.fileList);
 				if (!mode.isSysop) {
 					work_area.append({ type: 'div', label: 'Tagging for CSD F4 (no license), F5 (orphaned non-free use), F6 (no non-free use rationale), and F11 (no permission) can be done using Twinkle\'s "DI" tab.' });
 				}
 				break;
 
-			case 14:  // category
-			case 15:  // category talk
+			case 14: // category
+			case 15: // category talk
 				appendList('Categories', Twinkle.speedy.categoryList);
 				break;
 
@@ -351,7 +351,7 @@ Twinkle.speedy.callback.priorDeletionCount = function () {
 		leaction: 'delete/delete', // Just pure page deletion, no redirect overwrites or revdel
 		letitle: mw.config.get('wgPageName'),
 		leprop: '', // We're just counting we don't actually care about the entries
-		lelimit: 5  // A little bit goes a long way
+		lelimit: 5 // A little bit goes a long way
 	};
 
 	new Morebits.wiki.api('Checking for past deletions', query, ((apiobj) => {
@@ -458,7 +458,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 					criterion.subgroup,
 					{
 						type: 'button',
-						name: 'submit',  // ends up being called "csd.submit" so this is OK
+						name: 'submit', // ends up being called "csd.submit" so this is OK
 						label: mode.isSysop ? 'Delete page' : 'Tag page',
 						event: submitSubgroupHandler
 					}
@@ -898,7 +898,7 @@ Twinkle.speedy.generalList = [
 		value: 'subpage',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true,
-		hideInNamespaces: [ 0, 6, 8 ]  // hide in main, file, and mediawiki-spaces
+		hideInNamespaces: [ 0, 6, 8 ] // hide in main, file, and mediawiki-spaces
 	},
 	{
 		label: 'G10: Attack page',
@@ -949,7 +949,7 @@ Twinkle.speedy.generalList = [
 		value: 'afc',
 		tooltip: 'Any rejected or unsubmitted AfC submission in userspace or any non-redirect page in draft namespace, that has not been edited for more than 6 months. Blank drafts in either namespace are also included.',
 		hideWhenRedirect: true,
-		showInNamespaces: [2, 118]  // user, draft namespaces only
+		showInNamespaces: [2, 118] // user, draft namespaces only
 	},
 	{
 		label: 'G14: Unnecessary disambiguation page',
@@ -1064,7 +1064,7 @@ Twinkle.speedy.callbacks = {
 				code += '|' + norm.toUpperCase();
 				parameters = params.templateParams[index] || [];
 				for (const i in parameters) {
-					if (typeof parameters[i] === 'string' && !parseInt(i, 10)) {  // skip numeric parameters - {{db-multiple}} doesn't understand them
+					if (typeof parameters[i] === 'string' && !parseInt(i, 10)) { // skip numeric parameters - {{db-multiple}} doesn't understand them
 						code += '|' + i + '=' + parameters[i];
 					}
 				}
@@ -1170,7 +1170,7 @@ Twinkle.speedy.callbacks = {
 			notifytext += (params.welcomeuser ? '' : '|nowelcome=yes') + '}} ~~~~';
 
 			editsummary = 'Notification: speedy deletion' + (params.warnUser ? '' : ' nomination');
-			if (params.normalizeds.indexOf('g10') === -1) {  // no article name in summary for G10 taggings
+			if (params.normalizeds.indexOf('g10') === -1) { // no article name in summary for G10 taggings
 				editsummary += ' of [[:' + Morebits.pageNameNorm + ']].';
 			} else {
 				editsummary += ' of an attack page.';
@@ -1401,7 +1401,7 @@ Twinkle.speedy.callbacks = {
 
 				// Wrap SD template in noinclude tags if we are in template space.
 				// Won't work with userboxes in userspace, or any other transcluded page outside template space
-				if (mw.config.get('wgNamespaceNumber') === 10) {  // Template:
+				if (mw.config.get('wgNamespaceNumber') === 10) { // Template:
 					code = '<noinclude>' + code + '</noinclude>';
 				}
 
@@ -1533,7 +1533,7 @@ Twinkle.speedy.callbacks = {
 			let editsummary = 'Logging speedy deletion nomination';
 			let appendText = '# [[:' + Morebits.pageNameNorm;
 
-			if (params.normalizeds.indexOf('g10') === -1) {  // no article name in log for G10 taggings
+			if (params.normalizeds.indexOf('g10') === -1) { // no article name in log for G10 taggings
 				appendText += ']]' + fileLogLink + ': ';
 				editsummary += ' of [[:' + Morebits.pageNameNorm + ']].';
 			} else {
@@ -1545,7 +1545,7 @@ Twinkle.speedy.callbacks = {
 				$.each(params.normalizeds, (index, norm) => {
 					appendText += '[[WP:CSD#' + norm.toUpperCase() + '|' + norm.toUpperCase() + ']], ';
 				});
-				appendText = appendText.substr(0, appendText.length - 2);  // remove trailing comma
+				appendText = appendText.substr(0, appendText.length - 2); // remove trailing comma
 				appendText += ')';
 			} else if (params.normalizeds[0] === 'db') {
 				appendText += '{{tl|db-reason}}';
@@ -1610,7 +1610,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'userreq':  // U1
+			case 'userreq': // U1
 				if (form['csd.userreq_rationale']) {
 					const u1rationale = form['csd.userreq_rationale'].value;
 					if (mw.config.get('wgNamespaceNumber') === 3 && !(/\//).test(mw.config.get('wgTitle')) &&
@@ -1623,7 +1623,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'repost':  // G4
+			case 'repost': // G4
 				if (form['csd.repost_xfd']) {
 					const deldisc = form['csd.repost_xfd'].value;
 					if (deldisc) {
@@ -1632,13 +1632,13 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'banned':  // G5
+			case 'banned': // G5
 				if (form['csd.banned_user'] && form['csd.banned_user'].value) {
 					currentParams.user = form['csd.banned_user'].value.replace(/^\s*User:/i, '');
 				}
 				break;
 
-			case 'move':  // G6
+			case 'move': // G6
 				if (form['csd.move_page'] && form['csd.move_reason']) {
 					const movepage = form['csd.move_page'].value,
 						movereason = form['csd.move_reason'].value;
@@ -1657,7 +1657,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'xfd':  // G6
+			case 'xfd': // G6
 				if (form['csd.xfd_fullvotepage']) {
 					const xfd = form['csd.xfd_fullvotepage'].value;
 					if (xfd) {
@@ -1666,7 +1666,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'afc-move':  // G6
+			case 'afc-move': // G6
 				if (form['csd.draft_page']) {
 					const draftpage = form['csd.draft_page'].value;
 					if (!draftpage || !draftpage.trim()) {
@@ -1678,7 +1678,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'copypaste':  // G6
+			case 'copypaste': // G6
 				if (form['csd.copypaste_sourcepage']) {
 					const copypaste = form['csd.copypaste_sourcepage'].value;
 					if (!copypaste || !copypaste.trim()) {
@@ -1690,30 +1690,30 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'g6':  // G6
+			case 'g6': // G6
 				if (form['csd.g6_rationale'] && form['csd.g6_rationale'].value) {
 					currentParams.rationale = form['csd.g6_rationale'].value;
 				}
 				break;
 
-			case 'author':  // G7
+			case 'author': // G7
 				if (form['csd.author_rationale'] && form['csd.author_rationale'].value) {
 					currentParams.rationale = form['csd.author_rationale'].value;
 				}
 				break;
 
-			case 'g8':  // G8
+			case 'g8': // G8
 				if (form['csd.g8_rationale'] && form['csd.g8_rationale'].value) {
 					currentParams.rationale = form['csd.g8_rationale'].value;
 				}
 				break;
 
-			case 'attack':  // G10
+			case 'attack': // G10
 				currentParams.blanked = 'yes';
 				// it is actually blanked elsewhere in code, but setting the flag here
 				break;
 
-			case 'copyvio':  // G12
+			case 'copyvio': // G12
 				if (form['csd.copyvio_url'] && form['csd.copyvio_url'].value) {
 					currentParams.url = form['csd.copyvio_url'].value;
 				}
@@ -1725,11 +1725,11 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'afc':  // G13
+			case 'afc': // G13
 				currentParams.ts = '$TIMESTAMP'; // to be replaced by the last revision timestamp when page is saved
 				break;
 
-			case 'redundantimage':  // F1
+			case 'redundantimage': // F1
 				if (form['csd.redundantimage_filename']) {
 					const redimage = form['csd.redundantimage_filename'].value;
 					if (!redimage || !redimage.trim()) {
@@ -1741,13 +1741,13 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'badfairuse':  // F7
+			case 'badfairuse': // F7
 				if (form['csd.badfairuse_rationale'] && form['csd.badfairuse_rationale'].value) {
 					currentParams.rationale = form['csd.badfairuse_rationale'].value;
 				}
 				break;
 
-			case 'commons':  // F8
+			case 'commons': // F8
 				if (form['csd.commons_filename']) {
 					const filename = form['csd.commons_filename'].value;
 					if (filename && filename.trim() && filename !== Morebits.pageNameNorm) {
@@ -1756,7 +1756,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'imgcopyvio':  // F9
+			case 'imgcopyvio': // F9
 				if (form['csd.imgcopyvio_url'] && form['csd.imgcopyvio_rationale']) {
 					const f9url = form['csd.imgcopyvio_url'].value;
 					const f9rationale = form['csd.imgcopyvio_rationale'].value;
@@ -1774,7 +1774,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'foreign':  // A2
+			case 'foreign': // A2
 				if (form['csd.foreign_source']) {
 					const foreignlink = form['csd.foreign_source'].value;
 					if (!foreignlink || !foreignlink.trim()) {
@@ -1786,7 +1786,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'a10':  // A10
+			case 'a10': // A10
 				if (form['csd.a10_article']) {
 					const duptitle = form['csd.a10_article'].value;
 					if (!duptitle || !duptitle.trim()) {
@@ -1798,7 +1798,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
-			case 'c4':  // C4
+			case 'c4': // C4
 				if (form['csd.c4_rationale'] && form['csd.c4_rationale'].value) {
 					currentParams.rationale = form['csd.c4_rationale'].value;
 				}

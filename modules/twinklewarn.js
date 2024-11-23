@@ -118,7 +118,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 
 	const previewlink = document.createElement('a');
 	$(previewlink).click(() => {
-		Twinkle.warn.callbacks.preview(result);  // |result| is defined below
+		Twinkle.warn.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
@@ -1051,7 +1051,7 @@ Twinkle.warn.messages = {
 		'uw-bite': {
 			label: '"Biting" newcomers',
 			summary: 'Notice: "Biting" newcomers',
-			suppressArticleInSummary: true  // non-standard (user name, not article), and not necessary
+			suppressArticleInSummary: true // non-standard (user name, not article), and not necessary
 		},
 		'uw-blar': {
 			label: 'Article blanked and redirected',
@@ -1328,7 +1328,7 @@ Twinkle.warn.messages = {
 		},
 		'uw-socksuspect': {
 			label: 'Sockpuppetry',
-			summary: 'Warning: You are a suspected [[WP:SOCK|sockpuppet]]'  // of User:...
+			summary: 'Warning: You are a suspected [[WP:SOCK|sockpuppet]]' // of User:...
 		},
 		'uw-upv': {
 			label: 'Userpage vandalism',
@@ -1337,7 +1337,7 @@ Twinkle.warn.messages = {
 		'uw-username': {
 			label: 'Username is against policy',
 			summary: 'Warning: Your username might be against policy',
-			suppressArticleInSummary: true  // not relevant for this template
+			suppressArticleInSummary: true // not relevant for this template
 		},
 		'uw-coi-username': {
 			label: 'Username is against policy, and conflict of interest',
@@ -1967,7 +1967,7 @@ Twinkle.warn.callbacks = {
 			if (messageData.suppressArticleInSummary !== true && params.article) {
 				if (params.sub_group === 'uw-agf-sock' ||
 						params.sub_group === 'uw-socksuspect' ||
-						params.sub_group === 'uw-aiv') {  // these templates require a username
+						params.sub_group === 'uw-aiv') { // these templates require a username
 					summary += ' of [[:User:' + params.article + ']]';
 				} else {
 					summary += ' on [[:' + params.article + ']]';

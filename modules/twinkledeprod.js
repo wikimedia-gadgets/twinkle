@@ -34,7 +34,7 @@ Twinkle.deprod.callback = function() {
 	const form = new Morebits.quickForm(callback_commit);
 
 	const statusdiv = document.createElement('div');
-	statusdiv.style.padding = '15px';  // just so it doesn't look broken
+	statusdiv.style.padding = '15px'; // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
 	Window.display();
@@ -141,7 +141,7 @@ var callback_commit = function(event) {
 			const pageTitle = mw.Title.newFromText(pageName);
 			// Don't delete user talk pages, limiting this to Talk: pages since only article and user pages appear in deprod
 			if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
-				pageTitle.namespace++;  // now pageTitle is the talk page title!
+				pageTitle.namespace++; // now pageTitle is the talk page title!
 				query = {
 					action: 'query',
 					titles: pageTitle.toText(),

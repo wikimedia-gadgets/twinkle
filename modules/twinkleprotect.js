@@ -331,7 +331,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			});
 
 			field2 = new Morebits.quickForm.element({ type: 'field', label: 'Protection options', name: 'field2' });
-			field2.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field2.append({ type: 'div', name: 'currentprot', label: ' ' }); // holds the current protection level, as filled out by the async callback
 			field2.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			// for existing pages
 			if (mw.config.get('wgArticleId')) {
@@ -435,7 +435,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						list: Twinkle.protect.protectionLengths
 					});
 				}
-			} else {  // for non-existing pages
+			} else { // for non-existing pages
 				field2.append({
 					type: 'select',
 					name: 'createlevel',
@@ -490,13 +490,13 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				value: '',
 				tooltip: 'Optional revision ID of the RfPP page where protection was requested.'
 			});
-			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto' || mw.config.get('wgNamespaceNumber') === 710) {  // tagging isn't relevant for non-existing, module, or TimedText pages
+			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto' || mw.config.get('wgNamespaceNumber') === 710) { // tagging isn't relevant for non-existing, module, or TimedText pages
 				break;
 			}
 			/* falls through */
 		case 'tag':
 			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Tagging options', name: 'field1' });
-			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field1.append({ type: 'div', name: 'currentprot', label: ' ' }); // holds the current protection level, as filled out by the async callback
 			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append({
 				type: 'select',
@@ -539,7 +539,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 			});
 
 			field1 = new Morebits.quickForm.element({ type: 'field', label: 'Options', name: 'field1' });
-			field1.append({ type: 'div', name: 'currentprot', label: ' ' });  // holds the current protection level, as filled out by the async callback
+			field1.append({ type: 'div', name: 'currentprot', label: ' ' }); // holds the current protection level, as filled out by the async callback
 			field1.append({ type: 'div', name: 'hasprotectlog', label: ' ' });
 			field1.append({
 				type: 'select',
@@ -769,9 +769,9 @@ Twinkle.protect.protectionWeight = {
 	templateeditor: 30,
 	extendedconfirmed: 20,
 	autoconfirmed: 10,
-	flaggedrevs_autoconfirmed: 5,  // Pending Changes protection alone
+	flaggedrevs_autoconfirmed: 5, // Pending Changes protection alone
 	all: 0,
-	flaggedrevs_none: 0  // just in case
+	flaggedrevs_none: 0 // just in case
 };
 
 // NOTICE: keep this synched with [[MediaWiki:Protect-dropdown]]
@@ -869,7 +869,7 @@ Twinkle.protect.protectionPresetsInfo = {
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
 		template: 'pp-usertalk'
 	},
-	'pp-semi-template': {  // removed for now
+	'pp-semi-template': { // removed for now
 		edit: 'autoconfirmed',
 		move: 'autoconfirmed',
 		expiry: 'infinity',
@@ -887,7 +887,7 @@ Twinkle.protect.protectionPresetsInfo = {
 		template: 'pp-protected'
 	},
 	'pp-pc-vandalism': {
-		stabilize: 'autoconfirmed',  // stabilize = Pending Changes
+		stabilize: 'autoconfirmed', // stabilize = Pending Changes
 		reason: 'Persistent [[WP:Vandalism|vandalism]]',
 		template: 'pp-pc'
 	},
@@ -1005,7 +1005,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 		break;
 	}
 
-	if (actiontype === 'protect') {  // actually protecting the page
+	if (actiontype === 'protect') { // actually protecting the page
 		const item = Twinkle.protect.protectionPresetsInfo[form.category.value];
 
 		if (mw.config.get('wgArticleId')) {
@@ -1081,7 +1081,7 @@ Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePre
 			}
 		}
 
-	} else {  // RPP request
+	} else { // RPP request
 		if (form.category.value === 'unprotect') {
 			form.expiry.value = '';
 			form.expiry.disabled = true;
@@ -1350,7 +1350,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 			var reason = typereason;
 			if (input.reason !== '') {
 				if (typereason !== '') {
-					reason += '\u00A0\u2013 ';  // U+00A0 NO-BREAK SPACE; U+2013 EN RULE
+					reason += '\u00A0\u2013 '; // U+00A0 NO-BREAK SPACE; U+2013 EN RULE
 				}
 				reason += input.reason;
 			}

@@ -139,7 +139,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 			const titleSplit = pathSplit[3].split(':');
 			query.gapnamespace = mw.config.get('wgNamespaceIds')[titleSplit[0].toLowerCase()];
 			if (titleSplit.length < 2 || typeof query.gapnamespace === 'undefined') {
-				query.gapnamespace = 0;  // article namespace
+				query.gapnamespace = 0; // article namespace
 				query.gapprefix = pathSplit.splice(3).join('/');
 			} else {
 				pathSplit = pathSplit.splice(4);
@@ -156,7 +156,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	}
 
 	const statusdiv = document.createElement('div');
-	statusdiv.style.padding = '15px';  // just so it doesn't look broken
+	statusdiv.style.padding = '15px'; // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
 	Window.display();
@@ -539,7 +539,7 @@ Twinkle.batchdelete.callbacks = {
 			if (params.delete_talk) {
 				const pageTitle = mw.Title.newFromText(params.page);
 				if (pageTitle && pageTitle.namespace % 2 === 0 && pageTitle.namespace !== 2) {
-					pageTitle.namespace++;  // now pageTitle is the talk page title!
+					pageTitle.namespace++; // now pageTitle is the talk page title!
 					query = {
 						action: 'query',
 						titles: pageTitle.toText(),

@@ -440,7 +440,7 @@ Twinkle.rollback.callbacks = {
 			return;
 		}
 
-		const optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
+		const optional_summary = prompt('Please specify a reason for the revert:                                ', ''); // padded out to widen prompt in Firefox
 		if (optional_summary === null) {
 			apiobj.statelem.error('Aborted by user.');
 			return;
@@ -635,7 +635,7 @@ Twinkle.rollback.callbacks = {
 		let summary, extra_summary;
 		switch (params.type) {
 			case 'agf':
-				extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
+				extra_summary = prompt('An optional comment for the edit summary:                              ', ''); // padded out to widen prompt in Firefox
 				if (extra_summary === null) {
 					statelem.error('Aborted by user.');
 					return;
@@ -655,7 +655,7 @@ Twinkle.rollback.callbacks = {
 			/* falls through */
 			default:
 				if (Twinkle.getPref('offerReasonOnNormalRevert')) {
-					extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
+					extra_summary = prompt('An optional comment for the edit summary:                              ', ''); // padded out to widen prompt in Firefox
 					if (extra_summary === null) {
 						statelem.error('Aborted by user.');
 						return;
