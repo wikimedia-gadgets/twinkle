@@ -990,6 +990,11 @@ Twinkle.speedy.redirectList = [
 		value: 'redirnone',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true
+	},
+	{
+		label: 'X3: Redirects with no space before a parenthetical disambiguation',
+		value: 'disambigspace',
+		tooltip: 'This excludes terms that can plausibly be searched for without spaces, or if the redirect contains substantive page history (e.g. from a merge).'
 	}
 ];
 
@@ -1038,6 +1043,7 @@ Twinkle.speedy.normalizeHash = {
 	'rediruser': 'r2',
 	'redirtypo': 'r3',
 	'redircom': 'r4',
+	'disambigspace': 'x3',
 	'redundantimage': 'f1',
 	'noimage': 'f2',
 	'fpcfail': 'f2',
