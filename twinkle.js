@@ -191,7 +191,7 @@ Twinkle.getPref = function twinkleGetPref(name) {
 	// Backwards compatibility code because we renamed confirmOnFluff to confirmOnRollback, and confirmOnMobileFluff to confirmOnMobileRollback
 	if (name === 'confirmOnRollback' && Twinkle.prefs.confirmOnFluff !== undefined) {
 		return Twinkle.prefs.confirmOnFluff;
-	} else if (name === 'confirmOnMobileRollback' && Twinkle.prefs.confirmOnFluff !== undefined) {
+	} else if (name === 'confirmOnMobileRollback' && Twinkle.prefs.confirmOnMobileFluff !== undefined) {
 		return Twinkle.prefs.confirmOnMobileFluff;
 	}
 
