@@ -471,73 +471,24 @@ Twinkle.arv.callback.changeCategory = function (e) {
 };
 
 Twinkle.arv.callback.evaluate = function(e) {
-	const form = e.target;
-	let reason = '';
-	let comment = '';
-	if (form.reason) {
-		comment = form.reason.value;
-	}
-	const uid = form.uid.value;
+	var form = e.target;
+	var reason = '';
+	var input = Morebits.quickForm.getInputData(form);
 
-	let types;
-	switch (form.category.value) {
+	var uid = form.uid.value;
+
+	switch (input.category) {
 
 		// Report user for vandalism
 		case 'aiv':
 			/* falls through */
 		default:
-			types = form.getChecked('arvtype');
-			if (!types.length && comment === '') {
+			reason = Twinkle.arv.callback.getAivReasonWikitext(input);
+
+			if (reason === null) {
 				alert('You must specify some reason');
 				return;
 			}
-
-			types = types.map((v) => {
-				switch (v) {
-					case 'final':
-						return 'vandalism after final warning';
-					case 'postblock':
-						return 'vandalism after recent release of block';
-					case 'vandalonly':
-						return 'actions evidently indicate a vandalism-only account';
-					case 'promoonly':
-						return 'account is being used only for promotional purposes';
-					case 'spambot':
-						return 'account is evidently a spambot or a compromised account';
-					default:
-						return 'unknown reason';
-				}
-			}).join('; ');
-
-			if (form.page.value !== '') {
-				// Allow links to redirects, files, and categories
-				reason = 'On {{No redirect|:' + form.page.value + '}}';
-				if (form.badid.value !== '') {
-					reason += ' ({{diff|' + form.page.value + '|' + form.badid.value + '|' + form.goodid.value + '|diff}})';
-				}
-				reason += ':';
-			}
-
-			if (types) {
-				reason += ' ' + types;
-			}
-
-			if (comment !== '') {
-				const reasonEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(reason);
-				reason += reasonEndsInPunctuationOrBlank ? '' : '.';
-				const reasonIsBlank = reason === '';
-				reason += reasonIsBlank ? '' : ' ';
-				reason += comment;
-			}
-
-			reason = reason.trim();
-			var reasonEndsInPunctuation = /[.?!;]$/.test(reason);
-			if (!reasonEndsInPunctuation) {
-				reason += '.';
-			}
-
-			reason += ' ~~~~';
-			reason = reason.replace(/\r?\n/g, '\n*:');  // indent newlines
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
@@ -554,7 +505,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				const $aivLink = '<a target="_blank" href="/wiki/WP:AIV">WP:AIV</a>';
 
 				// check if user has already been reported
-				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(text)) {
+				if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(input.uid) + '\\s*\\}\\}').test(text)) {
 					aivPage.getStatusElement().error('Report already present, will not add a new one');
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $aivLink + ':');
 					return;
@@ -566,8 +517,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 					const tb2Text = tb2Page.getPageText();
 					const tb2statelem = tb2Page.getStatusElement();
 
-					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(uid) + '\\s*\\}\\}').test(tb2Text)) {
-						if (confirm('The user ' + uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
+					if (new RegExp('\\{\\{\\s*(?:(?:[Ii][Pp])?[Vv]andal|[Uu]serlinks)\\s*\\|\\s*(?:1=)?\\s*' + Morebits.string.escapeRegExp(input.uid) + '\\s*\\}\\}').test(tb2Text)) {
+						if (confirm('The user ' + input.uid + ' has already been reported by a bot. Do you wish to make the report anyway?')) {
 							tb2statelem.info('Proceeded despite bot report');
 						} else {
 							tb2statelem.error('Report from a bot is already present, stopping');
@@ -579,9 +530,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 					}
 
 					aivPage.getStatusElement().status('Adding new report...');
-					aivPage.setEditSummary('Reporting [[Special:Contributions/' + uid + '|' + uid + ']].');
+					aivPage.setEditSummary('Reporting [[Special:Contributions/' + input.uid + '|' + input.uid + ']].');
 					aivPage.setChangeTags(Twinkle.changeTags);
-					aivPage.setAppendText('\n*{{vandal|' + (/=/.test(uid) ? '1=' : '') + uid + '}} &ndash; ' + reason);
+					aivPage.setAppendText(Twinkle.arv.callback.buildAivReport(input));
 					aivPage.append();
 				});
 			});
@@ -589,37 +540,9 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 		// Report inappropriate username
 		case 'username':
-			types = form.getChecked('arvtype').map(Morebits.string.toLowerCaseFirstChar);
-			var censorUsername = types.includes('offensive'); // check if the username is marked offensive
+			var censorUsername = input.arvtype.includes('offensive'); // check if the username is marked offensive
 
-			// generate human-readable string, e.g. "misleading and promotional username"
-			if (types.length <= 2) {
-				types = types.join(' and ');
-			} else {
-				types = [ types.slice(0, -1).join(', '), types.slice(-1) ].join(' and ');
-			}
-
-			// a or an?
-			var adjective = 'a';
-			if (/[aeiouwyh]/.test(types[0] || '')) { // non 100% correct, but whatever, including 'h' for Cockney
-				adjective = 'an';
-			}
-
-			// generate wikicode to place on [[WP:UAA]] page
-			reason = '*{{user-uaa|1=' + uid + '}} &ndash; ';
-			if (types.length) {
-				reason += 'Violation of the username policy as ' + adjective + ' ' + types + ' username. ';
-			}
-			if (comment !== '') {
-				reason += Morebits.string.toUpperCaseFirstChar(comment);
-				const endsInPeriod = /\.$/.test(comment);
-				if (!endsInPeriod) {
-					reason += '.';
-				}
-				reason += ' ';
-			}
-			reason += '~~~~';
-			reason = reason.replace(/\r?\n/g, '\n*:');  // indent newlines
+			reason = Twinkle.arv.callback.getUsernameReportWikitext(input);
 
 			Morebits.simpleWindow.setButtonsEnabled(false);
 			Morebits.status.init(form);
@@ -634,14 +557,14 @@ Twinkle.arv.callback.evaluate = function(e) {
 				const text = uaaPage.getPageText();
 
 				// check if user has already been reported
-				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + Morebits.string.escapeRegExp(uid) + '\\s*(\\||\\})').test(text)) {
+				if (new RegExp('\\{\\{\\s*user-uaa\\s*\\|\\s*(1\\s*=\\s*)?' + Morebits.string.escapeRegExp(input.uid) + '\\s*(\\||\\})').test(text)) {
 					uaaPage.getStatusElement().error('User is already listed.');
 					const $uaaLink = '<a target="_blank" href="/wiki/WP:UAA">WP:UAA</a>';
 					Morebits.status.printUserText(reason, 'The comments you typed are provided below, in case you wish to manually post them under the existing report for this user at ' + $uaaLink + ':');
 					return;
 				}
 				uaaPage.getStatusElement().status('Adding new report...');
-				uaaPage.setEditSummary('Reporting ' + (censorUsername ? 'an offensive username.' : '[[Special:Contributions/' + uid + '|' + uid + ']].'));
+				uaaPage.setEditSummary('Reporting ' + (censorUsername ? 'an offensive username.' : '[[Special:Contributions/' + input.uid + '|' + input.uid + ']].'));
 				uaaPage.setChangeTags(Twinkle.changeTags);
 
 				// Blank newline per [[Special:Permalink/996949310#Spacing]]; see also [[WP:LISTGAP]] and [[WP:INDENTGAP]]
@@ -802,6 +725,100 @@ Twinkle.arv.callback.evaluate = function(e) {
 			}
 			break;
 	}
+};
+
+Twinkle.arv.callback.getAivReasonWikitext = function(input) {
+	var text = '';
+	var type = input.arvtype;
+
+	if (!type.length && input.reason === '') {
+		return null;
+	}
+
+	type = type.map(function(v) {
+		switch (v) {
+			case 'final':
+				return 'vandalism after final warning';
+			case 'postblock':
+				return 'vandalism after recent release of block';
+			case 'vandalonly':
+				return 'actions evidently indicate a vandalism-only account';
+			case 'promoonly':
+				return 'account is being used only for promotional purposes';
+			case 'spambot':
+				return 'account is evidently a spambot or a compromised account';
+			default:
+				return 'unknown reason';
+		}
+	}).join('; ');
+
+	if (input.page !== '') {
+		// Allow links to redirects, files, and categories
+		text = 'On {{No redirect|:' + input.page + '}}';
+		if (input.badid !== '') {
+			text += ' ({{diff|' + input.page + '|' + input.badid + '|' + input.goodid + '|diff}})';
+		}
+		text += ':';
+	}
+
+	if (type) {
+		text += ' ' + type;
+	}
+
+	if (input.reason !== '') {
+		var textEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(text);
+		text += textEndsInPunctuationOrBlank ? '' : '.';
+		var textIsBlank = text === '';
+		text += textIsBlank ? '' : ' ';
+		text += input.reason;
+	}
+
+	text = text.trim();
+	var textEndsInPunctuation = /[.?!;]$/.test(text);
+	if (!textEndsInPunctuation) {
+		text += '.';
+	}
+
+	text += ' ~~~~';
+	text = text.replace(/\r?\n/g, '\n*:');  // indent newlines
+
+	return text;
+};
+
+Twinkle.arv.callback.buildAivReport = function(input) {
+	return '\n*{{vandal|' + (/=/.test(input.uid) ? '1=' : '') + input.uid + '}} &ndash; ' + Twinkle.arv.callback.getAivReasonWikitext(input);
+};
+
+Twinkle.arv.callback.getUsernameReportWikitext = function(input) {
+	// generate human-readable string, e.g. "misleading and promotional username"
+	if (input.arvtype.length <= 2) {
+		input.arvtype = input.arvtype.join(' and ');
+	} else {
+		input.arvtype = [ input.arvtype.slice(0, -1).join(', '), input.arvtype.slice(-1) ].join(' and ');
+	}
+
+	// a or an?
+	var adjective = 'a';
+	if (/[aeiouwyh]/.test(input.arvtype[0] || '')) { // non 100% correct, but whatever, including 'h' for Cockney
+		adjective = 'an';
+	}
+
+	var text = '*{{user-uaa|1=' + input.uid + '}} &ndash; ';
+	if (input.arvtype.length) {
+		text += 'Violation of the username policy as ' + adjective + ' ' + input.arvtype + ' username. ';
+	}
+	if (input.reason !== '') {
+		text += Morebits.string.toUpperCaseFirstChar(input.reason);
+		var endsInPeriod = /\.$/.test(input.reason);
+		if (!endsInPeriod) {
+			text += '.';
+		}
+		text += ' ';
+	}
+	text += '~~~~';
+	text = text.replace(/\r?\n/g, '\n*:');  // indent newlines
+
+	return text;
 };
 
 Twinkle.arv.processSock = function(params) {

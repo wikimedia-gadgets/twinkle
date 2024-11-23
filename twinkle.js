@@ -179,6 +179,7 @@ Twinkle.getPref = function twinkleGetPref(name) {
 	if (typeof Twinkle.prefs === 'object' && Twinkle.prefs[name] !== undefined) {
 		return Twinkle.prefs[name];
 	}
+
 	// Old preferences format, used before twinkleoptions.js was a thing
 	if (typeof window.TwinkleConfig === 'object' && window.TwinkleConfig[name] !== undefined) {
 		return window.TwinkleConfig[name];
@@ -186,6 +187,14 @@ Twinkle.getPref = function twinkleGetPref(name) {
 	if (typeof window.FriendlyConfig === 'object' && window.FriendlyConfig[name] !== undefined) {
 		return window.FriendlyConfig[name];
 	}
+
+	// Backwards compatibility code because we renamed confirmOnFluff to confirmOnRollback, and confirmOnMobileFluff to confirmOnMobileRollback
+	if (name === 'confirmOnRollback' && Twinkle.prefs.confirmOnFluff !== undefined) {
+		return Twinkle.prefs.confirmOnFluff;
+	} else if (name === 'confirmOnMobileRollback' && Twinkle.prefs.confirmOnMobileFluff !== undefined) {
+		return Twinkle.prefs.confirmOnMobileFluff;
+	}
+
 	return Twinkle.defaultConfig[name];
 };
 
