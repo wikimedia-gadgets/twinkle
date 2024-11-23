@@ -993,7 +993,7 @@ Twinkle.speedy.redirectList = [
 	},
 	{
 		label: 'X3: Redirects with no space before a parenthetical disambiguation',
-		value: 'disambigspace',
+		value: 'x3',
 		tooltip: 'This excludes terms that can plausibly be searched for without spaces, or if the redirect contains substantive page history (e.g. from a merge).'
 	}
 ];
@@ -1043,7 +1043,7 @@ Twinkle.speedy.normalizeHash = {
 	'rediruser': 'r2',
 	'redirtypo': 'r3',
 	'redircom': 'r4',
-	'disambigspace': 'x3',
+	'x3': 'x3',
 	'redundantimage': 'f1',
 	'noimage': 'f2',
 	'fpcfail': 'f2',
