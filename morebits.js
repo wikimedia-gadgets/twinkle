@@ -1819,7 +1819,7 @@ Morebits.date = function() {
 
 	if (!this._d) {
 		// Try standard date
-		this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)));
+		this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)))();
 	}
 
 	// Still no?

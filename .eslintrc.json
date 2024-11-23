@@ -45,7 +45,6 @@
 		"jsdoc/require-asterisk-prefix": "warn",
 		"mediawiki/class-doc": "warn",
 		"new-cap": "warn",
-		"new-parens": "warn",
 		"no-jquery/no-constructor-attributes": "warn",
 		"no-jquery/no-each-util": "warn",
 		"no-jquery/no-extend": "warn",
