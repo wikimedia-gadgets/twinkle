@@ -60,7 +60,6 @@ Twinkle.getPref = function twinkleGetPref(name) {
 	return Twinkle.defaultConfig[name];
 };
 
-
 /**
  * Adds a portlet menu to one of the navigation areas on the page.
  *
