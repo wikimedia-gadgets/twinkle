@@ -61,6 +61,7 @@ const utils = {
 	/**
 	 * Remove namespace name from title if present
 	 * Exception-safe wrapper around mw.Title
+	 *
 	 * @param {string} title
 	 */
 	stripNs: function(title) {
@@ -75,6 +76,7 @@ const utils = {
 	 * Add namespace name to page title if not already given
 	 * CAUTION: namespace name won't be added if a namespace (*not* necessarily
 	 * the same as the one given) already is there in the title
+	 *
 	 * @param {string} title
 	 * @param {number} namespaceNumber
 	 */
@@ -88,8 +90,9 @@ const utils = {
 
 	/**
 	 * Provide Wikipedian TLA style: AfD, RfD, CfDS, RM, SfD, etc.
+	 *
 	 * @param {string} venue
-	 * @returns {string}
+	 * @return {string}
 	 */
 	toTLACase: function(venue) {
 		return venue
@@ -205,7 +208,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	});
 
 	const previewlink = document.createElement('a');
-	$(previewlink).click(() => {
+	$(previewlink).on('click', () => {
 		Twinkle.xfd.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
@@ -884,7 +887,8 @@ Twinkle.xfd.callbacks = {
 	/**
 	 * Unified handler for sending {{Xfd notice}} notifications
 	 * Also handles userspace logging
-	 * @param {object} params
+	 *
+	 * @param {Object} params
 	 * @param {string} notifyTarget The user or page being notified
 	 * @param {boolean} [noLog=false] Whether to skip logging to userspace
 	 * XfD log, especially useful in cases in where multiple notifications
@@ -1319,7 +1323,7 @@ Twinkle.xfd.callbacks = {
 
 				// Tag other template/module
 				wikipedia_otherpage.setFollowRedirect(true);
-				const otherParams = $.extend({}, params);
+				const otherParams = Object.assign({}, params);
 				otherParams.otherTemplateName = Morebits.pageNameNorm;
 				wikipedia_otherpage.setCallbackParameters(otherParams);
 				wikipedia_otherpage.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);
@@ -2066,9 +2070,10 @@ Twinkle.xfd.callbacks = {
 
 /**
  * Given the wikitext of the WP:RM/TR page and the wikitext to insert, insert it at the bottom of the ==== Uncontroversial technical requests ==== section.
- * @param {String} pageWikitext
- * @param {String} wikitextToInsert Will typically be `{{subst:RMassist|1=From|2=To|reason=Reason}}`, which expands out to `* {{RMassist/core | 1 = From | 2 = To | discuss = yes | reason = Reason | sig = Signature | requester = YourUserName}}`
- * @return {String} pageWikitext
+ *
+ * @param {string} pageWikitext
+ * @param {string} wikitextToInsert Will typically be `{{subst:RMassist|1=From|2=To|reason=Reason}}`, which expands out to `* {{RMassist/core | 1 = From | 2 = To | discuss = yes | reason = Reason | sig = Signature | requester = YourUserName}}`
+ * @return {string} pageWikitext
  */
 Twinkle.xfd.insertRMTR = function(pageWikitext, wikitextToInsert) {
 	const placementRE = /\n{1,}(==== ?Requests to revert undiscussed moves ?====)/i;
