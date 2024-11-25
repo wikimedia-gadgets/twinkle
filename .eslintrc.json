@@ -15,6 +15,7 @@
 		"camelcase": "off",
 		"computed-property-spacing": "off",
 		"max-len": "off",
+		"no-alert": "off",
 		"no-jquery/no-class-state": "off",
 		"no-jquery/no-global-selector": "off",
 		"no-shadow": "off",
@@ -38,15 +39,12 @@
 			}
 		],
 
-		"dot-location": "warn",
 		"es-x/no-array-prototype-includes": "warn",
 		"es-x/no-object-values": "warn",
 		"indent": "off",
 		"jsdoc/require-asterisk-prefix": "warn",
 		"mediawiki/class-doc": "warn",
 		"new-cap": "warn",
-		"new-parens": "warn",
-		"no-alert": "warn",
 		"no-jquery/no-constructor-attributes": "warn",
 		"no-jquery/no-each-util": "warn",
 		"no-jquery/no-extend": "warn",
@@ -57,8 +55,6 @@
 		"no-jquery/no-sizzle": "warn",
 		"no-jquery/variable-pattern": "warn",
 		"no-loop-func": "warn",
-		"no-multi-spaces": "warn",
-		"no-multiple-empty-lines": "warn",
 		"no-new": "warn",
 		"no-return-assign": "warn",
 		"no-script-url": "warn",
@@ -70,7 +66,6 @@
 		"no-useless-concat": "warn",
 		"no-var": "warn",
 		"operator-linebreak": "warn",
-		"prefer-const": "warn",
-		"quote-props": "warn"
+		"prefer-const": "warn"
 	}
 }

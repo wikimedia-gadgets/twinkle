@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -88,7 +86,7 @@ Twinkle.unlink.callback = function(presetReason) {
 	wikipedia_api.post();
 
 	const root = document.createElement('div');
-	root.style.padding = '15px';  // just so it doesn't look broken
+	root.style.padding = '15px'; // just so it doesn't look broken
 	Morebits.status.init(root);
 	wikipedia_api.statelem.status('loading...');
 	Window.setContent(root);
@@ -122,7 +120,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	const params = { reason: input.reason, unlinker: unlinker };
 	unlinker.run((pageName) => {
 		const wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking in page "' + pageName + '"');
-		wikipedia_page.setBotEdit(true);  // unlink considered a floody operation
+		wikipedia_page.setBotEdit(true); // unlink considered a floody operation
 		wikipedia_page.setCallbackParameters($.extend({
 			doBacklinks: input.backlinks.indexOf(pageName) !== -1,
 			doImageusage: input.imageusage.indexOf(pageName) !== -1
@@ -297,6 +295,5 @@ Twinkle.unlink.callbacks = {
 
 Twinkle.addInitCallback(Twinkle.unlink, 'unlink');
 }(jQuery));
-
 
 // </nowiki>

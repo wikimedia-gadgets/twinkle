@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -273,7 +271,7 @@ Twinkle.image.callbacks = {
 				tag += params.reason ? '|1=' + params.reason : '';
 				break;
 			default:
-				break;  // doesn't matter
+				break; // doesn't matter
 		}
 		tag += '|help=off}}\n';
 
@@ -358,6 +356,5 @@ Twinkle.image.callbacks = {
 
 Twinkle.addInitCallback(Twinkle.image, 'image');
 }(jQuery));
-
 
 // </nowiki>
