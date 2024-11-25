@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($) {
+(function() {
 
 
 /*
@@ -1730,7 +1730,7 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 };
 
 Twinkle.addInitCallback(Twinkle.config.init);
-}(jQuery));
+}());
 
 
 // </nowiki>

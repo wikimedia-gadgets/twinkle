@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($) {
+(function() {
 
 
 /*
@@ -336,7 +336,7 @@ Twinkle.batchprotect.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.batchprotect, 'batchprotect');
-}(jQuery));
+}());
 
 
 // </nowiki>

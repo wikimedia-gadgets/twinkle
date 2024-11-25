@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($) {
+(function() {
 
 
 /*
@@ -852,7 +852,7 @@ Twinkle.rollback.formatSummary = function(builtInString, userName, customString)
 };
 
 Twinkle.addInitCallback(Twinkle.rollback, 'rollback');
-}(jQuery));
+}());
 
 
 // </nowiki>

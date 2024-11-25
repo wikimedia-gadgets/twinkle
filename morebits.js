@@ -34,7 +34,7 @@
  */
 
 
-(function (window, document, $) { // Wrap entire file with anonymous function
+(function() {
 
 /** @lends Morebits */
 const Morebits = {};
@@ -6114,7 +6114,7 @@ Morebits.simpleWindow.setButtonsEnabled = function(enabled) {
 };
 
 
-}(window, document, jQuery)); // End wrap with anonymous function
+}());
 
 
 /**

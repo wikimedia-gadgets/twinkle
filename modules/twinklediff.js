@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($) {
+(function() {
 
 
 /*
@@ -77,7 +77,7 @@ Twinkle.diff.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.diff, 'diff');
-}(jQuery));
+}());
 
 
 // </nowiki>

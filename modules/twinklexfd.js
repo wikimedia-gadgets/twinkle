@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($) {
+(function() {
 
 
 /*
@@ -2254,7 +2254,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.xfd, 'xfd');
-}(jQuery));
+}());
 
 
 // </nowiki>

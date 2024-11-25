@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($) {
+(function() {
 
 
 /*
@@ -207,7 +207,7 @@ Twinkle.batchundelete.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.batchundelete, 'batchundelete');
-}(jQuery));
+}());
 
 
 // </nowiki>

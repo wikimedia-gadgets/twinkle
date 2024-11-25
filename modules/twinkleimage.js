@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($) {
+(function() {
 
 
 /*
@@ -357,7 +357,7 @@ Twinkle.image.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.image, 'image');
-}(jQuery));
+}());
 
 
 // </nowiki>

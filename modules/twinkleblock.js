@@ -1,7 +1,7 @@
 // <nowiki>
 
 
-(function($) {
+(function() {
 
 let api = new mw.Api(), relevantUserName, blockedUserName;
 const menuFormattedNamespaces = $.extend({}, mw.config.get('wgFormattedNamespaces'));
@@ -2043,7 +2043,7 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 };
 
 Twinkle.addInitCallback(Twinkle.block, 'block');
-}(jQuery));
+}());
 
 
 // </nowiki>
