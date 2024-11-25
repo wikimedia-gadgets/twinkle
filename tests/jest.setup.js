@@ -6,6 +6,8 @@ mw.config.set({
 
 require('../morebits.js');
 require('../twinkle.js');
+// contains the Twinkle.addInitCallback() function, which is used at the bottom of every module
+require('../twinkleutil.js');
 require('../modules/twinklewarn.js');
 require('../modules/twinklexfd.js');
 global.Morebits = window.Morebits;
