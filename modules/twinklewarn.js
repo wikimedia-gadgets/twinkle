@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function() {
-
 
 /*
  ****************************************
@@ -115,13 +113,12 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		id: 'twinkle-warn-warning-messages'
 	});
 
-
 	const more = form.append({ type: 'field', name: 'reasonGroup', label: 'Warning information' });
 	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
 
 	const previewlink = document.createElement('a');
 	$(previewlink).click(() => {
-		Twinkle.warn.callbacks.preview(result);  // |result| is defined below
+		Twinkle.warn.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
@@ -195,7 +192,6 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 			})).post();
 		}
 	}
-
 
 	// We must init the first choice (General Note);
 	const evt = document.createEvent('Event');
@@ -830,7 +826,7 @@ Twinkle.warn.messages = {
 				}
 			}
 		},
-		'Other': {
+		Other: {
 			'uw-attempt': {
 				level1: {
 					label: 'Triggering the edit filter',
@@ -1055,7 +1051,7 @@ Twinkle.warn.messages = {
 		'uw-bite': {
 			label: '"Biting" newcomers',
 			summary: 'Notice: "Biting" newcomers',
-			suppressArticleInSummary: true  // non-standard (user name, not article), and not necessary
+			suppressArticleInSummary: true // non-standard (user name, not article), and not necessary
 		},
 		'uw-blar': {
 			label: 'Article blanked and redirected',
@@ -1332,7 +1328,7 @@ Twinkle.warn.messages = {
 		},
 		'uw-socksuspect': {
 			label: 'Sockpuppetry',
-			summary: 'Warning: You are a suspected [[WP:SOCK|sockpuppet]]'  // of User:...
+			summary: 'Warning: You are a suspected [[WP:SOCK|sockpuppet]]' // of User:...
 		},
 		'uw-upv': {
 			label: 'Userpage vandalism',
@@ -1341,7 +1337,7 @@ Twinkle.warn.messages = {
 		'uw-username': {
 			label: 'Username is against policy',
 			summary: 'Warning: Your username might be against policy',
-			suppressArticleInSummary: true  // not relevant for this template
+			suppressArticleInSummary: true // not relevant for this template
 		},
 		'uw-coi-username': {
 			label: 'Username is against policy, and conflict of interest',
@@ -1525,7 +1521,6 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 				// Trigger subcategory change, add select menu, etc.
 				Twinkle.warn.callback.postCategoryCleanup(e);
 			};
-
 
 			if (Twinkle.warn.talkpageObj) {
 				autolevelProc();
@@ -1972,7 +1967,7 @@ Twinkle.warn.callbacks = {
 			if (messageData.suppressArticleInSummary !== true && params.article) {
 				if (params.sub_group === 'uw-agf-sock' ||
 						params.sub_group === 'uw-socksuspect' ||
-						params.sub_group === 'uw-aiv') {  // these templates require a username
+						params.sub_group === 'uw-aiv') { // these templates require a username
 					summary += ' of [[:User:' + params.article + ']]';
 				} else {
 					summary += ' on [[:' + params.article + ']]';
@@ -1983,7 +1978,6 @@ Twinkle.warn.callbacks = {
 		pageobj.setEditSummary(summary + '.');
 		pageobj.setChangeTags(Twinkle.changeTags);
 		pageobj.setWatchlist(Twinkle.getPref('watchWarnings'));
-
 
 		// Get actual warning text
 		let warningText = Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
@@ -2061,6 +2055,5 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 
 Twinkle.addInitCallback(Twinkle.warn, 'warn');
 }());
-
 
 // </nowiki>

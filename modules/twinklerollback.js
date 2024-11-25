@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function() {
-
 
 /*
  ****************************************
@@ -185,7 +183,6 @@ Twinkle.rollback.linkBuilder = {
 	}
 };
 
-
 Twinkle.rollback.addLinks = {
 	contributions: function() {
 		// $('sp-contributions-footer-anon-range') relies on the fmbox
@@ -275,7 +272,6 @@ Twinkle.rollback.addLinks = {
 				}
 			});
 
-
 		}
 	},
 
@@ -353,7 +349,6 @@ Twinkle.rollback.disableLinks = function disablelinks(parentNode) {
 		$(node).css('font-weight', 'normal').css('color', 'darkgray');
 	});
 };
-
 
 Twinkle.rollback.revert = function revertPage(type, vandal, rev, page) {
 	if (mw.util.isIPv6Address(vandal)) {
@@ -445,7 +440,7 @@ Twinkle.rollback.callbacks = {
 			return;
 		}
 
-		const optional_summary = prompt('Please specify a reason for the revert:                                ', '');  // padded out to widen prompt in Firefox
+		const optional_summary = prompt('Please specify a reason for the revert:                                ', ''); // padded out to widen prompt in Firefox
 		if (optional_summary === null) {
 			apiobj.statelem.error('Aborted by user.');
 			return;
@@ -640,7 +635,7 @@ Twinkle.rollback.callbacks = {
 		let summary, extra_summary;
 		switch (params.type) {
 			case 'agf':
-				extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
+				extra_summary = prompt('An optional comment for the edit summary:                              ', ''); // padded out to widen prompt in Firefox
 				if (extra_summary === null) {
 					statelem.error('Aborted by user.');
 					return;
@@ -660,7 +655,7 @@ Twinkle.rollback.callbacks = {
 			/* falls through */
 			default:
 				if (Twinkle.getPref('offerReasonOnNormalRevert')) {
-					extra_summary = prompt('An optional comment for the edit summary:                              ', '');  // padded out to widen prompt in Firefox
+					extra_summary = prompt('An optional comment for the edit summary:                              ', ''); // padded out to widen prompt in Firefox
 					if (extra_summary === null) {
 						statelem.error('Aborted by user.');
 						return;
@@ -853,6 +848,5 @@ Twinkle.rollback.formatSummary = function(builtInString, userName, customString)
 
 Twinkle.addInitCallback(Twinkle.rollback, 'rollback');
 }());
-
 
 // </nowiki>

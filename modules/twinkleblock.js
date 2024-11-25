@@ -1,6 +1,5 @@
 // <nowiki>
 
-
 (function() {
 
 let api = new mw.Api(), relevantUserName, blockedUserName;
@@ -639,7 +638,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		oldfield.parentNode.replaceChild(field_block_options.render(), oldfield);
 		$form.find('fieldset[name="field_64"]').show();
 
-
 		$form.find('[name=pagerestrictions]').select2({
 			theme: 'default select2-morebits',
 			width: '100%',
@@ -754,7 +752,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			statusStr += ' (expires ' + new Morebits.date(Twinkle.block.currentBlockInfo.expiry).calendar('utc') + ')';
 		}
 
-
 		let infoStr = 'This form will';
 		if (sameUser) {
 			infoStr += ' change that block';
@@ -831,7 +828,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   To disable, set 'hardblock' and 'disabletalk', respectively
  */
 Twinkle.block.blockPresetsInfo = {
-	'anonblock': {
+	anonblock: {
 		expiry: '31 hours',
 		forUnregisteredOnly: true,
 		nocreate: true,
@@ -881,14 +878,14 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{checkuserblock-wide}}',
 		sig: '~~~~'
 	},
-	'colocationwebhost': {
+	colocationwebhost: {
 		expiry: '1 year',
 		forUnregisteredOnly: true,
 		nonstandard: true,
 		reason: '{{colocationwebhost}}',
 		sig: null
 	},
-	'oversightblock': {
+	oversightblock: {
 		autoblock: true,
 		expiry: 'infinity',
 		nocreate: true,
@@ -903,28 +900,28 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{school block}}',
 		sig: '~~~~'
 	},
-	'spamblacklistblock': {
+	spamblacklistblock: {
 		forUnregisteredOnly: true,
 		expiry: '1 month',
 		disabletalk: true,
 		nocreate: true,
 		reason: '{{spamblacklistblock}} <!-- editor only attempts to add blacklisted links, see [[Special:Log/spamblacklist]] -->'
 	},
-	'rangeblock': {
+	rangeblock: {
 		reason: '{{rangeblock}}',
 		nocreate: true,
 		nonstandard: true,
 		forUnregisteredOnly: true,
 		sig: '~~~~'
 	},
-	'tor': {
+	tor: {
 		expiry: '1 year',
 		forUnregisteredOnly: true,
 		nonstandard: true,
 		reason: '{{Tor}}',
 		sig: null
 	},
-	'webhostblock': {
+	webhostblock: {
 		expiry: '1 year',
 		forUnregisteredOnly: true,
 		nonstandard: true,
@@ -1441,7 +1438,6 @@ Twinkle.block.blockGroupsPartial = [
 		]
 	}
 ];
-
 
 Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(group, show_template) {
 	return $.map(group, (blockGroup) => {
@@ -2044,6 +2040,5 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 
 Twinkle.addInitCallback(Twinkle.block, 'block');
 }());
-
 
 // </nowiki>

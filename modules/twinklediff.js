@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function() {
-
 
 /*
  ****************************************
@@ -78,6 +76,5 @@ Twinkle.diff.callbacks = {
 
 Twinkle.addInitCallback(Twinkle.diff, 'diff');
 }());
-
 
 // </nowiki>

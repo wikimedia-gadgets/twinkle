@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function() {
-
 
 /*
  ****************************************
@@ -160,7 +158,7 @@ Twinkle.welcome.callback = function twinklewelcomeCallback(uid) {
 
 	const previewlink = document.createElement('a');
 	$(previewlink).click(() => {
-		Twinkle.welcome.callbacks.preview(result);  // |result| is defined below
+		Twinkle.welcome.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
@@ -203,8 +201,8 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 			name: 'template',
 			list: $.map(templates, (properties, template) => ({
 					value: template,
-					label: '{{' + template + '}}: ' + properties.description + (properties.linkedArticle ? '\u00A0*' : ''),  // U+00A0 NO-BREAK SPACE
-					tooltip: properties.tooltip  // may be undefined
+					label: '{{' + template + '}}: ' + properties.description + (properties.linkedArticle ? '\u00A0*' : ''), // U+00A0 NO-BREAK SPACE
+					tooltip: properties.tooltip // may be undefined
 				})),
 			event: function(ev) {
 				ev.target.form.article.disabled = !templates[ev.target.value].linkedArticle;
@@ -233,7 +231,7 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 Twinkle.welcome.templates = {
 	standard: {
 		'General welcome templates': {
-			'welcome': {
+			welcome: {
 				description: 'standard welcome',
 				linkedArticle: true,
 				syntax: '{{subst:welcome|$USERNAME$|art=$ARTICLE$}} ~~~~'
@@ -251,7 +249,7 @@ Twinkle.welcome.templates = {
 				description: 'a welcome message with some helpful links and a plate of cookies',
 				syntax: '{{subst:welcome cookie}} ~~~~'
 			},
-			'welcoming': {
+			welcoming: {
 				description: 'welcome message with tutorial links and basic editing tips',
 				syntax: '{{subst:Welcoming}}'
 			}
@@ -316,31 +314,31 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}'
 			},
-			'welcomelaws': {
+			welcomelaws: {
 				description: 'welcome with information about copyrights, NPOV, the sandbox, and vandalism',
 				syntax: '{{subst:welcomelaws|$USERNAME$}} ~~~~'
 			},
-			'welcomenpov': {
+			welcomenpov: {
 				description: 'for someone whose initial efforts do not adhere to the neutral point of view policy',
 				linkedArticle: true,
 				syntax: '{{subst:welcomenpov|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
-			'welcomeunsourced': {
+			welcomeunsourced: {
 				description: 'for someone whose initial efforts are unsourced',
 				linkedArticle: true,
 				syntax: '{{subst:welcomeunsourced|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
-			'welcomevandal': {
+			welcomevandal: {
 				description: 'for someone whose initial efforts appear to be vandalism',
 				linkedArticle: true,
 				syntax: '{{subst:welcomevandal|$ARTICLE$|$USERNAME$}}'
 			},
-			'welcomespam': {
+			welcomespam: {
 				description: 'welcome with additional discussion of anti-spamming policies',
 				linkedArticle: true,
 				syntax: '{{subst:welcomespam|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
-			'welcometest': {
+			welcometest: {
 				description: 'for someone whose initial efforts appear to be tests',
 				linkedArticle: true,
 				syntax: '{{subst:welcometest|$ARTICLE$|$USERNAME$}} ~~~~'
@@ -355,7 +353,7 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcome-unregistered|art=$ARTICLE$}} ~~~~'
 			},
-			'thanks': {
+			thanks: {
 				description: 'for unregistered users; short; encourages creating an account',
 				linkedArticle: true,
 				syntax: '== Welcome! ==\n{{subst:thanks|page=$ARTICLE$}} ~~~~'
@@ -510,7 +508,7 @@ Twinkle.welcome.templates = {
 
 	nonEnglish: {
 		'Non-English welcome templates': {
-			'welcomeen': {
+			welcomeen: {
 				description: 'welcome for users whose first language is not listed here',
 				syntax: '{{subst:welcomeen}}'
 			},
@@ -657,11 +655,11 @@ Twinkle.welcome.getTemplateWikitext = function(type, template, article) {
 		}
 	});
 	if (properties) {
-		return properties.syntax.
-			replace('$USERNAME$', Twinkle.getPref('insertUsername') ? mw.config.get('wgUserName') : '').
-			replace('$ARTICLE$', article ? article : '').
-			replace(/\$HEADER\$\s*/, '== Welcome ==\n\n').
-			replace('$EXTRA$', '');  // EXTRA is not implemented yet
+		return properties.syntax
+			.replace('$USERNAME$', Twinkle.getPref('insertUsername') ? mw.config.get('wgUserName') : '')
+			.replace('$ARTICLE$', article ? article : '')
+			.replace(/\$HEADER\$\s*/, '== Welcome ==\n\n')
+			.replace('$EXTRA$', ''); // EXTRA is not implemented yet
 	}
 	return '{{subst:' + template + (article ? '|art=' + article : '') + '}}' +
 			(Twinkle.getPref('customWelcomeSignature') ? ' ~~~~' : '');
@@ -751,6 +749,5 @@ Twinkle.welcome.callback.evaluate = function twinklewelcomeCallbackEvaluate(e) {
 
 Twinkle.addInitCallback(Twinkle.welcome, 'welcome');
 }());
-
 
 // </nowiki>
