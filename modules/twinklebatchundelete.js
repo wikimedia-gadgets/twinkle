@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -11,7 +9,6 @@
  * Mode of invocation:     Tab ("Und-batch")
  * Active on:              Existing user and project pages
  */
-
 
 Twinkle.batchundelete = function twinklebatchundelete() {
 	if (!Morebits.userIsSysop || !mw.config.get('wgArticleId') || (
@@ -49,7 +46,7 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	});
 
 	const statusdiv = document.createElement('div');
-	statusdiv.style.padding = '15px';  // just so it doesn't look broken
+	statusdiv.style.padding = '15px'; // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
 	Window.display();
@@ -208,6 +205,5 @@ Twinkle.batchundelete.callbacks = {
 
 Twinkle.addInitCallback(Twinkle.batchundelete, 'batchundelete');
 }(jQuery));
-
 
 // </nowiki>

@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -130,9 +128,9 @@ Twinkle.shared.standardList = [
 ];
 
 Twinkle.shared.callback.change_shared = function twinklesharedCallbackChangeShared(e) {
-	e.target.form.contact.disabled = e.target.value !== 'Shared IP edu';  // only supported by {{Shared IP edu}}
+	e.target.form.contact.disabled = e.target.value !== 'Shared IP edu'; // only supported by {{Shared IP edu}}
 	e.target.form.organization.disabled = false;
-	e.target.form.host.disabled = e.target.value === 'Whois';  // host= not supported by {{Whois}}
+	e.target.form.host.disabled = e.target.value === 'Whois'; // host= not supported by {{Whois}}
 };
 
 Twinkle.shared.callbacks = {
@@ -232,6 +230,5 @@ Twinkle.shared.callback.evaluate = function twinklesharedCallbackEvaluate(e) {
 
 Twinkle.addInitCallback(Twinkle.shared, 'shared');
 }(jQuery));
-
 
 // </nowiki>

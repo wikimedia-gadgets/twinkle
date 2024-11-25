@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -110,7 +108,6 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	result.prodtype[0].dispatchEvent(evt);
 
 };
-
 
 Twinkle.prod.callback.prodtypechanged = function(event) {
 	// prepare frame for prod type dependant controls
@@ -222,7 +219,7 @@ Twinkle.prod.callbacks = {
 	fetchCreationInfo: function twinkleprodFetchCreationInfo() {
 		const def = $.Deferred();
 		const ts = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Looking up page creator');
-		ts.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
+		ts.setFollowRedirect(true); // for NPP, and also because redirects are ineligible for PROD
 		ts.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
 		ts.lookupCreation((pageobj) => {
 			params.initialContrib = pageobj.getCreator();
@@ -237,7 +234,7 @@ Twinkle.prod.callbacks = {
 		const def = $.Deferred();
 
 		const wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
-		wikipedia_page.setFollowRedirect(true);  // for NPP, and also because redirects are ineligible for PROD
+		wikipedia_page.setFollowRedirect(true); // for NPP, and also because redirects are ineligible for PROD
 		wikipedia_page.load((pageobj) => {
 			const statelem = pageobj.getStatusElement();
 
@@ -291,7 +288,7 @@ Twinkle.prod.callbacks = {
 				const wikipage = new Morebits.wikitext.page(text);
 				text = wikipage.insertAfterTemplates(tag + '\n', Twinkle.hatnoteRegex).getText();
 
-			} else {  // already tagged for PROD, so try endorsing it
+			} else { // already tagged for PROD, so try endorsing it
 				const prod2_re = /{{(?:Proposed deletion endorsed|prod-?2).*?}}/i;
 				if (prod2_re.test(text)) {
 					statelem.warn('Page already tagged with {{proposed deletion}} and {{proposed deletion endorsed}} templates, aborting procedure');
@@ -344,7 +341,7 @@ Twinkle.prod.callbacks = {
 		talkpage.setPrependText(oldprodfull);
 		talkpage.setEditSummary('Adding {{Old prod}}');
 		talkpage.setChangeTags(Twinkle.changeTags);
-		talkpage.setFollowRedirect(true);  // match behavior for page tagging
+		talkpage.setFollowRedirect(true); // match behavior for page tagging
 		talkpage.setCreateOption('recreate');
 		talkpage.prepend(def.resolve, def.reject);
 		return def;
@@ -476,6 +473,5 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 
 Twinkle.addInitCallback(Twinkle.prod, 'prod');
 }(jQuery));
-
 
 // </nowiki>
