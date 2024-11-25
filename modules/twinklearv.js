@@ -599,7 +599,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			spiPage.setWatchlist(Twinkle.getPref('spiWatchReport'));
 			spiPage.append();
 
-			Morebits.wiki.removeCheckpoint();  // all page updates have been started
+			Morebits.wiki.removeCheckpoint(); // all page updates have been started
 			break;
 
 		case 'an3':
