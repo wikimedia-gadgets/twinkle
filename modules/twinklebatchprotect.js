@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -12,7 +10,6 @@
  * Active on:              Existing project pages and user pages; existing and
  *                         non-existing categories; Special:PrefixIndex
  */
-
 
 Twinkle.batchprotect = function twinklebatchprotect() {
 	if (Morebits.userIsSysop && ((mw.config.get('wgArticleId') > 0 && (mw.config.get('wgNamespaceNumber') === 2 ||
@@ -135,7 +132,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 
 	form.append({
 		type: 'header',
-		label: ''  // horizontal rule
+		label: '' // horizontal rule
 	});
 	form.append({
 		type: 'input',
@@ -153,7 +150,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		format: 'json'
 	};
 
-	if (mw.config.get('wgNamespaceNumber') === 14) {  // categories
+	if (mw.config.get('wgNamespaceNumber') === 14) { // categories
 		query.generator = 'categorymembers';
 		query.gcmtitle = mw.config.get('wgPageName');
 		query.gcmlimit = Twinkle.getPref('batchMax');
@@ -169,7 +166,7 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 	}
 
 	const statusdiv = document.createElement('div');
-	statusdiv.style.padding = '15px';  // just so it doesn't look broken
+	statusdiv.style.padding = '15px'; // just so it doesn't look broken
 	Window.setContent(statusdiv);
 	Morebits.status.init(statusdiv);
 	Window.display();
@@ -337,6 +334,5 @@ Twinkle.batchprotect.callbacks = {
 
 Twinkle.addInitCallback(Twinkle.batchprotect, 'batchprotect');
 }(jQuery));
-
 
 // </nowiki>
