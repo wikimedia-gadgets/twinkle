@@ -1,8 +1,6 @@
 // <nowiki>
 
-
 (function($) {
-
 
 /*
  ****************************************
@@ -18,13 +16,12 @@
  point you in the right direction.)  -- TTO
  */
 
-
 Twinkle.config = {};
 
 Twinkle.config.watchlistEnums = {
-	'yes': 'Add to watchlist (indefinitely)',
-	'no': "Don't add to watchlist",
-	'default': 'Follow your site preferences',
+	yes: 'Add to watchlist (indefinitely)',
+	no: "Don't add to watchlist",
+	default: 'Follow your site preferences',
 	'1 week': 'Watch for 1 week',
 	'1 month': 'Watch for 1 month',
 	'3 months': 'Watch for 3 months',
@@ -967,7 +964,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			mw.config.get('wgAction') === 'view') {
 
 		if (!document.getElementById('twinkle-config')) {
-			return;  // maybe the page is misconfigured, or something - but any attempt to modify it will be pointless
+			return; // maybe the page is misconfigured, or something - but any attempt to modify it will be pointless
 		}
 
 		// set style to nothing to prevent conflict with external css
@@ -975,7 +972,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		document.getElementById('twinkle-config-titlebar').removeAttribute('style');
 
 		const contentdiv = document.getElementById('twinkle-config-content');
-		contentdiv.textContent = '';  // clear children
+		contentdiv.textContent = ''; // clear children
 
 		// let user know about possible conflict with skin js/common.js file
 		// (settings in that file will still work, but they will be overwritten by twinkleoptions.js settings)
@@ -1028,7 +1025,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 		contentdiv.appendChild(toctable);
 
 		const contentform = document.createElement('form');
-		contentform.setAttribute('action', 'javascript:void(0)');  // was #tw-save - changed to void(0) to work around Chrome issue
+		contentform.setAttribute('action', 'javascript:void(0)'); // was #tw-save - changed to void(0) to work around Chrome issue
 		contentform.addEventListener('submit', Twinkle.config.save, true);
 		contentdiv.appendChild(contentform);
 
@@ -1038,7 +1035,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 
 		$(Twinkle.config.sections).each((sectionkey, section) => {
 			if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
-				return true;  // i.e. "continue" in this context
+				return true; // i.e. "continue" in this context
 			}
 
 			// add to TOC
@@ -1062,12 +1059,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 			row.appendChild(cell);
 			container.appendChild(row);
 
-			let rowcount = 1;  // for row banding
+			let rowcount = 1; // for row banding
 
 			// add each of the preferences to the form
 			$(section.preferences).each((prefkey, pref) => {
 				if (pref.adminOnly && !Morebits.userIsSysop) {
-					return true;  // i.e. "continue" in this context
+					return true; // i.e. "continue" in this context
 				}
 
 				row = document.createElement('tr');
@@ -1081,7 +1078,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 				let label, input, gotPref = Twinkle.getPref(pref.name);
 				switch (pref.type) {
 
-					case 'boolean':  // create a checkbox
+					case 'boolean': // create a checkbox
 						cell.setAttribute('colspan', '2');
 
 						label = document.createElement('label');
@@ -1097,7 +1094,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell.appendChild(label);
 						break;
 
-					case 'string':  // create an input box
+					case 'string': // create an input box
 					case 'integer':
 						// add label to first column
 						cell.style.textAlign = 'right';
@@ -1118,7 +1115,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						if (pref.type === 'integer') {
 							input.setAttribute('size', 6);
 							input.setAttribute('type', 'number');
-							input.setAttribute('step', '1');  // integers only
+							input.setAttribute('step', '1'); // integers only
 						}
 						if (gotPref) {
 							input.setAttribute('value', gotPref);
@@ -1126,7 +1123,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell.appendChild(input);
 						break;
 
-					case 'enum':  // create a combo box
+					case 'enum': // create a combo box
 						// add label to first column
 						// note: duplicates the code above, under string/integer
 						cell.style.textAlign = 'right';
@@ -1160,10 +1157,10 @@ Twinkle.config.init = function twinkleconfigInit() {
 						cell.appendChild(input);
 						break;
 
-					case 'set':  // create a set of check boxes
+					case 'set': // create a set of check boxes
 						// add label first of all
 						cell.setAttribute('colspan', '2');
-						label = document.createElement('label');  // not really necessary to use a label element here, but we do it for consistency of styling
+						label = document.createElement('label'); // not really necessary to use a label element here, but we do it for consistency of styling
 						label.appendChild(document.createTextNode(pref.label + ':'));
 						cell.appendChild(label);
 
@@ -1306,9 +1303,9 @@ Twinkle.config.init = function twinkleconfigInit() {
 			// place "why not try the preference panel" notice
 			box.setAttribute('class', 'config-twopt-box');
 
-			if (mw.config.get('wgArticleId') > 0) {  // page exists
+			if (mw.config.get('wgArticleId') > 0) { // page exists
 				box.appendChild(document.createTextNode('This page contains your Twinkle preferences. You can change them using the '));
-			} else {  // page does not exist
+			} else { // page does not exist
 				box.appendChild(document.createTextNode('You can customize Twinkle to suit your preferences by using the '));
 			}
 			link = document.createElement('a');
@@ -1468,7 +1465,7 @@ Twinkle.config.listDialog.reset = function twinkleconfigListDialogReset($button,
 	Twinkle.config.resetPref(curpref);
 
 	// reset form
-	$tbody.find('tr').slice(1).remove();  // all rows except the first (header) row
+	$tbody.find('tr').slice(1).remove(); // all rows except the first (header) row
 	// add the new values
 	const curvalue = $button.data('value');
 	$.each(curvalue, (k, v) => {
@@ -1504,25 +1501,25 @@ Twinkle.config.resetPrefLink = function twinkleconfigResetPrefLink(e) {
 	// search tactics
 	$(Twinkle.config.sections).each((sectionkey, section) => {
 		if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
-			return true;  // continue: skip impossibilities
+			return true; // continue: skip impossibilities
 		}
 
 		let foundit = false;
 
 		$(section.preferences).each((prefkey, pref) => {
 			if (pref.name !== wantedpref) {
-				return true;  // continue
+				return true; // continue
 			}
 			Twinkle.config.resetPref(pref);
 			foundit = true;
-			return false;  // break
+			return false; // break
 		});
 
 		if (foundit) {
-			return false;  // break
+			return false; // break
 		}
 	});
-	return false;  // stop link from scrolling page
+	return false; // stop link from scrolling page
 };
 
 Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
@@ -1560,7 +1557,7 @@ Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 	// no confirmation message - the user can just refresh/close the page to abort
 	$(Twinkle.config.sections).each((sectionkey, section) => {
 		if (section.hidden || (section.adminOnly && !Morebits.userIsSysop)) {
-			return true;  // continue: skip impossibilities
+			return true; // continue: skip impossibilities
 		}
 		$(section.preferences).each((prefkey, pref) => {
 			if (!pref.adminOnly || Morebits.userIsSysop) {
@@ -1569,7 +1566,7 @@ Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 		});
 		return true;
 	});
-	return false;  // stop link from scrolling page
+	return false; // stop link from scrolling page
 };
 
 Twinkle.config.save = function twinkleconfigSave(e) {
@@ -1618,27 +1615,27 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 
 	$(Twinkle.config.sections).each((sectionkey, section) => {
 		if (section.adminOnly && !Morebits.userIsSysop) {
-			return;  // i.e. "continue" in this context
+			return; // i.e. "continue" in this context
 		}
 
 		// reach each of the preferences from the form
 		$(section.preferences).each((prefkey, pref) => {
-			let userValue;  // = undefined
+			let userValue; // = undefined
 
 			// only read form values for those prefs that have them
 			if (!pref.adminOnly || Morebits.userIsSysop) {
 				if (!section.hidden) {
 					switch (pref.type) {
-						case 'boolean':  // read from the checkbox
+						case 'boolean': // read from the checkbox
 							userValue = form[pref.name].checked;
 							break;
 
-						case 'string':  // read from the input box or combo box
+						case 'string': // read from the input box or combo box
 						case 'enum':
 							userValue = form[pref.name].value;
 							break;
 
-						case 'integer':  // read from the input box
+						case 'integer': // read from the input box
 							userValue = parseInt(form[pref.name].value, 10);
 							if (isNaN(userValue)) {
 								Morebits.status.warn('Saving', 'The value you specified for ' + pref.name + ' (' + pref.value + ') was invalid.  The save will continue, but the invalid data value will be skipped.');
@@ -1646,7 +1643,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 							}
 							break;
 
-						case 'set':  // read from the set of check boxes
+						case 'set': // read from the set of check boxes
 							userValue = [];
 							if (pref.setDisplayOrder) {
 							// read only those keys specified in the display order
@@ -1665,7 +1662,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 							}
 							break;
 
-						case 'customList':  // read from the jQuery data stored on the button object
+						case 'customList': // read from the jQuery data stored on the button object
 							userValue = $(form[pref.name]).data('value');
 							break;
 
@@ -1731,6 +1728,5 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 
 Twinkle.addInitCallback(Twinkle.config.init);
 }(jQuery));
-
 
 // </nowiki>
