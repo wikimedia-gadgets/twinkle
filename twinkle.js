@@ -425,6 +425,8 @@ Twinkle.summaryAd = ' ([[WP:TW|TW]])';
 // ensure MOS:ORDER
 Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|distinguish|for|further|selfref|year dab|similar names|highway detail hatnote|broader|about(?:-distinguish| other people)?|other\\s?(?:hurricane(?: use)?s|people|persons|places|ships|uses(?: of)?)|redirect(?:-(?:distinguish|synonym|multi))?|see\\s?(?:wiktionary|also(?: if exists)?)';
 
+/* Twinkle-specific utility functions shared by multiple modules */
+
 /**
  * When performing rollbacks with [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method gets a prefill, either from URL parameters (e.g. &vanarticle=Test) or from data previously stored using Twinkle.setPrefill()
  */
@@ -444,7 +446,9 @@ Twinkle.setPrefill = function (key, value) {
 	Twinkle.prefill[key] = value;
 };
 
-// Used in XFD and PROD
+/*
+ * Used in XFD and PROD
+ */
 Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
 	if (!$(divID).length) {
 		return;
@@ -461,14 +465,17 @@ Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
 	}
 };
 
-/** Twinkle-specific utility functions shared by multiple modules */
-// Used in batch, unlink, and deprod to sort pages by namespace, as
-// json formatversion=2 sorts by pageid instead (#1251)
+/**
+ * Used in batch, unlink, and deprod to sort pages by namespace, as
+ * json formatversion=2 sorts by pageid instead (#1251)
+ */
 Twinkle.sortByNamespace = function(first, second) {
 	return first.ns - second.ns || (first.title > second.title ? 1 : -1);
 };
 
-// Used in batch listings to link to the page in question with >
+/**
+ * Used in batch listings to link to the page in question with >
+ */
 Twinkle.generateArrowLinks = function (checkbox) {
 	const link = Morebits.htmlNode('a', ' >');
 	link.setAttribute('class', 'tw-arrowpage-link');
@@ -477,7 +484,9 @@ Twinkle.generateArrowLinks = function (checkbox) {
 	checkbox.nextElementSibling.append(link);
 };
 
-// Used in deprod and unlink listings to link the page title
+/**
+ * Used in deprod and unlink listings to link the page title
+ */
 Twinkle.generateBatchPageLinks = function (checkbox) {
 	const $checkbox = $(checkbox);
 	const link = Morebits.htmlNode('a', $checkbox.val());
