@@ -7,6 +7,7 @@ module.exports = {
 	collectCoverageFrom: [
 		'morebits.js',
 		'twinkle.js',
+		'twinkleutil.js',
 		'modules/**/*.{js,jsx,ts,tsx}'
 	]
 };
