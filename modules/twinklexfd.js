@@ -1048,12 +1048,9 @@ Twinkle.xfd.callbacks = {
 				}
 				break;
 			case 'rm':
-				if (params.rmtr) {
-					appendText += ' (technical)';
-				}
-				if (params.newname) {
-					appendText += '; New name: [[:' + params.newname + ']]';
-				}
+				appendText = params.currentname
+					.map((currentname, i) => `# [[:${currentname}]]: ${nominatedLink} at [[WP:${params.venue.toUpperCase()}|${utils.toTLACase(params.venue)}]]${params.rmtr ? ' (technical)' : ''}${params.newname[i] ? `; New name: [[:${params.newname[i]}]]` : ''}`)
+					.join('\n');
 				break;
 
 			default: // afd or ffd
@@ -2028,9 +2025,14 @@ Twinkle.xfd.callbacks = {
 	rm: {
 		listAtTalk: function(pageobj) {
 			const params = pageobj.getCallbackParameters();
+			params.discussionpage = pageobj.getPageName();
 
 			pageobj.setAppendText('\n\n' + Twinkle.xfd.callbacks.getDiscussionWikitext('rm', params));
-			pageobj.setEditSummary('Proposing move' + (params.newname ? ' to [[:' + params.newname + ']]' : ''));
+			pageobj.setEditSummary(`Proposing move of ${
+				params.currentname
+					.map((currentname, i) => `[[:${currentname}]]${params.newname[i] ? ` to [[:${params.newname[i]}]]` : ''}`)
+					.join(', ')
+			}.`);
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setCreateOption('recreate'); // since the talk page need not exist
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
@@ -2053,7 +2055,7 @@ Twinkle.xfd.callbacks = {
 				return;
 			}
 			pageobj.setPageText(newtext);
-			pageobj.setEditSummary('Adding [[:' + Morebits.pageNameNorm + ']].');
+			pageobj.setEditSummary(`Adding [[:${params.currentname.join(']], [[:')}]].`);
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.save(() => {
 				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
