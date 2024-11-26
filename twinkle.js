@@ -30,7 +30,8 @@ window.Twinkle = Twinkle; // allow global access
 Twinkle.initCallbacks = [];
 /**
  * Adds a callback to execute when Twinkle has loaded.
- * @param {function} func
+ *
+ * @param {Function} func
  * @param {string} [name] - name of module used to check if is disabled.
  * If name is not given, module is loaded unconditionally.
  */
@@ -201,16 +202,16 @@ Twinkle.getPref = function twinkleGetPref(name) {
 /**
  * Adds a portlet menu to one of the navigation areas on the page.
  *
- * @return {String} portletId
+ * @return {string} portletId
  */
 Twinkle.addPortlet = function() {
-	/** @type {String} id of the target navigation area (skin dependent, on vector either of "#left-navigation", "#right-navigation", or "#mw-panel") */
+	/** @type {string} id of the target navigation area (skin dependent, on vector either of "#left-navigation", "#right-navigation", or "#mw-panel") */
 	let navigation;
 
-	/** @type {String} id of the portlet menu to create, preferably start with "p-". */
+	/** @type {string} id of the portlet menu to create, preferably start with "p-". */
 	let id;
 
-	/** @type {String} name of the portlet menu to create. Visibility depends on the class used. */
+	/** @type {string} name of the portlet menu to create. Visibility depends on the class used. */
 	let text;
 
 	/** @type {Node} the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end. */
@@ -287,7 +288,7 @@ Twinkle.addPortletLink = function(task, text, id, tooltip) {
 
 	// Add a click listener for the portlet link
 	if (typeof task === 'function') {
-		$(link).click((ev) => {
+		$(link).on('click', (ev) => {
 			task();
 			ev.preventDefault();
 		});
@@ -336,7 +337,7 @@ $.ajax({
 			const options = JSON.parse(optionsText);
 			if (options) {
 				if (options.twinkle || options.friendly) { // Old preferences format
-					Twinkle.prefs = $.extend(options.twinkle, options.friendly);
+					Twinkle.prefs = Object.assign(options.twinkle, options.friendly);
 				} else {
 					Twinkle.prefs = options;
 				}

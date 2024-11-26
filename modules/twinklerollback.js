@@ -12,7 +12,7 @@
  */
 
 /**
- Twinklerollback revert and antivandalism utility
+ * Twinklerollback revert and antivandalism utility
  */
 
 Twinkle.rollback = function twinklerollback() {
@@ -118,12 +118,12 @@ Twinkle.rollback.linkBuilder = {
 		normLink.style.fontWeight = 'bold';
 		vandLink.style.fontWeight = 'bold';
 
-		$(normLink).click((e) => {
+		$(normLink).on('click', (e) => {
 			e.preventDefault();
 			Twinkle.rollback.revert('norm', vandal, rev, page);
 			Twinkle.rollback.disableLinks(revNode);
 		});
-		$(vandLink).click((e) => {
+		$(vandLink).on('click', (e) => {
 			e.preventDefault();
 			Twinkle.rollback.revert('vand', vandal, rev, page);
 			Twinkle.rollback.disableLinks(revNode);
@@ -141,7 +141,7 @@ Twinkle.rollback.linkBuilder = {
 		if (!inline) {
 			const agfNode = document.createElement('span');
 			const agfLink = Twinkle.rollback.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
-			$(agfLink).click((e) => {
+			$(agfLink).on('click', (e) => {
 				e.preventDefault();
 				Twinkle.rollback.revert('agf', vandal, rev, page);
 				// Twinkle.rollback.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
@@ -170,7 +170,7 @@ Twinkle.rollback.linkBuilder = {
 		revertToRevisionNode.style.fontWeight = 'bold';
 
 		const revertToRevisionLink = Twinkle.rollback.linkBuilder.buildLink('SaddleBrown', 'restore this version');
-		$(revertToRevisionLink).click((e) => {
+		$(revertToRevisionLink).on('click', (e) => {
 			e.preventDefault();
 			Twinkle.rollback.revertToRevision(revisionRef);
 		});

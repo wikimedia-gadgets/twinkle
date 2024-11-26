@@ -14,6 +14,9 @@
 		"array-bracket-spacing": "off",
 		"camelcase": "off",
 		"computed-property-spacing": "off",
+		"indent": "off",
+		"jsdoc/require-param": "off",
+		"jsdoc/require-returns": "off",
 		"max-len": "off",
 		"no-alert": "off",
 		"no-jquery/no-class-state": "off",
@@ -41,13 +44,10 @@
 
 		"es-x/no-array-prototype-includes": "warn",
 		"es-x/no-object-values": "warn",
-		"indent": "off",
-		"jsdoc/require-asterisk-prefix": "warn",
 		"mediawiki/class-doc": "warn",
 		"new-cap": "warn",
 		"no-jquery/no-constructor-attributes": "warn",
 		"no-jquery/no-each-util": "warn",
-		"no-jquery/no-extend": "warn",
 		"no-jquery/no-grep": "warn",
 		"no-jquery/no-in-array": "warn",
 		"no-jquery/no-map-util": "warn",
@@ -60,12 +60,10 @@
 		"no-script-url": "warn",
 		"no-sequences": "warn",
 		"no-throw-literal": "warn",
-		"no-unneeded-ternary": "warn",
 		"no-unused-expressions": "warn",
 		"no-use-before-define": "warn",
 		"no-useless-concat": "warn",
 		"no-var": "warn",
-		"operator-linebreak": "warn",
 		"prefer-const": "warn"
 	}
 }
