@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -229,6 +229,6 @@ Twinkle.shared.callback.evaluate = function twinklesharedCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.shared, 'shared');
-}(jQuery));
+}());
 
 // </nowiki>

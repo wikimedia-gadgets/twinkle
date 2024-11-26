@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -748,6 +748,6 @@ Twinkle.welcome.callback.evaluate = function twinklewelcomeCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.welcome, 'welcome');
-}(jQuery));
+}());
 
 // </nowiki>

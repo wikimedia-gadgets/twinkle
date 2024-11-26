@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -411,6 +411,6 @@ Twinkle.talkback.callbacks = {
 	}
 };
 Twinkle.addInitCallback(Twinkle.talkback, 'talkback');
-}(jQuery));
+}());
 
 // </nowiki>

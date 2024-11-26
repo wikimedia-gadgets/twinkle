@@ -17,7 +17,7 @@
 
 /* global Morebits */
 
-(function (window, document, $) { // Wrap with anonymous function
+(function() {
 
 // Check if account is experienced enough to use Twinkle
 if (!Morebits.userIsInGroup('autoconfirmed') && !Morebits.userIsInGroup('confirmed')) {
@@ -485,6 +485,6 @@ Twinkle.generateBatchPageLinks = function (checkbox) {
 	$checkbox.next().prepend([link, ' ']);
 };
 
-}(window, document, jQuery)); // End wrap with anonymous function
+}());
 
 // </nowiki>
