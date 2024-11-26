@@ -33,7 +33,7 @@
  * @namespace Morebits
  */
 
-(function (window, document, $) { // Wrap entire file with anonymous function
+(function() {
 
 /** @lends Morebits */
 const Morebits = {};
@@ -6078,7 +6078,7 @@ Morebits.simpleWindow.setButtonsEnabled = function(enabled) {
 	$('.morebits-dialog-buttons button').prop('disabled', !enabled);
 };
 
-}(window, document, jQuery)); // End wrap with anonymous function
+}());
 
 /**
  * If this script is being executed outside a ResourceLoader context, we add some

@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -1653,6 +1653,6 @@ Twinkle.protect.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.protect, 'protect');
-}(jQuery));
+}());
 
 // </nowiki>
