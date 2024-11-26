@@ -212,7 +212,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	const lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
 	const templatename = input.derivative ? 'dw ' + input.type : input.type;
 
-	const params = $.extend({
+	const params = Object.assign({
 		templatename: templatename,
 		normalized: csdcrit,
 		lognomination: lognomination

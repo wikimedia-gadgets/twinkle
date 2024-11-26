@@ -400,7 +400,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	};
 
 	return $.map(list, (critElement) => {
-		const criterion = $.extend({}, critElement);
+		const criterion = Object.assign({}, critElement);
 
 		if (mode.isMultiple) {
 			if (criterion.hideWhenMultiple) {
@@ -1068,7 +1068,7 @@ Twinkle.speedy.callbacks = {
 						code += '|' + i + '=' + parameters[i];
 					}
 				}
-				$.extend(params.utparams, Twinkle.speedy.getUserTalkParameters(norm, parameters));
+				Object.assign(params.utparams, Twinkle.speedy.getUserTalkParameters(norm, parameters));
 			});
 			code += '}}';
 		} else {
@@ -1285,7 +1285,7 @@ Twinkle.speedy.callbacks = {
 			// promote Unlink tool
 			let $link, $bigtext;
 			if (mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8') {
-				$link = $('<a/>', {
+				$link = $('<a>', {
 					href: '#',
 					text: 'click here to go to the Unlink tool',
 					css: { fontSize: '130%', fontWeight: 'bold' },
@@ -1295,13 +1295,13 @@ Twinkle.speedy.callbacks = {
 						Twinkle.unlink.callback('Removing usages of and/or links to deleted file ' + Morebits.pageNameNorm);
 					}
 				});
-				$bigtext = $('<span/>', {
+				$bigtext = $('<span>', {
 					text: 'To orphan backlinks and remove instances of file usage',
 					css: { fontSize: '130%', fontWeight: 'bold' }
 				});
 				Morebits.status.info($bigtext[0], $link[0]);
 			} else if (params.normalized !== 'f8') {
-				$link = $('<a/>', {
+				$link = $('<a>', {
 					href: '#',
 					text: 'click here to go to the Unlink tool',
 					css: { fontSize: '130%', fontWeight: 'bold' },
@@ -1311,7 +1311,7 @@ Twinkle.speedy.callbacks = {
 						Twinkle.unlink.callback('Removing links to deleted page ' + Morebits.pageNameNorm);
 					}
 				});
-				$bigtext = $('<span/>', {
+				$bigtext = $('<span>', {
 					text: 'To orphan backlinks',
 					css: { fontSize: '130%', fontWeight: 'bold' }
 				});
@@ -1862,7 +1862,7 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 
 /**
  * @param {Event} e
- * @returns {Array}
+ * @return {Array}
  */
 Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
 	const values = (e.target.form ? e.target.form : e.target).getChecked('csd');
