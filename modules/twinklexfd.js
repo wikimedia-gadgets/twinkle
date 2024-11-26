@@ -1273,7 +1273,7 @@ Twinkle.xfd.callbacks = {
 			const params = pageobj.getCallbackParameters();
 
 			const date = new Morebits.date(pageobj.getLoadTime());
-			params.logpage = 'Wikipedia:Templates for discussion/Log/' + date.format('YYYY MMMM D', 'utc'),
+			params.logpage = 'Wikipedia:Templates for discussion/Log/' + date.format('YYYY MMMM D', 'utc');
 			params.discussionpage = params.logpage + '#' + Morebits.pageNameNorm;
 			// Add log/discussion page params to the already-loaded page object
 			pageobj.setCallbackParameters(params);
