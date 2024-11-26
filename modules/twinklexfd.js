@@ -1049,7 +1049,7 @@ Twinkle.xfd.callbacks = {
 				break;
 			case 'rm':
 				appendText = params.currentname
-					.map((currentname, i) => `# [[:${currentname}]]: ${nominatedLink} at [[WP:${params.venue.toUpperCase()}|${utils.toTLACase(params.venue)}]]${params.rmtr ? ' (technical)' : ''}${params.newname[i] ? `; New name: [[:${params.newname[i]}]]` : ''}`)
+					.map((currentname, i) => `# [[:${currentname}]]: ${nominatedLink} at [[WP:RM${params.rmtr ? '/TR' : ''}|]]${params.newname[i] ? `; New name: [[:${params.newname[i]}]]` : ''}`)
 					.join('\n');
 				break;
 
