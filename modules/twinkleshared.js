@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -70,7 +70,7 @@ Twinkle.shared.callback = function twinklesharedCallback() {
 	);
 
 	const previewlink = document.createElement('a');
-	$(previewlink).click(() => {
+	$(previewlink).on('click', () => {
 		Twinkle.shared.preview(result);
 	});
 	previewlink.style.cursor = 'pointer';
@@ -187,7 +187,7 @@ Twinkle.shared.preview = function(form) {
 
 		previewDialog.display();
 
-		$(submit).click(() => {
+		$(submit).on('click', () => {
 			previewDialog.close();
 		});
 	}
@@ -229,6 +229,6 @@ Twinkle.shared.callback.evaluate = function twinklesharedCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.shared, 'shared');
-}(jQuery));
+}());
 
 // </nowiki>

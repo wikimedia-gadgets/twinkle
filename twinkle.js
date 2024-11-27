@@ -17,7 +17,7 @@
 
 /* global Morebits */
 
-(function (window, document, $) { // Wrap with anonymous function
+(function() {
 
 // Check if account is experienced enough to use Twinkle
 if (!Morebits.userIsInGroup('autoconfirmed') && !Morebits.userIsInGroup('confirmed')) {
@@ -30,7 +30,8 @@ window.Twinkle = Twinkle; // allow global access
 Twinkle.initCallbacks = [];
 /**
  * Adds a callback to execute when Twinkle has loaded.
- * @param {function} func
+ *
+ * @param {Function} func
  * @param {string} [name] - name of module used to check if is disabled.
  * If name is not given, module is loaded unconditionally.
  */
@@ -201,16 +202,16 @@ Twinkle.getPref = function twinkleGetPref(name) {
 /**
  * Adds a portlet menu to one of the navigation areas on the page.
  *
- * @return {String} portletId
+ * @return {string} portletId
  */
 Twinkle.addPortlet = function() {
-	/** @type {String} id of the target navigation area (skin dependent, on vector either of "#left-navigation", "#right-navigation", or "#mw-panel") */
+	/** @type {string} id of the target navigation area (skin dependent, on vector either of "#left-navigation", "#right-navigation", or "#mw-panel") */
 	let navigation;
 
-	/** @type {String} id of the portlet menu to create, preferably start with "p-". */
+	/** @type {string} id of the portlet menu to create, preferably start with "p-". */
 	let id;
 
-	/** @type {String} name of the portlet menu to create. Visibility depends on the class used. */
+	/** @type {string} name of the portlet menu to create. Visibility depends on the class used. */
 	let text;
 
 	/** @type {Node} the id of the node before which the new item should be added, should be another item in the same list, or undefined to place it at the end. */
@@ -287,7 +288,7 @@ Twinkle.addPortletLink = function(task, text, id, tooltip) {
 
 	// Add a click listener for the portlet link
 	if (typeof task === 'function') {
-		$(link).click((ev) => {
+		$(link).on('click', (ev) => {
 			task();
 			ev.preventDefault();
 		});
@@ -336,7 +337,7 @@ $.ajax({
 			const options = JSON.parse(optionsText);
 			if (options) {
 				if (options.twinkle || options.friendly) { // Old preferences format
-					Twinkle.prefs = $.extend(options.twinkle, options.friendly);
+					Twinkle.prefs = Object.assign(options.twinkle, options.friendly);
 				} else {
 					Twinkle.prefs = options;
 				}
@@ -422,6 +423,8 @@ Twinkle.summaryAd = ' ([[WP:TW|TW]])';
 // ensure MOS:ORDER
 Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|distinguish|for|further|selfref|year dab|similar names|highway detail hatnote|broader|about(?:-distinguish| other people)?|other\\s?(?:hurricane(?: use)?s|people|persons|places|ships|uses(?: of)?)|redirect(?:-(?:distinguish|synonym|multi))?|see\\s?(?:wiktionary|also(?: if exists)?)';
 
+/* Twinkle-specific utility functions shared by multiple modules */
+
 /**
  * When performing rollbacks with [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method gets a prefill, either from URL parameters (e.g. &vanarticle=Test) or from data previously stored using Twinkle.setPrefill()
  */
@@ -441,7 +444,9 @@ Twinkle.setPrefill = function (key, value) {
 	Twinkle.prefill[key] = value;
 };
 
-// Used in XFD and PROD
+/*
+ * Used in XFD and PROD
+ */
 Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
 	if (!$(divID).length) {
 		return;
@@ -458,14 +463,17 @@ Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
 	}
 };
 
-/** Twinkle-specific utility functions shared by multiple modules */
-// Used in batch, unlink, and deprod to sort pages by namespace, as
-// json formatversion=2 sorts by pageid instead (#1251)
+/**
+ * Used in batch, unlink, and deprod to sort pages by namespace, as
+ * json formatversion=2 sorts by pageid instead (#1251)
+ */
 Twinkle.sortByNamespace = function(first, second) {
 	return first.ns - second.ns || (first.title > second.title ? 1 : -1);
 };
 
-// Used in batch listings to link to the page in question with >
+/**
+ * Used in batch listings to link to the page in question with >
+ */
 Twinkle.generateArrowLinks = function (checkbox) {
 	const link = Morebits.htmlNode('a', ' >');
 	link.setAttribute('class', 'tw-arrowpage-link');
@@ -474,7 +482,9 @@ Twinkle.generateArrowLinks = function (checkbox) {
 	checkbox.nextElementSibling.append(link);
 };
 
-// Used in deprod and unlink listings to link the page title
+/**
+ * Used in deprod and unlink listings to link the page title
+ */
 Twinkle.generateBatchPageLinks = function (checkbox) {
 	const $checkbox = $(checkbox);
 	const link = Morebits.htmlNode('a', $checkbox.val());
@@ -484,6 +494,6 @@ Twinkle.generateBatchPageLinks = function (checkbox) {
 	$checkbox.next().prepend([link, ' ']);
 };
 
-}(window, document, jQuery)); // End wrap with anonymous function
+}());
 
 // </nowiki>

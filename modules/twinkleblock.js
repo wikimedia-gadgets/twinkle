@@ -1,9 +1,9 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 let api = new mw.Api(), relevantUserName, blockedUserName;
-const menuFormattedNamespaces = $.extend({}, mw.config.get('wgFormattedNamespaces'));
+const menuFormattedNamespaces = Object.assign({}, mw.config.get('wgFormattedNamespaces'));
 menuFormattedNamespaces[0] = '(Article)';
 
 /*
@@ -186,9 +186,11 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 	// Toggle unblock link if not the user in question; always first
 	const unblockLink = document.querySelector('.morebits-dialog-footerlinks a');
 	if (blockedUserName !== relevantUserName) {
-		unblockLink.hidden = true, unblockLink.nextSibling.hidden = true; // link+trailing bullet
+		unblockLink.hidden = true;
+		unblockLink.nextSibling.hidden = true; // link+trailing bullet
 	} else {
-		unblockLink.hidden = false, unblockLink.nextSibling.hidden = false; // link+trailing bullet
+		unblockLink.hidden = false;
+		unblockLink.nextSibling.hidden = false; // link+trailing bullet
 	}
 
 	// Semi-busted on ranges, see [[phab:T270737]] and [[phab:T146628]].
@@ -1897,7 +1899,7 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	// "talk page" of an IP range (which does not exist)
 	const userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
-	const params = $.extend(formData, {
+	const params = Object.assign(formData, {
 		messageData: Twinkle.block.blockPresetsInfo[formData.template],
 		reason: Twinkle.block.field_template_options.block_reason,
 		disabletalk: Twinkle.block.field_template_options.notalk,
@@ -2039,6 +2041,6 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 };
 
 Twinkle.addInitCallback(Twinkle.block, 'block');
-}(jQuery));
+}());
 
 // </nowiki>

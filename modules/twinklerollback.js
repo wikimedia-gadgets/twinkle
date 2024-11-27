@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -12,7 +12,7 @@
  */
 
 /**
- Twinklerollback revert and antivandalism utility
+ * Twinklerollback revert and antivandalism utility
  */
 
 Twinkle.rollback = function twinklerollback() {
@@ -118,12 +118,12 @@ Twinkle.rollback.linkBuilder = {
 		normLink.style.fontWeight = 'bold';
 		vandLink.style.fontWeight = 'bold';
 
-		$(normLink).click((e) => {
+		$(normLink).on('click', (e) => {
 			e.preventDefault();
 			Twinkle.rollback.revert('norm', vandal, rev, page);
 			Twinkle.rollback.disableLinks(revNode);
 		});
-		$(vandLink).click((e) => {
+		$(vandLink).on('click', (e) => {
 			e.preventDefault();
 			Twinkle.rollback.revert('vand', vandal, rev, page);
 			Twinkle.rollback.disableLinks(revNode);
@@ -141,7 +141,7 @@ Twinkle.rollback.linkBuilder = {
 		if (!inline) {
 			const agfNode = document.createElement('span');
 			const agfLink = Twinkle.rollback.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
-			$(agfLink).click((e) => {
+			$(agfLink).on('click', (e) => {
 				e.preventDefault();
 				Twinkle.rollback.revert('agf', vandal, rev, page);
 				// Twinkle.rollback.disableLinks(revNode); // rollbackInPlace not relevant for any inline situations
@@ -170,7 +170,7 @@ Twinkle.rollback.linkBuilder = {
 		revertToRevisionNode.style.fontWeight = 'bold';
 
 		const revertToRevisionLink = Twinkle.rollback.linkBuilder.buildLink('SaddleBrown', 'restore this version');
-		$(revertToRevisionLink).click((e) => {
+		$(revertToRevisionLink).on('click', (e) => {
 			e.preventDefault();
 			Twinkle.rollback.revertToRevision(revisionRef);
 		});
@@ -278,18 +278,18 @@ Twinkle.rollback.addLinks = {
 	diff: function() {
 		// Autofill user talk links on diffs with vanarticle for easy warning, but don't autowarn
 		const warnFromTalk = function(xtitle) {
-			const talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
-			if (talkLink.length) {
+			const $talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
+			if ($talkLink.length) {
 				let extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
 				// diffIDs for vanarticlerevid
 				extraParams += '&vanarticlerevid=';
 				extraParams += xtitle === 'otitle' ? mw.config.get('wgDiffOldId') : mw.config.get('wgDiffNewId');
 
-				const href = talkLink.attr('href');
+				const href = $talkLink.attr('href');
 				if (href.indexOf('?') === -1) {
-					talkLink.attr('href', href + '?' + extraParams);
+					$talkLink.attr('href', href + '?' + extraParams);
 				} else {
-					talkLink.attr('href', href + '&' + extraParams);
+					$talkLink.attr('href', href + '&' + extraParams);
 				}
 			}
 		};
@@ -847,6 +847,6 @@ Twinkle.rollback.formatSummary = function(builtInString, userName, customString)
 };
 
 Twinkle.addInitCallback(Twinkle.rollback, 'rollback');
-}(jQuery));
+}());
 
 // </nowiki>

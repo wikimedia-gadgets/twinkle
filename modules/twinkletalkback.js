@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -61,7 +61,7 @@ Twinkle.talkback.callback = function() {
 	});
 
 	const previewlink = document.createElement('a');
-	$(previewlink).click(() => {
+	$(previewlink).on('click', () => {
 		Twinkle.talkback.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
@@ -411,6 +411,6 @@ Twinkle.talkback.callbacks = {
 	}
 };
 Twinkle.addInitCallback(Twinkle.talkback, 'talkback');
-}(jQuery));
+}());
 
 // </nowiki>
