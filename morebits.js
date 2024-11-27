@@ -934,7 +934,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
  * Create a jQuery UI-based tooltip.
  *
  * @memberof Morebits.quickForm.element
- * @requires jquery.ui
+ * @requires jQuery.ui
  * @param {HTMLElement} node - The HTML element beside which a tooltip is to be generated.
  * @param {Object} data - Tooltip-related configuration data.
  */
@@ -1637,7 +1637,7 @@ Morebits.array = {
  *
  * @namespace Morebits.select2
  * @memberof Morebits
- * @requires jquery.select2
+ * @requires jQuery.select2
  */
 Morebits.select2 = {
 	matchers: {
@@ -2347,7 +2347,7 @@ Morebits.wiki.api.prototype = {
 	 *
 	 * @param {Object} callerAjaxParameters - Do not specify a parameter unless you really
 	 * really want to give jQuery some extra parameters.
-	 * @return {promise} - A jQuery promise object that is resolved or rejected with the api object.
+	 * @return {jQuery.Promise} - A jQuery promise object that is resolved or rejected with the api object.
 	 */
 	post: function(callerAjaxParameters) {
 
@@ -5147,7 +5147,7 @@ Morebits.userspaceLogger = function(logPageName) {
 	 *
 	 * @param {string} logText - Doesn't include leading `#` or `*`.
 	 * @param {string} summaryText - Edit summary.
-	 * @return {JQuery.Promise}
+	 * @return {jQuery.Promise}
 	 */
 	this.log = function(logText, summaryText) {
 		const def = $.Deferred();
@@ -5764,7 +5764,7 @@ Morebits.taskManager = function(context) {
  *
  * @memberof Morebits
  * @class
- * @requires jquery.ui.dialog
+ * @requires jQuery.ui.dialog
  * @param {number} width
  * @param {number} height - The maximum allowable height for the content area.
  */
