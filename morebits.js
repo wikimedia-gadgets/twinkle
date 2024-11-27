@@ -1971,7 +1971,8 @@ Morebits.date.prototype = {
 			// No built-in week functions, so rather than build out ISO's getWeek/setWeek, just multiply
 			// Probably can't be used for Julian->Gregorian changeovers, etc.
 			if (unitNorm === 'Week') {
-				unitNorm = 'Date', num *= 7;
+				unitNorm = 'Date';
+				num *= 7;
 			}
 			this['set' + unitNorm](this['get' + unitNorm]() + num);
 			return this;
