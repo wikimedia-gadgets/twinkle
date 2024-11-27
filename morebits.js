@@ -1701,14 +1701,14 @@ Morebits.select2 = {
 		if (ev.which < 48) {
 			return;
 		}
-		let target = $(ev.target).closest('.select2-container');
-		if (!target.length) {
+		let $target = $(ev.target).closest('.select2-container');
+		if (!$target.length) {
 			return;
 		}
-		target = target.prev();
-		target.select2('open');
-		const search = target.data('select2').dropdown.$search ||
-			target.data('select2').selection.$search;
+		$target = $target.prev();
+		$target.select2('open');
+		const search = $target.data('select2').dropdown.$search ||
+			$target.data('select2').selection.$search;
 		// Use DOM .focus() to work around a jQuery 3.6.0 regression (https://github.com/select2/select2/issues/5993)
 		search[0].focus();
 	}
@@ -5423,16 +5423,16 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 	function clickHandler(event) {
 		const thisCb = this;
 		if (event.shiftKey && lastCheckbox !== null) {
-			const cbs = $(jQuerySelector, jQueryContext); // can't cache them, obviously, if we want to support resorting
+			const $cbs = $(jQuerySelector, jQueryContext); // can't cache them, obviously, if we want to support re-sorting
 			let index = -1, lastIndex = -1, i;
-			for (i = 0; i < cbs.length; i++) {
-				if (cbs[i] === thisCb) {
+			for (i = 0; i < $cbs.length; i++) {
+				if ($cbs[i] === thisCb) {
 					index = i;
 					if (lastIndex > -1) {
 						break;
 					}
 				}
-				if (cbs[i] === lastCheckbox) {
+				if ($cbs[i] === lastCheckbox) {
 					lastIndex = i;
 					if (index > -1) {
 						break;
@@ -5453,8 +5453,8 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 				}
 
 				for (i = start; i <= finish; i++) {
-					if (cbs[i].checked !== endState) {
-						cbs[i].click();
+					if ($cbs[i].checked !== endState) {
+						$cbs[i].click();
 					}
 				}
 			}

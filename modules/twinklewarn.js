@@ -1841,12 +1841,12 @@ Twinkle.warn.callbacks = {
 								$('input[value=final]').prop('checked', true); // Vandalism after final
 							}
 						});
-						const statusNode = $('<div>', {
+						const $statusNode = $('<div>', {
 							text: mw.config.get('wgRelevantUserName') + ' recently received a level 4 warning (' + latest.type + ') so it might be better to report them instead; ',
 							css: {color: 'red' }
 						});
-						statusNode.append($link[0]);
-						$autolevelMessage.append(statusNode);
+						$statusNode.append($link[0]);
+						$autolevelMessage.append($statusNode);
 					}
 				} else { // Automatically increase severity
 					level += 1;
