@@ -52,8 +52,8 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 		rvuser: user,
 		format: 'json'
 	};
-	Morebits.status.init(document.getElementById('mw-content-text'));
-	const wikipedia_api = new Morebits.wiki.api('Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main);
+	Morebits.Status.init(document.getElementById('mw-content-text'));
+	const wikipedia_api = new Morebits.wiki.Api('Grabbing data of initial contributor', query, Twinkle.diff.callbacks.main);
 	wikipedia_api.params = { user: user };
 	wikipedia_api.post();
 };
