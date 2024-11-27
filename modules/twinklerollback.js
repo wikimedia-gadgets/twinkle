@@ -278,18 +278,18 @@ Twinkle.rollback.addLinks = {
 	diff: function() {
 		// Autofill user talk links on diffs with vanarticle for easy warning, but don't autowarn
 		const warnFromTalk = function(xtitle) {
-			const talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
-			if (talkLink.length) {
+			const $talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
+			if ($talkLink.length) {
 				let extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
 				// diffIDs for vanarticlerevid
 				extraParams += '&vanarticlerevid=';
 				extraParams += xtitle === 'otitle' ? mw.config.get('wgDiffOldId') : mw.config.get('wgDiffNewId');
 
-				const href = talkLink.attr('href');
+				const href = $talkLink.attr('href');
 				if (href.indexOf('?') === -1) {
-					talkLink.attr('href', href + '?' + extraParams);
+					$talkLink.attr('href', href + '?' + extraParams);
 				} else {
-					talkLink.attr('href', href + '&' + extraParams);
+					$talkLink.attr('href', href + '&' + extraParams);
 				}
 			}
 		};
