@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -597,7 +597,7 @@ Twinkle.batchdelete.callbacks = {
 		unlinker.setPageList(pages);
 		unlinker.run((pageName) => {
 			const wikipedia_page = new Morebits.wiki.page(pageName, 'Unlinking on ' + pageName);
-			const params = $.extend({}, apiobj.params);
+			const params = Object.assign({}, apiobj.params);
 			params.title = pageName;
 			params.unlinker = unlinker;
 			wikipedia_page.setCallbackParameters(params);
@@ -648,7 +648,7 @@ Twinkle.batchdelete.callbacks = {
 		unlinker.setPageList(pages);
 		unlinker.run((pageName) => {
 			const wikipedia_page = new Morebits.wiki.page(pageName, 'Removing file usages on ' + pageName);
-			const params = $.extend({}, apiobj.params);
+			const params = Object.assign({}, apiobj.params);
 			params.title = pageName;
 			params.unlinker = unlinker;
 			wikipedia_page.setCallbackParameters(params);
@@ -690,6 +690,6 @@ Twinkle.batchdelete.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.batchdelete, 'batchdelete');
-}(jQuery));
+}());
 
 // </nowiki>

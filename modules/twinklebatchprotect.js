@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -288,7 +288,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 		};
 		const wikipedia_api = new Morebits.wiki.api('Checking if page ' + pageName + ' exists', query,
 			Twinkle.batchprotect.callbacks.main, null, batchOperation.workerFailure);
-		wikipedia_api.params = $.extend({
+		wikipedia_api.params = Object.assign({
 			page: pageName,
 			batchOperation: batchOperation
 		}, input);
@@ -333,6 +333,6 @@ Twinkle.batchprotect.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.batchprotect, 'batchprotect');
-}(jQuery));
+}());
 
 // </nowiki>

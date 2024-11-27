@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -157,7 +157,7 @@ Twinkle.welcome.callback = function twinklewelcomeCallback(uid) {
 	});
 
 	const previewlink = document.createElement('a');
-	$(previewlink).click(() => {
+	$(previewlink).on('click', () => {
 		Twinkle.welcome.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
@@ -657,7 +657,7 @@ Twinkle.welcome.getTemplateWikitext = function(type, template, article) {
 	if (properties) {
 		return properties.syntax
 			.replace('$USERNAME$', Twinkle.getPref('insertUsername') ? mw.config.get('wgUserName') : '')
-			.replace('$ARTICLE$', article ? article : '')
+			.replace('$ARTICLE$', article || '')
 			.replace(/\$HEADER\$\s*/, '== Welcome ==\n\n')
 			.replace('$EXTRA$', ''); // EXTRA is not implemented yet
 	}
@@ -688,7 +688,7 @@ Twinkle.welcome.callbacks = {
 
 		previewDialog.display();
 
-		$(submit).click(() => {
+		$(submit).on('click', () => {
 			previewDialog.close();
 		});
 	},
@@ -748,6 +748,6 @@ Twinkle.welcome.callback.evaluate = function twinklewelcomeCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.welcome, 'welcome');
-}(jQuery));
+}());
 
 // </nowiki>
