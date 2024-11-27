@@ -57,7 +57,6 @@
 		"no-new": "warn",
 		"no-return-assign": "warn",
 		"no-script-url": "warn",
-		"no-sequences": "warn",
 		"no-throw-literal": "warn",
 		"no-unused-expressions": "warn",
 		"no-use-before-define": "warn",

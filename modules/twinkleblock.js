@@ -186,9 +186,11 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 	// Toggle unblock link if not the user in question; always first
 	const unblockLink = document.querySelector('.morebits-dialog-footerlinks a');
 	if (blockedUserName !== relevantUserName) {
-		unblockLink.hidden = true, unblockLink.nextSibling.hidden = true; // link+trailing bullet
+		unblockLink.hidden = true;
+		unblockLink.nextSibling.hidden = true; // link+trailing bullet
 	} else {
-		unblockLink.hidden = false, unblockLink.nextSibling.hidden = false; // link+trailing bullet
+		unblockLink.hidden = false;
+		unblockLink.nextSibling.hidden = false; // link+trailing bullet
 	}
 
 	// Semi-busted on ranges, see [[phab:T270737]] and [[phab:T146628]].
