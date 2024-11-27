@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -488,7 +488,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 
 	// tally tags added/removed, update statusNode text
 	const statusNode = document.getElementById('tw-tag-status');
-	$('[name=tags], [name=existingTags]').click(function() {
+	$('[name=tags], [name=existingTags]').on('click', function() {
 		if (this.name === 'tags') {
 			Twinkle.tag.status.numAdded += this.checked ? 1 : -1;
 		} else if (this.name === 'existingTags') {
@@ -505,6 +505,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 
 /**
  * Adds a link to each template's description page
+ *
  * @param {Morebits.quickForm.element} checkbox  associated with the template
  */
 var generateLinks = function(checkbox) {
@@ -1593,6 +1594,7 @@ Twinkle.tag.callbacks = {
 
 		/**
 		 * Updates `tagText` with the syntax of `tagName` template with its parameters
+		 *
 		 * @param {number} tagIndex
 		 * @param {string} tagName
 		 */
@@ -2184,5 +2186,5 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.tag, 'tag');
-}(jQuery));
+}());
 // </nowiki>

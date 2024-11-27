@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -373,10 +373,10 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							} else {
 								for (let i = 0; i < page.revisions.length; ++i) {
 									const rev = page.revisions[i];
-									const $entry = $('<div/>', {
+									const $entry = $('<div>', {
 										class: 'entry'
 									});
-									const $input = $('<input/>', {
+									const $input = $('<input>', {
 										type: 'checkbox',
 										name: 's_' + field,
 										value: rev.revid
@@ -397,15 +397,15 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 							// add free form input for resolves
 							if (field === 'resolves') {
-								const $free_entry = $('<div/>', {
+								const $free_entry = $('<div>', {
 									class: 'entry'
 								});
-								const $free_input = $('<input/>', {
+								const $free_input = $('<input>', {
 									type: 'text',
 									name: 's_resolves_free'
 								});
 
-								const $free_label = $('<label/>', {
+								const $free_label = $('<label>', {
 									for: 's_resolves_free',
 									html: 'URL link of diff with additional discussions: '
 								});
@@ -468,11 +468,11 @@ Twinkle.arv.callback.changeCategory = function (e) {
 };
 
 Twinkle.arv.callback.evaluate = function(e) {
-	var form = e.target;
-	var reason = '';
-	var input = Morebits.quickForm.getInputData(form);
+	const form = e.target;
+	let reason = '';
+	const input = Morebits.quickForm.getInputData(form);
 
-	var uid = form.uid.value;
+	const uid = form.uid.value;
 
 	switch (input.category) {
 
@@ -725,8 +725,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 };
 
 Twinkle.arv.callback.getAivReasonWikitext = function(input) {
-	var text = '';
-	var type = input.arvtype;
+	let text = '';
+	let type = input.arvtype;
 
 	if (!type.length && input.reason === '') {
 		return null;
@@ -763,15 +763,15 @@ Twinkle.arv.callback.getAivReasonWikitext = function(input) {
 	}
 
 	if (input.reason !== '') {
-		var textEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(text);
+		const textEndsInPunctuationOrBlank = /([.?!;:]|^)$/.test(text);
 		text += textEndsInPunctuationOrBlank ? '' : '.';
-		var textIsBlank = text === '';
+		const textIsBlank = text === '';
 		text += textIsBlank ? '' : ' ';
 		text += input.reason;
 	}
 
 	text = text.trim();
-	var textEndsInPunctuation = /[.?!;]$/.test(text);
+	const textEndsInPunctuation = /[.?!;]$/.test(text);
 	if (!textEndsInPunctuation) {
 		text += '.';
 	}
@@ -795,18 +795,18 @@ Twinkle.arv.callback.getUsernameReportWikitext = function(input) {
 	}
 
 	// a or an?
-	var adjective = 'a';
+	let adjective = 'a';
 	if (/[aeiouwyh]/.test(input.arvtype[0] || '')) { // non 100% correct, but whatever, including 'h' for Cockney
 		adjective = 'an';
 	}
 
-	var text = '*{{user-uaa|1=' + input.uid + '}} &ndash; ';
+	let text = '*{{user-uaa|1=' + input.uid + '}} &ndash; ';
 	if (input.arvtype.length) {
 		text += 'Violation of the username policy as ' + adjective + ' ' + input.arvtype + ' username. ';
 	}
 	if (input.reason !== '') {
 		text += Morebits.string.toUpperCaseFirstChar(input.reason);
-		var endsInPeriod = /\.$/.test(input.reason);
+		const endsInPeriod = /\.$/.test(input.reason);
 		if (!endsInPeriod) {
 			text += '.';
 		}
@@ -980,6 +980,6 @@ Twinkle.arv.processAN3 = function(params) {
 };
 
 Twinkle.addInitCallback(Twinkle.arv, 'arv');
-}(jQuery));
+}());
 
 // </nowiki>

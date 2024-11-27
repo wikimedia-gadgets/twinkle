@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -31,7 +31,7 @@ Twinkle.warn = function twinklewarn() {
 		const $vandalTalkLink = $('#mw-rollback-success').find('.mw-usertoollinks a').first();
 		if ($vandalTalkLink.length) {
 			$vandalTalkLink.css('font-weight', 'bold');
-			$vandalTalkLink.wrapInner($('<span/>').attr('title', 'If appropriate, you can use Twinkle to warn the user about their edits to this page.'));
+			$vandalTalkLink.wrapInner($('<span>').attr('title', 'If appropriate, you can use Twinkle to warn the user about their edits to this page.'));
 
 			// Can't provide vanarticlerevid as only wgCurRevisionId is provided
 			const extraParam = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm);
@@ -117,7 +117,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	more.append({ type: 'textarea', label: 'Optional message:', name: 'reason', tooltip: 'Perhaps a reason, or that a more detailed notice must be appended' });
 
 	const previewlink = document.createElement('a');
-	$(previewlink).click(() => {
+	$(previewlink).on('click', () => {
 		Twinkle.warn.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
@@ -1363,7 +1363,7 @@ Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyNam
 		const level = isNumberedTemplate[0];
 		const numberedWarnings = {};
 		$.each(templates.levels, (key, val) => {
-			$.extend(numberedWarnings, val);
+			Object.assign(numberedWarnings, val);
 		});
 		$.each(numberedWarnings, (key) => {
 			if (key === unNumberedTemplateName) {
@@ -1376,7 +1376,7 @@ Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyNam
 	const otherWarnings = {};
 	$.each(templates, (key, val) => {
 		if (key !== 'levels') {
-			$.extend(otherWarnings, val);
+			Object.assign(otherWarnings, val);
 		}
 	});
 	$.each(otherWarnings, (key) => {
@@ -1469,7 +1469,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			createEntries(Twinkle.warn.messages[value], sub_group, true);
 			break;
 		case 'singlecombined':
-			var unSortedSinglets = $.extend({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
+			var unSortedSinglets = Object.assign({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
 			var sortedSingletMessages = {};
 			Object.keys(unSortedSinglets).sort().forEach((key) => {
 				sortedSingletMessages[key] = unSortedSinglets[key];
@@ -1534,7 +1534,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 					// Catch and warn if the talkpage can't load,
 					// most likely because it's a cross-namespace redirect
 					// Supersedes the typical $autolevelMessage added in autolevelParseWikitext
-					const $noTalkPageNode = $('<strong/>', {
+					const $noTalkPageNode = $('<strong>', {
 						text: 'Unable to load user talk page; it might be a cross-namespace redirect.  Autolevel detection will not work.',
 						id: 'twinkle-warn-autolevel-message',
 						css: {color: 'red' }
@@ -1582,7 +1582,7 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 			})
 			.change(Twinkle.warn.callback.change_subcategory);
 
-		$('.select2-selection').keydown(Morebits.select2.autoStart).focus();
+		$('.select2-selection').on('keydown', Morebits.select2.autoStart).trigger('focus');
 
 		mw.util.addCSS(
 			// Increase height
@@ -1748,12 +1748,13 @@ Twinkle.warn.callbacks = {
 		}
 	},
 	/**
-	* Used in the main and autolevel loops to determine when to warn
-	* about excessively recent, stale, or identical warnings.
-	* @param {string} wikitext  The text of a user's talk page, from getPageText()
-	* @returns {Object[]} - Array of objects: latest contains most recent
-	* warning and date; history lists all prior warnings
-	*/
+	 * Used in the main and autolevel loops to determine when to warn
+	 * about excessively recent, stale, or identical warnings.
+	 *
+	 * @param {string} wikitext  The text of a user's talk page, from getPageText()
+	 * @return {Object[]} - Array of objects: latest contains most recent
+	 * warning and date; history lists all prior warnings
+	 */
 	dateProcessing: function(wikitext) {
 		const history_re = /<!--\s?Template:([uU]w-.*?)\s?-->.*?(\d{1,2}:\d{1,2}, \d{1,2} \w+ \d{4} \(UTC\))/g;
 		const history = {};
@@ -1773,23 +1774,23 @@ Twinkle.warn.callbacks = {
 		return [latest, history];
 	},
 	/**
-	* Main loop for deciding what the level should increment to. Most of
-	* this is really just error catching and updating the subsequent data.
-	* May produce up to two notices in a twinkle-warn-autolevel-messages div
-	*
-	* @param {string} wikitext  The text of a user's talk page, from getPageText() (required)
-	* @param {Object} params  Params object: sub_group is the template (required);
-	* article is the user-provided article (form.article) used to link ARV on recent level4 warnings;
-	* messageData is only necessary if getting the full template, as it's
-	* used to ensure a valid template of that level exists
-	* @param {Object} latest  First element of the array returned from
-	* dateProcessing. Provided here rather than processed within to avoid
-	* repeated call to dateProcessing
-	* @param {(Date|Morebits.date)} date  Date from which staleness is determined
-	* @param {Morebits.status} statelem  Status element, only used for handling error in final execution
-	*
-	* @returns {Array} - Array that contains the full template and just the warning level
-	*/
+	 * Main loop for deciding what the level should increment to. Most of
+	 * this is really just error catching and updating the subsequent data.
+	 * May produce up to two notices in a twinkle-warn-autolevel-messages div
+	 *
+	 * @param {string} wikitext  The text of a user's talk page, from getPageText() (required)
+	 * @param {Object} params  Params object: sub_group is the template (required);
+	 * article is the user-provided article (form.article) used to link ARV on recent level4 warnings;
+	 * messageData is only necessary if getting the full template, as it's
+	 * used to ensure a valid template of that level exists
+	 * @param {Object} latest  First element of the array returned from
+	 * dateProcessing. Provided here rather than processed within to avoid
+	 * repeated call to dateProcessing
+	 * @param {(Date|Morebits.date)} date  Date from which staleness is determined
+	 * @param {Morebits.status} statelem  Status element, only used for handling error in final execution
+	 *
+	 * @return {Array} - Array that contains the full template and just the warning level
+	 */
 	autolevelParseWikitext: function(wikitext, params, latest, date, statelem) {
 		let level; // undefined rather than '' means the isNaN below will return true
 		if (/\d(?:im)?$/.test(latest.type)) { // level1-4im
@@ -1807,7 +1808,7 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		const $autolevelMessage = $('<div/>', {id: 'twinkle-warn-autolevel-message'});
+		const $autolevelMessage = $('<div>', {id: 'twinkle-warn-autolevel-message'});
 
 		if (isNaN(level)) { // No prior warnings found, this is the first
 			level = 1;
@@ -1828,7 +1829,7 @@ Twinkle.warn.callbacks = {
 					// Basically indicates whether we're in the final Main evaluation or not,
 					// and thus whether we can continue or need to display the warning and link
 					if (!statelem) {
-						const $link = $('<a/>', {
+						const $link = $('<a>', {
 							href: '#',
 							text: 'click here to open the ARV tool.',
 							css: { fontWeight: 'bold' },
@@ -1840,12 +1841,12 @@ Twinkle.warn.callbacks = {
 								$('input[value=final]').prop('checked', true); // Vandalism after final
 							}
 						});
-						const statusNode = $('<div/>', {
+						const $statusNode = $('<div>', {
 							text: mw.config.get('wgRelevantUserName') + ' recently received a level 4 warning (' + latest.type + ') so it might be better to report them instead; ',
 							css: {color: 'red' }
 						});
-						statusNode.append($link[0]);
-						$autolevelMessage.append(statusNode);
+						$statusNode.append($link[0]);
+						$autolevelMessage.append($statusNode);
 					}
 				} else { // Automatically increase severity
 					level += 1;
@@ -2054,6 +2055,6 @@ Twinkle.warn.callback.evaluate = function twinklewarnCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.warn, 'warn');
-}(jQuery));
+}());
 
 // </nowiki>
