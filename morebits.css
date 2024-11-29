@@ -46,7 +46,7 @@ html {
 	}
 }
 
-/* Morebits.status */
+/* Morebits.Status */
 
 .morebits_status_status {
 	color: var(--morebits-color-status-status, #4682B4);
@@ -65,7 +65,7 @@ html {
 	font-weight: bold;
 }
 
-/* Morebits.quickForm */
+/* Morebits.QuickForm */
 
 form.quickform
 {
@@ -176,7 +176,7 @@ form.quickform .morebits-tooltipButton
 }
 
 
-/* Scrollbox styles, for use within Morebits.simpleWindow */
+/* Scrollbox styles, for use within Morebits.SimpleWindow */
 
 div.morebits-scrollbox
 {
@@ -233,7 +233,7 @@ div.morebits-usertext {
 }
 
 
-/* Morebits.simpleWindow */
+/* Morebits.SimpleWindow */
 
 .morebits-dialog {
 	border: 1px #666 solid;
