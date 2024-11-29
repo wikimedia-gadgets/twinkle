@@ -24,19 +24,19 @@ Twinkle.deprod = function() {
 const concerns = {};
 
 Twinkle.deprod.callback = function() {
-	const Window = new Morebits.simpleWindow(800, 400);
+	const Window = new Morebits.SimpleWindow(800, 400);
 	Window.setTitle('PROD cleaning');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Proposed deletion', 'WP:PROD');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#deprod');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	const form = new Morebits.quickForm(callback_commit);
+	const form = new Morebits.QuickForm(callback_commit);
 
 	const statusdiv = document.createElement('div');
 	statusdiv.style.padding = '15px'; // just so it doesn't look broken
 	Window.setContent(statusdiv);
-	Morebits.status.init(statusdiv);
+	Morebits.Status.init(statusdiv);
 	Window.display();
 
 	const query = {
@@ -51,8 +51,8 @@ Twinkle.deprod.callback = function() {
 		format: 'json'
 	};
 
-	const statelem = new Morebits.status('Grabbing list of pages');
-	const wikipedia_api = new Morebits.wiki.api('loading...', query, ((apiobj) => {
+	const statelem = new Morebits.Status('Grabbing list of pages');
+	const wikipedia_api = new Morebits.wiki.Api('loading...', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		const pages = (response.query && response.query.pages) || [];
 		const list = [];
@@ -88,14 +88,14 @@ Twinkle.deprod.callback = function() {
 			type: 'button',
 			label: 'Select All',
 			event: function(e) {
-				$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', true);
+				$(Morebits.QuickForm.getElements(e.target.form, 'pages')).prop('checked', true);
 			}
 		});
 		apiobj.params.form.append({
 			type: 'button',
 			label: 'Deselect All',
 			event: function(e) {
-				$(Morebits.quickForm.getElements(e.target.form, 'pages')).prop('checked', false);
+				$(Morebits.QuickForm.getElements(e.target.form, 'pages')).prop('checked', false);
 			}
 		});
 		apiobj.params.form.append({
@@ -109,7 +109,7 @@ Twinkle.deprod.callback = function() {
 
 		const rendered = apiobj.params.form.render();
 		apiobj.params.Window.setContent(rendered);
-		Morebits.quickForm.getElements(rendered, 'pages').forEach(Twinkle.generateBatchPageLinks);
+		Morebits.QuickForm.getElements(rendered, 'pages').forEach(Twinkle.generateBatchPageLinks);
 	}), statelem);
 
 	wikipedia_api.params = { form: form, Window: Window };
@@ -117,10 +117,10 @@ Twinkle.deprod.callback = function() {
 };
 
 var callback_commit = function(event) {
-		const pages = Morebits.quickForm.getInputData(event.target).pages;
-		Morebits.status.init(event.target);
+		const pages = Morebits.QuickForm.getInputData(event.target).pages;
+		Morebits.Status.init(event.target);
 
-		const batchOperation = new Morebits.batchOperation('Deleting pages');
+		const batchOperation = new Morebits.BatchOperation('Deleting pages');
 		batchOperation.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		batchOperation.setOption('preserveIndividualStatusLines', true);
 		batchOperation.setPageList(pages);
@@ -134,7 +134,7 @@ var callback_commit = function(event) {
 				rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
 			};
-			let wikipedia_api = new Morebits.wiki.api('Grabbing redirects', query, callback_deleteRedirects);
+			let wikipedia_api = new Morebits.wiki.Api('Grabbing redirects', query, callback_deleteRedirects);
 			wikipedia_api.params = params;
 			wikipedia_api.post();
 
@@ -147,13 +147,13 @@ var callback_commit = function(event) {
 					titles: pageTitle.toText(),
 					format: 'json'
 				};
-				wikipedia_api = new Morebits.wiki.api('Checking whether ' + pageName + ' has a talk page', query,
+				wikipedia_api = new Morebits.wiki.Api('Checking whether ' + pageName + ' has a talk page', query,
 					callback_deleteTalk);
 				wikipedia_api.params = params;
 				wikipedia_api.post();
 			}
 
-			var page = new Morebits.wiki.page(pageName, 'Deleting page ' + pageName);
+			var page = new Morebits.wiki.Page(pageName, 'Deleting page ' + pageName);
 			page.setEditSummary('Expired [[WP:PROD|PROD]], concern was: ' + concerns[pageName]);
 			page.setChangeTags(Twinkle.changeTags);
 			page.suppressProtectWarning();
@@ -166,7 +166,7 @@ var callback_commit = function(event) {
 			return;
 		}
 
-		const page = new Morebits.wiki.page('Talk:' + apiobj.params.page, 'Deleting talk page of page ' + apiobj.params.page);
+		const page = new Morebits.wiki.Page('Talk:' + apiobj.params.page, 'Deleting talk page of page ' + apiobj.params.page);
 		page.setEditSummary('[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page "' + apiobj.params.page + '"');
 		page.setChangeTags(Twinkle.changeTags);
 		page.deletePage();
@@ -176,7 +176,7 @@ var callback_commit = function(event) {
 		const redirects = response.query.pages[0].redirects || [];
 		redirects.forEach((rd) => {
 			const title = rd.title;
-			const page = new Morebits.wiki.page(title, 'Deleting redirecting page ' + title);
+			const page = new Morebits.wiki.Page(title, 'Deleting redirecting page ' + title);
 			page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"');
 			page.setChangeTags(Twinkle.changeTags);
 			page.deletePage();

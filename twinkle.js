@@ -373,7 +373,7 @@ Twinkle.load = function () {
 	}
 
 	// Set custom Api-User-Agent header, for server-side logging purposes
-	Morebits.wiki.api.setApiUserAgent('Twinkle (' + mw.config.get('wgWikiID') + ')');
+	Morebits.wiki.Api.setApiUserAgent('Twinkle (' + mw.config.get('wgWikiID') + ')');
 
 	Twinkle.disabledModules = Twinkle.getPref('disabledModules').concat(Twinkle.getPref('disabledSysopModules'));
 
@@ -452,7 +452,7 @@ Twinkle.makeFindSourcesDiv = function makeSourcesDiv(divID) {
 		return;
 	}
 	if (!Twinkle.findSources) {
-		const parser = new Morebits.wiki.preview($(divID)[0]);
+		const parser = new Morebits.wiki.Preview($(divID)[0]);
 		parser.beginRender('({{Find sources|' + Morebits.pageNameNorm + '}})', 'WP:AFD').then(() => {
 			// Save for second-time around
 			Twinkle.findSources = parser.previewbox.innerHTML;
