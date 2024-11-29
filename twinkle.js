@@ -337,7 +337,7 @@ $.ajax({
 			const options = JSON.parse(optionsText);
 			if (options) {
 				if (options.twinkle || options.friendly) { // Old preferences format
-					Twinkle.prefs = $.extend(options.twinkle, options.friendly);
+					Twinkle.prefs = Object.assign(options.twinkle || {}, options.friendly);
 				} else {
 					Twinkle.prefs = options;
 				}

@@ -758,7 +758,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createElement('div');
 
 			data.inputs.forEach((subdata) => {
-				const cell = new Morebits.quickForm.element($.extend(subdata, { type: '_dyninput_cell' }));
+				const cell = new Morebits.quickForm.element(Object.assign(subdata || {}, { type: '_dyninput_cell' }));
 				node.appendChild(cell.render());
 			});
 			if (data.remove) {

@@ -1899,7 +1899,7 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	// "talk page" of an IP range (which does not exist)
 	const userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
-	const params = $.extend(formData, {
+	const params = Object.assign(formData || {}, {
 		messageData: Twinkle.block.blockPresetsInfo[formData.template],
 		reason: Twinkle.block.field_template_options.block_reason,
 		disabletalk: Twinkle.block.field_template_options.notalk,
