@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -1376,7 +1376,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 	const curvalue = $prefbutton.data('value');
 	const curpref = $prefbutton.data('pref');
 
-	const dialog = new Morebits.simpleWindow(720, 400);
+	const dialog = new Morebits.SimpleWindow(720, 400);
 	dialog.setTitle(curpref.label);
 	dialog.setScriptName('Twinkle preferences');
 
@@ -1422,7 +1422,7 @@ Twinkle.config.listDialog.display = function twinkleconfigListDialogDisplay(e) {
 				),
 			$('<button>')
 				.text('Save changes')
-				.attr('type', 'submit') // so Morebits.simpleWindow puts the button in the button pane
+				.attr('type', 'submit') // so Morebits.SimpleWindow puts the button in the button pane
 				.on('click', () => {
 					Twinkle.config.listDialog.save($prefbutton, $dlgtbody);
 					dialog.close();
@@ -1570,10 +1570,10 @@ Twinkle.config.resetAllPrefs = function twinkleconfigResetAllPrefs() {
 };
 
 Twinkle.config.save = function twinkleconfigSave(e) {
-	Morebits.status.init(document.getElementById('twinkle-config-content'));
+	Morebits.Status.init(document.getElementById('twinkle-config-content'));
 
 	const userjs = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user] + ':' + mw.config.get('wgUserName') + '/twinkleoptions.js';
-	const wikipedia_page = new Morebits.wiki.page(userjs, 'Saving preferences to ' + userjs);
+	const wikipedia_page = new Morebits.wiki.Page(userjs, 'Saving preferences to ' + userjs);
 	wikipedia_page.setCallbackParameters(e.target);
 	wikipedia_page.load(Twinkle.config.writePrefs);
 
@@ -1638,7 +1638,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 						case 'integer': // read from the input box
 							userValue = parseInt(form[pref.name].value, 10);
 							if (isNaN(userValue)) {
-								Morebits.status.warn('Saving', 'The value you specified for ' + pref.name + ' (' + pref.value + ') was invalid.  The save will continue, but the invalid data value will be skipped.');
+								Morebits.Status.warn('Saving', 'The value you specified for ' + pref.name + ' (' + pref.value + ') was invalid.  The save will continue, but the invalid data value will be skipped.');
 								userValue = null;
 							}
 							break;
@@ -1719,14 +1719,14 @@ Twinkle.config.saveSuccess = function twinkleconfigSaveSuccess(pageobj) {
 	noticebox.style.fontSize = '100%';
 	noticebox.innerHTML = '<p><b>Your Twinkle preferences have been saved.</b> To see the changes, you will need to clear your browser cache entirely (see <a href="' + mw.util.getUrl('WP:BYPASS') + '" title="WP:BYPASS">WP:BYPASS</a> for instructions).</p>';
 	mw.loader.using('mediawiki.htmlform.codex.styles', () => {
-		Morebits.status.root.appendChild(noticebox);
+		Morebits.Status.root.appendChild(noticebox);
 	});
 	const noticeclear = document.createElement('br');
 	noticeclear.style.clear = 'both';
-	Morebits.status.root.appendChild(noticeclear);
+	Morebits.Status.root.appendChild(noticeclear);
 };
 
 Twinkle.addInitCallback(Twinkle.config.init);
-}(jQuery));
+}());
 
 // </nowiki>

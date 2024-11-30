@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -20,14 +20,14 @@ Twinkle.shared = function twinkleshared() {
 };
 
 Twinkle.shared.callback = function twinklesharedCallback() {
-	const Window = new Morebits.simpleWindow(600, 450);
+	const Window = new Morebits.SimpleWindow(600, 450);
 	Window.setTitle('Shared IP address tagging');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Shared prefs', 'WP:TW/PREF#shared');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#shared');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	const form = new Morebits.quickForm(Twinkle.shared.callback.evaluate);
+	const form = new Morebits.QuickForm(Twinkle.shared.callback.evaluate);
 
 	const div = form.append({
 		type: 'div',
@@ -70,7 +70,7 @@ Twinkle.shared.callback = function twinklesharedCallback() {
 	);
 
 	const previewlink = document.createElement('a');
-	$(previewlink).click(() => {
+	$(previewlink).on('click', () => {
 		Twinkle.shared.preview(result);
 	});
 	previewlink.style.cursor = 'pointer';
@@ -142,7 +142,7 @@ Twinkle.shared.callbacks = {
 		for (let i = 0; i < Twinkle.shared.standardList.length; i++) {
 			const tagRe = new RegExp('(\\{\\{' + Twinkle.shared.standardList[i].value + '(\\||\\}\\}))', 'im');
 			if (tagRe.exec(pageText)) {
-				Morebits.status.warn('Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting');
+				Morebits.Status.warn('Info', 'Found {{' + Twinkle.shared.standardList[i].value + '}} on the user\'s talk page already...aborting');
 				found = true;
 			}
 		}
@@ -151,7 +151,7 @@ Twinkle.shared.callbacks = {
 			return;
 		}
 
-		Morebits.status.info('Info', 'Will add the shared IP address template to the top of the user\'s talk page.');
+		Morebits.Status.info('Info', 'Will add the shared IP address template to the top of the user\'s talk page.');
 		const text = Twinkle.shared.getTemplateWikitext(params);
 
 		const summaryText = 'Added {{[[Template:' + params.template + '|' + params.template + ']]}} template.';
@@ -165,9 +165,9 @@ Twinkle.shared.callbacks = {
 };
 
 Twinkle.shared.preview = function(form) {
-	const input = Morebits.quickForm.getInputData(form);
+	const input = Morebits.QuickForm.getInputData(form);
 	if (input.template) {
-		const previewDialog = new Morebits.simpleWindow(700, 500);
+		const previewDialog = new Morebits.SimpleWindow(700, 500);
 		previewDialog.setTitle('Shared IP template preview');
 		previewDialog.setScriptName('Add Shared IP template');
 		previewDialog.setModality(true);
@@ -177,7 +177,7 @@ Twinkle.shared.preview = function(form) {
 		previewdiv.style.fontSize = 'small';
 		previewDialog.setContent(previewdiv);
 
-		const previewer = new Morebits.wiki.preview(previewdiv);
+		const previewer = new Morebits.wiki.Preview(previewdiv);
 		previewer.beginRender(Twinkle.shared.getTemplateWikitext(input), mw.config.get('wgPageName'));
 
 		const submit = document.createElement('input');
@@ -187,7 +187,7 @@ Twinkle.shared.preview = function(form) {
 
 		previewDialog.display();
 
-		$(submit).click(() => {
+		$(submit).on('click', () => {
 			previewDialog.close();
 		});
 	}
@@ -206,7 +206,7 @@ Twinkle.shared.getTemplateWikitext = function(input) {
 };
 
 Twinkle.shared.callback.evaluate = function twinklesharedCallbackEvaluate(e) {
-	const params = Morebits.quickForm.getInputData(e.target);
+	const params = Morebits.QuickForm.getInputData(e.target);
 	if (!params.template) {
 		alert('You must select a shared IP address template to use!');
 		return;
@@ -216,19 +216,19 @@ Twinkle.shared.callback.evaluate = function twinklesharedCallbackEvaluate(e) {
 		return;
 	}
 
-	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(e.target);
+	Morebits.SimpleWindow.setButtonsEnabled(false);
+	Morebits.Status.init(e.target);
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = 'Tagging complete, reloading talk page in a few seconds';
 
-	const wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'User talk page modification');
+	const wikipedia_page = new Morebits.wiki.Page(mw.config.get('wgPageName'), 'User talk page modification');
 	wikipedia_page.setFollowRedirect(true);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.shared.callbacks.main);
 };
 
 Twinkle.addInitCallback(Twinkle.shared, 'shared');
-}(jQuery));
+}());
 
 // </nowiki>

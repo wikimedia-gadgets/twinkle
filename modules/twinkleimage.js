@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -17,7 +17,7 @@ Twinkle.image = function twinkleimage() {
 };
 
 Twinkle.image.callback = function twinkleimageCallback() {
-	const Window = new Morebits.simpleWindow(600, 330);
+	const Window = new Morebits.SimpleWindow(600, 330);
 	Window.setTitle('File for dated speedy deletion');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Speedy deletion policy', 'WP:CSD#Files');
@@ -25,7 +25,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#image');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	const form = new Morebits.quickForm(Twinkle.image.callback.evaluate);
+	const form = new Morebits.QuickForm(Twinkle.image.callback.evaluate);
 	form.append({
 		type: 'checkbox',
 		list: [
@@ -111,7 +111,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 	const value = event.target.values;
 	const root = event.target.form;
-	const work_area = new Morebits.quickForm.element({
+	const work_area = new Morebits.QuickForm.Element({
 		type: 'div',
 		name: 'work_area'
 	});
@@ -180,7 +180,7 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
-	const input = Morebits.quickForm.getInputData(event.target);
+	const input = Morebits.QuickForm.getInputData(event.target);
 	if (input.replacement) {
 		input.replacement = (new RegExp('^' + Morebits.namespaceRegex(6) + ':', 'i').test(input.replacement) ? '' : 'File:') + input.replacement;
 	}
@@ -212,20 +212,20 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 	const lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
 	const templatename = input.derivative ? 'dw ' + input.type : input.type;
 
-	const params = $.extend({
+	const params = Object.assign({
 		templatename: templatename,
 		normalized: csdcrit,
 		lognomination: lognomination
 	}, input);
 
-	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(event.target);
+	Morebits.SimpleWindow.setButtonsEnabled(false);
+	Morebits.Status.init(event.target);
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = 'Tagging complete';
 
 	// Tagging image
-	const wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging file with deletion tag');
+	const wikipedia_page = new Morebits.wiki.Page(mw.config.get('wgPageName'), 'Tagging file with deletion tag');
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.image.callbacks.taggingImage);
 
@@ -240,7 +240,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		// No auto-notification, display what was going to be added.
 		const noteData = document.createElement('pre');
 		noteData.appendChild(document.createTextNode('{{subst:di-' + templatename + '-notice|1=' + mw.config.get('wgTitle') + '}} ~~~~'));
-		Morebits.status.info('Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement('br'), noteData ]);
+		Morebits.Status.info('Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement('br'), noteData ]);
 	}
 };
 
@@ -290,7 +290,7 @@ Twinkle.image.callbacks = {
 		if (initialContrib === mw.config.get('wgUserName')) {
 			pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
 		} else {
-			const usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
+			const usertalkpage = new Morebits.wiki.Page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
 			let notifytext = '\n{{subst:di-' + params.templatename + '-notice|1=' + mw.config.get('wgTitle');
 			if (params.type === 'no permission') {
 				notifytext += params.source ? '|source=' + params.source : '';
@@ -311,7 +311,7 @@ Twinkle.image.callbacks = {
 		}
 	},
 	addToLog: function(params, initialContrib) {
-		const usl = new Morebits.userspaceLogger(Twinkle.getPref('speedyLogPageName'));
+		const usl = new Morebits.UserspaceLogger(Twinkle.getPref('speedyLogPageName'));
 		usl.initialText =
 			"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
 			'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
@@ -355,6 +355,6 @@ Twinkle.image.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.image, 'image');
-}(jQuery));
+}());
 
 // </nowiki>
