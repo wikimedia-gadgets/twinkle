@@ -27,7 +27,6 @@
 		"space-before-function-paren": "off",
 		"space-in-parens": "off",
 		"template-curly-spacing": "off",
-		"unicorn/prefer-string-slice": "off",
 
 		"no-nested-ternary": "error",
 		"no-restricted-syntax": [
@@ -62,6 +61,7 @@
 		"no-use-before-define": "warn",
 		"no-useless-concat": "warn",
 		"no-var": "warn",
-		"prefer-const": "warn"
+		"prefer-const": "warn",
+		"unicorn/prefer-string-slice": "warn"
 	}
 }
