@@ -318,10 +318,10 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcomenpov|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
-			'welcomeunsourced': {
+			'welcome-unsourced': {
 				description: 'for someone whose initial efforts are unsourced',
 				linkedArticle: true,
-				syntax: '{{subst:welcomeunsourced|$ARTICLE$|$USERNAME$}} ~~~~'
+				syntax: '{{subst:welcome-unsourced|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			'welcomevandal': {
 				description: 'for someone whose initial efforts appear to be vandalism',
