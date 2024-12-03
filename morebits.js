@@ -1421,7 +1421,7 @@ Morebits.string = {
 	 */
 	toUpperCaseFirstChar: function(str) {
 		str = str.toString();
-		return str.substr(0, 1).toUpperCase() + str.substr(1);
+		return str.slice(0, 1).toUpperCase() + str.slice(1);
 	},
 	/**
 	 * @param {string} str
@@ -1429,7 +1429,7 @@ Morebits.string = {
 	 */
 	toLowerCaseFirstChar: function(str) {
 		str = str.toString();
-		return str.substr(0, 1).toLowerCase() + str.substr(1);
+		return str.slice(0, 1).toLowerCase() + str.slice(1);
 	},
 
 	/**
@@ -4830,7 +4830,7 @@ Morebits.wikitext.parseTemplate = function(text, start) {
 	function findParam(final) {
 		// Nothing found yet, this must be the template name
 		if (count === -1) {
-			result.name = current.substring(2).trim();
+			result.name = current.slice(2).trim();
 			++count;
 		} else {
 			// In a parameter

@@ -1918,7 +1918,7 @@ Twinkle.warn.callbacks = {
 		const customProcess = function(template) {
 			template = template.split('|')[0];
 			let prefix;
-			switch (template.substr(-1)) {
+			switch (template.slice(-1)) {
 				case '1':
 					prefix = 'General note';
 					break;
@@ -1932,7 +1932,7 @@ Twinkle.warn.callbacks = {
 					prefix = 'Final warning';
 					break;
 				case 'm':
-					if (template.substr(-3) === '4im') {
+					if (template.slice(-3) === '4im') {
 						prefix = 'Only warning';
 						break;
 					}
@@ -1950,9 +1950,9 @@ Twinkle.warn.callbacks = {
 		} else {
 			// Normalize kitchensink to the 1-4im style
 			if (params.main_group === 'kitchensink' && !/^D+$/.test(params.sub_group)) {
-				let sub = params.sub_group.substr(-1);
+				let sub = params.sub_group.slice(-1);
 				if (sub === 'm') {
-					sub = params.sub_group.substr(-3);
+					sub = params.sub_group.slice(-3);
 				}
 				// Don't overwrite uw-3rr, technically unnecessary
 				if (/\d/.test(sub)) {
