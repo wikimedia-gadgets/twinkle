@@ -1694,6 +1694,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		'// changing the configuration parameters in a valid-JavaScript way) will be\n' +
 		'// overwritten the next time you click "save" in the Twinkle preferences\n' +
 		'// panel.  If modifying this file, make sure to use correct JavaScript.\n' +
+		// eslint-disable-next-line no-useless-concat
 		'// <no' + 'wiki>\n' +
 		'\n' +
 		'window.Twinkle.prefs = ';
@@ -1701,6 +1702,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	text +=
 		';\n' +
 		'\n' +
+		// eslint-disable-next-line no-useless-concat
 		'// </no' + 'wiki>\n' +
 		'// End of twinkleoptions.js\n';
 
