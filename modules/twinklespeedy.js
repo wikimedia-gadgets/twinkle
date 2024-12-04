@@ -1285,36 +1285,36 @@ Twinkle.speedy.callbacks = {
 			// promote Unlink tool
 			let $link, $bigtext;
 			if (mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8') {
-				$link = $('<a>', {
-					href: '#',
-					text: 'click here to go to the Unlink tool',
-					css: { fontSize: '130%', fontWeight: 'bold' },
-					click: function() {
+				$link = $('<a>')
+					.attr('href', '#')
+					.text('click here to go to the Unlink tool')
+					.css('fontSize', '130%')
+					.css('fontWeight', 'bold')
+					.on('click', () => {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback('Removing usages of and/or links to deleted file ' + Morebits.pageNameNorm);
-					}
-				});
-				$bigtext = $('<span>', {
-					text: 'To orphan backlinks and remove instances of file usage',
-					css: { fontSize: '130%', fontWeight: 'bold' }
-				});
+					});
+				$bigtext = $('<span>')
+					.text('To orphan backlinks and remove instances of file usage')
+					.css('fontSize', '130%')
+					.css('fontWeight', 'bold');
 				Morebits.Status.info($bigtext[0], $link[0]);
 			} else if (params.normalized !== 'f8') {
-				$link = $('<a>', {
-					href: '#',
-					text: 'click here to go to the Unlink tool',
-					css: { fontSize: '130%', fontWeight: 'bold' },
-					click: function() {
+				$link = $('<a>')
+					.attr('href', '#')
+					.text('click here to go to the Unlink tool')
+					.css('fontSize', '130%')
+					.css('fontWeight', 'bold')
+					.on('click', () => {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback('Removing links to deleted page ' + Morebits.pageNameNorm);
-					}
-				});
-				$bigtext = $('<span>', {
-					text: 'To orphan backlinks',
-					css: { fontSize: '130%', fontWeight: 'bold' }
-				});
+					} );
+				$bigtext = $('<span>')
+					.text('To orphan backlinks')
+					.css('fontSize', '130%')
+					.css('fontWeight', 'bold');
 				Morebits.Status.info($bigtext[0], $link[0]);
 			}
 		},
