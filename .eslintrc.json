@@ -46,7 +46,6 @@
 		"es-x/no-object-values": "warn",
 		"mediawiki/class-doc": "warn",
 		"new-cap": "warn",
-		"no-jquery/no-constructor-attributes": "warn",
 		"no-jquery/no-each-util": "warn",
 		"no-jquery/no-grep": "warn",
 		"no-jquery/no-in-array": "warn",
