@@ -302,6 +302,13 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				}
 				break;
 
+			case 10: // template
+			case 11: // template talk
+			case 828: // module
+			case 829: // module talk
+				appendList('Templates and modules', Twinkle.speedy.templateList);
+				break;
+
 			case 14: // category
 			case 15: // category talk
 				appendList('Categories', Twinkle.speedy.categoryList);
@@ -709,6 +716,14 @@ Twinkle.speedy.categoryList = [
 	}
 ];
 
+Twinkle.speedy.templateList = [
+	{
+		label: 'T5: Unused template subpages',
+		value: 't5',
+		tooltip: 'Unused subpages of templates and Lua modules. This does not apply to /testcases and /sandbox subpages, or subpages of Module:Sandbox.'
+	}
+];
+
 Twinkle.speedy.userList = [
 	{
 		label: 'U1: User request',
@@ -1049,6 +1064,7 @@ Twinkle.speedy.normalizeHash = {
 	nopermission: 'f11',
 	catempty: 'c1',
 	c4: 'c4',
+	t5: 't5',
 	userreq: 'u1',
 	nouser: 'u2',
 	notwebhost: 'u5'
