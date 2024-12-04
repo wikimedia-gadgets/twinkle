@@ -537,7 +537,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 		// Report inappropriate username
 		case 'username':
-			var censorUsername = input.arvtype.includes('offensive'); // check if the username is marked offensive
+			var censorUsername = input.arvtype.indexOf('offensive') !== -1; // check if the username is marked offensive
 
 			reason = Twinkle.arv.callback.getUsernameReportWikitext(input);
 
