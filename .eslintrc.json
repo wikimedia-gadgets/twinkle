@@ -41,7 +41,6 @@
 			}
 		],
 
-		"es-x/no-array-prototype-includes": "warn",
 		"es-x/no-object-values": "warn",
 		"mediawiki/class-doc": "warn",
 		"new-cap": "warn",

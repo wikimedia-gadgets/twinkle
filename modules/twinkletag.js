@@ -45,7 +45,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 	const form = new Morebits.QuickForm(Twinkle.tag.callback.evaluate);
 
 	// if page is unreviewed, add a checkbox to the form so that user can pick whether or not to review it
-	const isPatroller = mw.config.get('wgUserGroups').some((r) => ['patroller', 'sysop'].includes(r));
+	const isPatroller = mw.config.get('wgUserGroups').some((r) => ['patroller', 'sysop'].indexOf(r) !== -1);
 	if (isPatroller) {
 		new mw.Api().get({
 			action: 'pagetriagelist',
@@ -2085,38 +2085,38 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 				// Check that selected templates make sense given the file's extension.
 
 				// {{Bad GIF|JPEG|SVG}}, {{Fake SVG}}
-				if (extensionUpper !== 'GIF' && params.tags.includes('Bad GIF')) {
+				if (extensionUpper !== 'GIF' && params.tags.indexOf('Bad GIF') !== -1) {
 					alert('This appears to be a ' + extension + ' file, so {{Bad GIF}} is inappropriate.');
 					return;
-				} else if (extensionUpper !== 'JPEG' && params.tags.includes('Bad JPEG')) {
+				} else if (extensionUpper !== 'JPEG' && params.tags.indexOf('Bad JPEG') !== -1) {
 					alert('This appears to be a ' + extension + ' file, so {{Bad JPEG}} is inappropriate.');
 					return;
-				} else if (extensionUpper !== 'SVG' && params.tags.includes('Bad SVG')) {
+				} else if (extensionUpper !== 'SVG' && params.tags.indexOf('Bad SVG') !== -1) {
 					alert('This appears to be a ' + extension + ' file, so {{Bad SVG}} is inappropriate.');
 					return;
-				} else if (extensionUpper !== 'SVG' && params.tags.includes('Fake SVG')) {
+				} else if (extensionUpper !== 'SVG' && params.tags.indexOf('Fake SVG') !== -1) {
 					alert('This appears to be a ' + extension + ' file, so {{Fake SVG}} is inappropriate.');
 					return;
 				}
 
 				// {{Should be PNG|SVG}}
-				if (params.tags.includes('Should be ' + extensionUpper)) {
+				if (params.tags.indexOf('Should be ' + extensionUpper) !== -1) {
 					alert('This is already a ' + extension + ' file, so {{Should be ' + extensionUpper + '}} is inappropriate.');
 					return;
 				}
 
 				// {{Overcompressed JPEG}}
-				if (params.tags.includes('Overcompressed JPEG') && extensionUpper !== 'JPEG') {
+				if (params.tags.indexOf('Overcompressed JPEG') !== -1 && extensionUpper !== 'JPEG') {
 					alert('This appears to be a ' + extension + ' file, so {{Overcompressed JPEG}} probably doesn\'t apply.');
 					return;
 				}
 
 				// {{Bad trace}} and {{Bad font}}
 				if (extensionUpper !== 'SVG') {
-					if (params.tags.includes('Bad trace')) {
+					if (params.tags.indexOf('Bad trace') !== -1) {
 						alert('This appears to be a ' + extension + ' file, so {{Bad trace}} probably doesn\'t apply.');
 						return;
-					} else if (params.tags.includes('Bad font')) {
+					} else if (params.tags.indexOf('Bad font') !== -1) {
 						alert('This appears to be a ' + extension + ' file, so {{Bad font}} probably doesn\'t apply.');
 						return;
 					}
@@ -2125,7 +2125,7 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 
 			// {{Do not move to Commons}}
 			if (
-				params.tags.includes('Do not move to Commons') &&
+				params.tags.indexOf('Do not move to Commons') !== -1 &&
 				params.DoNotMoveToCommons_expiry &&
 				(
 					!/^2\d{3}$/.test(params.DoNotMoveToCommons_expiry) ||
