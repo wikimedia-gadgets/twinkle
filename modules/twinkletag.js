@@ -2022,7 +2022,11 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 
 	// Given an array of incompatible tags, check if we have two or more selected
 	const checkIncompatible = function(conflicts, extra) {
-		const count = conflicts.reduce((sum, tag) => sum += params.tags.indexOf(tag) !== -1, 0);
+		const count = conflicts.reduce((sum, tag) => {
+			const hasTag = params.tags.indexOf(tag) !== -1;
+			sum += (hasTag ? 1 : 0);
+			return sum;
+		}, 0);
 		if (count > 1) {
 			let message = 'Please select only one of: {{' + conflicts.join('}}, {{') + '}}.';
 			message += extra ? ' ' + extra : '';
