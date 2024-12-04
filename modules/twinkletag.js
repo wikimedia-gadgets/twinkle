@@ -2024,7 +2024,9 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 	const checkIncompatible = function(conflicts, extra) {
 		const count = conflicts.reduce((sum, tag) => {
 			const hasTag = params.tags.indexOf(tag) !== -1;
-			sum += (hasTag ? 1 : 0);
+			if (hasTag) {
+				sum++;
+			}
 			return sum;
 		}, 0);
 		if (count > 1) {
