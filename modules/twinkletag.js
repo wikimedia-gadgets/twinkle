@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -35,14 +35,14 @@ Twinkle.tag = function twinkletag() {
 Twinkle.tag.checkedTags = [];
 
 Twinkle.tag.callback = function twinkletagCallback() {
-	const Window = new Morebits.simpleWindow(630, Twinkle.tag.mode === 'article' ? 500 : 400);
+	const Window = new Morebits.SimpleWindow(630, Twinkle.tag.mode === 'article' ? 500 : 400);
 	Window.setScriptName('Twinkle');
 	// anyone got a good policy/guideline/info page/instructional page link??
 	Window.addFooterLink('Tag prefs', 'WP:TW/PREF#tag');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#tag');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	const form = new Morebits.quickForm(Twinkle.tag.callback.evaluate);
+	const form = new Morebits.QuickForm(Twinkle.tag.callback.evaluate);
 
 	// if page is unreviewed, add a checkbox to the form so that user can pick whether or not to review it
 	const isPatroller = mw.config.get('wgUserGroups').some((r) => ['patroller', 'sysop'].includes(r));
@@ -62,7 +62,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 			// if article is not marked as reviewed, show the "mark as reviewed" check box
 			if (!isReviewed) {
 				// Quickform is probably already rendered. Instead of using form.append(), we need to make an element and then append it using JQuery.
-				const checkbox = new Morebits.quickForm.element({
+				const checkbox = new Morebits.QuickForm.Element({
 					type: 'checkbox',
 					list: [
 						{
@@ -354,7 +354,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 
 	} else {
 		// Redirects and files: Add a link to each template's description page
-		Morebits.quickForm.getElements(result, 'tags').forEach(generateLinks);
+		Morebits.QuickForm.getElements(result, 'tags').forEach(generateLinks);
 	}
 };
 
@@ -367,7 +367,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	const sortorder = e.target.value;
 	Twinkle.tag.checkedTags = form.getChecked('tags');
 
-	const container = new Morebits.quickForm.element({ type: 'fragment' });
+	const container = new Morebits.QuickForm.Element({ type: 'fragment' });
 
 	// function to generate a checkbox, with appropriate subgroup if needed
 	const makeCheckbox = function (item) {
@@ -483,12 +483,12 @@ Twinkle.tag.updateSortOrder = function(e) {
 	$workarea.find('h5:not(:first-child)').css({ 'margin-top': '1em' });
 	$workarea.find('div').filter(':has(span.quickformDescription)').css({ 'margin-top': '0.4em' });
 
-	Morebits.quickForm.getElements(form, 'existingTags').forEach(generateLinks);
-	Morebits.quickForm.getElements(form, 'tags').forEach(generateLinks);
+	Morebits.QuickForm.getElements(form, 'existingTags').forEach(generateLinks);
+	Morebits.QuickForm.getElements(form, 'tags').forEach(generateLinks);
 
 	// tally tags added/removed, update statusNode text
 	const statusNode = document.getElementById('tw-tag-status');
-	$('[name=tags], [name=existingTags]').click(function() {
+	$('[name=tags], [name=existingTags]').on('click', function() {
 		if (this.name === 'tags') {
 			Twinkle.tag.status.numAdded += this.checked ? 1 : -1;
 		} else if (this.name === 'existingTags') {
@@ -505,7 +505,8 @@ Twinkle.tag.updateSortOrder = function(e) {
 
 /**
  * Adds a link to each template's description page
- * @param {Morebits.quickForm.element} checkbox  associated with the template
+ *
+ * @param {Morebits.QuickForm.Element} checkbox  associated with the template
  */
 var generateLinks = function(checkbox) {
 	const link = Morebits.htmlNode('a', '>');
@@ -1185,7 +1186,7 @@ Twinkle.tag.fileList = {
 					type: 'number',
 					name: 'DoNotMoveToCommons_expiry',
 					label: 'Expiration year:',
-					min: new Morebits.date().getFullYear(),
+					min: new Morebits.Date().getFullYear(),
 					tooltip: 'If this file can be moved to Commons beginning in a certain year, you can enter it here (optional).'
 				}
 			]
@@ -1399,9 +1400,9 @@ Twinkle.tag.callbacks = {
 			pageobj.save(() => {
 				// COI: Start the discussion on the talk page (mainspace only)
 				if (params.coiReason) {
-					const coiTalkPage = new Morebits.wiki.page('Talk:' + Morebits.pageNameNorm, 'Starting discussion on talk page');
+					const coiTalkPage = new Morebits.wiki.Page('Talk:' + Morebits.pageNameNorm, 'Starting discussion on talk page');
 					coiTalkPage.setNewSectionText(params.coiReason + ' ~~~~');
-					coiTalkPage.setNewSectionTitle('COI tag (' + new Morebits.date(pageobj.getLoadTime()).format('MMMM Y', 'utc') + ')');
+					coiTalkPage.setNewSectionTitle('COI tag (' + new Morebits.Date(pageobj.getLoadTime()).format('MMMM Y', 'utc') + ')');
 					coiTalkPage.setChangeTags(Twinkle.changeTags);
 					coiTalkPage.setCreateOption('recreate');
 					coiTalkPage.newSection();
@@ -1410,7 +1411,7 @@ Twinkle.tag.callbacks = {
 				// Special functions for merge tags
 				// Post a rationale on the talk page (mainspace only)
 				if (params.mergeReason) {
-					const mergeTalkPage = new Morebits.wiki.page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
+					const mergeTalkPage = new Morebits.wiki.Page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
 					mergeTalkPage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
 					mergeTalkPage.setNewSectionTitle(params.talkDiscussionTitleLinked);
 					mergeTalkPage.setChangeTags(Twinkle.changeTags);
@@ -1435,7 +1436,7 @@ Twinkle.tag.callbacks = {
 						talkDiscussionTitle: params.talkDiscussionTitle,
 						talkDiscussionTitleLinked: params.talkDiscussionTitleLinked
 					};
-					const otherpage = new Morebits.wiki.page(params.mergeTarget, 'Tagging other page (' +
+					const otherpage = new Morebits.wiki.Page(params.mergeTarget, 'Tagging other page (' +
 						params.mergeTarget + ')');
 					otherpage.setChangeTags(Twinkle.changeTags);
 					otherpage.setCallbackParameters(newParams);
@@ -1445,7 +1446,7 @@ Twinkle.tag.callbacks = {
 				// Special functions for {{not English}} and {{rough translation}}
 				// Post at WP:PNT (mainspace only)
 				if (params.translationPostAtPNT) {
-					const pntPage = new Morebits.wiki.page('Wikipedia:Pages needing translation into English',
+					const pntPage = new Morebits.wiki.Page('Wikipedia:Pages needing translation into English',
 						'Listing article at Wikipedia:Pages needing translation into English');
 					pntPage.setFollowRedirect(true);
 					pntPage.load((pageobj) => {
@@ -1485,7 +1486,7 @@ Twinkle.tag.callbacks = {
 				}
 				// Notify the user ({{Not English}} only)
 				if (params.translationNotify) {
-					new Morebits.wiki.page(Morebits.pageNameNorm).lookupCreation((innerPageobj) => {
+					new Morebits.wiki.Page(Morebits.pageNameNorm).lookupCreation((innerPageobj) => {
 						const initialContrib = innerPageobj.getCreator();
 
 						// Disallow warning yourself
@@ -1494,7 +1495,7 @@ Twinkle.tag.callbacks = {
 							return;
 						}
 
-						const userTalkPage = new Morebits.wiki.page('User talk:' + initialContrib,
+						const userTalkPage = new Morebits.wiki.Page('User talk:' + initialContrib,
 							'Notifying initial contributor (' + initialContrib + ')');
 						userTalkPage.setNewSectionTitle('Your article [[' + Morebits.pageNameNorm + ']]');
 						userTalkPage.setNewSectionText('{{subst:uw-notenglish|1=' + Morebits.pageNameNorm +
@@ -1524,7 +1525,7 @@ Twinkle.tag.callbacks = {
 				return;
 			}
 
-			Morebits.status.info('Info', 'Removing deselected tags that were already present');
+			Morebits.Status.info('Info', 'Removing deselected tags that were already present');
 
 			const getRedirectsFor = [];
 
@@ -1547,7 +1548,7 @@ Twinkle.tag.callbacks = {
 			}
 
 			// Remove tags which appear in page text as redirects
-			const api = new Morebits.wiki.api('Getting template redirects', {
+			const api = new Morebits.wiki.Api('Getting template redirects', {
 				action: 'query',
 				prop: 'linkshere',
 				titles: getRedirectsFor.join('|'),
@@ -1570,7 +1571,7 @@ Twinkle.tag.callbacks = {
 						}
 					});
 					if (!removed) {
-						Morebits.status.warn('Info', 'Failed to find {{' +
+						Morebits.Status.warn('Info', 'Failed to find {{' +
 						page.title.slice(9) + '}} on the page... excluding');
 					}
 
@@ -1593,6 +1594,7 @@ Twinkle.tag.callbacks = {
 
 		/**
 		 * Updates `tagText` with the syntax of `tagName` template with its parameters
+		 *
 		 * @param {number} tagIndex
 		 * @param {string} tagName
 		 */
@@ -1665,7 +1667,7 @@ Twinkle.tag.callbacks = {
 
 			// Insert tag after short description or any hatnotes,
 			// as well as deletion/protection-related templates
-			const wikipage = new Morebits.wikitext.page(pageText);
+			const wikipage = new Morebits.wikitext.Page(pageText);
 			const templatesAfter = Twinkle.hatnoteRegex +
 				// Protection templates
 				'pp|pp-.*?|' +
@@ -1699,7 +1701,7 @@ Twinkle.tag.callbacks = {
 				if (tag === 'Merge from' || tag === 'History merge') {
 					tags.push(tag);
 				} else {
-					Morebits.status.warn('Info', 'Found {{' + tag +
+					Morebits.Status.warn('Info', 'Found {{' + tag +
 						'}} on the article already...excluding');
 					// don't do anything else with merge tags
 					if (['Merge', 'Merge to'].indexOf(tag) !== -1) {
@@ -1720,7 +1722,7 @@ Twinkle.tag.callbacks = {
 		const miTest = /\{\{(multiple ?issues|article ?issues|mi)(?!\s*\|\s*section\s*=)[^}]+\{/im.exec(pageText);
 
 		if (miTest && groupableTags.length > 0) {
-			Morebits.status.info('Info', 'Adding supported tags inside existing {{multiple issues}} tag');
+			Morebits.Status.info('Info', 'Adding supported tags inside existing {{multiple issues}} tag');
 
 			tagText = '';
 			$.each(groupableTags, addTag);
@@ -1732,7 +1734,7 @@ Twinkle.tag.callbacks = {
 			addUngroupedTags();
 
 		} else if (params.group && !miTest && (groupableExistingTags.length + groupableTags.length) >= 2) {
-			Morebits.status.info('Info', 'Grouping supported tags inside {{multiple issues}}');
+			Morebits.Status.info('Info', 'Grouping supported tags inside {{multiple issues}}');
 
 			tagText += '{{Multiple issues|\n';
 
@@ -1765,7 +1767,7 @@ Twinkle.tag.callbacks = {
 				return;
 			}
 
-			const api = new Morebits.wiki.api('Getting template redirects', {
+			const api = new Morebits.wiki.Api('Getting template redirects', {
 				action: 'query',
 				prop: 'linkshere',
 				titles: getRedirectsFor.join('|'),
@@ -1789,7 +1791,7 @@ Twinkle.tag.callbacks = {
 						}
 					});
 					if (!found) {
-						Morebits.status.warn('Info', 'Failed to find the existing {{' +
+						Morebits.Status.warn('Info', 'Failed to find the existing {{' +
 						page.title.slice(9) + '}} on the page... skip repositioning');
 					}
 				});
@@ -1814,7 +1816,7 @@ Twinkle.tag.callbacks = {
 			if (!tagRe.exec(pageText)) {
 				tags.push(params.tags[i]);
 			} else {
-				Morebits.status.warn('Info', 'Found {{' + params.tags[i] +
+				Morebits.Status.warn('Info', 'Found {{' + params.tags[i] +
 					'}} on the redirect already...excluding');
 			}
 		}
@@ -1845,7 +1847,7 @@ Twinkle.tag.callbacks = {
 		};
 
 		if (!tags.length) {
-			Morebits.status.warn('Info', 'No tags remaining to apply');
+			Morebits.Status.warn('Info', 'No tags remaining to apply');
 		}
 
 		tags.sort();
@@ -2014,7 +2016,7 @@ Twinkle.tag.callbacks = {
 
 Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 	const form = e.target;
-	const params = Morebits.quickForm.getInputData(form);
+	const params = Morebits.QuickForm.getInputData(form);
 
 	// Validation
 
@@ -2167,8 +2169,8 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 		return;
 	}
 
-	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(form);
+	Morebits.SimpleWindow.setButtonsEnabled(false);
+	Morebits.Status.init(form);
 
 	Morebits.wiki.actionCompleted.redirect = Morebits.pageNameNorm;
 	Morebits.wiki.actionCompleted.notice = 'Tagging complete, reloading article in a few seconds';
@@ -2176,7 +2178,7 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 		Morebits.wiki.actionCompleted.followRedirect = false;
 	}
 
-	const wikipedia_page = new Morebits.wiki.page(Morebits.pageNameNorm, 'Tagging ' + Twinkle.tag.mode);
+	const wikipedia_page = new Morebits.wiki.Page(Morebits.pageNameNorm, 'Tagging ' + Twinkle.tag.mode);
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
 	wikipedia_page.load(Twinkle.tag.callbacks[Twinkle.tag.mode]);
@@ -2184,5 +2186,5 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.tag, 'tag');
-}(jQuery));
+}());
 // </nowiki>

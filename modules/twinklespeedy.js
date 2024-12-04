@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -40,7 +40,7 @@ Twinkle.speedy.hasCSD = !!$('#delete-reason').length;
 // Prepares the speedy deletion dialog and displays it
 Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	let dialog;
-	Twinkle.speedy.dialog = new Morebits.simpleWindow(Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight'));
+	Twinkle.speedy.dialog = new Morebits.SimpleWindow(Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight'));
 	dialog = Twinkle.speedy.dialog;
 	dialog.setTitle('Choose criteria for speedy deletion');
 	dialog.setScriptName('Twinkle');
@@ -49,7 +49,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 	dialog.addFooterLink('Twinkle help', 'WP:TW/DOC#speedy');
 	dialog.addFooterLink('Give feedback', 'WT:TW');
 
-	const form = new Morebits.quickForm(callbackfunc, Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null);
+	const form = new Morebits.QuickForm(callbackfunc, Twinkle.getPref('speedySelectionStyle') === 'radioClick' ? 'change' : null);
 	if (Morebits.userIsSysop) {
 		form.append({
 			type: 'checkbox',
@@ -245,7 +245,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 		$('button.tw-speedy-submit').text('Tag page');
 	}
 
-	const work_area = new Morebits.quickForm.element({
+	const work_area = new Morebits.QuickForm.Element({
 		type: 'div',
 		name: 'work_area'
 	});
@@ -325,7 +325,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	}
 	appendList('General criteria', generalCriteria);
 
-	const old_area = Morebits.quickForm.getElements(form, 'work_area')[0];
+	const old_area = Morebits.QuickForm.getElements(form, 'work_area')[0];
 	form.replaceChild(work_area.render(), old_area);
 
 	// if sysop, check if CSD is already on the page and fill in custom rationale
@@ -354,7 +354,7 @@ Twinkle.speedy.callback.priorDeletionCount = function () {
 		lelimit: 5 // A little bit goes a long way
 	};
 
-	new Morebits.wiki.api('Checking for past deletions', query, ((apiobj) => {
+	new Morebits.wiki.Api('Checking for past deletions', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		const delCount = response.query.logevents.length;
 		if (delCount) {
@@ -400,7 +400,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	};
 
 	return $.map(list, (critElement) => {
-		const criterion = $.extend({}, critElement);
+		const criterion = Object.assign({}, critElement);
 
 		if (mode.isMultiple) {
 			if (criterion.hideWhenMultiple) {
@@ -1074,7 +1074,7 @@ Twinkle.speedy.callbacks = {
 						code += '|' + i + '=' + parameters[i];
 					}
 				}
-				$.extend(params.utparams, Twinkle.speedy.getUserTalkParameters(norm, parameters));
+				Object.assign(params.utparams, Twinkle.speedy.getUserTalkParameters(norm, parameters));
 			});
 			code += '}}';
 		} else {
@@ -1107,8 +1107,8 @@ Twinkle.speedy.callbacks = {
 			format: 'json'
 		};
 
-		const statusIndicator = new Morebits.status('Building deletion summary');
-		const api = new Morebits.wiki.api('Parsing deletion template', query, ((apiobj) => {
+		const statusIndicator = new Morebits.Status('Building deletion summary');
+		const api = new Morebits.wiki.Api('Parsing deletion template', query, ((apiobj) => {
 			const reason = decodeURIComponent($(apiobj.getResponse().parse.text).find('#delete-reason').text()).replace(/\+/g, ' ');
 			if (!reason) {
 				statusIndicator.warn('Unable to generate summary from deletion template');
@@ -1126,27 +1126,27 @@ Twinkle.speedy.callbacks = {
 
 		// disallow notifying yourself
 		if (initialContrib === mw.config.get('wgUserName')) {
-			Morebits.status.warn('You (' + initialContrib + ') created this page; skipping user notification');
+			Morebits.Status.warn('You (' + initialContrib + ') created this page; skipping user notification');
 			initialContrib = null;
 
 		// don't notify users when their user talk page is nominated/deleted
 		} else if (initialContrib === mw.config.get('wgTitle') && mw.config.get('wgNamespaceNumber') === 3) {
-			Morebits.status.warn('Notifying initial contributor: this user created their own user talk page; skipping notification');
+			Morebits.Status.warn('Notifying initial contributor: this user created their own user talk page; skipping notification');
 			initialContrib = null;
 
 		// quick hack to prevent excessive unwanted notifications, per request. Should actually be configurable on recipient page...
 		} else if ((initialContrib === 'Cyberbot I' || initialContrib === 'SoxBot') && params.normalizeds[0] === 'f2') {
-			Morebits.status.warn('Notifying initial contributor: page created procedurally by bot; skipping notification');
+			Morebits.Status.warn('Notifying initial contributor: page created procedurally by bot; skipping notification');
 			initialContrib = null;
 
 		// Check for already existing tags
 		} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
-			Morebits.status.info('Notifying initial contributor', 'canceled by user; skipping notification.');
+			Morebits.Status.info('Notifying initial contributor', 'canceled by user; skipping notification.');
 			initialContrib = null;
 		}
 
 		if (initialContrib) {
-			let usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')'),
+			let usertalkpage = new Morebits.wiki.Page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')'),
 				notifytext, i, editsummary;
 
 			// special cases: "db" and "db-multiple"
@@ -1222,12 +1222,12 @@ Twinkle.speedy.callbacks = {
 			}
 		},
 		deletePage: function(reason, params) {
-			const thispage = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Deleting page');
+			const thispage = new Morebits.wiki.Page(mw.config.get('wgPageName'), 'Deleting page');
 
 			if (reason === null) {
-				return Morebits.status.error('Asking for reason', 'User cancelled');
+				return Morebits.Status.error('Asking for reason', 'User cancelled');
 			} else if (!reason || !reason.replace(/^\s*/, '').replace(/\s*$/, '')) {
-				return Morebits.status.error('Asking for reason', "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");
+				return Morebits.Status.error('Asking for reason', "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");
 			}
 
 			const deleteMain = function(callback) {
@@ -1259,7 +1259,7 @@ Twinkle.speedy.callbacks = {
 			if (params.deleteTalkPage &&
 					params.normalized !== 'f8' &&
 					!document.getElementById('ca-talk').classList.contains('new')) {
-				const talkpage = new Morebits.wiki.page(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceNumber') + 1] + ':' + mw.config.get('wgTitle'), 'Deleting talk page');
+				const talkpage = new Morebits.wiki.Page(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceNumber') + 1] + ':' + mw.config.get('wgTitle'), 'Deleting talk page');
 				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page "' + Morebits.pageNameNorm + '"');
 				talkpage.setChangeTags(Twinkle.changeTags);
 				talkpage.deletePage();
@@ -1282,8 +1282,8 @@ Twinkle.speedy.callbacks = {
 					rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 					format: 'json'
 				};
-				const wikipedia_api = new Morebits.wiki.api('getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
-					new Morebits.status('Deleting redirects'));
+				const wikipedia_api = new Morebits.wiki.Api('getting list of redirects...', query, Twinkle.speedy.callbacks.sysop.deleteRedirectsMain,
+					new Morebits.Status('Deleting redirects'));
 				wikipedia_api.params = params;
 				wikipedia_api.post();
 			}
@@ -1291,7 +1291,7 @@ Twinkle.speedy.callbacks = {
 			// promote Unlink tool
 			let $link, $bigtext;
 			if (mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8') {
-				$link = $('<a/>', {
+				$link = $('<a>', {
 					href: '#',
 					text: 'click here to go to the Unlink tool',
 					css: { fontSize: '130%', fontWeight: 'bold' },
@@ -1301,13 +1301,13 @@ Twinkle.speedy.callbacks = {
 						Twinkle.unlink.callback('Removing usages of and/or links to deleted file ' + Morebits.pageNameNorm);
 					}
 				});
-				$bigtext = $('<span/>', {
+				$bigtext = $('<span>', {
 					text: 'To orphan backlinks and remove instances of file usage',
 					css: { fontSize: '130%', fontWeight: 'bold' }
 				});
-				Morebits.status.info($bigtext[0], $link[0]);
+				Morebits.Status.info($bigtext[0], $link[0]);
 			} else if (params.normalized !== 'f8') {
-				$link = $('<a/>', {
+				$link = $('<a>', {
 					href: '#',
 					text: 'click here to go to the Unlink tool',
 					css: { fontSize: '130%', fontWeight: 'bold' },
@@ -1317,11 +1317,11 @@ Twinkle.speedy.callbacks = {
 						Twinkle.unlink.callback('Removing links to deleted page ' + Morebits.pageNameNorm);
 					}
 				});
-				$bigtext = $('<span/>', {
+				$bigtext = $('<span>', {
 					text: 'To orphan backlinks',
 					css: { fontSize: '130%', fontWeight: 'bold' }
 				});
-				Morebits.status.info($bigtext[0], $link[0]);
+				Morebits.Status.info($bigtext[0], $link[0]);
 			}
 		},
 		deleteRedirectsMain: function(apiobj) {
@@ -1352,7 +1352,7 @@ Twinkle.speedy.callbacks = {
 
 			snapshot.forEach((value) => {
 				const title = value.title;
-				const page = new Morebits.wiki.page(title, 'Deleting redirect "' + title + '"');
+				const page = new Morebits.wiki.Page(title, 'Deleting redirect "' + title + '"');
 				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + Morebits.pageNameNorm + '"');
 				page.setChangeTags(Twinkle.changeTags);
 				page.deletePage(onsuccess);
@@ -1458,7 +1458,7 @@ Twinkle.speedy.callbacks = {
 					text = code;
 				} else {
 					// Insert tag after short description or any hatnotes
-					const wikipage = new Morebits.wikitext.page(text);
+					const wikipage = new Morebits.wikitext.Page(text);
 					text = wikipage.insertAfterTemplates(code + '\n', Twinkle.hatnoteRegex).getText();
 				}
 
@@ -1475,7 +1475,7 @@ Twinkle.speedy.callbacks = {
 
 					pageobj.getStatusElement().warn('Unable to edit page, placing tag on talk page');
 
-					const talk_page = new Morebits.wiki.page(talkName, 'Automatically placing tag on talk page');
+					const talk_page = new Morebits.wiki.Page(talkName, 'Automatically placing tag on talk page');
 					talk_page.setNewSectionTitle(pageobj.getPageName() + ' nominated for CSD, request deletion');
 					talk_page.setNewSectionText(code + '\n\nI was unable to tag ' + pageobj.getPageName() + ' so please delete it. ~~~~');
 					talk_page.setCreateOption('recreate');
@@ -1495,7 +1495,7 @@ Twinkle.speedy.callbacks = {
 
 			// Notification to first contributor, will also log nomination to the user's userspace log
 			if (params.usertalk) {
-				const thispage = new Morebits.wiki.page(Morebits.pageNameNorm);
+				const thispage = new Morebits.wiki.Page(Morebits.pageNameNorm);
 				thispage.setCallbackParameters(params);
 				thispage.lookupCreation(Twinkle.speedy.callbacks.noteToCreator);
 			// or, if not notifying, add this nomination to the user's userspace log without the initial contributor's name
@@ -1505,7 +1505,7 @@ Twinkle.speedy.callbacks = {
 		},
 
 		addToLog: function(params, initialContrib) {
-			const usl = new Morebits.userspaceLogger(Twinkle.getPref('speedyLogPageName'));
+			const usl = new Morebits.UserspaceLogger(Twinkle.getPref('speedyLogPageName'));
 			usl.initialText =
 				"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
 				'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
@@ -1868,7 +1868,7 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 
 /**
  * @param {Event} e
- * @returns {Array}
+ * @return {Array}
  */
 Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
 	const values = (e.target.form ? e.target.form : e.target).getChecked('csd');
@@ -1932,8 +1932,8 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 		templateParams: templateParams
 	};
 
-	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(form);
+	Morebits.SimpleWindow.setButtonsEnabled(false);
+	Morebits.Status.init(form);
 
 	Twinkle.speedy.callbacks.sysop.main(params);
 };
@@ -1978,19 +1978,19 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 		templateParams: templateParams
 	};
 
-	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(form);
+	Morebits.SimpleWindow.setButtonsEnabled(false);
+	Morebits.Status.init(form);
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = 'Tagging complete';
 
-	const wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
+	const wikipedia_page = new Morebits.wiki.Page(mw.config.get('wgPageName'), 'Tagging page');
 	wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.speedy.callbacks.user.main);
 };
 
 Twinkle.addInitCallback(Twinkle.speedy, 'speedy');
-}(jQuery));
+}());
 
 // </nowiki>

@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -36,11 +36,11 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 		// no default
 	}
 
-	const Window = new Morebits.simpleWindow(800, 410);
+	const Window = new Morebits.SimpleWindow(800, 410);
 	Window.setTitle('Proposed deletion (PROD)');
 	Window.setScriptName('Twinkle');
 
-	const form = new Morebits.quickForm(Twinkle.prod.callback.evaluate);
+	const form = new Morebits.QuickForm(Twinkle.prod.callback.evaluate);
 
 	if (namespace === 'article') {
 		Window.addFooterLink('Proposed deletion policy', 'WP:PROD');
@@ -111,7 +111,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 
 Twinkle.prod.callback.prodtypechanged = function(event) {
 	// prepare frame for prod type dependant controls
-	const field = new Morebits.quickForm.element({
+	const field = new Morebits.QuickForm.Element({
 		type: 'field',
 		label: 'Parameters',
 		name: 'parameters'
@@ -196,7 +196,7 @@ Twinkle.prod.callbacks = {
 			format: 'json'
 		};
 
-		const wikipedia_api = new Morebits.wiki.api('Checking talk page for prior nominations', query);
+		const wikipedia_api = new Morebits.wiki.Api('Checking talk page for prior nominations', query);
 		return wikipedia_api.post().then((apiobj) => {
 			const statelem = apiobj.statelem;
 
@@ -218,7 +218,7 @@ Twinkle.prod.callbacks = {
 
 	fetchCreationInfo: function twinkleprodFetchCreationInfo() {
 		const def = $.Deferred();
-		const ts = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Looking up page creator');
+		const ts = new Morebits.wiki.Page(mw.config.get('wgPageName'), 'Looking up page creator');
 		ts.setFollowRedirect(true); // for NPP, and also because redirects are ineligible for PROD
 		ts.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
 		ts.lookupCreation((pageobj) => {
@@ -233,7 +233,7 @@ Twinkle.prod.callbacks = {
 	taggingPage: function twinkleprodTaggingPage() {
 		const def = $.Deferred();
 
-		const wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging page');
+		const wikipedia_page = new Morebits.wiki.Page(mw.config.get('wgPageName'), 'Tagging page');
 		wikipedia_page.setFollowRedirect(true); // for NPP, and also because redirects are ineligible for PROD
 		wikipedia_page.load((pageobj) => {
 			const statelem = pageobj.getStatusElement();
@@ -285,7 +285,7 @@ Twinkle.prod.callbacks = {
 				}
 
 				// Insert tag after short description or any hatnotes
-				const wikipage = new Morebits.wikitext.page(text);
+				const wikipage = new Morebits.wikitext.Page(text);
 				text = wikipage.insertAfterTemplates(tag + '\n', Twinkle.hatnoteRegex).getText();
 
 			} else { // already tagged for PROD, so try endorsing it
@@ -337,7 +337,7 @@ Twinkle.prod.callbacks = {
 		// Add {{Old prod}} to the talk page
 		const oldprodfull = '{{Old prod|nom=' + mw.config.get('wgUserName') + '|nomdate={{subst:#time: Y-m-d}}}}\n';
 		const talktitle = new mw.Title(mw.config.get('wgPageName')).getTalkPage().getPrefixedText();
-		const talkpage = new Morebits.wiki.page(talktitle, 'Placing {{Old prod}} on talk page');
+		const talkpage = new Morebits.wiki.Page(talktitle, 'Placing {{Old prod}} on talk page');
 		talkpage.setPrependText(oldprodfull);
 		talkpage.setEditSummary('Adding {{Old prod}}');
 		talkpage.setChangeTags(Twinkle.changeTags);
@@ -356,7 +356,7 @@ Twinkle.prod.callbacks = {
 
 		// Disallow warning yourself
 		if (params.initialContrib === mw.config.get('wgUserName')) {
-			Morebits.status.info('Notifying creator', 'You (' + params.initialContrib + ') created this page; skipping user notification');
+			Morebits.Status.info('Notifying creator', 'You (' + params.initialContrib + ') created this page; skipping user notification');
 			return def.resolve();
 		}
 		// [[Template:Proposed deletion notify]] supports File namespace
@@ -368,7 +368,7 @@ Twinkle.prod.callbacks = {
 		}
 		const notifytext = '\n{{subst:' + notifyTemplate + '|1=' + Morebits.pageNameNorm + '|concern=' + params.reason + '}} ~~~~';
 
-		const usertalkpage = new Morebits.wiki.page('User talk:' + params.initialContrib, 'Notifying initial contributor (' + params.initialContrib + ')');
+		const usertalkpage = new Morebits.wiki.Page('User talk:' + params.initialContrib, 'Notifying initial contributor (' + params.initialContrib + ')');
 		usertalkpage.setAppendText(notifytext);
 		usertalkpage.setEditSummary('Notification: proposed deletion of [[:' + Morebits.pageNameNorm + ']].');
 		usertalkpage.setChangeTags(Twinkle.changeTags);
@@ -387,7 +387,7 @@ Twinkle.prod.callbacks = {
 		if (!Twinkle.getPref('logProdPages')) {
 			return $.Deferred().resolve();
 		}
-		const usl = new Morebits.userspaceLogger(Twinkle.getPref('prodLogPageName'));
+		const usl = new Morebits.UserspaceLogger(Twinkle.getPref('prodLogPageName'));
 		usl.initialText =
 			"This is a log of all [[WP:PROD|proposed deletion]] tags applied or endorsed by this user using [[WP:TW|Twinkle]]'s PROD module.\n\n" +
 			'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
@@ -423,7 +423,7 @@ Twinkle.prod.callbacks = {
 
 Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	const form = e.target;
-	const input = Morebits.quickForm.getInputData(form);
+	const input = Morebits.QuickForm.getInputData(form);
 
 	params = {
 		usertalk: input.notify || input.prodtype === 'prodblp',
@@ -437,10 +437,10 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 		}
 	}
 
-	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(form);
+	Morebits.SimpleWindow.setButtonsEnabled(false);
+	Morebits.Status.init(form);
 
-	const tm = new Morebits.taskManager();
+	const tm = new Morebits.TaskManager();
 	const cbs = Twinkle.prod.callbacks; // shortcut reference, cbs for `callbacks`
 
 	// Disable Morebits.wiki.numberOfActionsLeft system
@@ -464,7 +464,7 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	tm.add(cbs.addToLog, [ cbs.notifyAuthor, cbs.taggingPage ]);
 	// All set, go!
 	tm.execute().then(() => {
-		Morebits.status.actionCompleted('Tagging complete');
+		Morebits.Status.actionCompleted('Tagging complete');
 		setTimeout(() => {
 			window.location.href = mw.util.getUrl(mw.config.get('wgPageName'));
 		}, Morebits.wiki.actionCompleted.timeOut);
@@ -472,6 +472,6 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 };
 
 Twinkle.addInitCallback(Twinkle.prod, 'prod');
-}(jQuery));
+}());
 
 // </nowiki>

@@ -1,6 +1,6 @@
 // <nowiki>
 
-(function($) {
+(function() {
 
 /*
  ****************************************
@@ -22,14 +22,14 @@ Twinkle.talkback.callback = function() {
 		return;
 	}
 
-	const Window = new Morebits.simpleWindow(600, 350);
+	const Window = new Morebits.SimpleWindow(600, 350);
 	Window.setTitle('Talkback');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Talkback prefs', 'WP:TW/PREF#talkback');
 	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#talkback');
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
-	const form = new Morebits.quickForm(Twinkle.talkback.evaluate);
+	const form = new Morebits.QuickForm(Twinkle.talkback.evaluate);
 
 	form.append({ type: 'radio', name: 'tbtarget',
 		list: [
@@ -61,7 +61,7 @@ Twinkle.talkback.callback = function() {
 	});
 
 	const previewlink = document.createElement('a');
-	$(previewlink).click(() => {
+	$(previewlink).on('click', () => {
 		Twinkle.talkback.callbacks.preview(result); // |result| is defined below
 	});
 	previewlink.style.cursor = 'pointer';
@@ -74,7 +74,7 @@ Twinkle.talkback.callback = function() {
 	var result = form.render();
 	Window.setContent(result);
 	Window.display();
-	result.previewer = new Morebits.wiki.preview($(result).find('div#twinkletalkback-previewbox').last()[0]);
+	result.previewer = new Morebits.wiki.Preview($(result).find('div#twinkletalkback-previewbox').last()[0]);
 
 	// We must init the
 	const evt = document.createEvent('Event');
@@ -90,7 +90,7 @@ Twinkle.talkback.callback = function() {
 		ellimit: '1',
 		format: 'json'
 	};
-	const wpapi = new Morebits.wiki.api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
+	const wpapi = new Morebits.wiki.Api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
 	wpapi.post();
 };
 
@@ -115,7 +115,7 @@ Twinkle.talkback.changeTarget = function(e) {
 	const value = e.target.values;
 	const root = e.target.form;
 
-	const old_area = Morebits.quickForm.getElements(root, 'work_area')[0];
+	const old_area = Morebits.QuickForm.getElements(root, 'work_area')[0];
 
 	if (root.section) {
 		prev_section = root.section.value;
@@ -127,7 +127,7 @@ Twinkle.talkback.changeTarget = function(e) {
 		prev_page = root.page.value;
 	}
 
-	let work_area = new Morebits.quickForm.element({
+	let work_area = new Morebits.QuickForm.Element({
 		type: 'field',
 		label: 'Talkback information',
 		name: 'work_area'
@@ -168,11 +168,11 @@ Twinkle.talkback.changeTarget = function(e) {
 				label: 'Noticeboard:',
 				event: function(e) {
 					if (e.target.value === 'afchd') {
-						Morebits.quickForm.overrideElementLabel(root.section, 'Title of draft (excluding the prefix): ');
-						Morebits.quickForm.setElementTooltipVisibility(root.section, false);
+						Morebits.QuickForm.overrideElementLabel(root.section, 'Title of draft (excluding the prefix): ');
+						Morebits.QuickForm.setElementTooltipVisibility(root.section, false);
 					} else {
-						Morebits.quickForm.resetElementLabel(root.section);
-						Morebits.quickForm.setElementTooltipVisibility(root.section, true);
+						Morebits.QuickForm.resetElementLabel(root.section);
+						Morebits.QuickForm.setElementTooltipVisibility(root.section, true);
 					}
 				}
 			});
@@ -304,13 +304,13 @@ Twinkle.talkback.noticeboards = {
 };
 
 Twinkle.talkback.evaluate = function(e) {
-	const input = Morebits.quickForm.getInputData(e.target);
+	const input = Morebits.QuickForm.getInputData(e.target);
 
 	const fullUserTalkPageName = new mw.Title(mw.config.get('wgRelevantUserName'), 3).toText();
-	const talkpage = new Morebits.wiki.page(fullUserTalkPageName, 'Adding talkback');
+	const talkpage = new Morebits.wiki.Page(fullUserTalkPageName, 'Adding talkback');
 
-	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(e.target);
+	Morebits.SimpleWindow.setButtonsEnabled(false);
+	Morebits.Status.init(e.target);
 
 	Morebits.wiki.actionCompleted.redirect = fullUserTalkPageName;
 	Morebits.wiki.actionCompleted.notice = 'Talkback complete; reloading talk page in a few seconds';
@@ -365,7 +365,7 @@ Twinkle.talkback.callbacks = {
 	},
 
 	preview: function(form) {
-		const input = Morebits.quickForm.getInputData(form);
+		const input = Morebits.QuickForm.getInputData(form);
 
 		if (input.tbtarget === 'talkback' || input.tbtarget === 'see') {
 			input.page = Twinkle.talkback.callbacks.normalizeTalkbackPage(input.page);
@@ -411,6 +411,6 @@ Twinkle.talkback.callbacks = {
 	}
 };
 Twinkle.addInitCallback(Twinkle.talkback, 'talkback');
-}(jQuery));
+}());
 
 // </nowiki>
