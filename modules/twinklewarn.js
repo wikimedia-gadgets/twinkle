@@ -54,9 +54,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		return;
 	}
 
-	let dialog;
 	Twinkle.warn.dialog = new Morebits.SimpleWindow(600, 440);
-	dialog = Twinkle.warn.dialog;
+	const dialog = Twinkle.warn.dialog;
 	dialog.setTitle('Warn/notify user');
 	dialog.setScriptName('Twinkle');
 	dialog.addFooterLink('Choosing a warning level', 'WP:UWUL#Levels');
@@ -1706,9 +1705,7 @@ Twinkle.warn.callbacks = {
 		// Provided on autolevel, not otherwise
 		templatename = templatename || input.sub_group;
 		const linkedarticle = input.article;
-		let templatetext;
-
-		templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
+		const templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
 			input.reason, input.main_group === 'custom');
 
 		form.previewer.beginRender(templatetext, 'User_talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username

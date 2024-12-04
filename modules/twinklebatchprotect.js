@@ -180,7 +180,8 @@ Twinkle.batchprotect.callback = function twinklebatchprotectCallback() {
 		pages.sort(Twinkle.sortByNamespace);
 		pages.forEach((page) => {
 			const metadata = [];
-			let missing = !!page.missing, editProt;
+			const missing = !!page.missing;
+			let editProt;
 
 			if (missing) {
 				metadata.push('page does not exist');

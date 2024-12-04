@@ -351,7 +351,6 @@ Twinkle.tag.callback = function twinkletagCallback() {
 		const evt = document.createEvent('Event');
 		evt.initEvent('change', true, true);
 		result.sortorder.dispatchEvent(evt);
-
 	} else {
 		// Redirects and files: Add a link to each template's description page
 		Morebits.QuickForm.getElements(result, 'tags').forEach(generateLinks);
@@ -1589,7 +1588,8 @@ Twinkle.tag.callbacks = {
 			return;
 		}
 
-		let tagRe, tagText = '', tags = [], groupableTags = [], groupableExistingTags = [];
+		let tagRe, tagText = '', tags = [];
+		const groupableTags = [], groupableExistingTags = [];
 		// Executes first: addition of selected tags
 
 		/**
@@ -1806,10 +1806,12 @@ Twinkle.tag.callbacks = {
 	},
 
 	redirect: function redirect(pageobj) {
-		let params = pageobj.getCallbackParameters(),
-			pageText = pageobj.getPageText(),
-			tagRe, tagText = '', summaryText = 'Added',
-			tags = [], i;
+		const params = pageobj.getCallbackParameters(),
+			tags = [];
+		let pageText = pageobj.getPageText(),
+			tagRe, tagText = '',
+			summaryText = 'Added',
+			i;
 
 		for (i = 0; i < params.tags.length; i++) {
 			tagRe = new RegExp('(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im');

@@ -2,7 +2,8 @@
 
 (function() {
 
-let api = new mw.Api(), relevantUserName, blockedUserName;
+const api = new mw.Api();
+let relevantUserName, blockedUserName;
 const menuFormattedNamespaces = Object.assign({}, mw.config.get('wgFormattedNamespaces'));
 menuFormattedNamespaces[0] = '(Article)';
 
@@ -156,8 +157,8 @@ Twinkle.block.fetchedData = {};
 // Processes the data from a a query response, separated from
 // Twinkle.block.fetchUserInfo to allow reprocessing of already-fetched data
 Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
-	let blockinfo = data.query.blocks[0],
-		userinfo = data.query.users[0];
+	let blockinfo = data.query.blocks[0];
+	const userinfo = data.query.users[0];
 	// If an IP is blocked *and* rangeblocked, the above finds
 	// whichever block is more recent, not necessarily correct.
 	// Three seems... unlikely
@@ -296,7 +297,8 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 };
 
 Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction(e) {
-	let field_preset, field_template_options, field_block_options, $form = $(e.target.form);
+	let field_preset, field_template_options, field_block_options;
+	const $form = $(e.target.form);
 	// Make ifs shorter
 	const blockBox = $form.find('[name=actiontype][value=block]').is(':checked');
 	const templateBox = $form.find('[name=actiontype][value=template]').is(':checked');
@@ -1572,7 +1574,8 @@ Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSR
 };
 
 Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, data) {
-	let form = e.target.form, expiry = data.expiry;
+	const form = e.target.form;
+	let expiry = data.expiry;
 
 	// don't override original expiry if useInitialOptions is set
 	if (!data.useInitialOptions) {
@@ -1723,11 +1726,11 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 };
 
 Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
-	let $form = $(e.target),
+	const $form = $(e.target),
 		toBlock = $form.find('[name=actiontype][value=block]').is(':checked'),
 		toWarn = $form.find('[name=actiontype][value=template]').is(':checked'),
-		toPartial = $form.find('[name=actiontype][value=partial]').is(':checked'),
-		blockoptions = {}, templateoptions = {};
+		toPartial = $form.find('[name=actiontype][value=partial]').is(':checked');
+	let blockoptions = {}, templateoptions = {};
 
 	Twinkle.block.callback.saveFieldset($form.find('[name=field_block_options]'));
 	Twinkle.block.callback.saveFieldset($form.find('[name=field_template_options]'));
@@ -1916,7 +1919,8 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 };
 
 Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
-	let text = '{{', settings = Twinkle.block.blockPresetsInfo[params.template];
+	let text = '{{';
+	const settings = Twinkle.block.blockPresetsInfo[params.template];
 	if (!settings.nonstandard) {
 		text += 'subst:' + params.template;
 		if (params.article && settings.pageParam) {
@@ -1990,10 +1994,10 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 };
 
 Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
-	let params = pageobj.getCallbackParameters(),
+	const params = pageobj.getCallbackParameters(),
 		date = new Morebits.Date(pageobj.getLoadTime()),
-		messageData = params.messageData,
-		text;
+		messageData = params.messageData;
+	let text;
 
 	params.indefinite = Morebits.string.isInfinity(params.expiry);
 
@@ -2003,7 +2007,8 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 	} else {
 		text = pageobj.getPageText();
 
-		let dateHeaderRegex = date.monthHeaderRegex(), dateHeaderRegexLast, dateHeaderRegexResult;
+		const dateHeaderRegex = date.monthHeaderRegex();
+		let dateHeaderRegexLast, dateHeaderRegexResult;
 		while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
 			dateHeaderRegexResult = dateHeaderRegexLast;
 		}
