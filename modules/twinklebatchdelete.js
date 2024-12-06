@@ -597,7 +597,7 @@ Twinkle.batchdelete.callbacks = {
 		unlinker.setPageList(pages);
 		unlinker.run((pageName) => {
 			const wikipedia_page = new Morebits.wiki.Page(pageName, 'Unlinking on ' + pageName);
-			const params = Object.assign({}, apiobj.params);
+			const params = $.extend({}, apiobj.params);
 			params.title = pageName;
 			params.unlinker = unlinker;
 			wikipedia_page.setCallbackParameters(params);
@@ -648,7 +648,7 @@ Twinkle.batchdelete.callbacks = {
 		unlinker.setPageList(pages);
 		unlinker.run((pageName) => {
 			const wikipedia_page = new Morebits.wiki.Page(pageName, 'Removing file usages on ' + pageName);
-			const params = Object.assign({}, apiobj.params);
+			const params = $.extend({}, apiobj.params);
 			params.title = pageName;
 			params.unlinker = unlinker;
 			wikipedia_page.setCallbackParameters(params);

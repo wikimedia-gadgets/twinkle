@@ -3,7 +3,7 @@
 (function() {
 
 let api = new mw.Api(), relevantUserName, blockedUserName;
-const menuFormattedNamespaces = Object.assign({}, mw.config.get('wgFormattedNamespaces'));
+const menuFormattedNamespaces = $.extend({}, mw.config.get('wgFormattedNamespaces'));
 menuFormattedNamespaces[0] = '(Article)';
 
 /*
@@ -1899,7 +1899,7 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	// "talk page" of an IP range (which does not exist)
 	const userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
-	const params = Object.assign(formData || {}, {
+	const params = $.extend(formData, {
 		messageData: Twinkle.block.blockPresetsInfo[formData.template],
 		reason: Twinkle.block.field_template_options.block_reason,
 		disabletalk: Twinkle.block.field_template_options.notalk,
