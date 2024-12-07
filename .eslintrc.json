@@ -12,7 +12,6 @@
 	},
 	"rules": {
 		"array-bracket-spacing": "off",
-		"camelcase": "off",
 		"computed-property-spacing": "off",
 		"indent": "off",
 		"jsdoc/require-param": "off",
@@ -22,7 +21,6 @@
 		"no-jquery/no-class-state": "off",
 		"no-jquery/no-global-selector": "off",
 		"no-shadow": "off",
-		"no-underscore-dangle": "off",
 		"object-curly-spacing": "off",
 		"space-before-function-paren": "off",
 		"space-in-parens": "off",
@@ -41,6 +39,7 @@
 			}
 		],
 
+		"camelcase": ["warn", {"properties": "never"}],
 		"es-x/no-array-prototype-includes": "warn",
 		"es-x/no-object-values": "warn",
 		"mediawiki/class-doc": "warn",
@@ -58,6 +57,7 @@
 		"no-return-assign": "warn",
 		"no-script-url": "warn",
 		"no-throw-literal": "warn",
+		"no-underscore-dangle": "warn",
 		"no-unused-expressions": "warn",
 		"no-use-before-define": "warn",
 		"no-useless-concat": "warn",
