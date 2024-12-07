@@ -400,7 +400,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	};
 
 	return $.map(list, (critElement) => {
-		const criterion = Object.assign({}, critElement);
+		const criterion = $.extend({}, critElement);
 
 		if (mode.isMultiple) {
 			if (criterion.hideWhenMultiple) {
@@ -1068,7 +1068,7 @@ Twinkle.speedy.callbacks = {
 						code += '|' + i + '=' + parameters[i];
 					}
 				}
-				Object.assign(params.utparams, Twinkle.speedy.getUserTalkParameters(norm, parameters));
+				$.extend(params.utparams, Twinkle.speedy.getUserTalkParameters(norm, parameters));
 			});
 			code += '}}';
 		} else {
