@@ -791,7 +791,6 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-sock-noticeboard': {
 		edit: 'autoconfirmed',
-		move: 'autoconfirmed',
 		expiry: '2 hours',
 		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]]',
 		template: 'pp-sock'
@@ -872,14 +871,12 @@ Twinkle.protect.protectionPresetsInfo = {
 	},
 	'pp-semi-usertalk': {
 		edit: 'autoconfirmed',
-		move: 'autoconfirmed',
 		expiry: 'infinity',
 		reason: '[[WP:PP#Talk-page protection|Inappropriate use of user talk page while blocked]]',
 		template: 'pp-usertalk'
 	},
 	'pp-semi-template': { // removed for now
 		edit: 'autoconfirmed',
-		move: 'autoconfirmed',
 		expiry: 'infinity',
 		reason: '[[WP:High-risk templates|Highly visible template]]',
 		template: 'pp-template'
