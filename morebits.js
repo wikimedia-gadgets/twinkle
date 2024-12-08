@@ -266,7 +266,8 @@ Morebits.namespaceRegex = function(namespaces) {
 	if (!Array.isArray(namespaces)) {
 		namespaces = [namespaces];
 	}
-	let aliases = [], regex;
+	const aliases = [];
+	let regex;
 	$.each(mw.config.get('wgNamespaceIds'), (name, number) => {
 		if (namespaces.indexOf(number) !== -1) {
 			// Namespaces are completely agnostic as to case,
@@ -601,7 +602,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 							id: id + '_' + i + '_subgroup'
 						});
 						$.each(tmpgroup, (idx, el) => {
-							const newEl = Object.assign({}, el);
+							const newEl = $.extend({}, el);
 							if (!newEl.type) {
 								newEl.type = data.type;
 							}
@@ -758,7 +759,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createElement('div');
 
 			data.inputs.forEach((subdata) => {
-				const cell = new Morebits.quickForm.element(Object.assign(subdata || {}, { type: '_dyninput_cell' }));
+				const cell = new Morebits.quickForm.element($.extend(subdata, { type: '_dyninput_cell' }));
 				node.appendChild(cell.render());
 			});
 			if (data.remove) {
@@ -1404,6 +1405,7 @@ Morebits.ip = {
 		}
 		ipv6 = Morebits.ip.sanitizeIPv6(ipv6);
 		const ip_re = /^((?:[0-9A-F]{1,4}:){4})(?:[0-9A-F]{1,4}:){3}[0-9A-F]{1,4}(?:\/\d{1,3})?$/;
+		// eslint-disable-next-line no-useless-concat
 		return ipv6.replace(ip_re, '$1' + '0:0:0:0/64');
 	}
 };
@@ -1500,6 +1502,7 @@ Morebits.string = {
 	formatReasonText: function(str, addSig) {
 		let reason = (str || '').toString().trim();
 		const unbinder = new Morebits.unbinder(reason);
+		// eslint-disable-next-line no-useless-concat
 		unbinder.unbind('<no' + 'wiki>', '</no' + 'wiki>');
 		unbinder.content = unbinder.content.replace(/\|/g, '{{subst:!}}');
 		reason = unbinder.rebind();
@@ -2363,7 +2366,7 @@ Morebits.wiki.api.prototype = {
 		}).join('&').replace(/^(.*?)(\btoken=[^&]*)&(.*)/, '$1$3&$2');
 		// token should always be the last item in the query string (bug TW-B-0013)
 
-		const ajaxparams = Object.assign({}, {
+		const ajaxparams = $.extend({}, {
 			context: this,
 			type: this.query.action === 'query' ? 'GET' : 'POST',
 			url: mw.util.wikiScript('api'),
@@ -3831,7 +3834,8 @@ Morebits.wiki.page = function(pageName, status) {
 			return; // abort
 		}
 
-		let page = response.pages[0], rev;
+		const page = response.pages[0];
+		let rev;
 		ctx.pageExists = !page.missing;
 		if (ctx.pageExists) {
 			rev = page.revisions[0];

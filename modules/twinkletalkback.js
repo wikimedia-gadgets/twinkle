@@ -273,7 +273,7 @@ Twinkle.talkback.noticeboards = {
 	},
 	hd: {
 		label: 'WP:HD (Help desk)',
-		text: '== Your question at the Help desk ==\n' + '{{helpdeskreply|1=$SECTION|ts=~~~~~}}',
+		text: '== Your question at the Help desk ==\n{{helpdeskreply|1=$SECTION|ts=~~~~~}}',
 		editSummary: 'You have replies at the [[Wikipedia:Help desk|Wikipedia help desk]]'
 	},
 	norn: {

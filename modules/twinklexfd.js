@@ -424,8 +424,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Choose type of action wanted:',
 				name: 'xfdcat',
 				event: function(e) {
-					let target = e.target,
-						tfdtarget = target.form.tfdtarget;
+					const target = e.target;
+					let tfdtarget = target.form.tfdtarget;
 					// add/remove extra input box
 					if (target.value === 'tfm' && !tfdtarget) {
 						tfdtarget = new Morebits.QuickForm.Element({
@@ -554,9 +554,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Choose type of action wanted:',
 				name: 'xfdcat',
 				event: function(e) {
-					let value = e.target.value,
-						cfdtarget = e.target.form.cfdtarget,
-						cfdtarget2 = e.target.form.cfdtarget2;
+					const value = e.target.value,
+						cfdtarget = e.target.form.cfdtarget;
+					let cfdtarget2 = e.target.form.cfdtarget2;
 
 					// update enabled status
 					cfdtarget.disabled = value === 'cfd' || value === 'sfd-t';
@@ -1320,7 +1320,7 @@ Twinkle.xfd.callbacks = {
 
 				// Tag other template/module
 				wikipedia_otherpage.setFollowRedirect(true);
-				const otherParams = Object.assign({}, params);
+				const otherParams = $.extend({}, params);
 				otherParams.otherTemplateName = Morebits.pageNameNorm;
 				wikipedia_otherpage.setCallbackParameters(otherParams);
 				wikipedia_otherpage.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);

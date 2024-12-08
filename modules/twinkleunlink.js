@@ -121,7 +121,7 @@ Twinkle.unlink.callback.evaluate = function twinkleunlinkCallbackEvaluate(event)
 	unlinker.run((pageName) => {
 		const wikipedia_page = new Morebits.wiki.Page(pageName, 'Unlinking in page "' + pageName + '"');
 		wikipedia_page.setBotEdit(true); // unlink considered a floody operation
-		wikipedia_page.setCallbackParameters(Object.assign({
+		wikipedia_page.setCallbackParameters($.extend({
 			doBacklinks: input.backlinks.indexOf(pageName) !== -1,
 			doImageusage: input.imageusage.indexOf(pageName) !== -1
 		}, params));
