@@ -2017,15 +2017,16 @@ Twinkle.tag.callbacks = {
 /**
  * Given an array of incompatible tags, check if we have two or more selected
  *
- * @param {Array} conflictsToCheckFor
+ * @param {Array} incompatibleTags
  * @param {Array} tagsToCheck
  * @param {string} [extraMessage]
  * @return {true|undefined}
  */
-Twinkle.tag.checkIncompatible = function(conflictsToCheckFor, tagsToCheck, extraMessage = null) {
-	const count = conflictsToCheckFor.reduce((sum, tag) => sum += tagsToCheck.indexOf(tag) !== -1, 0);
+Twinkle.tag.checkIncompatible = function(incompatibleTags, tagsToCheck, extraMessage = null) {
+	const count = incompatibleTags.reduce((sum, tag) => sum += tagsToCheck.indexOf(tag) !== -1, 0);
 	if (count > 1) {
-		let message = 'Please select only one of: {{' + conflictsToCheckFor.join('}}, {{') + '}}.';
+		const incompatibleTagsString = '{{' + incompatibleTags.join('}}, {{') + '}}';
+		let message = 'Please select only one of: ' + incompatibleTagsString + '.';
 		message += extraMessage ? ' ' + extraMessage : '';
 		alert(message);
 		return true;
