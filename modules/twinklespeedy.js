@@ -1221,7 +1221,7 @@ Twinkle.speedy.callbacks = {
 			if (reason === null) {
 				return Morebits.Status.error('Asking for reason', 'User cancelled');
 			} else if (!reason || !reason.replace(/^\s*/, '').replace(/\s*$/, '')) {
-				return Morebits.Status.error('Asking for reason', "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");
+				return Morebits.Status.error('Asking for reason', 'The "reason" for deleting was not provided, or Twinkle was unable to compute it. Aborting.');
 			}
 
 			const deleteMain = function(callback) {
