@@ -1,15 +1,13 @@
 // <nowiki>
 
-
-(function($) {
-
+(function() {
 
 /*
  ****************************************
  *** twinkleimage.js: Image CSD module
  ****************************************
  * Mode of invocation:     Tab ("DI")
- * Active on:              Local nonredirect file pages (not on Commons)
+ * Active on:              Local nonredirect file pages (not on Commons) - Only file pages that exist locally; Files that exist on Commons do not trigger this module.
  */
 
 Twinkle.image = function twinkleimage() {
@@ -19,7 +17,7 @@ Twinkle.image = function twinkleimage() {
 };
 
 Twinkle.image.callback = function twinkleimageCallback() {
-	var Window = new Morebits.simpleWindow(600, 330);
+	const Window = new Morebits.SimpleWindow(600, 330);
 	Window.setTitle('File for dated speedy deletion');
 	Window.setScriptName('Twinkle');
 	Window.addFooterLink('Speedy deletion policy', 'COM:CSD#Files');
@@ -27,7 +25,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 	Window.addFooterLink('Twinkle help', 'COM:TW');
 	Window.addFooterLink('Give feedback', 'Commons talk:TW');
 
-	var form = new Morebits.quickForm(Twinkle.image.callback.evaluate);
+	const form = new Morebits.QuickForm(Twinkle.image.callback.evaluate);
 	form.append({
 		type: 'checkbox',
 		list: [
@@ -41,7 +39,7 @@ Twinkle.image.callback = function twinkleimageCallback() {
 		]
 	}
 	);
-	var field = form.append({
+	const field = form.append({
 		type: 'field',
 		label: 'Type of action wanted'
 	});
@@ -75,20 +73,20 @@ Twinkle.image.callback = function twinkleimageCallback() {
 	});
 	form.append({ type: 'submit' });
 
-	var result = form.render();
+	const result = form.render();
 	Window.setContent(result);
 	Window.display();
 
 	// We must init the parameters
-	var evt = document.createEvent('Event');
+	const evt = document.createEvent('Event');
 	evt.initEvent('change', true, true);
 	result.type[0].dispatchEvent(evt);
 };
 
 Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
-	var value = event.target.values;
-	var root = event.target.form;
-	var work_area = new Morebits.quickForm.element({
+	const value = event.target.values;
+	const root = event.target.form;
+	const work_area = new Morebits.QuickForm.Element({
 		type: 'div',
 		name: 'work_area'
 	});
@@ -119,12 +117,12 @@ Twinkle.image.callback.choice = function twinkleimageCallbackChoose(event) {
 
 Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 
-	var input = Morebits.quickForm.getInputData(event.target);
+	const input = Morebits.QuickForm.getInputData(event.target);
 	if (input.replacement) {
 		input.replacement = (new RegExp('^' + Morebits.namespaceRegex(6) + ':', 'i').test(input.replacement) ? '' : 'File:') + input.replacement;
 	}
 
-	var csdcrit;
+	let csdcrit;
 	switch (input.type) {
 		case 'no source':
 		case 'no license':
@@ -135,24 +133,24 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 			throw new Error('Twinkle.image.callback.evaluate: unknown criterion');
 	}
 
-	var lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
-	var templatename = input.derivative ? 'dw ' + input.type : input.type;
+	const lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
+	const templatename = input.derivative ? 'dw ' + input.type : input.type;
 
-	var params = $.extend({
+	const params = $.extend({
 		templatename: templatename,
 		derivative: input.derivative,
 		normalized: csdcrit,
 		lognomination: lognomination
 	}, input);
 
-	Morebits.simpleWindow.setButtonsEnabled(false);
-	Morebits.status.init(event.target);
+	Morebits.SimpleWindow.setButtonsEnabled(false);
+	Morebits.Status.init(event.target);
 
 	Morebits.wiki.actionCompleted.redirect = mw.config.get('wgPageName');
 	Morebits.wiki.actionCompleted.notice = 'Tagging complete';
 
 	// Tagging image
-	var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), 'Tagging file with deletion tag');
+	const wikipedia_page = new Morebits.wiki.Page(mw.config.get('wgPageName'), 'Tagging file with deletion tag');
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.image.callbacks.taggingImage);
 
@@ -165,16 +163,16 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 			Twinkle.image.callbacks.addToLog(params, null);
 		}
 		// No auto-notification, display what was going to be added.
-		var noteData = document.createElement('pre');
+		const noteData = document.createElement('pre');
 		noteData.appendChild(document.createTextNode('{{subst:di-' + templatename + '-notice|1=File:' + mw.config.get('wgTitle') + '}} ~~~~'));
-		Morebits.status.info('Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement('br'), noteData ]);
+		Morebits.Status.info('Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement('br'), noteData ]);
 	}
 };
 
 Twinkle.image.callbacks = {
 	taggingImage: function(pageobj) {
-		var text = pageobj.getPageText();
-		var params = pageobj.getCallbackParameters();
+		let text = pageobj.getPageText();
+		const params = pageobj.getCallbackParameters();
 
 		var tag = '';
 		switch (params.type) {
@@ -192,7 +190,7 @@ Twinkle.image.callbacks = {
 				tag = '{{subst:npd}}';
 				break;
 			default:
-				break;  // doesn't matter
+				break; // doesn't matter
 		}
 		// tag += '|help=off}}\n';
 		tag += '\n';
@@ -205,15 +203,15 @@ Twinkle.image.callbacks = {
 		pageobj.save();
 	},
 	userNotification: function(pageobj) {
-		var params = pageobj.getCallbackParameters();
-		var initialContrib = pageobj.getCreator();
+		const params = pageobj.getCallbackParameters();
+		const initialContrib = pageobj.getCreator();
 
 		// disallow warning yourself
 		if (initialContrib === mw.config.get('wgUserName')) {
 			pageobj.getStatusElement().warn('You (' + initialContrib + ') created this page; skipping user notification');
 		} else {
-			var usertalkpage = new Morebits.wiki.page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
-			var notifytext = '\n{{subst:di-' + params.templatename + '-notice|1=File:' + mw.config.get('wgTitle');
+			const usertalkpage = new Morebits.wiki.Page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
+			let notifytext = '\n{{subst:di-' + params.templatename + '-notice|1=File:' + mw.config.get('wgTitle');
 			notifytext += '}} ~~~~';
 			usertalkpage.setAppendText(notifytext);
 			usertalkpage.setEditSummary('Notification: tagging for deletion of [[:' + Morebits.pageNameNorm + ']].');
@@ -230,28 +228,28 @@ Twinkle.image.callbacks = {
 		}
 	},
 	addToLog: function(params, initialContrib) {
-		var usl = new Morebits.userspaceLogger(Twinkle.getPref('speedyLogPageName'));
+		const usl = new Morebits.UserspaceLogger(Twinkle.getPref('speedyLogPageName'));
 		usl.initialText =
 			"This is a log of all [[WP:CSD|speedy deletion]] nominations made by this user using [[WP:TW|Twinkle]]'s CSD module.\n\n" +
 			'If you no longer wish to keep this log, you can turn it off using the [[Wikipedia:Twinkle/Preferences|preferences panel]], and ' +
 			'nominate this page for speedy deletion under [[WP:CSD#U1|CSD U1]].' +
 			(Morebits.userIsSysop ? '\n\nThis log does not track outright speedy deletions made using Twinkle.' : '');
 
-		var formatParamLog = function(normalize, csdparam, input) {
+		const formatParamLog = function(normalize, csdparam, input) {
 			if (normalize === 'F5' && csdparam === 'replacement') {
 				input = '[[:' + input + ']]';
 			}
 			return ' {' + normalize + ' ' + csdparam + ': ' + input + '}';
 		};
 
-		var extraInfo = '';
+		let extraInfo = '';
 
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
-		var fileLogLink = ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])';
+		const fileLogLink = ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log])';
 
-		var appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ': DI [[WP:CSD#' + params.normalized.toUpperCase() + '|CSD ' + params.normalized.toUpperCase() + ']] ({{tl|di-' + params.templatename + '}})';
+		let appendText = '# [[:' + Morebits.pageNameNorm + ']]' + fileLogLink + ': DI [[WP:CSD#' + params.normalized.toUpperCase() + '|CSD ' + params.normalized.toUpperCase() + ']] ({{tl|di-' + params.templatename + '}})';
 
-		['reason', 'replacement', 'source'].forEach(function(item) {
+		['reason', 'replacement', 'source'].forEach((item) => {
 			if (params[item]) {
 				extraInfo += formatParamLog(params.normalized.toUpperCase(), item, params[item]);
 				return false;
@@ -266,7 +264,7 @@ Twinkle.image.callbacks = {
 		}
 		appendText += ' ~~~~~\n';
 
-		var editsummary = 'Logging speedy deletion nomination of [[:' + Morebits.pageNameNorm + ']].';
+		const editsummary = 'Logging speedy deletion nomination of [[:' + Morebits.pageNameNorm + ']].';
 
 		usl.changeTags = Twinkle.changeTags;
 		usl.log(appendText, editsummary);
@@ -274,7 +272,6 @@ Twinkle.image.callbacks = {
 };
 
 Twinkle.addInitCallback(Twinkle.image, 'image');
-})(jQuery);
-
+}());
 
 // </nowiki>

@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# sync.pl by azatoth (2011), update by amorymeltzer (2019)
+# deploy.pl by azatoth (2011), update by amorymeltzer (2019)
 
 use strict;
 use warnings;
@@ -28,10 +28,10 @@ my %conf = (
             username => q{},
             password => q{},
             mode => q{},
-            lang => 'commons',
-            family => 'wikimedia',
+            lang => 'en',
+            family => 'wikipedia',
             url => q{},
-            base => 'User:Mdaniels5757/'
+            base => 'User:AzaToth/'
            );
 
 my $rc = '.twinklerc';
@@ -69,7 +69,7 @@ my $mw = MediaWiki::API->new({
 			      max_lag => 1000000, # not a botty script, thus smash it!
 			      on_error => \&dieNice
 			     });
-$mw->{ua}->agent('Twinkle/sync.pl ('.$mw->{ua}->agent.')');
+$mw->{ua}->agent('Twinkle/deploy.pl ('.$mw->{ua}->agent.')');
 $mw->login({lgname => $conf{username}, lgpassword => $conf{password}});
 
 my $diffFunc = $conf{w} || 'diff'; # Only used for the --diff option
@@ -417,12 +417,12 @@ Usage: $PROGRAM_NAME --mode=deploy|pull|push --username username --password pass
     --username, -s Username for account. Required.
     --password, -p Password for account. Required.
 
-    --lang, -l Target language, default 'commons'
-    --family, -f Target family, default 'wikimedia'
+    --lang, -l Target language, default 'en'
+    --family, -f Target family, default 'wikipedia'
 
     --all, -a Pass all available files, rather than just those on the commandline
 
-    --base, -b Base page prefix where on-wiki files exist, default 'User:Mdaniels5757/'
+    --base, -b Base page prefix where on-wiki files exist, default 'User:AzaToth/'
 
 Less common options:
 
@@ -451,19 +451,6 @@ USAGE
 ## The lines below do not represent Perl code, and are not examined by the
 ## compiler.  Rather, they are used by the --all option to simplify bulk
 ## updating all files.
-## Removed:
-#   modules/twinklearv.js
-#   modules/twinkleblock.js
-#   modules/twinkledeprod.js
-#   modules/twinkleprod.js
-#   modules/twinkleprotect.js
-#   modules/twinklewarn.js
-#   modules/twinklexfd.js
-#   modules/friendlyshared.js
-#   modules/friendlytag.js
-#   modules/friendlytalkback.js
-#   modules/friendlywelcome.js
-
 __DATA__
 twinkle.js
   twinkle.css
@@ -472,12 +459,23 @@ twinkle.js
   morebits.css
   lib/select2.min.js
   lib/select2.min.css
-  modules/twinkleconfig.js
+  modules/twinklearv.js
   modules/twinklebatchdelete.js
   modules/twinklebatchprotect.js
   modules/twinklebatchundelete.js
+  modules/twinkleblock.js
+  modules/twinkleconfig.js
+  modules/twinkledeprod.js
   modules/twinklediff.js
-  modules/twinklefluff.js
-  modules/twinklespeedy.js
-  modules/twinkleunlink.js
   modules/twinkleimage.js
+  modules/twinkleprod.js
+  modules/twinkleprotect.js
+  modules/twinklerollback.js
+  modules/twinkleshared.js
+  modules/twinklespeedy.js
+  modules/twinkletag.js
+  modules/twinkletalkback.js
+  modules/twinkleunlink.js
+  modules/twinklewarn.js
+  modules/twinklewelcome.js
+  modules/twinklexfd.js

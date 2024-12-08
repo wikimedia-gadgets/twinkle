@@ -58,7 +58,7 @@ Specifically, the following pages on enwiki may be helpful:
 Some things to watch out for:
 
 - The `twinkleconfig` pseudo-module holds the code to save and determine user preferences, while `twinkle.js` holds the defaults.
-- There is some variety in how the individual modules are written, in particular among the `friendly` family as well as with `twinkleconfig.js`.
+- There is some variety in how the individual modules are written, in particular among the four Twinkle modules that used to be the `friendly` userscript (shared, tag, talkback, welcome), as well as with `twinkleconfig.js`.
 
 As Twinkle is used many thousands of times a day, changes to how Twinkle works may be confusing or disruptive to editors.  Significant or major changes to workflow, design, or functionality should gain some modicum of consensus before being worked on, through discussion at [Wikipedia talk:Twinkle][] or a GitHub issue.
 
