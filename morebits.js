@@ -266,7 +266,8 @@ Morebits.namespaceRegex = function(namespaces) {
 	if (!Array.isArray(namespaces)) {
 		namespaces = [namespaces];
 	}
-	let aliases = [], regex;
+	const aliases = [];
+	let regex;
 	$.each(mw.config.get('wgNamespaceIds'), (name, number) => {
 		if (namespaces.indexOf(number) !== -1) {
 			// Namespaces are completely agnostic as to case,
@@ -3831,7 +3832,8 @@ Morebits.wiki.page = function(pageName, status) {
 			return; // abort
 		}
 
-		let page = response.pages[0], rev;
+		const page = response.pages[0];
+		let rev;
 		ctx.pageExists = !page.missing;
 		if (ctx.pageExists) {
 			rev = page.revisions[0];

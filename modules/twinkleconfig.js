@@ -1075,7 +1075,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 				}
 				cell = document.createElement('td');
 
-				let label, input, gotPref = Twinkle.getPref(pref.name);
+				let label, input;
+				const gotPref = Twinkle.getPref(pref.name);
 				switch (pref.type) {
 
 					case 'boolean': // create a checkbox
@@ -1295,9 +1296,11 @@ Twinkle.config.init = function twinkleconfigInit() {
 		// Styled in twinkle.css
 		box.setAttribute('id', 'twinkle-config-headerbox');
 
-		let link,
-			scriptPageName = mw.config.get('wgPageName').slice(mw.config.get('wgPageName').lastIndexOf('/') + 1,
-				mw.config.get('wgPageName').lastIndexOf('.js'));
+		let link;
+		const scriptPageName = mw.config.get('wgPageName').slice(
+			mw.config.get('wgPageName').lastIndexOf('/') + 1,
+			mw.config.get('wgPageName').lastIndexOf('.js')
+		);
 
 		if (scriptPageName === 'twinkleoptions') {
 			// place "why not try the preference panel" notice
