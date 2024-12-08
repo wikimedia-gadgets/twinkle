@@ -602,7 +602,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 							id: id + '_' + i + '_subgroup'
 						});
 						$.each(tmpgroup, (idx, el) => {
-							const newEl = Object.assign({}, el);
+							const newEl = $.extend({}, el);
 							if (!newEl.type) {
 								newEl.type = data.type;
 							}
@@ -759,7 +759,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createElement('div');
 
 			data.inputs.forEach((subdata) => {
-				const cell = new Morebits.quickForm.element(Object.assign(subdata || {}, { type: '_dyninput_cell' }));
+				const cell = new Morebits.quickForm.element($.extend(subdata, { type: '_dyninput_cell' }));
 				node.appendChild(cell.render());
 			});
 			if (data.remove) {
@@ -2364,7 +2364,7 @@ Morebits.wiki.api.prototype = {
 		}).join('&').replace(/^(.*?)(\btoken=[^&]*)&(.*)/, '$1$3&$2');
 		// token should always be the last item in the query string (bug TW-B-0013)
 
-		const ajaxparams = Object.assign({}, {
+		const ajaxparams = $.extend({}, {
 			context: this,
 			type: this.query.action === 'query' ? 'GET' : 'POST',
 			url: mw.util.wikiScript('api'),

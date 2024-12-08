@@ -1320,7 +1320,7 @@ Twinkle.xfd.callbacks = {
 
 				// Tag other template/module
 				wikipedia_otherpage.setFollowRedirect(true);
-				const otherParams = Object.assign({}, params);
+				const otherParams = $.extend({}, params);
 				otherParams.otherTemplateName = Morebits.pageNameNorm;
 				wikipedia_otherpage.setCallbackParameters(otherParams);
 				wikipedia_otherpage.load(Twinkle.xfd.callbacks.tfd.taggingTemplateForMerge);

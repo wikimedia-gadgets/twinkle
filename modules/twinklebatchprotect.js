@@ -289,7 +289,7 @@ Twinkle.batchprotect.callback.evaluate = function twinklebatchprotectCallbackEva
 		};
 		const wikipedia_api = new Morebits.wiki.Api('Checking if page ' + pageName + ' exists', query,
 			Twinkle.batchprotect.callbacks.main, null, batchOperation.workerFailure);
-		wikipedia_api.params = Object.assign({
+		wikipedia_api.params = $.extend({
 			page: pageName,
 			batchOperation: batchOperation
 		}, input);

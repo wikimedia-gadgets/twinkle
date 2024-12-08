@@ -1362,7 +1362,7 @@ Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyNam
 		const level = isNumberedTemplate[0];
 		const numberedWarnings = {};
 		$.each(templates.levels, (key, val) => {
-			Object.assign(numberedWarnings, val);
+			$.extend(numberedWarnings, val);
 		});
 		$.each(numberedWarnings, (key) => {
 			if (key === unNumberedTemplateName) {
@@ -1375,7 +1375,7 @@ Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyNam
 	const otherWarnings = {};
 	$.each(templates, (key, val) => {
 		if (key !== 'levels') {
-			Object.assign(otherWarnings, val);
+			$.extend(otherWarnings, val);
 		}
 	});
 	$.each(otherWarnings, (key) => {
@@ -1468,7 +1468,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			createEntries(Twinkle.warn.messages[value], sub_group, true);
 			break;
 		case 'singlecombined':
-			var unSortedSinglets = Object.assign({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
+			var unSortedSinglets = $.extend({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
 			var sortedSingletMessages = {};
 			Object.keys(unSortedSinglets).sort().forEach((key) => {
 				sortedSingletMessages[key] = unSortedSinglets[key];
