@@ -2000,22 +2000,30 @@ Twinkle.tag.callbacks = {
 	}
 };
 
+/**
+ * Given an array of incompatible tags, check if we have two or more selected
+ *
+ * @param {Array} incompatibleTags
+ * @param {Array} tagsToCheck
+ * @param {string} [extraMessage]
+ * @return {true|undefined}
+ */
+Twinkle.tag.checkIncompatible = function(incompatibleTags, tagsToCheck, extraMessage = null) {
+	const count = incompatibleTags.reduce((sum, tag) => sum += tagsToCheck.indexOf(tag) !== -1, 0);
+	if (count > 1) {
+		const incompatibleTagsString = '{{' + incompatibleTags.join('}}, {{') + '}}';
+		let message = 'Please select only one of: ' + incompatibleTagsString + '.';
+		message += extraMessage ? ' ' + extraMessage : '';
+		alert(message);
+		return true;
+	}
+};
+
 Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 	const form = e.target;
 	const params = Morebits.QuickForm.getInputData(form);
 
 	// Validation
-
-	// Given an array of incompatible tags, check if we have two or more selected
-	const checkIncompatible = function(conflicts, extra) {
-		const count = conflicts.reduce((sum, tag) => sum += params.tags.indexOf(tag) !== -1, 0);
-		if (count > 1) {
-			let message = 'Please select only one of: {{' + conflicts.join('}}, {{') + '}}.';
-			message += extra ? ' ' + extra : '';
-			alert(message);
-			return true;
-		}
-	};
 
 	// We could theoretically put them all checkIncompatible calls in a
 	// forEach loop, but it's probably clearer not to have [[array one],
@@ -2027,7 +2035,7 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 
 			if ((params.tags.indexOf('Merge') !== -1) || (params.tags.indexOf('Merge from') !== -1) ||
 				(params.tags.indexOf('Merge to') !== -1)) {
-				if (checkIncompatible(['Merge', 'Merge from', 'Merge to'], 'If several merges are required, use {{Merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).')) {
+				if (Twinkle.tag.checkIncompatible(['Merge', 'Merge from', 'Merge to'], params.tags, 'If several merges are required, use {{Merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).')) {
 					return;
 				}
 				if ((params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1) {
@@ -2036,25 +2044,25 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 				}
 			}
 
-			if (checkIncompatible(['Not English', 'Rough translation'])) {
+			if (Twinkle.tag.checkIncompatible(['Not English', 'Rough translation'], params.tags)) {
 				return;
 			}
 			break;
 
 		case 'file':
-			if (checkIncompatible(['Bad GIF', 'Bad JPEG', 'Bad SVG', 'Bad format'])) {
+			if (Twinkle.tag.checkIncompatible(['Bad GIF', 'Bad JPEG', 'Bad SVG', 'Bad format'], params.tags)) {
 				return;
 			}
-			if (checkIncompatible(['Should be PNG', 'Should be SVG', 'Should be text'])) {
+			if (Twinkle.tag.checkIncompatible(['Should be PNG', 'Should be SVG', 'Should be text'], params.tags)) {
 				return;
 			}
-			if (checkIncompatible(['Bad SVG', 'Vector version available'])) {
+			if (Twinkle.tag.checkIncompatible(['Bad SVG', 'Vector version available'], params.tags)) {
 				return;
 			}
-			if (checkIncompatible(['Bad JPEG', 'Overcompressed JPEG'])) {
+			if (Twinkle.tag.checkIncompatible(['Bad JPEG', 'Overcompressed JPEG'], params.tags)) {
 				return;
 			}
-			if (checkIncompatible(['PNG version available', 'Vector version available'])) {
+			if (Twinkle.tag.checkIncompatible(['PNG version available', 'Vector version available'], params.tags)) {
 				return;
 			}
 
@@ -2125,20 +2133,20 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 			break;
 
 		case 'redirect':
-			if (checkIncompatible(['R printworthy', 'R unprintworthy'])) {
+			if (Twinkle.tag.checkIncompatible(['R printworthy', 'R unprintworthy'], params.tags)) {
 				return;
 			}
-			if (checkIncompatible(['R from subtopic', 'R to subtopic'])) {
+			if (Twinkle.tag.checkIncompatible(['R from subtopic', 'R to subtopic'], params.tags)) {
 				return;
 			}
-			if (checkIncompatible([
+			if (Twinkle.tag.checkIncompatible([
 				'R to category namespace',
 				'R to help namespace',
 				'R to main namespace',
 				'R to portal namespace',
 				'R to project namespace',
 				'R to user namespace'
-			])) {
+			], params.tags)) {
 				return;
 			}
 			break;
