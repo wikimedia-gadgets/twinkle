@@ -1588,7 +1588,7 @@ Morebits.array = {
 	 */
 	uniq: function(arr) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.uniq';
+			throw new Error('A non-array object passed to Morebits.array.uniq');
 		}
 		return arr.filter((item, idx) => arr.indexOf(item) === idx);
 	},
@@ -1603,7 +1603,7 @@ Morebits.array = {
 	 */
 	dups: function(arr) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.dups';
+			throw new Error('A non-array object passed to Morebits.array.dups');
 		}
 		return arr.filter((item, idx) => arr.indexOf(item) !== idx);
 	},
@@ -1618,7 +1618,7 @@ Morebits.array = {
 	 */
 	chunk: function(arr, size) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.chunk';
+			throw new Error('A non-array object passed to Morebits.array.chunk');
 		}
 		if (typeof size !== 'number' || size <= 0) { // pretty impossible to do anything :)
 			return [ arr ]; // we return an array consisting of this array.
@@ -5235,7 +5235,7 @@ Morebits.status.onError = function(handler) {
 	if (typeof handler === 'function') {
 		Morebits.status.errorEvent = handler;
 	} else {
-		throw 'Morebits.status.onError: handler is not a function';
+		throw new Error('Morebits.status.onError: handler is not a function');
 	}
 };
 
