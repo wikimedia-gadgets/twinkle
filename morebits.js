@@ -266,7 +266,8 @@ Morebits.namespaceRegex = function(namespaces) {
 	if (!Array.isArray(namespaces)) {
 		namespaces = [namespaces];
 	}
-	let aliases = [], regex;
+	const aliases = [];
+	let regex;
 	$.each(mw.config.get('wgNamespaceIds'), (name, number) => {
 		if (namespaces.indexOf(number) !== -1) {
 			// Namespaces are completely agnostic as to case,
@@ -1404,6 +1405,7 @@ Morebits.ip = {
 		}
 		ipv6 = Morebits.ip.sanitizeIPv6(ipv6);
 		const ip_re = /^((?:[0-9A-F]{1,4}:){4})(?:[0-9A-F]{1,4}:){3}[0-9A-F]{1,4}(?:\/\d{1,3})?$/;
+		// eslint-disable-next-line no-useless-concat
 		return ipv6.replace(ip_re, '$1' + '0:0:0:0/64');
 	}
 };
@@ -1500,6 +1502,7 @@ Morebits.string = {
 	formatReasonText: function(str, addSig) {
 		let reason = (str || '').toString().trim();
 		const unbinder = new Morebits.unbinder(reason);
+		// eslint-disable-next-line no-useless-concat
 		unbinder.unbind('<no' + 'wiki>', '</no' + 'wiki>');
 		unbinder.content = unbinder.content.replace(/\|/g, '{{subst:!}}');
 		reason = unbinder.rebind();
@@ -1585,7 +1588,7 @@ Morebits.array = {
 	 */
 	uniq: function(arr) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.uniq';
+			throw new Error('A non-array object passed to Morebits.array.uniq');
 		}
 		return arr.filter((item, idx) => arr.indexOf(item) === idx);
 	},
@@ -1600,7 +1603,7 @@ Morebits.array = {
 	 */
 	dups: function(arr) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.dups';
+			throw new Error('A non-array object passed to Morebits.array.dups');
 		}
 		return arr.filter((item, idx) => arr.indexOf(item) !== idx);
 	},
@@ -1615,7 +1618,7 @@ Morebits.array = {
 	 */
 	chunk: function(arr, size) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.chunk';
+			throw new Error('A non-array object passed to Morebits.array.chunk');
 		}
 		if (typeof size !== 'number' || size <= 0) { // pretty impossible to do anything :)
 			return [ arr ]; // we return an array consisting of this array.
@@ -3831,7 +3834,8 @@ Morebits.wiki.page = function(pageName, status) {
 			return; // abort
 		}
 
-		let page = response.pages[0], rev;
+		const page = response.pages[0];
+		let rev;
 		ctx.pageExists = !page.missing;
 		if (ctx.pageExists) {
 			rev = page.revisions[0];
@@ -5231,7 +5235,7 @@ Morebits.status.onError = function(handler) {
 	if (typeof handler === 'function') {
 		Morebits.status.errorEvent = handler;
 	} else {
-		throw 'Morebits.status.onError: handler is not a function';
+		throw new Error('Morebits.status.onError: handler is not a function');
 	}
 };
 

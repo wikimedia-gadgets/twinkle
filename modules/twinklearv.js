@@ -306,7 +306,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 			work_area.append(
 				{
 					type: 'dyninput',
-					name: 'sockpuppet',
+					name: 'sockpuppets',
 					label: 'Sockpuppets',
 					sublabel: 'Sock:',
 					tooltip: 'The username of the sockpuppet without the "User:" prefix',
@@ -574,26 +574,32 @@ Twinkle.arv.callback.evaluate = function(e) {
 		case 'sock':
 			/* falls through */
 		case 'puppet':
-			var sockParameters = {
-				evidence: form.evidence.value.trim(),
-				checkuser: form.checkuser.checked
-			};
+			var reportData = Twinkle.arv.callback.getSpiReportData(input);
 
-			var puppetReport = form.category.value === 'puppet';
-			if (puppetReport && !form.sockmaster.value.trim()) {
-				alert('You have not entered a sockmaster account for this puppet. Consider reporting this account as a sockpuppeteer instead.');
-				return;
-			} else if (!puppetReport && !form.sockpuppet[0].value.trim()) {
-				alert('You have not entered any sockpuppet account(s) for this sockmaster. Consider reporting this account as a sockpuppet instead.');
+			if (reportData.error) {
+				alert(reportData.error);
 				return;
 			}
 
-			sockParameters.uid = puppetReport ? form.sockmaster.value.trim() : uid;
-			sockParameters.sockpuppets = puppetReport ? [uid] : Morebits.array.uniq($.map($('input:text[name=sockpuppet]', form), (o) => $(o).val() || null));
-
 			Morebits.SimpleWindow.setButtonsEnabled(false);
 			Morebits.Status.init(form);
-			Twinkle.arv.processSock(sockParameters);
+
+			Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
+
+			var reportpage = 'Wikipedia:Sockpuppet investigations/' + reportData.sockmaster;
+
+			Morebits.wiki.actionCompleted.redirect = reportpage;
+			Morebits.wiki.actionCompleted.notice = 'Reporting complete';
+
+			var spiPage = new Morebits.wiki.page(reportpage, 'Retrieving discussion page');
+			spiPage.setFollowRedirect(true);
+			spiPage.setEditSummary('Adding new report for [[Special:Contributions/' + reportData.sockmaster + '|' + reportData.sockmaster + ']].');
+			spiPage.setChangeTags(Twinkle.changeTags);
+			spiPage.setAppendText(reportData.wikitext);
+			spiPage.setWatchlist(Twinkle.getPref('spiWatchReport'));
+			spiPage.append();
+
+			Morebits.wiki.removeCheckpoint(); // all page updates have been started
 			break;
 
 		case 'an3':
@@ -818,32 +824,34 @@ Twinkle.arv.callback.getUsernameReportWikitext = function(input) {
 	return text;
 };
 
-Twinkle.arv.processSock = function(params) {
-	Morebits.wiki.addCheckpoint(); // prevent notification events from causing an erronous "action completed"
+Twinkle.arv.callback.getSpiReportData = function(input) {
+	const isPuppetReport = input.category === 'puppet';
 
-	// prepare the SPI report
+	if (!isPuppetReport) {
+		input.sockpuppets = input.sockpuppets.filter((sock) => sock !== ''); // ignore empty sockpuppet inputs
+	}
+
+	if (isPuppetReport && !input.sockmaster) {
+		return { error: 'You have not entered a sockmaster account for this puppet. Consider reporting this account as a sockpuppeteer instead.' };
+	} else if (!isPuppetReport && input.sockpuppets.length === 0) {
+		return { error: 'You have not entered any sockpuppet account(s) for this sockmaster. Consider reporting this account as a sockpuppet instead.' };
+	}
+
+	input.sockmaster = input.sockmaster || input.uid;
+	input.sockpuppets = isPuppetReport ? [input.uid] : Morebits.array.uniq(input.sockpuppets);
+
 	let text = '\n{{subst:SPI report|' +
-		params.sockpuppets.map((sock, index) => (index + 1) + '=' + sock).join('|') + '\n|evidence=' + params.evidence + ' \n';
+		input.sockpuppets.map((sock, index) => (index + 1) + '=' + sock).join('|') + '\n|evidence=' + input.evidence + ' \n';
 
-	if (params.checkuser) {
+	if (input.checkuser) {
 		text += '|checkuser=yes';
 	}
 	text += '}}';
 
-	const reportpage = 'Wikipedia:Sockpuppet investigations/' + params.uid;
-
-	Morebits.wiki.actionCompleted.redirect = reportpage;
-	Morebits.wiki.actionCompleted.notice = 'Reporting complete';
-
-	const spiPage = new Morebits.wiki.Page(reportpage, 'Retrieving discussion page');
-	spiPage.setFollowRedirect(true);
-	spiPage.setEditSummary('Adding new report for [[Special:Contributions/' + params.uid + '|' + params.uid + ']].');
-	spiPage.setChangeTags(Twinkle.changeTags);
-	spiPage.setAppendText(text);
-	spiPage.setWatchlist(Twinkle.getPref('spiWatchReport'));
-	spiPage.append();
-
-	Morebits.wiki.removeCheckpoint(); // all page updates have been started
+	return {
+		sockmaster: input.sockmaster,
+		wikitext: text
+	};
 };
 
 Twinkle.arv.processAN3 = function(params) {
@@ -921,19 +929,19 @@ Twinkle.arv.processAN3 = function(params) {
 			ret += sub.reverse().map((v) => (sub.length >= 2 ? '#' : '') + '# {{diff2|' + v.revid + '|' + new Morebits.Date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v)).join('\n');
 			return ret;
 		}).reverse().join('\n');
-		const warningtext = params.warnings.reverse().map((v) => '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.Date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v)).join('\n');
-		let resolvetext = params.resolves.reverse().map((v) => '# ' + ' {{diff2|' + v.revid + '|' + new Morebits.Date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v)).join('\n');
+		const warningtext = params.warnings.reverse().map((v) => '#  {{diff2|' + v.revid + '|' + new Morebits.Date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v)).join('\n');
+		let resolvetext = params.resolves.reverse().map((v) => '#  {{diff2|' + v.revid + '|' + new Morebits.Date(v.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC)}} ' + hasHiddenComment(v)).join('\n');
 
 		if (params.free_resolves) {
 			const page = params.free_resolves;
 			if (page.compare) {
-				resolvetext += '\n# ' + ' {{diff|oldid=' + page.compare.fromrevid + '|diff=' + page.compare.torevid + '|label=Consecutive edits on ' + page.compare.totitle + '}}';
+				resolvetext += '\n#  {{diff|oldid=' + page.compare.fromrevid + '|diff=' + page.compare.torevid + '|label=Consecutive edits on ' + page.compare.totitle + '}}';
 			} else if (page.revisions) {
 				const revCount = page.revisions.length;
 				let rev;
 				if (revCount < 3) { // diff=prev or next
 					rev = revCount === 1 ? page.revisions[0] : page.revisions[1];
-					resolvetext += '\n# ' + ' {{diff2|' + rev.revid + '|' + new Morebits.Date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title + '}} ' + hasHiddenComment(rev);
+					resolvetext += '\n#  {{diff2|' + rev.revid + '|' + new Morebits.Date(rev.timestamp).format('HH:mm, D MMMM YYYY', 'utc') + ' (UTC) on ' + page.title + '}} ' + hasHiddenComment(rev);
 				} else { // diff and oldid are nonconsecutive
 					rev = page.revisions[0];
 					const revLatest = page.revisions[revCount - 1];
@@ -949,7 +957,7 @@ Twinkle.arv.processAN3 = function(params) {
 			comment += ' ~~~~';
 		}
 
-		const text = '\n\n' + '{{subst:AN3 report|diffs=' + difftext + '|warnings=' + warningtext + '|resolves=' + resolvetext + '|pagename=' + params.page + '|orig=' + origtext + '|comment=' + comment + '|uid=' + params.uid + '}}';
+		const text = '\n\n{{subst:AN3 report|diffs=' + difftext + '|warnings=' + warningtext + '|resolves=' + resolvetext + '|pagename=' + params.page + '|orig=' + origtext + '|comment=' + comment + '|uid=' + params.uid + '}}';
 
 		const reportpage = 'Wikipedia:Administrators\' noticeboard/Edit warring';
 
