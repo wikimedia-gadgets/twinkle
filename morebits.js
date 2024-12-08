@@ -1405,6 +1405,7 @@ Morebits.ip = {
 		}
 		ipv6 = Morebits.ip.sanitizeIPv6(ipv6);
 		const ip_re = /^((?:[0-9A-F]{1,4}:){4})(?:[0-9A-F]{1,4}:){3}[0-9A-F]{1,4}(?:\/\d{1,3})?$/;
+		// eslint-disable-next-line no-useless-concat
 		return ipv6.replace(ip_re, '$1' + '0:0:0:0/64');
 	}
 };
@@ -1501,6 +1502,7 @@ Morebits.string = {
 	formatReasonText: function(str, addSig) {
 		let reason = (str || '').toString().trim();
 		const unbinder = new Morebits.unbinder(reason);
+		// eslint-disable-next-line no-useless-concat
 		unbinder.unbind('<no' + 'wiki>', '</no' + 'wiki>');
 		unbinder.content = unbinder.content.replace(/\|/g, '{{subst:!}}');
 		reason = unbinder.rebind();
