@@ -1282,6 +1282,10 @@ Twinkle.warn.messages = {
 			label: 'Removing {{copyvio}} template from articles',
 			summary: 'Warning: Removing {{copyvio}} templates'
 		},
+		'uw-derogatory': {
+			label: 'Addition of derogatory/hateful content',
+			summary: 'Warning: Addition of derogatory content'
+		},
 		'uw-efsummary': {
 			label: 'Edit summary triggering the edit filter',
 			summary: 'Warning: Edit summary triggering the edit filter'
