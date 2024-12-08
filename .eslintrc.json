@@ -57,7 +57,6 @@
 		"no-return-assign": "warn",
 		"no-script-url": "warn",
 		"no-throw-literal": "warn",
-		"no-underscore-dangle": "warn",
 		"no-unused-expressions": "warn",
 		"no-use-before-define": "warn",
 		"no-useless-concat": "warn",
