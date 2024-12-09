@@ -1899,7 +1899,7 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	// "talk page" of an IP range (which does not exist)
 	const userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
-	const params = Twinkle.block.callback.combineFormDataAndFieldTemplateOptions(
+	const params = Twinkle.block.combineFormDataAndFieldTemplateOptions(
 		formData,
 		Twinkle.block.blockPresetsInfo[formData.template],
 		Twinkle.block.field_template_options.block_reason,
@@ -1916,7 +1916,7 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	wikipedia_page.load(Twinkle.block.callback.main);
 };
 
-Twinkle.block.callback.combineFormDataAndFieldTemplateOptions = function(formData, messageData, reason, disabletalk, noemail, nocreate) {
+Twinkle.block.combineFormDataAndFieldTemplateOptions = function(formData, messageData, reason, disabletalk, noemail, nocreate) {
 	return $.extend(formData, {
 		messageData: messageData,
 		reason: reason,
