@@ -17,6 +17,9 @@
 
 /* global Morebits */
 
+// Ignore this file in Jest's test coverage report
+/* istanbul ignore file */
+
 (function() {
 
 // Check if account is experienced enough to use Twinkle
