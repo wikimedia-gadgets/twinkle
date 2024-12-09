@@ -351,7 +351,6 @@ Twinkle.tag.callback = function twinkletagCallback() {
 		const evt = document.createEvent('Event');
 		evt.initEvent('change', true, true);
 		result.sortorder.dispatchEvent(evt);
-
 	} else {
 		// Redirects and files: Add a link to each template's description page
 		Morebits.QuickForm.getElements(result, 'tags').forEach(generateLinks);
@@ -1210,16 +1209,6 @@ Twinkle.tag.fileList = {
 				label: 'Name on Commons:',
 				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
 			}
-		},
-		{
-			label: '{{Now Commons}}: file has been copied to Commons',
-			value: 'Now Commons',
-			subgroup: {
-				type: 'input',
-				name: 'nowcommonsName',
-				label: 'Commons image name if different:',
-				tooltip: 'Name of the image on Commons (if different from local name), excluding the File: prefix:'
-			}
 		}
 	],
 	'Cleanup tags': [
@@ -1589,7 +1578,8 @@ Twinkle.tag.callbacks = {
 			return;
 		}
 
-		let tagRe, tagText = '', tags = [], groupableTags = [], groupableExistingTags = [];
+		let tagRe, tagText = '', tags = [];
+		const groupableTags = [], groupableExistingTags = [];
 		// Executes first: addition of selected tags
 
 		/**
@@ -1806,10 +1796,12 @@ Twinkle.tag.callbacks = {
 	},
 
 	redirect: function redirect(pageobj) {
-		let params = pageobj.getCallbackParameters(),
-			pageText = pageobj.getPageText(),
-			tagRe, tagText = '', summaryText = 'Added',
-			tags = [], i;
+		const params = pageobj.getCallbackParameters(),
+			tags = [];
+		let pageText = pageobj.getPageText(),
+			tagRe, tagText = '',
+			summaryText = 'Added',
+			i;
 
 		for (i = 0; i < params.tags.length; i++) {
 			tagRe = new RegExp('(\\{\\{' + params.tags[i] + '(\\||\\}\\}))', 'im');
@@ -1906,19 +1898,13 @@ Twinkle.tag.callbacks = {
 			let tagtext = '', currentTag;
 			$.each(params.tags, (k, tag) => {
 				// when other commons-related tags are placed, remove "move to Commons" tag
-				if (['Keep local', 'Now Commons', 'Do not move to Commons'].indexOf(tag) !== -1) {
+				if (['Keep local', 'Do not move to Commons'].indexOf(tag) !== -1) {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 				}
 
 				currentTag = tag;
 
 				switch (tag) {
-					case 'Now Commons':
-						currentTag = 'subst:' + currentTag; // subst
-						if (params.nowcommonsName !== '') {
-							currentTag += '|1=' + params.nowcommonsName;
-						}
-						break;
 					case 'Keep local':
 						if (params.keeplocalName !== '') {
 							currentTag += '|1=' + params.keeplocalName;

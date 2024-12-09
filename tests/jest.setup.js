@@ -6,6 +6,7 @@ mw.config.set({
 
 require('../morebits.js');
 require('../twinkle.js');
+require('../modules/twinkleblock.js');
 require('../modules/twinkletag.js');
 require('../modules/twinklewarn.js');
 require('../modules/twinklexfd.js');

@@ -10,10 +10,6 @@
                            and adds an ad box to the top of user subpages belonging to the
                            currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
-
- I, [[User:This, that and the other]], originally wrote this.  If the code is misbehaving, or you have any
- questions, don't hesitate to ask me.  (This doesn't at all imply [[WP:OWN]]ership - it's just meant to
- point you in the right direction.)  -- TTO
  */
 
 Twinkle.config = {};
@@ -1075,7 +1071,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 				}
 				cell = document.createElement('td');
 
-				let label, input, gotPref = Twinkle.getPref(pref.name);
+				let label, input;
+				const gotPref = Twinkle.getPref(pref.name);
 				switch (pref.type) {
 
 					case 'boolean': // create a checkbox
@@ -1295,9 +1292,11 @@ Twinkle.config.init = function twinkleconfigInit() {
 		// Styled in twinkle.css
 		box.setAttribute('id', 'twinkle-config-headerbox');
 
-		let link,
-			scriptPageName = mw.config.get('wgPageName').slice(mw.config.get('wgPageName').lastIndexOf('/') + 1,
-				mw.config.get('wgPageName').lastIndexOf('.js'));
+		let link;
+		const scriptPageName = mw.config.get('wgPageName').slice(
+			mw.config.get('wgPageName').lastIndexOf('/') + 1,
+			mw.config.get('wgPageName').lastIndexOf('.js')
+		);
 
 		if (scriptPageName === 'twinkleoptions') {
 			// place "why not try the preference panel" notice
@@ -1694,6 +1693,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		'// changing the configuration parameters in a valid-JavaScript way) will be\n' +
 		'// overwritten the next time you click "save" in the Twinkle preferences\n' +
 		'// panel.  If modifying this file, make sure to use correct JavaScript.\n' +
+		// eslint-disable-next-line no-useless-concat
 		'// <no' + 'wiki>\n' +
 		'\n' +
 		'window.Twinkle.prefs = ';
@@ -1701,6 +1701,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	text +=
 		';\n' +
 		'\n' +
+		// eslint-disable-next-line no-useless-concat
 		'// </no' + 'wiki>\n' +
 		'// End of twinkleoptions.js\n';
 

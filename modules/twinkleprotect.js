@@ -173,7 +173,8 @@ Twinkle.protect.fetchProtectionLevel = function twinkleprotectFetchProtectionLev
 
 		const pageid = protectData[0].query.pageids[0];
 		const page = protectData[0].query.pages[pageid];
-		let current = {}, adminEditDeferred;
+		const current = {};
+		let adminEditDeferred;
 
 		// Save requested page's watched status for later in case needed when filing request
 		Twinkle.protect.watched = page.watchlistexpiry || page.watched === '';
