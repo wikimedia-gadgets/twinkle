@@ -1814,20 +1814,20 @@ Morebits.date = function() {
 			const digitMatch = /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(param);
 			if (digitMatch) {
 				// ..... year ... month .. date ... hour .... minute ..... second
-				this._d = new Date(Date.UTC.apply(null, [digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]]));
+				this.privateDate = new Date(Date.UTC.apply(null, [digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]]));
 			}
 		} else if (typeof param === 'string') {
 			// Wikitext signature timestamp
 			const dateParts = Morebits.l10n.signatureTimestampFormat(param);
 			if (dateParts) {
-				this._d = new Date(Date.UTC.apply(null, dateParts));
+				this.privateDate = new Date(Date.UTC.apply(null, dateParts));
 			}
 		}
 	}
 
-	if (!this._d) {
+	if (!this.privateDate) {
 		// Try standard date
-		this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)))();
+		this.privateDate = new (Function.prototype.bind.apply(Date, [Date].concat(args)))();
 	}
 
 	// Still no?
@@ -2148,7 +2148,7 @@ Morebits.date.prototype = {
 // Allow native Date.prototype methods to be used on Morebits.date objects
 Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
 	Morebits.date.prototype[func] = function() {
-		return this._d[func].apply(this._d, Array.prototype.slice.call(arguments));
+		return this.privateDate[func].apply(this.privateDate, Array.prototype.slice.call(arguments));
 	};
 });
 

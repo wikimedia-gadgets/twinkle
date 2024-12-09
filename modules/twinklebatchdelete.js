@@ -277,9 +277,9 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		if (subpagesLoaded) {
 
 			$.each(Twinkle.batchdelete.pages, (i, el) => {
-				// Get back the subgroup from subgroup_, where we saved it
-				if (el.subgroup === null && el.subgroup_) {
-					el.subgroup = el.subgroup_;
+				// Get back the subgroup from subgroupBeforeDeletion, where we saved it
+				if (el.subgroup === null && el.subgroupBeforeDeletion) {
+					el.subgroup = el.subgroupBeforeDeletion;
 				}
 			});
 
@@ -388,10 +388,10 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 
 		$.each(Twinkle.batchdelete.pages, (i, el) => {
 			if (el.subgroup) {
-				// Remove subgroup after saving its contents in subgroup_
+				// Remove subgroup after saving its contents in subgroupBeforeDeletion
 				// so that it can be retrieved easily if user decides to
 				// delete the subpages again
-				el.subgroup_ = el.subgroup;
+				el.subgroupBeforeDeletion = el.subgroup;
 				el.subgroup = null;
 			}
 		});
