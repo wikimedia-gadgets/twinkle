@@ -4,8 +4,8 @@ mw.config.set({
 	wgUserGroups: ['interface-admin', 'sysop', '*', 'user', 'autoconfirmed'],
 });
 
-require('../morebits.js');
-require('../twinkle.js');
+require('../modules/morebits.js');
+require('../modules/twinkle.js');
 require('../modules/twinklewarn.js');
 require('../modules/twinklexfd.js');
 global.Morebits = window.Morebits;

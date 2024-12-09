@@ -23,13 +23,13 @@ After the files are synced, ensure that [MediaWiki:Gadgets-definition][] contain
 
 Each Twinkle module and dependency lives on the wiki as a separate file. The list of modules and what pages they should be on are as follows:
 
-- `twinkle.js` &rarr; [MediaWiki:Gadget-Twinkle.js][]
-- `twinkle.css` &rarr; [MediaWiki:Gadget-Twinkle.css][]
-- `twinkle-pagestyles.css` &rarr; [MediaWiki:Gadget-Twinkle-pagestyles.css][]
-- `morebits.js` &rarr; [MediaWiki:Gadget-morebits.js][]
-- `morebits.css` &rarr; [MediaWiki:Gadget-morebits.css][]
-- `select2.min.js` &rarr; [MediaWiki:Gadget-select2.min.js][]
-- `select2.min.css` &rarr; [MediaWiki:Gadget-select2.min.css][]
+- `modules/twinkle.js` &rarr; [MediaWiki:Gadget-Twinkle.js][]
+- `modules/twinkle.css` &rarr; [MediaWiki:Gadget-Twinkle.css][]
+- `modules/twinkle-pagestyles.css` &rarr; [MediaWiki:Gadget-Twinkle-pagestyles.css][]
+- `modules/morebits.js` &rarr; [MediaWiki:Gadget-morebits.js][]
+- `modules/morebits.css` &rarr; [MediaWiki:Gadget-morebits.css][]
+- `lib/select2.min.js` &rarr; [MediaWiki:Gadget-select2.min.js][]
+- `lib/select2.min.css` &rarr; [MediaWiki:Gadget-select2.min.css][]
 - `modules/twinklearv.js` &rarr; [MediaWiki:Gadget-twinklearv.js][]
 - `modules/twinklebatchdelete.js` &rarr; [MediaWiki:Gadget-twinklebatchdelete.js][]
 - `modules/twinklebatchprotect.js` &rarr; [MediaWiki:Gadget-twinklebatchprotect.js][]

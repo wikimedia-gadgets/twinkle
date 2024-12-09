@@ -452,11 +452,11 @@ USAGE
 ## compiler.  Rather, they are used by the --all option to simplify bulk
 ## updating all files.
 __DATA__
-twinkle.js
-  twinkle.css
-  twinkle-pagestyles.css
-  morebits.js
-  morebits.css
+modules/twinkle.js
+  modules/twinkle.css
+  modules/twinkle-pagestyles.css
+  modules/morebits.js
+  modules/morebits.css
   lib/select2.min.js
   lib/select2.min.css
   modules/twinklearv.js

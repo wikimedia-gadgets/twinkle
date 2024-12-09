@@ -1,10 +1,10 @@
 "Module: twinkle":
-  - twinkle.js
-  - twinkle.css
-  - twinkle-pagestyles.css
+  - modules/twinkle.js
+  - modules/twinkle.css
+  - modules/twinkle-pagestyles.css
 "Module: morebits":
-  - morebits.js
-  - morebits.css
+  - modules/morebits.js
+  - modules/morebits.css
 "Module: arv":
   - modules/twinklearv.js
 "Module: batch":
