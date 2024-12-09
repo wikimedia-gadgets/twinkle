@@ -36,7 +36,7 @@ Twinkle.warn = function twinklewarn() {
 			// Can't provide vanarticlerevid as only wgCurRevisionId is provided
 			const extraParam = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm);
 			const href = $vandalTalkLink.attr('href');
-			if (href.indexOf('?') === -1) {
+			if (!href.includes('?')) {
 				$vandalTalkLink.attr('href', href + '?' + extraParam);
 			} else {
 				$vandalTalkLink.attr('href', href + '&' + extraParam);
@@ -1634,7 +1634,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		'uw-aiv': 'Optional username that was reported (without User:) '
 	};
 
-	const hasLevel = ['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].indexOf(selected_main_group) !== -1;
+	const hasLevel = ['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].includes(selected_main_group);
 	if (hasLevel) {
 		if (notLinkedArticle[selected_template]) {
 			if (Twinkle.warn.prev_article === null) {

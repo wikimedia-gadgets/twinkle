@@ -170,7 +170,7 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 
 	Twinkle.block.isRegistered = !!userinfo.userid;
 	if (Twinkle.block.isRegistered) {
-		Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map((e) => e.group).indexOf('bot') !== -1;
+		Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map((e) => e.group).includes('bot');
 	} else {
 		Twinkle.block.userIsBot = false;
 	}
@@ -1548,7 +1548,7 @@ Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSee
 
 	if (!Twinkle.block.seeAlsos.length) {
 		this.form.reason.value = reason;
-	} else if (reason.indexOf('{{') !== -1) {
+	} else if (reason.includes('{{')) {
 		this.form.reason.value = reason + ' <!-- see also ' + seeAlsoMessage + ' -->';
 	} else {
 		this.form.reason.value = reason + '; see also ' + seeAlsoMessage;
@@ -1760,7 +1760,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 
 	if (toBlock) {
 		if (blockoptions.partial) {
-			if (blockoptions.disabletalk && blockoptions.namespacerestrictions.indexOf('3') === -1) {
+			if (blockoptions.disabletalk && !blockoptions.namespacerestrictions.includes('3')) {
 				return alert('Partial blocks cannot prevent talk page access unless also restricting them from editing User talk space!');
 			}
 			if (!blockoptions.namespacerestrictions && !blockoptions.pagerestrictions) {

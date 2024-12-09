@@ -39,6 +39,7 @@
 				"selector": "MemberExpression > Identifier[name=\"fail\"]"
 			}
 		],
+		"unicorn/prefer-includes": "error",
 
 		"camelcase": ["warn", {"properties": "never"}],
 		"es-x/no-object-values": "warn",
