@@ -13,6 +13,7 @@
 	"rules": {
 		"array-bracket-spacing": "off",
 		"computed-property-spacing": "off",
+		"es-x/no-array-prototype-includes": "off",
 		"indent": "off",
 		"jsdoc/require-param": "off",
 		"jsdoc/require-returns": "off",
@@ -38,9 +39,9 @@
 				"selector": "MemberExpression > Identifier[name=\"fail\"]"
 			}
 		],
+		"unicorn/prefer-includes": "error",
 
 		"camelcase": ["warn", {"properties": "never"}],
-		"es-x/no-array-prototype-includes": "warn",
 		"es-x/no-object-values": "warn",
 		"mediawiki/class-doc": "warn",
 		"new-cap": "warn",

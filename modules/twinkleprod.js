@@ -11,7 +11,7 @@
  */
 
 Twinkle.prod = function twinkleprod() {
-	if (([0, 6].indexOf(mw.config.get('wgNamespaceNumber')) === -1) ||
+	if ((![0, 6].includes(mw.config.get('wgNamespaceNumber'))) ||
 		!mw.config.get('wgCurRevisionId') ||
 		Morebits.isPageRedirect()) {
 		return;

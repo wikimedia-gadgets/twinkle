@@ -1274,7 +1274,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 					break;
 				case 'unprotect':
 					var admins = $.map(Twinkle.protect.currentProtectionLevels, (pl) => {
-						if (!pl.admin || Twinkle.protect.trustedBots.indexOf(pl.admin) !== -1) {
+						if (!pl.admin || Twinkle.protect.trustedBots.includes(pl.admin)) {
 							return null;
 						}
 						return 'User:' + pl.admin;
@@ -1401,7 +1401,7 @@ Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallback
 			$(form.protectReason_notes_rfppRevid).parent().hide();
 		}
 	} else if (this.name === 'protectReason_notes_rfppRevid') {
-		Twinkle.protect.protectReasonAnnotations = Twinkle.protect.protectReasonAnnotations.filter((el) => el.indexOf('[[Special:Permalink') === -1);
+		Twinkle.protect.protectReasonAnnotations = Twinkle.protect.protectReasonAnnotations.filter((el) => !el.includes('[[Special:Permalink'));
 		if (e.target.value.length) {
 			const permalink = '[[Special:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + ']]';
 			Twinkle.protect.protectReasonAnnotations.push(permalink);
@@ -1459,7 +1459,7 @@ Twinkle.protect.callbacks = {
 					return;
 				}
 			} else {
-				const needsTagToBeCommentedOut = ['javascript', 'css', 'sanitized-css'].indexOf(protectedPage.getContentModel()) !== -1;
+				const needsTagToBeCommentedOut = ['javascript', 'css', 'sanitized-css'].includes(protectedPage.getContentModel());
 				if (needsTagToBeCommentedOut) {
 					if (params.noinclude) {
 						tag = '/* <noinclude>{{' + tag + '}}</noinclude> */';

@@ -209,7 +209,7 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 			throw new Error('Twinkle.image.callback.evaluate: unknown criterion');
 	}
 
-	const lognomination = Twinkle.getPref('logSpeedyNominations') && Twinkle.getPref('noLogOnSpeedyNomination').indexOf(csdcrit.toLowerCase()) === -1;
+	const lognomination = Twinkle.getPref('logSpeedyNominations') && !Twinkle.getPref('noLogOnSpeedyNomination').includes(csdcrit.toLowerCase());
 	const templatename = input.derivative ? 'dw ' + input.type : input.type;
 
 	const params = $.extend({

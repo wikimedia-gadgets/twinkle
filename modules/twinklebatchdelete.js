@@ -305,7 +305,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			const pageTitle = mw.Title.newFromText(pageName);
 
 			// No need to look for subpages in main/file/mediawiki space
-			if ([0, 6, 8].indexOf(pageTitle.namespace) > -1) {
+			if ([0, 6, 8].includes(pageTitle.namespace)) {
 				subpageLister.workerSuccess();
 				return;
 			}
