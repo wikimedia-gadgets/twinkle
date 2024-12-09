@@ -10,6 +10,7 @@
 		"array-bracket-spacing": "off",
 		"computed-property-spacing": "off",
 		"no-shadow": "off",
+		"object-curly-spacing": "off",
 		"space-in-parens": "off",
 
 		"camelcase": "warn",
