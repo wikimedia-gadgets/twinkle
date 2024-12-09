@@ -15,8 +15,6 @@
  */
 // <nowiki>
 
-/* global Morebits */
-
 (function() {
 
 // Check if account is experienced enough to use Twinkle
