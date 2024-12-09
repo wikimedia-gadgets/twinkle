@@ -1902,13 +1902,14 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	// "talk page" of an IP range (which does not exist)
 	const userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
-	const params = $.extend(formData, {
-		messageData: Twinkle.block.blockPresetsInfo[formData.template],
-		reason: Twinkle.block.field_template_options.block_reason,
-		disabletalk: Twinkle.block.field_template_options.notalk,
-		noemail: Twinkle.block.field_template_options.noemail_template,
-		nocreate: Twinkle.block.field_template_options.nocreate_template
-	});
+	const params = Twinkle.block.combineFormDataAndFieldTemplateOptions(
+		formData,
+		Twinkle.block.blockPresetsInfo[formData.template],
+		Twinkle.block.field_template_options.block_reason,
+		Twinkle.block.field_template_options.notalk,
+		Twinkle.block.field_template_options.noemail_template,
+		Twinkle.block.field_template_options.nocreate_template
+	);
 
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = 'Actions complete, loading user talk page in a few seconds';
@@ -1916,6 +1917,16 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	const wikipedia_page = new Morebits.wiki.Page(userTalkPage, 'User talk page modification');
 	wikipedia_page.setCallbackParameters(params);
 	wikipedia_page.load(Twinkle.block.callback.main);
+};
+
+Twinkle.block.combineFormDataAndFieldTemplateOptions = function(formData, messageData, reason, disabletalk, noemail, nocreate) {
+	return $.extend(formData, {
+		messageData: messageData,
+		reason: reason,
+		disabletalk: disabletalk,
+		noemail: noemail,
+		nocreate: nocreate
+	});
 };
 
 Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
