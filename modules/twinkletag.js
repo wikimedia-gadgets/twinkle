@@ -2009,7 +2009,7 @@ Twinkle.tag.callbacks = {
  * @return {true|undefined}
  */
 Twinkle.tag.checkIncompatible = function(incompatibleTags, tagsToCheck, extraMessage = null) {
-	const count = incompatibleTags.reduce((sum, tag) => sum += tagsToCheck.indexOf(tag) !== -1, 0);
+	const count = incompatibleTags.reduce((sum, tag) => sum += tagsToCheck.includes(tag), 0);
 	if (count > 1) {
 		const incompatibleTagsString = '{{' + incompatibleTags.join('}}, {{') + '}}';
 		let message = 'Please select only one of: ' + incompatibleTagsString + '.';
