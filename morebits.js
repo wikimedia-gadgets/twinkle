@@ -266,7 +266,8 @@ Morebits.namespaceRegex = function(namespaces) {
 	if (!Array.isArray(namespaces)) {
 		namespaces = [namespaces];
 	}
-	let aliases = [], regex;
+	const aliases = [];
+	let regex;
 	$.each(mw.config.get('wgNamespaceIds'), (name, number) => {
 		if (namespaces.indexOf(number) !== -1) {
 			// Namespaces are completely agnostic as to case,
@@ -601,7 +602,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 							id: id + '_' + i + '_subgroup'
 						});
 						$.each(tmpgroup, (idx, el) => {
-							const newEl = Object.assign({}, el);
+							const newEl = $.extend({}, el);
 							if (!newEl.type) {
 								newEl.type = data.type;
 							}
@@ -758,7 +759,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createElement('div');
 
 			data.inputs.forEach((subdata) => {
-				const cell = new Morebits.quickForm.element(Object.assign(subdata || {}, { type: '_dyninput_cell' }));
+				const cell = new Morebits.quickForm.element($.extend(subdata, { type: '_dyninput_cell' }));
 				node.appendChild(cell.render());
 			});
 			if (data.remove) {
@@ -1404,6 +1405,7 @@ Morebits.ip = {
 		}
 		ipv6 = Morebits.ip.sanitizeIPv6(ipv6);
 		const ip_re = /^((?:[0-9A-F]{1,4}:){4})(?:[0-9A-F]{1,4}:){3}[0-9A-F]{1,4}(?:\/\d{1,3})?$/;
+		// eslint-disable-next-line no-useless-concat
 		return ipv6.replace(ip_re, '$1' + '0:0:0:0/64');
 	}
 };
@@ -1500,6 +1502,7 @@ Morebits.string = {
 	formatReasonText: function(str, addSig) {
 		let reason = (str || '').toString().trim();
 		const unbinder = new Morebits.unbinder(reason);
+		// eslint-disable-next-line no-useless-concat
 		unbinder.unbind('<no' + 'wiki>', '</no' + 'wiki>');
 		unbinder.content = unbinder.content.replace(/\|/g, '{{subst:!}}');
 		reason = unbinder.rebind();
@@ -1585,7 +1588,7 @@ Morebits.array = {
 	 */
 	uniq: function(arr) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.uniq';
+			throw new Error('A non-array object passed to Morebits.array.uniq');
 		}
 		return arr.filter((item, idx) => arr.indexOf(item) === idx);
 	},
@@ -1600,7 +1603,7 @@ Morebits.array = {
 	 */
 	dups: function(arr) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.dups';
+			throw new Error('A non-array object passed to Morebits.array.dups');
 		}
 		return arr.filter((item, idx) => arr.indexOf(item) !== idx);
 	},
@@ -1615,7 +1618,7 @@ Morebits.array = {
 	 */
 	chunk: function(arr, size) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.chunk';
+			throw new Error('A non-array object passed to Morebits.array.chunk');
 		}
 		if (typeof size !== 'number' || size <= 0) { // pretty impossible to do anything :)
 			return [ arr ]; // we return an array consisting of this array.
@@ -1811,20 +1814,20 @@ Morebits.date = function() {
 			const digitMatch = /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(param);
 			if (digitMatch) {
 				// ..... year ... month .. date ... hour .... minute ..... second
-				this._d = new Date(Date.UTC.apply(null, [digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]]));
+				this.privateDate = new Date(Date.UTC.apply(null, [digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]]));
 			}
 		} else if (typeof param === 'string') {
 			// Wikitext signature timestamp
 			const dateParts = Morebits.l10n.signatureTimestampFormat(param);
 			if (dateParts) {
-				this._d = new Date(Date.UTC.apply(null, dateParts));
+				this.privateDate = new Date(Date.UTC.apply(null, dateParts));
 			}
 		}
 	}
 
-	if (!this._d) {
+	if (!this.privateDate) {
 		// Try standard date
-		this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)))();
+		this.privateDate = new (Function.prototype.bind.apply(Date, [Date].concat(args)))();
 	}
 
 	// Still no?
@@ -2145,7 +2148,7 @@ Morebits.date.prototype = {
 // Allow native Date.prototype methods to be used on Morebits.date objects
 Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
 	Morebits.date.prototype[func] = function() {
-		return this._d[func].apply(this._d, Array.prototype.slice.call(arguments));
+		return this.privateDate[func].apply(this.privateDate, Array.prototype.slice.call(arguments));
 	};
 });
 
@@ -2363,7 +2366,7 @@ Morebits.wiki.api.prototype = {
 		}).join('&').replace(/^(.*?)(\btoken=[^&]*)&(.*)/, '$1$3&$2');
 		// token should always be the last item in the query string (bug TW-B-0013)
 
-		const ajaxparams = Object.assign({}, {
+		const ajaxparams = $.extend({}, {
 			context: this,
 			type: this.query.action === 'query' ? 'GET' : 'POST',
 			url: mw.util.wikiScript('api'),
@@ -3831,7 +3834,8 @@ Morebits.wiki.page = function(pageName, status) {
 			return; // abort
 		}
 
-		let page = response.pages[0], rev;
+		const page = response.pages[0];
+		let rev;
 		ctx.pageExists = !page.missing;
 		if (ctx.pageExists) {
 			rev = page.revisions[0];
@@ -5231,7 +5235,7 @@ Morebits.status.onError = function(handler) {
 	if (typeof handler === 'function') {
 		Morebits.status.errorEvent = handler;
 	} else {
-		throw 'Morebits.status.onError: handler is not a function';
+		throw new Error('Morebits.status.onError: handler is not a function');
 	}
 };
 

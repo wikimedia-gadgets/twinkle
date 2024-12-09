@@ -280,7 +280,7 @@ Twinkle.rollback.addLinks = {
 		const warnFromTalk = function(xtitle) {
 			const $talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
 			if ($talkLink.length) {
-				let extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
+				let extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&noautowarn=true';
 				// diffIDs for vanarticlerevid
 				extraParams += '&vanarticlerevid=';
 				extraParams += xtitle === 'otitle' ? mw.config.get('wgDiffOldId') : mw.config.get('wgDiffNewId');

@@ -39,9 +39,8 @@ Twinkle.speedy.hasCSD = !!$('#delete-reason').length;
 
 // Prepares the speedy deletion dialog and displays it
 Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
-	let dialog;
 	Twinkle.speedy.dialog = new Morebits.SimpleWindow(Twinkle.getPref('speedyWindowWidth'), Twinkle.getPref('speedyWindowHeight'));
-	dialog = Twinkle.speedy.dialog;
+	const dialog = Twinkle.speedy.dialog;
 	dialog.setTitle('Choose criteria for speedy deletion');
 	dialog.setScriptName('Twinkle');
 	dialog.addFooterLink('Speedy deletion policy', 'WP:CSD');
@@ -400,7 +399,7 @@ Twinkle.speedy.generateCsdList = function twinklespeedyGenerateCsdList(list, mod
 	};
 
 	return $.map(list, (critElement) => {
-		const criterion = Object.assign({}, critElement);
+		const criterion = $.extend({}, critElement);
 
 		if (mode.isMultiple) {
 			if (criterion.hideWhenMultiple) {
@@ -1068,7 +1067,7 @@ Twinkle.speedy.callbacks = {
 						code += '|' + i + '=' + parameters[i];
 					}
 				}
-				Object.assign(params.utparams, Twinkle.speedy.getUserTalkParameters(norm, parameters));
+				$.extend(params.utparams, Twinkle.speedy.getUserTalkParameters(norm, parameters));
 			});
 			code += '}}';
 		} else {
@@ -1140,8 +1139,8 @@ Twinkle.speedy.callbacks = {
 		}
 
 		if (initialContrib) {
-			let usertalkpage = new Morebits.wiki.Page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')'),
-				notifytext, i, editsummary;
+			const usertalkpage = new Morebits.wiki.Page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
+			let notifytext, i, editsummary;
 
 			// special cases: "db" and "db-multiple"
 			if (params.normalizeds.length > 1) {
@@ -1221,7 +1220,7 @@ Twinkle.speedy.callbacks = {
 			if (reason === null) {
 				return Morebits.Status.error('Asking for reason', 'User cancelled');
 			} else if (!reason || !reason.replace(/^\s*/, '').replace(/\s*$/, '')) {
-				return Morebits.Status.error('Asking for reason', "you didn't give one.  I don't know... what with admins and their apathetic antics... I give up...");
+				return Morebits.Status.error('Asking for reason', 'The "reason" for deleting was not provided, or Twinkle was unable to compute it. Aborting.');
 			}
 
 			const deleteMain = function(callback) {
@@ -1367,8 +1366,8 @@ Twinkle.speedy.callbacks = {
 
 			// given the params, builds the template and also adds the user talk page parameters to the params that were passed in
 			// returns => [<string> wikitext, <object> utparams]
-			let buildData = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params),
-				code = buildData[0];
+			const buildData = Twinkle.speedy.callbacks.getTemplateCodeAndParams(params);
+			let code = buildData[0];
 			params.utparams = buildData[1];
 
 			// Set the correct value for |ts= parameter in {{db-g13}}

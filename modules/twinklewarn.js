@@ -54,9 +54,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		return;
 	}
 
-	let dialog;
 	Twinkle.warn.dialog = new Morebits.SimpleWindow(600, 440);
-	dialog = Twinkle.warn.dialog;
+	const dialog = Twinkle.warn.dialog;
 	dialog.setTitle('Warn/notify user');
 	dialog.setScriptName('Twinkle');
 	dialog.addFooterLink('Choosing a warning level', 'WP:UWUL#Levels');
@@ -1282,6 +1281,10 @@ Twinkle.warn.messages = {
 			label: 'Removing {{copyvio}} template from articles',
 			summary: 'Warning: Removing {{copyvio}} templates'
 		},
+		'uw-derogatory': {
+			label: 'Addition of derogatory/hateful content',
+			summary: 'Warning: Addition of derogatory content'
+		},
 		'uw-efsummary': {
 			label: 'Edit summary triggering the edit filter',
 			summary: 'Warning: Edit summary triggering the edit filter'
@@ -1363,7 +1366,7 @@ Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyNam
 		const level = isNumberedTemplate[0];
 		const numberedWarnings = {};
 		$.each(templates.levels, (key, val) => {
-			Object.assign(numberedWarnings, val);
+			$.extend(numberedWarnings, val);
 		});
 		$.each(numberedWarnings, (key) => {
 			if (key === unNumberedTemplateName) {
@@ -1376,7 +1379,7 @@ Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyNam
 	const otherWarnings = {};
 	$.each(templates, (key, val) => {
 		if (key !== 'levels') {
-			Object.assign(otherWarnings, val);
+			$.extend(otherWarnings, val);
 		}
 	});
 	$.each(otherWarnings, (key) => {
@@ -1469,7 +1472,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			createEntries(Twinkle.warn.messages[value], sub_group, true);
 			break;
 		case 'singlecombined':
-			var unSortedSinglets = Object.assign({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
+			var unSortedSinglets = $.extend({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
 			var sortedSingletMessages = {};
 			Object.keys(unSortedSinglets).sort().forEach((key) => {
 				sortedSingletMessages[key] = unSortedSinglets[key];
@@ -1706,9 +1709,7 @@ Twinkle.warn.callbacks = {
 		// Provided on autolevel, not otherwise
 		templatename = templatename || input.sub_group;
 		const linkedarticle = input.article;
-		let templatetext;
-
-		templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
+		const templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
 			input.reason, input.main_group === 'custom');
 
 		form.previewer.beginRender(templatetext, 'User_talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username

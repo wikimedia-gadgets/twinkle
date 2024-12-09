@@ -314,6 +314,11 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}'
 			},
+			'welcome-unsourced': {
+				description: 'for someone whose initial efforts are unsourced',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-unsourced|$ARTICLE$|$USERNAME$}} ~~~~'
+			},
 			welcomelaws: {
 				description: 'welcome with information about copyrights, NPOV, the sandbox, and vandalism',
 				syntax: '{{subst:welcomelaws|$USERNAME$}} ~~~~'
@@ -322,11 +327,6 @@ Twinkle.welcome.templates = {
 				description: 'for someone whose initial efforts do not adhere to the neutral point of view policy',
 				linkedArticle: true,
 				syntax: '{{subst:welcomenpov|$ARTICLE$|$USERNAME$}} ~~~~'
-			},
-			welcomeunsourced: {
-				description: 'for someone whose initial efforts are unsourced',
-				linkedArticle: true,
-				syntax: '{{subst:welcomeunsourced|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			welcomevandal: {
 				description: 'for someone whose initial efforts appear to be vandalism',
