@@ -866,7 +866,9 @@ Twinkle.arv.callback.getAn3ReportData = function(input) {
 					page = queryResponse;
 				} else if (queryResponse.query) {
 					const pageIds = queryResponse.query.pageids;
-					if (!Array.isArray(pageIds) || pageIds.length !== 1) reject({ message: 'Error parsing diff.', data: queryResponse });
+					if (!Array.isArray(pageIds) || pageIds.length !== 1) {
+						reject({ message: 'Error parsing diff.', data: queryResponse });
+					}
 					page = queryResponse.query.pages[pageIds[0]];
 				} else {
 					reject({ message: 'Could not find any diff associated with the URL provided.', data: queryResponse });
