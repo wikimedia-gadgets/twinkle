@@ -87,10 +87,10 @@ Twinkle.tag.callback = function twinkletagCallback() {
 		event: function twinkletagquickfilter() {
 			// flush the DOM of all existing underline spans
 			$allCheckboxDivs.find('.search-hit').each((i, e) => {
-				const label_element = e.parentElement;
+				const labelElement = e.parentElement;
 				// This would convert <label>Hello <span class=search-hit>wo</span>rld</label>
 				// to <label>Hello world</label>
-				label_element.innerHTML = label_element.textContent;
+				labelElement.innerHTML = labelElement.textContent;
 			});
 
 			if (this.value) {
@@ -100,16 +100,16 @@ Twinkle.tag.callback = function twinkletagCallback() {
 				const searchRegex = new RegExp(mw.util.escapeRegExp(searchString), 'i');
 
 				$allCheckboxDivs.find('label').each(function () {
-					const label_text = this.textContent;
-					const searchHit = searchRegex.exec(label_text);
+					const labelText = this.textContent;
+					const searchHit = searchRegex.exec(labelText);
 					if (searchHit) {
 						const range = document.createRange();
 						const textnode = this.childNodes[0];
 						range.selectNodeContents(textnode);
 						range.setStart(textnode, searchHit.index);
 						range.setEnd(textnode, searchHit.index + searchString.length);
-						const underline_span = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
-						range.surroundContents(underline_span);
+						const underlineSpan = $('<span>').addClass('search-hit').css('text-decoration', 'underline')[0];
+						range.surroundContents(underlineSpan);
 						this.parentElement.style.display = 'block'; // show
 					}
 				});
@@ -1439,7 +1439,7 @@ Twinkle.tag.callbacks = {
 						'Listing article at Wikipedia:Pages needing translation into English');
 					pntPage.setFollowRedirect(true);
 					pntPage.load((pageobj) => {
-						const old_text = pageobj.getPageText();
+						const oldText = pageobj.getPageText();
 
 						const lang = params.translationLanguage;
 						const reason = params.translationComments;
@@ -1451,18 +1451,18 @@ Twinkle.tag.callbacks = {
 							templateText = '{{subst:Dual fluency request|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 							// Place in section == Translated pages that could still use some cleanup ==
-							text = old_text + '\n\n' + templateText;
+							text = oldText + '\n\n' + templateText;
 							summary = 'Translation cleanup requested on ';
 						} else if (params.tags.includes('Not English')) {
 							templateText = '{{subst:Translation request|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 							// Place in section == Pages for consideration ==
-							text = old_text.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
+							text = oldText.replace(/\n+(==\s?Translated pages that could still use some cleanup\s?==)/,
 								'\n\n' + templateText + '\n\n$1');
 							summary = 'Translation' + (lang ? ' from ' + lang : '') + ' requested on ';
 						}
 
-						if (text === old_text) {
+						if (text === oldText) {
 							pageobj.getStatusElement().error('failed to find target spot for the discussion');
 							return;
 						}
@@ -1522,10 +1522,10 @@ Twinkle.tag.callbacks = {
 			// otherwise moves it to `getRedirectsFor` array earmarking it for
 			// later removal
 			params.tagsToRemove.forEach((tag) => {
-				const tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
+				const tagRegex = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?');
 
-				if (tag_re.test(pageText)) {
-					pageText = pageText.replace(tag_re, '');
+				if (tagRegex.test(pageText)) {
+					pageText = pageText.replace(tagRegex, '');
 				} else {
 					getRedirectsFor.push('Template:' + tag);
 				}
@@ -1552,9 +1552,9 @@ Twinkle.tag.callbacks = {
 					let removed = false;
 					page.linkshere.concat({title: page.title}).forEach((el) => {
 						const tag = el.title.slice(9);
-						const tag_re = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
-						if (tag_re.test(pageText)) {
-							pageText = pageText.replace(tag_re, '');
+						const tagRegex = new RegExp('\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?');
+						if (tagRegex.test(pageText)) {
+							pageText = pageText.replace(tagRegex, '');
 							removed = true;
 							return false; // break out of $.each
 						}
@@ -1743,10 +1743,10 @@ Twinkle.tag.callbacks = {
 			// Reposition the tags on the page into {{multiple issues}}, if found with its
 			// proper name, else moves it to `getRedirectsFor` array to be handled later
 			groupableExistingTags.forEach((tag) => {
-				const tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?)');
-				if (tag_re.test(pageText)) {
-					tagText += tag_re.exec(pageText)[1];
-					pageText = pageText.replace(tag_re, '');
+				const tagRegex = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]+)?\\}\\}\\n?)');
+				if (tagRegex.test(pageText)) {
+					tagText += tagRegex.exec(pageText)[1];
+					pageText = pageText.replace(tagRegex, '');
 				} else {
 					getRedirectsFor.push('Template:' + tag);
 				}
@@ -1772,10 +1772,10 @@ Twinkle.tag.callbacks = {
 					let found = false;
 					page.linkshere.forEach((el) => {
 						const tag = el.title.slice(9);
-						const tag_re = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?)');
-						if (tag_re.test(pageText)) {
-							tagText += tag_re.exec(pageText)[1];
-							pageText = pageText.replace(tag_re, '');
+						const tagRegex = new RegExp('(\\{\\{' + Morebits.pageNameRegex(tag) + '\\s*(\\|[^}]*)?\\}\\}\\n?)');
+						if (tagRegex.test(pageText)) {
+							tagText += tagRegex.exec(pageText)[1];
+							pageText = pageText.replace(tagRegex, '');
 							found = true;
 							return false; // break out of $.each
 						}
@@ -2009,7 +2009,7 @@ Twinkle.tag.callbacks = {
  * @return {true|undefined}
  */
 Twinkle.tag.checkIncompatible = function(incompatibleTags, tagsToCheck, extraMessage = null) {
-	const count = incompatibleTags.reduce((sum, tag) => sum += tagsToCheck.includes(tag), 0);
+	const count = incompatibleTags.filter((tag) => tagsToCheck.includes(tag)).length;
 	if (count > 1) {
 		const incompatibleTagsString = '{{' + incompatibleTags.join('}}, {{') + '}}';
 		let message = 'Please select only one of: ' + incompatibleTagsString + '.';
@@ -2172,10 +2172,10 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 		Morebits.wiki.actionCompleted.followRedirect = false;
 	}
 
-	const wikipedia_page = new Morebits.wiki.Page(Morebits.pageNameNorm, 'Tagging ' + Twinkle.tag.mode);
-	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.setChangeTags(Twinkle.changeTags); // Here to apply to triage
-	wikipedia_page.load(Twinkle.tag.callbacks[Twinkle.tag.mode]);
+	const wikipediaPage = new Morebits.wiki.Page(Morebits.pageNameNorm, 'Tagging ' + Twinkle.tag.mode);
+	wikipediaPage.setCallbackParameters(params);
+	wikipediaPage.setChangeTags(Twinkle.changeTags); // Here to apply to triage
+	wikipediaPage.load(Twinkle.tag.callbacks[Twinkle.tag.mode]);
 
 };
 

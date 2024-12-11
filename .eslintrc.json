@@ -55,7 +55,6 @@
 		"no-jquery/no-sizzle": "warn",
 		"no-loop-func": "warn",
 		"no-new": "warn",
-		"no-return-assign": "warn",
 		"no-script-url": "warn",
 		"no-unused-expressions": "warn",
 		"no-use-before-define": "warn",
