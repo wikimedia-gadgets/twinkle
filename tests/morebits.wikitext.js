@@ -81,13 +81,13 @@ describe('Morebits.wikitext', () => {
 
 	test('Morebits.wikitext.page', () => {
 		var text = '{{short description}}{{about}}[[File:Fee.svg]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!';
-		var page = new Morebits.wikitext.page(text);
+		var page = new Morebits.wikitext.Page(text);
 		assert.true(page instanceof Morebits.wikitext.page, 'Correct instance');
 		assert.strictEqual(page.getText(), text, 'Got text');
 
 		// Throws
-		assert.throws(() => new Morebits.wikitext.page(text).insertAfterTemplates(), 'throws: no tag');
-		assert.throws(() => new Morebits.wikitext.page(text).insertAfterTemplates('tag'), 'throws: no regex');
+		assert.throws(() => new Morebits.wikitext.Page(text).insertAfterTemplates(), 'throws: no tag');
+		assert.throws(() => new Morebits.wikitext.Page(text).insertAfterTemplates('tag'), 'throws: no regex');
 
 		// Define all the tests individually, with the appropriate method,
 		// input, expected output, and (spreaded) parameters.
@@ -354,7 +354,7 @@ describe('Morebits.wikitext', () => {
 		];
 
 		tests.forEach((test) => {
-			var page = new Morebits.wikitext.page(test.input);
+			var page = new Morebits.wikitext.Page(test.input);
 			assert.strictEqual(page[test.method](...test.params).getText(), test.expected, test.method + ' - ' + test.name);
 		});
 	});

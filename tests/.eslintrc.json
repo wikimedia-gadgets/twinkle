@@ -16,7 +16,6 @@
 		"camelcase": "warn",
 		"comma-dangle": "warn",
 		"eol-last": "warn",
-		"new-cap": "warn",
 		"prefer-arrow-callback": "warn",
 		"prefer-const": "warn",
 		"no-trailing-spaces": "warn",

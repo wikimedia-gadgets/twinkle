@@ -1,6 +1,6 @@
 describe('Morebits.taskManager', () => {
 	test('Contruction', () => {
-		var tm = new Morebits.taskManager();
+		var tm = new Morebits.TaskManager();
 		assert.true(tm instanceof Morebits.taskManager, 'Correct instance');
 	});
 
@@ -19,7 +19,7 @@ describe('Morebits.taskManager', () => {
 
 	test('Simple', () => {
 		generateFuncs();
-		var simple = new Morebits.taskManager();
+		var simple = new Morebits.TaskManager();
 		simple.add(data.one, []);
 		simple.add(data.two, [data.one]);
 		simple.add(data.three, [data.two]);
@@ -30,7 +30,7 @@ describe('Morebits.taskManager', () => {
 	});
 	test('Complex', () => {
 		generateFuncs();
-		var complex = new Morebits.taskManager();
+		var complex = new Morebits.TaskManager();
 		complex.add(data.one, [data.two]);
 		complex.add(data.two, [data.three, data.four]);
 		complex.add(data.three, []);
