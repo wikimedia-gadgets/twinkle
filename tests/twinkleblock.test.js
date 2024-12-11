@@ -1,3 +1,5 @@
+'use strict';
+
 describe('modules/twinkleblock', () => {
 	describe('combineFormDataAndFieldTemplateOptions', () => {
 		// https://github.com/wikimedia-gadgets/twinkle/issues/2106

@@ -1,3 +1,5 @@
+'use strict';
+
 // Tweak some mw.configs as needed by tests
 mw.config.set({
 	wgPageName: 'Macbeth,_King_of_Scotland',

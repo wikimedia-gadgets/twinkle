@@ -1,3 +1,5 @@
+'use strict';
+
 describe('constants', () => {
 	test('userIsSysop', () => {
 		assert.true(Morebits.userIsSysop, 'Is sysop');

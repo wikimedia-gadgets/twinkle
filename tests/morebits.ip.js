@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Morebits.ip', () => {
 	test('sanitizeIPv6', () => {
 		assert.strictEqual(Morebits.ip.sanitizeIPv6('2001:0db8:0010:0000:0000:0000:0000:0001'), '2001:DB8:10:0:0:0:0:1', 'Shorten IPv6');

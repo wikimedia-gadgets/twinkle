@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Morebits.array', () => {
 	test('chunk', () => {
 		assert.deepEqual(Morebits.array.chunk([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3), [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]], '10 over 3');

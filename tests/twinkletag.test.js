@@ -1,3 +1,5 @@
+'use strict';
+
 describe('modules/twinkletag', () => {
 	describe('checkIncompatible', () => {
 		test('no conflicts, 0 tags to check', () => {

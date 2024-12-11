@@ -1,3 +1,5 @@
+'use strict';
+
 /** Simple helper to render a quickform element */
 function renderElement(data) {
 	return new Morebits.quickForm.element(data).render();
