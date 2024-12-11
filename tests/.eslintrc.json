@@ -21,7 +21,6 @@
 		"prefer-const": "warn",
 		"no-trailing-spaces": "warn",
 		"no-undef": "warn",
-		"no-useless-escape": "warn",
 		"no-var": "warn",
 		"semi": "warn",
 		"strict": "warn",
