@@ -1,6 +1,6 @@
 /** Simple helper to render a quickform element */
 function renderElement(data) {
-	return new Morebits.quickForm.element(data).render();
+	return new Morebits.QuickForm.Element(data).render();
 }
 
 describe("quickform", () => {
@@ -71,7 +71,7 @@ describe("quickform", () => {
 	};
 
 	let getRenderedForm = () => {
-		let form = new Morebits.quickForm(function () {});
+		let form = new Morebits.QuickForm(function () {});
 		form.append(inputConfig);
 		form.append(checkboxesConfig);
 		form.append(checkboxListConfig);

@@ -1,8 +1,8 @@
 describe('Morebits.batchOperation', () => {
 	test('Contruction', () => {
-		assert.true(new Morebits.batchOperation() instanceof Morebits.batchOperation, 'Correct instance');
+		assert.true(new Morebits.BatchOperation() instanceof Morebits.batchOperation, 'Correct instance');
 	});
-	var batch = new Morebits.batchOperation();
+	var batch = new Morebits.BatchOperation();
 	var pageList = ['Macbeth', 'Hamlet', 'Romeo and Juliet', 'Much Ado About Nothing', 'Tempest'];
 	batch.setPageList(pageList);
 	var chunkLength = 2;
