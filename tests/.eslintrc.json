@@ -13,7 +13,6 @@
 		"object-curly-spacing": "off",
 		"space-in-parens": "off",
 
-		"camelcase": "warn",
 		"comma-dangle": "warn",
 		"eol-last": "warn",
 		"new-cap": "warn",
