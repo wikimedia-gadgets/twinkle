@@ -1,0 +1,31 @@
+{
+	"extends": [
+		"wikimedia/server"
+	],
+	"env": {
+		"jest": true
+	},
+	"root": true,
+	"rules": {
+		"array-bracket-spacing": "off",
+		"computed-property-spacing": "off",
+		"no-shadow": "off",
+		"object-curly-spacing": "off",
+		"space-in-parens": "off",
+
+		"camelcase": "warn",
+		"comma-dangle": "warn",
+		"eol-last": "warn",
+		"new-cap": "warn",
+		"prefer-arrow-callback": "warn",
+		"prefer-const": "warn",
+		"no-trailing-spaces": "warn",
+		"no-undef": "warn",
+		"no-useless-escape": "warn",
+		"no-var": "warn",
+		"semi": "warn",
+		"strict": "warn",
+		"quotes": "warn",
+		"unicorn/prefer-date-now": "warn"
+	}
+}
