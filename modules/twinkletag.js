@@ -21,7 +21,7 @@ Twinkle.tag = function twinkletag() {
 		Twinkle.tag.mode = 'file';
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'twinkle-tag', 'Add maintenance tags to file');
 	// article/draft article tagging
-	} else if ([0, 118].indexOf(mw.config.get('wgNamespaceNumber')) !== -1 && mw.config.get('wgCurRevisionId')) {
+	} else if ([0, 118].includes(mw.config.get('wgNamespaceNumber')) && mw.config.get('wgCurRevisionId')) {
 		Twinkle.tag.mode = 'article';
 		// Can't remove tags when not viewing current version
 		Twinkle.tag.canRemove = (mw.config.get('wgCurRevisionId') === mw.config.get('wgRevisionId')) &&
@@ -372,7 +372,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	const makeCheckbox = function (item) {
 		const tag = item.tag, description = item.description;
 		const checkbox = { value: tag, label: '{{' + tag + '}}: ' + description };
-		if (Twinkle.tag.checkedTags.indexOf(tag) !== -1) {
+		if (Twinkle.tag.checkedTags.includes(tag)) {
 			checkbox.checked = true;
 		}
 		checkbox.subgroup = item.subgroup;
@@ -389,7 +389,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 				{
 					value: tag,
 					label: '{{' + tag + '}}' + (Twinkle.tag.article.flatObject[tag] ? ': ' + Twinkle.tag.article.flatObject[tag].description : ''),
-					checked: unCheckedTags.indexOf(tag) === -1,
+					checked: !unCheckedTags.includes(tag),
 					style: 'font-style: italic'
 				};
 
@@ -407,7 +407,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		const doCategoryCheckboxes = function(subdiv, subgroup) {
 			const checkboxes = [];
 			$.each(subgroup, (k, item) => {
-				if (Twinkle.tag.alreadyPresentTags.indexOf(item.tag) === -1) {
+				if (!Twinkle.tag.alreadyPresentTags.includes(item.tag)) {
 					checkboxes.push(makeCheckbox(item));
 				}
 			});
@@ -445,7 +445,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		Twinkle.tag.article.alphabeticalList = Twinkle.tag.article.alphabeticalList || Object.keys(Twinkle.tag.article.flatObject).sort();
 		const checkboxes = [];
 		Twinkle.tag.article.alphabeticalList.forEach((tag) => {
-			if (Twinkle.tag.alreadyPresentTags.indexOf(tag) === -1) {
+			if (!Twinkle.tag.alreadyPresentTags.includes(tag)) {
 				checkboxes.push(makeCheckbox(Twinkle.tag.article.flatObject[tag]));
 			}
 		});
@@ -461,7 +461,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		container.append({ type: 'header', label: 'Custom tags' });
 		container.append({ type: 'checkbox', name: 'tags',
 			list: Twinkle.getPref('customTagList').map((el) => {
-				el.checked = Twinkle.tag.checkedTags.indexOf(el.value) !== -1;
+				el.checked = Twinkle.tag.checkedTags.includes(el.value);
 				return el;
 			})
 		});
@@ -512,8 +512,8 @@ var generateLinks = function(checkbox) {
 	link.setAttribute('class', 'tag-template-link');
 	const tagname = checkbox.values;
 	link.setAttribute('href', mw.util.getUrl(
-		(tagname.indexOf(':') === -1 ? 'Template:' : '') +
-		(tagname.indexOf('|') === -1 ? tagname : tagname.slice(0, tagname.indexOf('|')))
+		(!tagname.includes(':') ? 'Template:' : '') +
+		(!tagname.includes('|') ? tagname : tagname.slice(0, tagname.indexOf('|')))
 	));
 	link.setAttribute('target', '_blank');
 	$(checkbox).parent().append(['\u00A0', link]);
@@ -1353,10 +1353,10 @@ Twinkle.tag.callbacks = {
 			const makeTemplateLink = function(tag) {
 				let text = '{{[[';
 				// if it is a custom tag with a parameter
-				if (tag.indexOf('|') !== -1) {
+				if (tag.includes('|')) {
 					tag = tag.slice(0, tag.indexOf('|'));
 				}
-				text += tag.indexOf(':') !== -1 ? tag : 'Template:' + tag + '|' + tag;
+				text += tag.includes(':') ? tag : 'Template:' + tag + '|' + tag;
 				return text + ']]}}';
 			};
 
@@ -1381,7 +1381,7 @@ Twinkle.tag.callbacks = {
 
 			pageobj.setPageText(pageText);
 			pageobj.setEditSummary(summaryText);
-			if ((mw.config.get('wgNamespaceNumber') === 0 && Twinkle.getPref('watchTaggedVenues').indexOf('articles') !== -1) || (mw.config.get('wgNamespaceNumber') === 118 && Twinkle.getPref('watchTaggedVenues').indexOf('drafts') !== -1)) {
+			if ((mw.config.get('wgNamespaceNumber') === 0 && Twinkle.getPref('watchTaggedVenues').includes('articles')) || (mw.config.get('wgNamespaceNumber') === 118 && Twinkle.getPref('watchTaggedVenues').includes('drafts'))) {
 				pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 			}
 			pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
@@ -1447,13 +1447,13 @@ Twinkle.tag.callbacks = {
 						let templateText;
 
 						let text, summary;
-						if (params.tags.indexOf('Rough translation') !== -1) {
+						if (params.tags.includes('Rough translation')) {
 							templateText = '{{subst:Dual fluency request|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 							// Place in section == Translated pages that could still use some cleanup ==
 							text = oldText + '\n\n' + templateText;
 							summary = 'Translation cleanup requested on ';
-						} else if (params.tags.indexOf('Not English') !== -1) {
+						} else if (params.tags.includes('Not English')) {
 							templateText = '{{subst:Translation request|pg=' + Morebits.pageNameNorm + '|Language=' +
 							(lang || 'uncertain') + '|Comments=' + reason.trim() + '}} ~~~~';
 							// Place in section == Pages for consideration ==
@@ -1694,7 +1694,7 @@ Twinkle.tag.callbacks = {
 					Morebits.Status.warn('Info', 'Found {{' + tag +
 						'}} on the article already...excluding');
 					// don't do anything else with merge tags
-					if (['Merge', 'Merge to'].indexOf(tag) !== -1) {
+					if (['Merge', 'Merge to'].includes(tag)) {
 						params.mergeTarget = params.mergeReason = params.mergeTagOther = null;
 					}
 				}
@@ -1835,7 +1835,7 @@ Twinkle.tag.callbacks = {
 				}
 			}
 
-			summaryText += ' {{[[:' + (tagName.indexOf(':') !== -1 ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
+			summaryText += ' {{[[:' + (tagName.includes(':') ? tagName : 'Template:' + tagName + '|' + tagName) + ']]}}';
 		};
 
 		if (!tags.length) {
@@ -1874,7 +1874,7 @@ Twinkle.tag.callbacks = {
 
 		pageobj.setPageText(pageText);
 		pageobj.setEditSummary(summaryText);
-		if (Twinkle.getPref('watchTaggedVenues').indexOf('redirects') !== -1) {
+		if (Twinkle.getPref('watchTaggedVenues').includes('redirects')) {
 			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 		}
 		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
@@ -1898,7 +1898,7 @@ Twinkle.tag.callbacks = {
 			let tagtext = '', currentTag;
 			$.each(params.tags, (k, tag) => {
 				// when other commons-related tags are placed, remove "move to Commons" tag
-				if (['Keep local', 'Do not move to Commons'].indexOf(tag) !== -1) {
+				if (['Keep local', 'Do not move to Commons'].includes(tag)) {
 					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 				}
 
@@ -1987,7 +1987,7 @@ Twinkle.tag.callbacks = {
 		pageobj.setPageText(text);
 		pageobj.setEditSummary(summary.substring(0, summary.length - 2));
 		pageobj.setChangeTags(Twinkle.changeTags);
-		if (Twinkle.getPref('watchTaggedVenues').indexOf('files') !== -1) {
+		if (Twinkle.getPref('watchTaggedVenues').includes('files')) {
 			pageobj.setWatchlist(Twinkle.getPref('watchTaggedPages'));
 		}
 		pageobj.setMinorEdit(Twinkle.getPref('markTaggedPagesAsMinor'));
@@ -2033,12 +2033,12 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 			params.tagsToRemove = form.getUnchecked('existingTags'); // not in `input`
 			params.tagsToRemain = params.existingTags || []; // container not created if none present
 
-			if ((params.tags.indexOf('Merge') !== -1) || (params.tags.indexOf('Merge from') !== -1) ||
-				(params.tags.indexOf('Merge to') !== -1)) {
+			if ((params.tags.includes('Merge')) || (params.tags.includes('Merge from')) ||
+				(params.tags.includes('Merge to'))) {
 				if (Twinkle.tag.checkIncompatible(['Merge', 'Merge from', 'Merge to'], params.tags, 'If several merges are required, use {{Merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).')) {
 					return;
 				}
-				if ((params.mergeTagOther || params.mergeReason) && params.mergeTarget.indexOf('|') !== -1) {
+				if ((params.mergeTagOther || params.mergeReason) && params.mergeTarget.includes('|')) {
 					alert('Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.');
 					return;
 				}

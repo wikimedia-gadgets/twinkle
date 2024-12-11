@@ -143,7 +143,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append({
 		type: 'option',
 		label: 'TfD (Templates for discussion)',
-		selected: [ 10, 828 ].indexOf(namespace) !== -1, // Template and module namespaces
+		selected: [ 10, 828 ].includes(namespace), // Template and module namespaces
 		value: 'tfd'
 	});
 	categories.append({
@@ -166,7 +166,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append({
 		type: 'option',
 		label: 'MfD (Miscellany for deletion)',
-		selected: [ 0, 6, 10, 14, 828 ].indexOf(namespace) === -1 || Morebits.pageNameNorm.indexOf('Template:User ', 0) === 0,
+		selected: ![ 0, 6, 10, 14, 828 ].includes(namespace) || Morebits.pageNameNorm.indexOf('Template:User ', 0) === 0,
 		// Other namespaces, and userboxes in template namespace
 		value: 'mfd'
 	});
@@ -249,7 +249,7 @@ Twinkle.xfd.callback.wrongVenueWarning = function twinklexfdWrongVenueWarning(ve
 			}
 			break;
 		case 'cfd':
-			if ([ 10, 14 ].indexOf(namespace) === -1) {
+			if (![ 10, 14 ].includes(namespace)) {
 				text = 'CfD is only for categories and stub templates.';
 			}
 			break;
@@ -266,7 +266,7 @@ Twinkle.xfd.callback.wrongVenueWarning = function twinklexfdWrongVenueWarning(ve
 		case 'rm':
 			if (namespace === 14) { // category
 				text = 'Please use CfD or CfDS for category renames.';
-			} else if ([118, 119, 2, 3].indexOf(namespace) > -1) { // draft, draft talk, user, user talk
+			} else if ([118, 119, 2, 3].includes(namespace)) { // draft, draft talk, user, user talk
 				text = 'RMs are not permitted in draft and userspace, unless they are uncontroversial technical requests.';
 			}
 			break;
@@ -981,7 +981,7 @@ Twinkle.xfd.callbacks = {
 		}
 	},
 	addToLog: function(params, initialContrib) {
-		if (!Twinkle.getPref('logXfdNominations') || Twinkle.getPref('noLogOnXfdNomination').indexOf(params.venue) !== -1) {
+		if (!Twinkle.getPref('logXfdNominations') || Twinkle.getPref('noLogOnXfdNomination').includes(params.venue)) {
 			return;
 		}
 
@@ -1360,7 +1360,7 @@ Twinkle.xfd.callbacks = {
 					page.setCallbackParameters(params);
 					page.lookupCreation((innerpage) => {
 						const username = innerpage.getCreator();
-						if (seenusers.indexOf(username) === -1) {
+						if (!seenusers.includes(username)) {
 							seenusers.push(username);
 							// Only log once on merge nominations, for the initial template
 							Twinkle.xfd.callbacks.notifyUser(innerpage.getCallbackParameters(), username,
@@ -1382,7 +1382,7 @@ Twinkle.xfd.callbacks = {
 					'Templates used by Ultraviolet': 'Wikipedia talk:Ultraviolet'
 				};
 				$.each(categoryNotificationPageMap, (category, page) => {
-					if (inCategories.indexOf(category) !== -1) {
+					if (inCategories.includes(category)) {
 						Twinkle.xfd.callbacks.notifyUser(params, page, true, 'Notifying ' + page + ' of template nomination');
 					}
 				});
@@ -1404,7 +1404,7 @@ Twinkle.xfd.callbacks = {
 				params.tagText += params.templatetype === 'standard' || params.templatetype === 'sidebar' || params.templatetype === 'disabled' ? '\n' : ''; // No newline for inline
 			}
 
-			if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
+			if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].includes(pageobj.getContentModel())) {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
@@ -1433,7 +1433,7 @@ Twinkle.xfd.callbacks = {
 				params.tagText += params.templatetype === 'standard' || params.templatetype === 'sidebar' || params.templatetype === 'disabled' ? '\n' : ''; // No newline for inline
 			}
 
-			if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
+			if (pageobj.canEdit() && ['wikitext', 'sanitized-css'].includes(pageobj.getContentModel())) {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Listed for merging with [[:' + params.otherTemplateName + ']]; see [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);
@@ -1558,7 +1558,7 @@ Twinkle.xfd.callbacks = {
 
 			params.tagText = '{{' + (params.number === '' ? 'mfd' : 'mfdx|' + params.number) + '|help=off}}';
 
-			if (['javascript', 'css', 'sanitized-css'].indexOf(mw.config.get('wgPageContentModel')) !== -1) {
+			if (['javascript', 'css', 'sanitized-css'].includes(mw.config.get('wgPageContentModel'))) {
 				params.tagText = '/* ' + params.tagText + ' */\n';
 			} else {
 				params.tagText += '\n';
@@ -1567,7 +1567,7 @@ Twinkle.xfd.callbacks = {
 				}
 			}
 
-			if (pageobj.canEdit() && ['wikitext', 'javascript', 'css', 'sanitized-css'].indexOf(pageobj.getContentModel()) !== -1) {
+			if (pageobj.canEdit() && ['wikitext', 'javascript', 'css', 'sanitized-css'].includes(pageobj.getContentModel())) {
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
 				pageobj.setChangeTags(Twinkle.changeTags);

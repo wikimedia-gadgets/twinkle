@@ -1171,12 +1171,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 							check.setAttribute('type', 'checkbox');
 							check.setAttribute('id', pref.name + '_' + itemkey);
 							check.setAttribute('name', pref.name + '_' + itemkey);
-							if (gotPref && gotPref.indexOf(itemkey) !== -1) {
+							if (gotPref && gotPref.includes(itemkey)) {
 								check.setAttribute('checked', 'checked');
 							}
 							// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
 							if (pref.name === 'unlinkNamespaces') {
-								if (gotPref && gotPref.indexOf(parseInt(itemkey, 10)) !== -1) {
+								if (gotPref && gotPref.includes(parseInt(itemkey, 10))) {
 									check.setAttribute('checked', 'checked');
 								}
 							}
@@ -1314,7 +1314,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.appendChild(document.createTextNode(', or by editing this page.'));
 			$(box).insertAfter($('#contentSub'));
 
-		} else if (['monobook', 'vector', 'vector-2022', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].indexOf(scriptPageName) !== -1) {
+		} else if (['monobook', 'vector', 'vector-2022', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].includes(scriptPageName)) {
 			// place "Looking for Twinkle options?" notice
 			box.setAttribute('class', 'config-userskin-box');
 
@@ -1537,7 +1537,7 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
 		case 'set':
 			$.each(pref.setValues, (itemkey) => {
 				if (document.getElementById(pref.name + '_' + itemkey)) {
-					document.getElementById(pref.name + '_' + itemkey).checked = Twinkle.defaultConfig[pref.name].indexOf(itemkey) !== -1;
+					document.getElementById(pref.name + '_' + itemkey).checked = Twinkle.defaultConfig[pref.name].includes(itemkey);
 				}
 			});
 			break;
