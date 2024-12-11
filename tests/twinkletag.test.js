@@ -6,7 +6,7 @@ describe('modules/twinkletag', () => {
 			const expected = undefined;
 			expect(Twinkle.tag.checkIncompatible(incompatibleTags, tagsToCheck)).toBe(expected);
 		});
-		
+
 		test('no conflicts, 1 tag to check', () => {
 			const incompatibleTags = ['Bad GIF', 'Bad JPEG', 'Bad SVG', 'Bad format'];
 			const tagsToCheck = ['Better source requested'];
