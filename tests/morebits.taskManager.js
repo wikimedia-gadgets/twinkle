@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Morebits.taskManager', () => {
 	test('Contruction', () => {
 		var tm = new Morebits.taskManager();

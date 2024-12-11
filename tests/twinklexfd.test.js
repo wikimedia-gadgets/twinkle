@@ -1,3 +1,5 @@
+'use strict';
+
 describe('modules/twinklexfd', () => {
 	describe('insertRMTR', () => {
 		test('0 rows, 1 line breaks', () => {

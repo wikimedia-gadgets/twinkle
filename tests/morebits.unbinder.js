@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Morebits.unbinder', () => {
 	test('Construction', () => {
 		assert.throws(() => new Morebits.unbinder(), 'throws: no string');

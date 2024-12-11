@@ -24,7 +24,6 @@
 		"no-useless-escape": "warn",
 		"no-var": "warn",
 		"semi": "warn",
-		"strict": "warn",
 		"quotes": "warn",
 		"unicorn/prefer-date-now": "warn"
 	}

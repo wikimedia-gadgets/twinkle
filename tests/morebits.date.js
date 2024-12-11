@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Morebits.date', () => {
 	var now = Date.now();
 	var ts_mw = '16:26, 7 November 2020 (UTC)', ts_iso = '2020-11-07T16:26:00.000Z', naive = 20201107162600;
