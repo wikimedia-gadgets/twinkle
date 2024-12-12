@@ -1,15 +1,15 @@
 describe('Morebits.wikitext', () => {
 	test('parseTemplate', () => {
 		// Function to help build a template from a sample object
-		var makeTemplate = function (data) {
-			var template = '{{' + data.name;
-			Object.keys(data.parameters).forEach(function (key) {
+		const makeTemplate = function (data) {
+			let template = '{{' + data.name;
+			Object.keys(data.parameters).forEach((key) => {
 				template += '|' + key + '=' + data.parameters[key];
 			});
 			return template + '}}';
 		};
 
-		var simple = {
+		const simple = {
 			name: 'prod',
 			parameters: {
 				reason: 'because',
@@ -19,7 +19,7 @@ describe('Morebits.wikitext', () => {
 		};
 		assert.deepEqual(Morebits.wikitext.parseTemplate('Template: ' + makeTemplate(simple) + ' in text', 10), simple, 'Basic parameters');
 
-		var involved = {
+		const involved = {
 			name: 'Proposed deletion/dated',
 			parameters: {
 				concern: 'Text (paren) then [[piped|link]] and [[WP:WP/LINK]] {{{plural|with|a|template}}} then question?',
@@ -31,10 +31,10 @@ describe('Morebits.wikitext', () => {
 		assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(involved)), involved, 'Involved parameters');
 
 		// Try a variety of whitespace options
-		var whitespace = '{{' + involved.name + ' |concern = ' + involved.parameters.concern + ' | timestamp =' + involved.parameters.timestamp + '| nom= ' + involved.parameters.nom + '|help = ' + involved.parameters.help + ' }}';
+		const whitespace = '{{' + involved.name + ' |concern = ' + involved.parameters.concern + ' | timestamp =' + involved.parameters.timestamp + '| nom= ' + involved.parameters.nom + '|help = ' + involved.parameters.help + ' }}';
 		assert.deepEqual(Morebits.wikitext.parseTemplate(whitespace), involved, 'Involved parameters with whitespace');
 
-		var unnamed = {
+		const unnamed = {
 			name: 'db-meta',
 			parameters: {
 				criterion: 'G13',
@@ -43,10 +43,10 @@ describe('Morebits.wikitext', () => {
 				2: 'extra'
 			}
 		};
-		var unnamedTemplate = '{{' + unnamed.name + '|criterion=' + unnamed.parameters.criterion + '||' + unnamed.parameters['1'] + '| middle =|2= ' + unnamed.parameters['2'] + '|}}';
+		const unnamedTemplate = '{{' + unnamed.name + '|criterion=' + unnamed.parameters.criterion + '||' + unnamed.parameters['1'] + '| middle =|2= ' + unnamed.parameters['2'] + '|}}';
 		assert.deepEqual(Morebits.wikitext.parseTemplate(unnamedTemplate), unnamed, 'Unnamed and empty parameters');
 
-		var multiLevel = {
+		const multiLevel = {
 			name: 'toplevel',
 			parameters: {
 				named: '{{namedtop}}',
@@ -56,7 +56,7 @@ describe('Morebits.wikitext', () => {
 			}
 		};
 		assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(multiLevel)), multiLevel, 'Multiple levels');
-		var parser = {
+		const parser = {
 			name: 'toplevel',
 			parameters: {
 				named: '{{namedtop}}',
@@ -67,7 +67,7 @@ describe('Morebits.wikitext', () => {
 		};
 		assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(parser)), parser, 'Parser function');
 
-		var internal = {
+		const internal = {
 			name: 'internal',
 			parameters: {
 				named: 'parameter {{tq|with an internal}} template',
@@ -80,8 +80,8 @@ describe('Morebits.wikitext', () => {
 	});
 
 	test('Morebits.wikitext.page', () => {
-		var text = '{{short description}}{{about}}[[File:Fee.svg]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!';
-		var page = new Morebits.wikitext.Page(text);
+		const text = '{{short description}}{{about}}[[File:Fee.svg]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!';
+		const page = new Morebits.wikitext.Page(text);
 		assert.true(page instanceof Morebits.wikitext.page, 'Correct instance');
 		assert.strictEqual(page.getText(), text, 'Got text');
 
@@ -91,7 +91,7 @@ describe('Morebits.wikitext', () => {
 
 		// Define all the tests individually, with the appropriate method,
 		// input, expected output, and (spreaded) parameters.
-		var tests = [
+		const tests = [
 			{
 				name: 'simple',
 				method: 'removeLink',
@@ -354,7 +354,7 @@ describe('Morebits.wikitext', () => {
 		];
 
 		tests.forEach((test) => {
-			var page = new Morebits.wikitext.Page(test.input);
+			const page = new Morebits.wikitext.Page(test.input);
 			assert.strictEqual(page[test.method](...test.params).getText(), test.expected, test.method + ' - ' + test.name);
 		});
 	});

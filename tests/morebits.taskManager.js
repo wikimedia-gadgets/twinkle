@@ -1,13 +1,13 @@
 describe('Morebits.taskManager', () => {
 	test('Contruction', () => {
-		var tm = new Morebits.TaskManager();
+		const tm = new Morebits.TaskManager();
 		assert.true(tm instanceof Morebits.taskManager, 'Correct instance');
 	});
 
 	// Helper to generate functions as well as testing output in proper order;
 	// verifySteps not used because it would require some extra duplication
-	var data = {};
-	var generateFuncs = () => {
+	const data = {};
+	const generateFuncs = () => {
 		data.out = [];
 		['one', 'two', 'three', 'four'].forEach((step) => {
 			data[step] = () => {
@@ -19,7 +19,7 @@ describe('Morebits.taskManager', () => {
 
 	test('Simple', () => {
 		generateFuncs();
-		var simple = new Morebits.TaskManager();
+		const simple = new Morebits.TaskManager();
 		simple.add(data.one, []);
 		simple.add(data.two, [data.one]);
 		simple.add(data.three, [data.two]);
@@ -30,7 +30,7 @@ describe('Morebits.taskManager', () => {
 	});
 	test('Complex', () => {
 		generateFuncs();
-		var complex = new Morebits.TaskManager();
+		const complex = new Morebits.TaskManager();
 		complex.add(data.one, [data.two]);
 		complex.add(data.two, [data.three, data.four]);
 		complex.add(data.three, []);

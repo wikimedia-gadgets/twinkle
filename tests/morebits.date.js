@@ -1,10 +1,10 @@
 describe('Morebits.date', () => {
-	var now = Date.now();
-	var ts_mw = '16:26, 7 November 2020 (UTC)', ts_iso = '2020-11-07T16:26:00.000Z', naive = 20201107162600;
+	const now = Date.now();
+	const ts_mw = '16:26, 7 November 2020 (UTC)', ts_iso = '2020-11-07T16:26:00.000Z', naive = 20201107162600;
 	test('Construction', () => {
 		// getTime and toISOString imply testing of inherited methods
 		// Allow off-by-one values in milliseconds for not-quite-simultaneous date contructions
-		expect(Math.abs(new Morebits.Date().getTime() - new Date().getTime())).toBeLessThanOrEqual(1);
+		expect(Math.abs(new Morebits.Date().getTime() - Date.now())).toBeLessThanOrEqual(1);
 
 		assert.strictEqual(new Morebits.Date(now).getTime(), new Date(now).getTime(), 'Constructor from timestring');
 		assert.strictEqual(new Morebits.Date(2020, 11, 7, 16, 26).getTime(), new Date(2020, 11, 7, 16, 26).getTime(), 'Constructor from parts');
@@ -14,7 +14,7 @@ describe('Morebits.date', () => {
 		assert.strictEqual(new Morebits.Date(parseInt(naive / 10, 10)).toISOString(), new Date(parseInt(naive / 10, 10)).toISOString(), 'native 13 digit');
 		assert.strictEqual(new Morebits.Date(naive * 10).toISOString(), new Date(naive * 10).toISOString(), 'native 15 digit');
 	});
-	var date = new Morebits.Date(ts_mw);
+	const date = new Morebits.Date(ts_mw);
 	test('Methods', () => {
 		assert.true(date.isValid(), 'Valid');
 		// Logs a message; not a failure, but annoying
