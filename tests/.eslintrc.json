@@ -23,17 +23,8 @@
 		"space-in-parens": "off",
 
 		"camelcase": "warn",
-		"comma-dangle": "warn",
-		"eol-last": "warn",
 		"new-cap": "warn",
-		"prefer-arrow-callback": "warn",
-		"prefer-const": "warn",
-		"no-trailing-spaces": "warn",
 		"no-useless-escape": "warn",
-		"no-var": "warn",
-		"semi": "warn",
-		"strict": "warn",
-		"quotes": "warn",
-		"unicorn/prefer-date-now": "warn"
+		"strict": "warn"
 	}
 }
