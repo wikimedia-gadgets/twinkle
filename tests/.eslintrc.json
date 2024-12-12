@@ -16,6 +16,6 @@
 		"camelcase": "warn",
 		"new-cap": "warn",
 		"no-undef": "warn",
-		"no-useless-escape": "warn",
+		"no-useless-escape": "warn"
 	}
 }
