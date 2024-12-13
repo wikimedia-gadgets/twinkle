@@ -13,9 +13,7 @@
 		"object-curly-spacing": "off",
 		"space-in-parens": "off",
 
-		"camelcase": "warn",
 		"no-undef": "warn",
-		"no-useless-escape": "warn",
-		"strict": "warn"
+		"no-useless-escape": "warn"
 	}
 }

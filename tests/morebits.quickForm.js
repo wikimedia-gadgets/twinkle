@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Simple helper to render a quickform element
  *

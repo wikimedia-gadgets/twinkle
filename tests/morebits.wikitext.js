@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Morebits.wikitext', () => {
 	test('parseTemplate', () => {
 		// Function to help build a template from a sample object
