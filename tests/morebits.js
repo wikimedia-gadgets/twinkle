@@ -20,7 +20,7 @@ describe('methods', () => {
 		assert.strictEqual(Morebits.pageNameRegex(''), '', 'Empty');
 		assert.strictEqual(Morebits.pageNameRegex('a'), '[Aa]', 'Single character');
 		assert.strictEqual(Morebits.pageNameRegex('#'), '#', 'Single same-case');
-		assert.strictEqual(Morebits.pageNameRegex('*$, \{}(a) |.?+-^ [ ]'), '\\*\\$,[_ ]\\{\\}\\(a\\)[_ ]\\|\\.\\?\\+\\-\\^\[_ ]\\[[_ ]\\]', 'Special characters');
+		assert.strictEqual(Morebits.pageNameRegex('*$, {}(a) |.?+-^ [ ]'), '\\*\\$,[_ ]\\{\\}\\(a\\)[_ ]\\|\\.\\?\\+\\-\\^[_ ]\\[[_ ]\\]', 'Special characters');
 	});
 	test('namespaceRegex', () => {
 		assert.strictEqual(Morebits.namespaceRegex([6]), '(?:[Ff][Ii][Ll][Ee]|[Ii][Mm][Aa][Gg][Ee])', 'Files');

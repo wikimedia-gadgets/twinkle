@@ -20,8 +20,6 @@
 		"computed-property-spacing": "off",
 		"no-shadow": "off",
 		"object-curly-spacing": "off",
-		"space-in-parens": "off",
-
-		"no-useless-escape": "warn"
+		"space-in-parens": "off"
 	}
 }
