@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Morebits.string', () => {
 	test('escapeRegExp', () => {
 		assert.strictEqual(Morebits.string.escapeRegExp('Four score and seven years ago'), 'Four[_ ]score[_ ]and[_ ]seven[_ ]years[_ ]ago', 'Spaces');

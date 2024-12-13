@@ -1,8 +1,10 @@
+'use strict';
+
 describe('Morebits.batchOperation', () => {
 	test('Contruction', () => {
-		assert.true(new Morebits.batchOperation() instanceof Morebits.batchOperation, 'Correct instance');
+		assert.true(new Morebits.BatchOperation() instanceof Morebits.batchOperation, 'Correct instance');
 	});
-	const batch = new Morebits.batchOperation();
+	const batch = new Morebits.BatchOperation();
 	const pageList = ['Macbeth', 'Hamlet', 'Romeo and Juliet', 'Much Ado About Nothing', 'Tempest'];
 	batch.setPageList(pageList);
 	const chunkLength = 2;

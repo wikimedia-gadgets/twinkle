@@ -1,3 +1,5 @@
+'use strict';
+
 describe('modules/twinklewarn', () => {
 	describe('getTemplateProperty', () => {
 		const templates = {

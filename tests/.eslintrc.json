@@ -22,9 +22,6 @@
 		"object-curly-spacing": "off",
 		"space-in-parens": "off",
 
-		"camelcase": "warn",
-		"new-cap": "warn",
-		"no-useless-escape": "warn",
-		"strict": "warn"
+		"no-useless-escape": "warn"
 	}
 }
