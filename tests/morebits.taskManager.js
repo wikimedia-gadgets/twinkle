@@ -1,6 +1,8 @@
+'use strict';
+
 describe('Morebits.taskManager', () => {
 	test('Contruction', () => {
-		const tm = new Morebits.taskManager();
+		const tm = new Morebits.TaskManager();
 		assert.true(tm instanceof Morebits.taskManager, 'Correct instance');
 	});
 
@@ -19,7 +21,7 @@ describe('Morebits.taskManager', () => {
 
 	test('Simple', () => {
 		generateFuncs();
-		const simple = new Morebits.taskManager();
+		const simple = new Morebits.TaskManager();
 		simple.add(data.one, []);
 		simple.add(data.two, [data.one]);
 		simple.add(data.three, [data.two]);
@@ -30,7 +32,7 @@ describe('Morebits.taskManager', () => {
 	});
 	test('Complex', () => {
 		generateFuncs();
-		const complex = new Morebits.taskManager();
+		const complex = new Morebits.TaskManager();
 		complex.add(data.one, [data.two]);
 		complex.add(data.two, [data.three, data.four]);
 		complex.add(data.three, []);

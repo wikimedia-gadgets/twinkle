@@ -5,6 +5,15 @@
 	"env": {
 		"jest": true
 	},
+	"globals": {
+		"assert": "readonly",
+		"document": "readonly",
+		"jQuery": "readonly",
+		"Morebits": "readonly",
+		"mw": "readonly",
+		"Twinkle": "readonly",
+		"window": "readonly"
+	},
 	"root": true,
 	"rules": {
 		"array-bracket-spacing": "off",
@@ -12,10 +21,5 @@
 		"no-shadow": "off",
 		"object-curly-spacing": "off",
 		"space-in-parens": "off",
-
-		"camelcase": "warn",
-		"new-cap": "warn",
-		"no-undef": "warn",
-		"strict": "warn"
 	}
 }
