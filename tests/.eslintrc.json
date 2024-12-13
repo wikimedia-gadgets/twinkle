@@ -15,7 +15,6 @@
 
 		"new-cap": "warn",
 		"no-undef": "warn",
-		"no-useless-escape": "warn",
-		"strict": "warn"
+		"no-useless-escape": "warn"
 	}
 }
