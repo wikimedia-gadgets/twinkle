@@ -2,7 +2,7 @@
 
 describe('Morebits.batchOperation', () => {
 	test('Contruction', () => {
-		assert.true(new Morebits.BatchOperation() instanceof Morebits.batchOperation, 'Correct instance');
+		assert.true(new Morebits.BatchOperation() instanceof Morebits.BatchOperation, 'Correct instance');
 	});
 	const batch = new Morebits.BatchOperation();
 	const pageList = ['Macbeth', 'Hamlet', 'Romeo and Juliet', 'Much Ado About Nothing', 'Tempest'];
