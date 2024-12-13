@@ -13,7 +13,6 @@
 		"object-curly-spacing": "off",
 		"space-in-parens": "off",
 
-		"new-cap": "warn",
 		"no-undef": "warn",
 		"no-useless-escape": "warn"
 	}
