@@ -3,7 +3,7 @@
 describe('Morebits.taskManager', () => {
 	test('Contruction', () => {
 		const tm = new Morebits.TaskManager();
-		assert.true(tm instanceof Morebits.taskManager, 'Correct instance');
+		assert.true(tm instanceof Morebits.TaskManager, 'Correct instance');
 	});
 
 	// Helper to generate functions as well as testing output in proper order;

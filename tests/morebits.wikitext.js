@@ -84,7 +84,7 @@ describe('Morebits.wikitext', () => {
 	test('Morebits.wikitext.page', () => {
 		const text = '{{short description}}{{about}}[[File:Fee.svg]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!';
 		const page = new Morebits.wikitext.Page(text);
-		assert.true(page instanceof Morebits.wikitext.page, 'Correct instance');
+		assert.true(page instanceof Morebits.wikitext.Page, 'Correct instance');
 		assert.strictEqual(page.getText(), text, 'Got text');
 
 		// Throws
