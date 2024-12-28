@@ -12,8 +12,8 @@
 	},
 	"rules": {
 		"array-bracket-spacing": "off",
-		"camelcase": "off",
 		"computed-property-spacing": "off",
+		"es-x/no-array-prototype-includes": "off",
 		"indent": "off",
 		"jsdoc/require-param": "off",
 		"jsdoc/require-returns": "off",
@@ -22,7 +22,6 @@
 		"no-jquery/no-class-state": "off",
 		"no-jquery/no-global-selector": "off",
 		"no-shadow": "off",
-		"no-underscore-dangle": "off",
 		"object-curly-spacing": "off",
 		"space-before-function-paren": "off",
 		"space-in-parens": "off",
@@ -40,13 +39,15 @@
 				"selector": "MemberExpression > Identifier[name=\"fail\"]"
 			}
 		],
+		"unicorn/prefer-includes": "error",
 
-		"es-x/no-array-prototype-includes": "warn",
+		"camelcase": ["warn", {"properties": "never"}],
 		"es-x/no-object-values": "warn",
 		"mediawiki/class-doc": "warn",
 		"new-cap": "warn",
 		"no-jquery/no-constructor-attributes": "warn",
 		"no-jquery/no-each-util": "warn",
+		"no-jquery/no-extend": "warn",
 		"no-jquery/no-grep": "warn",
 		"no-jquery/no-in-array": "warn",
 		"no-jquery/no-map-util": "warn",
@@ -54,14 +55,10 @@
 		"no-jquery/no-sizzle": "warn",
 		"no-loop-func": "warn",
 		"no-new": "warn",
-		"no-return-assign": "warn",
 		"no-script-url": "warn",
-		"no-throw-literal": "warn",
 		"no-unused-expressions": "warn",
 		"no-use-before-define": "warn",
-		"no-useless-concat": "warn",
 		"no-var": "warn",
-		"prefer-const": "warn",
 		"unicorn/prefer-string-slice": "warn"
 	}
 }

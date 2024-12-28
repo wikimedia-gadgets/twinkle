@@ -180,3 +180,14 @@ All the dependencies that Twinkle uses are JavaScript **dev** dependencies. They
 - mwn - Used when you run `npm start`. `npm start` is what enables localhost testing.
 
 When updating dependencies, CI should take care of testing most of that. Manually testing `npm start` should be the only additional check needed.
+
+### Adding a CSD
+
+Here is a checklist for writing a patch to add a speedy deletion criteria called A1:
+
+* Write a patch similar to this one: https://github.com/wikimedia-gadgets/twinkle/pull/2097/files
+* If you want any of the config options to be on by default (instead of off by default), modify twinkle.js -> Twinkle.defaultConfig.
+* On wiki, create these pages. Copy an existing template and adjust as needed.
+    * Template:Db-a1, which will be placed on the page tagged for deletion.
+    * Template:Db-a1-notice, which will be placed on the user talk page of the author of the page tagged for deletion.
+    * Template:Db-a1-deleted, which will be placed on the user talk page of the author of the page deleted.

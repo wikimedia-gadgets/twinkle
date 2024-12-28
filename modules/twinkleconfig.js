@@ -10,10 +10,6 @@
                            and adds an ad box to the top of user subpages belonging to the
                            currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
-
- I, [[User:This, that and the other]], originally wrote this.  If the code is misbehaving, or you have any
- questions, don't hesitate to ask me.  (This doesn't at all imply [[WP:OWN]]ership - it's just meant to
- point you in the right direction.)  -- TTO
  */
 
 Twinkle.config = {};
@@ -1081,7 +1077,8 @@ Twinkle.config.init = function twinkleconfigInit() {
 				}
 				cell = document.createElement('td');
 
-				let label, input, gotPref = Twinkle.getPref(pref.name);
+				let label, input;
+				const gotPref = Twinkle.getPref(pref.name);
 				switch (pref.type) {
 
 					case 'boolean': // create a checkbox
@@ -1180,12 +1177,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 							check.setAttribute('type', 'checkbox');
 							check.setAttribute('id', pref.name + '_' + itemkey);
 							check.setAttribute('name', pref.name + '_' + itemkey);
-							if (gotPref && gotPref.indexOf(itemkey) !== -1) {
+							if (gotPref && gotPref.includes(itemkey)) {
 								check.setAttribute('checked', 'checked');
 							}
 							// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
 							if (pref.name === 'unlinkNamespaces') {
-								if (gotPref && gotPref.indexOf(parseInt(itemkey, 10)) !== -1) {
+								if (gotPref && gotPref.includes(parseInt(itemkey, 10))) {
 									check.setAttribute('checked', 'checked');
 								}
 							}
@@ -1301,9 +1298,11 @@ Twinkle.config.init = function twinkleconfigInit() {
 		// Styled in twinkle.css
 		box.setAttribute('id', 'twinkle-config-headerbox');
 
-		let link,
-			scriptPageName = mw.config.get('wgPageName').slice(mw.config.get('wgPageName').lastIndexOf('/') + 1,
-				mw.config.get('wgPageName').lastIndexOf('.js'));
+		let link;
+		const scriptPageName = mw.config.get('wgPageName').slice(
+			mw.config.get('wgPageName').lastIndexOf('/') + 1,
+			mw.config.get('wgPageName').lastIndexOf('.js')
+		);
 
 		if (scriptPageName === 'twinkleoptions') {
 			// place "why not try the preference panel" notice
@@ -1321,7 +1320,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.appendChild(document.createTextNode(', or by editing this page.'));
 			$(box).insertAfter($('#contentSub'));
 
-		} else if (['monobook', 'vector', 'vector-2022', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].indexOf(scriptPageName) !== -1) {
+		} else if (['monobook', 'vector', 'vector-2022', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].includes(scriptPageName)) {
 			// place "Looking for Twinkle options?" notice
 			box.setAttribute('class', 'config-userskin-box');
 
@@ -1544,7 +1543,7 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
 		case 'set':
 			$.each(pref.setValues, (itemkey) => {
 				if (document.getElementById(pref.name + '_' + itemkey)) {
-					document.getElementById(pref.name + '_' + itemkey).checked = Twinkle.defaultConfig[pref.name].indexOf(itemkey) !== -1;
+					document.getElementById(pref.name + '_' + itemkey).checked = Twinkle.defaultConfig[pref.name].includes(itemkey);
 				}
 			});
 			break;
@@ -1700,6 +1699,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 		'// changing the configuration parameters in a valid-JavaScript way) will be\n' +
 		'// overwritten the next time you click "save" in the Twinkle preferences\n' +
 		'// panel.  If modifying this file, make sure to use correct JavaScript.\n' +
+		// eslint-disable-next-line no-useless-concat
 		'// <no' + 'wiki>\n' +
 		'\n' +
 		'window.Twinkle.prefs = ';
@@ -1707,6 +1707,7 @@ Twinkle.config.writePrefs = function twinkleconfigWritePrefs(pageobj) {
 	text +=
 		';\n' +
 		'\n' +
+		// eslint-disable-next-line no-useless-concat
 		'// </no' + 'wiki>\n' +
 		'// End of twinkleoptions.js\n';
 

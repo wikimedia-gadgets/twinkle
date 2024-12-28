@@ -1,6 +1,8 @@
+'use strict';
+
 describe('modules/twinklewarn', () => {
 	describe('getTemplateProperty', () => {
-		let templates = {
+		const templates = {
 			levels: {
 				'Common warnings': {
 					'uw-vandalism': {
@@ -24,7 +26,7 @@ describe('modules/twinklewarn', () => {
 							label: 'Vandalism',
 							summary: 'Only warning: Vandalism'
 						}
-					},
+					}
 				}
 			},
 
@@ -34,15 +36,15 @@ describe('modules/twinklewarn', () => {
 					summary: 'Notice: Not using edit summary',
 					hideLinkedPage: true,
 					hideReason: true
-				},
+				}
 			},
-			
+
 			singlewarn: {
 				'uw-attack': {
 					label: 'Creating attack pages',
 					summary: 'Warning: Creating attack pages',
 					suppressArticleInSummary: true
-				},
+				}
 			}
 		};
 

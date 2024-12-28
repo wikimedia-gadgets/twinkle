@@ -277,9 +277,9 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 		if (subpagesLoaded) {
 
 			$.each(Twinkle.batchdelete.pages, (i, el) => {
-				// Get back the subgroup from subgroup_, where we saved it
-				if (el.subgroup === null && el.subgroup_) {
-					el.subgroup = el.subgroup_;
+				// Get back the subgroup from subgroupBeforeDeletion, where we saved it
+				if (el.subgroup === null && el.subgroupBeforeDeletion) {
+					el.subgroup = el.subgroupBeforeDeletion;
 				}
 			});
 
@@ -305,7 +305,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			const pageTitle = mw.Title.newFromText(pageName);
 
 			// No need to look for subpages in main/file/mediawiki space
-			if ([0, 6, 8].indexOf(pageTitle.namespace) > -1) {
+			if ([0, 6, 8].includes(pageTitle.namespace)) {
 				subpageLister.workerSuccess();
 				return;
 			}
@@ -388,10 +388,10 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 
 		$.each(Twinkle.batchdelete.pages, (i, el) => {
 			if (el.subgroup) {
-				// Remove subgroup after saving its contents in subgroup_
+				// Remove subgroup after saving its contents in subgroupBeforeDeletion
 				// so that it can be retrieved easily if user decides to
 				// delete the subpages again
-				el.subgroup_ = el.subgroup;
+				el.subgroupBeforeDeletion = el.subgroup;
 				el.subgroup = null;
 			}
 		});
@@ -597,7 +597,7 @@ Twinkle.batchdelete.callbacks = {
 		unlinker.setPageList(pages);
 		unlinker.run((pageName) => {
 			const wikipedia_page = new Morebits.wiki.Page(pageName, 'Unlinking on ' + pageName);
-			const params = Object.assign({}, apiobj.params);
+			const params = $.extend({}, apiobj.params);
 			params.title = pageName;
 			params.unlinker = unlinker;
 			wikipedia_page.setCallbackParameters(params);
@@ -648,7 +648,7 @@ Twinkle.batchdelete.callbacks = {
 		unlinker.setPageList(pages);
 		unlinker.run((pageName) => {
 			const wikipedia_page = new Morebits.wiki.Page(pageName, 'Removing file usages on ' + pageName);
-			const params = Object.assign({}, apiobj.params);
+			const params = $.extend({}, apiobj.params);
 			params.title = pageName;
 			params.unlinker = unlinker;
 			wikipedia_page.setCallbackParameters(params);
