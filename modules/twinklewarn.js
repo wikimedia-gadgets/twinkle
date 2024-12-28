@@ -823,6 +823,24 @@ Twinkle.warn.messages = {
 					label: 'Removing speedy deletion tags',
 					summary: 'Final warning: Removing speedy deletion tags'
 				}
+			},
+			'uw-rfd': {
+				level1: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'General note: Removing redirects for discussion tags'
+				},
+				level2: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'Caution: Removing redirects for discussion tags'
+				},
+				level3: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'Warning: Removing redirects for discussion tags'
+				},
+				level4: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'Final warning: Removing redirects for discussion tags'
+				}
 			}
 		},
 		Other: {
