@@ -1253,7 +1253,7 @@ Twinkle.speedy.callbacks = {
 					params.normalized !== 'f8' &&
 					!document.getElementById('ca-talk').classList.contains('new')) {
 				const talkpage = new Morebits.wiki.Page(mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceNumber') + 1] + ':' + mw.config.get('wgTitle'), 'Deleting talk page');
-				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page "' + Morebits.pageNameNorm + '"');
+				talkpage.setEditSummary('[[WP:CSD#G8|G8]]: Talk page of deleted page [[' + Morebits.pageNameNorm + ']]');
 				talkpage.setChangeTags(Twinkle.changeTags);
 				talkpage.deletePage();
 				// this is ugly, but because of the architecture of wiki.api, it is needed
@@ -1346,7 +1346,7 @@ Twinkle.speedy.callbacks = {
 			snapshot.forEach((value) => {
 				const title = value.title;
 				const page = new Morebits.wiki.Page(title, 'Deleting redirect "' + title + '"');
-				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + Morebits.pageNameNorm + '"');
+				page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page [[' + Morebits.pageNameNorm + ']]');
 				page.setChangeTags(Twinkle.changeTags);
 				page.deletePage(onsuccess);
 			});
