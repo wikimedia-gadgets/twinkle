@@ -994,7 +994,9 @@ Twinkle.block.blockPresetsInfo = {
 		suppressArticleInSummary: true
 	},
 	'uw-blocknotalk': {
+		autoblock: true,
 		disabletalk: true,
+		nocreate: true,
 		pageParam: true,
 		reasonParam: true,
 		summary: 'You have been blocked from editing and your user talk page access has been disabled',
