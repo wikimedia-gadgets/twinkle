@@ -306,6 +306,11 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				appendList('Categories', Twinkle.speedy.categoryList);
 				break;
 
+			case 710: // timed text
+			case 711: // timed text talk
+				appendList('Timed Text pages', Twinkle.speedy.timedtextList);
+				break;
+
 			default:
 				break;
 		}
@@ -989,6 +994,14 @@ Twinkle.speedy.redirectList = [
 	}
 ];
 
+Twinkle.speedy.timedtextList = [
+	{
+		label: 'G8: Timed Text pages with no corresponding file',
+		value: 'timedtext',
+		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.'
+	}
+];
+
 Twinkle.speedy.normalizeHash = {
 	reason: 'db',
 	nonsense: 'g1',
@@ -1009,6 +1022,7 @@ Twinkle.speedy.normalizeHash = {
 	talk: 'g8',
 	subpage: 'g8',
 	redirnone: 'g8',
+	timedtext: 'g8',
 	imagepage: 'g8',
 	attack: 'g10',
 	negublp: 'g10',
