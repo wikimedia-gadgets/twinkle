@@ -305,7 +305,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			case 15: // category talk
 				appendList('Categories', Twinkle.speedy.categoryList);
 				break;
-			
+
 			case 710: // timed text
 			case 711: // timed text talk
 				appendList('Timed Text pages', Twinkle.speedy.timedtextList);
