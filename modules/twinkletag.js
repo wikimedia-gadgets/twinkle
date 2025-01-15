@@ -725,7 +725,6 @@ Twinkle.tag.article.tagList = {
 		],
 		'Sense (or lack thereof)': [
 			{ tag: 'Confusing', description: 'confusing or unclear' },
-			{ tag: 'Incomprehensible', description: 'very hard to understand or incomprehensible' },
 			{ tag: 'Unfocused', description: 'lacks focus or is about more than one topic' }
 		],
 		'Information and detail': [
