@@ -317,12 +317,12 @@ Twinkle.welcome.templates = {
 			'welcome-LLM': {
 				description: 'for someone whose initial efforts seem to be made with a large language model',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-delete|$ARTICLE$|$USERNAME$}} ~~~~'
+				syntax: '{{subst:welcome-LLM|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			'welcome-translation': {
 				description: 'for someone whose initial efforts are unattributed translations from another language Wikipedia',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-delete|$ARTICLE$|$USERNAME$}} ~~~~'
+				syntax: '{{subst:welcome-translation|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			'welcome-unsourced': {
 				description: 'for someone whose initial efforts are unsourced',
