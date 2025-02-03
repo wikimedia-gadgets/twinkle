@@ -940,7 +940,7 @@ Twinkle.tag.article.tagList = {
 	],
 	Splitting: [
 		{ tag: 'Split', description: 'should be split into multiple pages.', excludeMI: true },
-		{ tag: 'Splitdab', description: 'disambiguation page should be split into multiple pages.', excludeMI: true }
+		{ tag: 'Split dab', description: 'disambiguation page should be split into multiple pages.', excludeMI: true }
 	],
 	Informational: [
 		{ tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeMI: true },
