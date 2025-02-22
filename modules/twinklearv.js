@@ -369,18 +369,19 @@ Twinkle.arv.callback.changeCategory = function (e) {
 							const pageid = data.query.pageids[0];
 							const page = data.query.pages[pageid];
 							if (!page.revisions) {
-								$('<span class="entry">None found</span>').appendTo($field);
+								$('<span>')
+									.addClass('entry')
+									.html('None found')
+									.appendTo($field);
 							} else {
 								for (let i = 0; i < page.revisions.length; ++i) {
 									const rev = page.revisions[i];
-									const $entry = $('<div>', {
-										class: 'entry'
-									});
-									const $input = $('<input>', {
-										type: 'checkbox',
-										name: 's_' + field,
-										value: rev.revid
-									});
+									const $entry = $('<div>')
+										.addClass('entry');
+									const $input = $('<input>')
+										.attr('type', 'checkbox')
+										.attr('name', 's_' + field)
+										.attr('value', rev.revid);
 									$input.data('revinfo', rev);
 									$input.appendTo($entry);
 									let comment = '<span>';
@@ -397,22 +398,21 @@ Twinkle.arv.callback.changeCategory = function (e) {
 
 							// add free form input for resolves
 							if (field === 'resolves') {
-								const $free_entry = $('<div>', {
-									class: 'entry'
-								});
-								const $free_input = $('<input>', {
-									type: 'text',
-									name: 's_resolves_free'
-								});
-
-								const $free_label = $('<label>', {
-									for: 's_resolves_free',
-									html: 'URL link of diff with additional discussions: '
-								});
+								const $free_entry = $('<div>')
+									.addClass('entry');
+								const $free_input = $('<input>')
+									.attr('type', 'text')
+									.attr('name', 's_resolves_free');
+								const $free_label = $('<label>')
+									.attr('for', 's_resolves_free')
+									.html('URL link of diff with additional discussions: ');
 								$free_entry.append($free_label).append($free_input).appendTo($field);
 							}
 						}).fail(() => {
-							$('<span class="entry">API failure, reload page and try again</span>').appendTo($field);
+							$('<span>')
+								.addClass('entry')
+								.html('API failure, reload page and try again')
+								.appendTo($field);
 						});
 					};
 
