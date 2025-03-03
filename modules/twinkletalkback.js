@@ -218,6 +218,11 @@ Twinkle.talkback.changeTarget = function(e) {
 };
 
 Twinkle.talkback.noticeboards = {
+	ae: {
+		label: "WP:AE (Arbitration/Requests/Enforcement)",
+		text: "{{subst:AE-notice|$SECTION}} ~~~~",
+		editSummary: 'Notice of discussion at [[WP:AE]]'
+	},
 	an: {
 		label: "WP:AN (Administrators' noticeboard)",
 		text: '{{subst:AN-notice|thread=$SECTION}} ~~~~',
