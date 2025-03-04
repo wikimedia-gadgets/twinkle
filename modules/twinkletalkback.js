@@ -221,7 +221,7 @@ Twinkle.talkback.noticeboards = {
 	ae: {
 		label: "WP:AE (Arbitration/Requests/Enforcement)",
 		text: "{{subst:AE-notice|$SECTION}} ~~~~",
-		editSummary: 'Notice of discussion at [[WP:AE]]'
+		editSummary: 'Notice of discussion at [[Wikipedia:AEArbitration/Requests/Enforcement]]'
 	},
 	an: {
 		label: "WP:AN (Administrators' noticeboard)",
