@@ -5,6 +5,7 @@
 	"repository": "wikimedia-gadgets/twinkle",
 	"scripts": {
 		"deploy": "node scripts/deploy.js",
+		"deploy:cd": "node scripts/deploy.js -y",
 		"lint:fix": "eslint . --fix",
 		"lint": "eslint .",
 		"start": "node scripts/dev-server.js",

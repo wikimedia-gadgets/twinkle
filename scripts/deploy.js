@@ -128,7 +128,7 @@ async function buildEditSummary(page, file, oldSummary, timestamp, user, conf) {
 
     // 'Repo at' will add 17 characters and MW truncates at 497 to allow for '...'
     const maxLength = 480;
-    while (editSummary.length > maxLength) {
+    while (editSummary.length > maxLength && !conf.yes) {
         const over = editSummary.length - maxLength;
         console.log(`The current edit summary is too long by ${over} character${over === 1 ? '' : 's'} and would thus be truncated.`);
         console.log(`\t${editSummary}`);
@@ -193,12 +193,12 @@ async function main() {
 
     // Confirm
     if (!conf.dry) {
-        console.log('Attempting to ' + chalk.magentaBright('DEPLOY'));
+        console.log('Attempting to deploy');
         if (program.args.length) {
-            files.forEach(f => console.log(chalk.blue('\t' + f)));
+            files.forEach(f => console.log('\t' + chalk.yellow(f)));
         }
-        console.log('to pages prefixed by ' + chalk.whiteBright(conf.base));
-        console.log('at site ' + chalk.magentaBright(apiUrl));
+        console.log('to pages prefixed by ' + chalk.bold(conf.base));
+        console.log('at site ' + chalk.bold.magenta(new URL(apiUrl).hostname));
         if (conf.accessToken) {
             console.log('using the given OAuth2 access token');
         } else {
@@ -238,11 +238,13 @@ async function main() {
     let countDiff = 0;
     for (const file of files) {
         let page = file;
+
         // Twinkle.js, Twinkle.css, and Twinkle-pagestyles.css have leading uppercase on-wiki
         // TODO: Remove once onwiki pages are renamed
         if (GADGET_FILES.indexOf(file) < 3) {
             page = page.charAt(0).toUpperCase() + page.slice(1);
         }
+
         if (!page.startsWith(conf.base)) {
             page = conf.base + page.replace(/^.*\//, '');
         }
@@ -298,7 +300,7 @@ async function main() {
                 basetimestamp: wikiPage?.revisions?.[0]?.timestamp,
                 nocreate: !conf.create
             });
-            console.log(chalk.green(`${file} successfully deployed to ${page}`));
+            console.log(chalk.green(`\t${file} successfully deployed to ${page}`));
         } catch (e) {
             console.log(chalk.red(`Error deploying ${file}: ${e.message}`));
         }
