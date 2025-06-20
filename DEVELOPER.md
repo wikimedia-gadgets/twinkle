@@ -51,51 +51,32 @@ Each Twinkle module and dependency lives on the wiki as a separate file. The lis
 - `modules/twinklewelcome.js` &rarr; [MediaWiki:Gadget-twinklewelcome.js][]
 - `modules/twinklexfd.js` &rarr; [MediaWiki:Gadget-twinklexfd.js][]
 
-### Synchronization using `deploy.pl`
+### Deployment using `deploy.js`
 
-There is a synchronization script called `deploy.pl`, which can be used to deploy updates to on-wiki gadgets, or update the repository based on on-wiki changes. For full details, run `perl deploy.pl --help`.
+[Interface administrators][intadmin] can use the deployment script to deploy updates to on-wiki gadgets. For full details, run `node deploy.js --help`.
 
-The program depends on a few Perl modules, namely [`MediaWiki::API`][MediaWiki::API], [`Git::Repository`][Git::Repository], [`File::Slurper`][File::Slurper], and [`Config::General`][Config::General]. These can be installed easily using [`App::cpanminus`][App::cpanminus]:
+You will need to set up either a bot password at [Special:BotPasswords][special_botpass] or an [owner-only OAuth2 token](https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose/oauth2?wpownerOnly=1). Ensure to check the "Edit sitewide and user CSS/JS" permission in the grants. It is recommended to save your credentials to the `scripts/credentials.json`, in this format:
 
-    cpanm install MediaWiki::API Git::Repository File::Slurper Config::General
+```json
+{
+	"site": "https://test.wikipedia.org/w/api.php",
+	"username": "",
+	"password": "",
+	"accessToken": ""
+}
+```
 
-You may prefer to install them through your operating system's packaing tool (e.g. `apt-get install libconfig-general-perl`) although you can install them through cpanm too.
+All parameters can also be passed as cli params. Use either the BotPassword credentials (`--username` and `--password`) or the OAuth 2 token (`--accessToken`). For --site, you can use `testwiki` or `enwiki` as shortcuts instead of using the full URLs. Your working directory must be clean while deploying; if not, stash or commit your changes. The script can be run from any subdirectory of the repository.
 
-When running the program, you can enter your credentials on the command line using the `--username` and `--password` parameters, but it is recommended to save them in a `.twinklerc` file, either in this directory or in your `~` home, using the following format (also the defaults):
+To perform the deployment:
 
-    username = username
-    password = password
-    mode     = deploy|push|pull
-    lang     = en
-    family   = wikipedia
-    url      =
-    base     = User:AzaToth/
+    node deploy.js
 
-`username`, `password`, and `mode` (one of `deploy`, `push`, or `pull`) are required, either through the command line or configuration file; lang and family default to `en.wikipedia`. Note that your working directory **must** be clean; if not, either `stash` or `commit` your changes. The script automatically handles the directory (e.g. `modules/`) from the file path when downloading/uploading. It can be run from any subdirectory of the repository.
+To do a dry run and see diffs of changes instead of deploying:
 
-Using the `deploy` mode, [interface-admins][intadmin] can deploy Twinkle files live to their MediaWiki:Gadget locations. You will need to set up a bot password at [Special:BotPasswords][special_botpass].
+	node deploy.js --dry
 
-    deploy.pl --mode=deploy twinkle.js morebits.js ...
-
-If no files are provided, it will just report the status of the gadget. You may also `deploy` **all** files via
-
-    deploy.pl --mode=deploy --all
-
-Note that for syncing to a non-Enwiki project, you will also need to specify the --lang and/or --family parameters. For instance, to deploy to `fr.wikiquote.org` you should specify `--lang=fr --family=wikiquote`, such as
-
-    deploy.pl --mode=deploy --lang=fr --family=wikiquote --all
-
-When `deploy`ing or `push`ing, the script will attempt to parse the latest on-wiki edit summary for the commit of the last update, and will use that to create an edit summary using the changes committed since then. If it cannot find anything that looks like a commit hash, it will give you the most recent commits for each file and prompt you to enter an edit summary manually.
-
-To `pull` user Foobar's changes (i.e. `User:Foobar/morebits.js`) down from the wiki, do:
-
-    deploy.pl --base User:Foobar/ --mode=pull twinkle.js morebits.js ...
-
-To `push` your changes to user Foobar's wiki page, do:
-
-    deploy.pl --base User:Foobar/ --mode=push twinkle.js morebits.js ...
-
-The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
+The script will parse the latest on-wiki edit summary for last deployed commit hash, and auto-generate an edit summary from the new commit messages. If it cannot find the commit hash in edit summary, it will give you the most recent commits for each file and prompt you to enter an edit summary manually.
 
 [MediaWiki:Gadgets-definition]: https://en.wikipedia.org/wiki/MediaWiki:Gadgets-definition
 [MediaWiki:Gadget-Twinkle.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-Twinkle.js
@@ -126,48 +107,8 @@ The `--base` flag operates as a *prefix*; note the presence of the trailing `/`.
 [MediaWiki:Gadget-twinklewelcome.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklewelcome.js
 [MediaWiki:Gadget-twinklexfd.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklexfd.js
 [select2]: https://github.com/select2/select2
-[MediaWiki::API]: https://metacpan.org/pod/MediaWiki::API
-[Git::Repository]: https://metacpan.org/pod/Git::Repository
-[File::Slurper]: https://metacpan.org/pod/File::Slurper
-[Config::General]: https://metacpan.org/pod/Config::General
-[App::cpanminus]: https://metacpan.org/pod/App::cpanminus
 [intadmin]: https://en.wikipedia.org/wiki/Wikipedia:Interface_administrators
 [special_botpass]: https://en.wikipedia.org/wiki/Special:BotPasswords
-
-#### Work instruction
-
-If you are an interface admin on English Wikipedia and you want to deploy Twinkle's master branch, and you aren't interested in deploy.pl's fancy options, here's a simple work instruction. Don't forget to change the username and password.
-
-Microsoft Windows:
-```
-First time:
-- download and install strawberry perl. https://strawberryperl.com/
-- open powershell
-- `cd` to your twinkle/scripts directory
-- `cpanm install MediaWiki::API File::Slurper Config::General`
-- `cpanm install Git::Repository --force`
-- create a bot password at [[Special:BotPasswords]] with the following permissions: edit existing pages; edit the mediawiki namespace and sitewide/user json; edit sitewide and user css/js; create, edit and move pages
-- create a file called .twinklerc in the root directory. populate it with the following data
-
-username = yourUsernameHere (as provided by Special:BotPasswords, should have @ in it)
-password = yourPasswordHere
-mode     = deploy
-lang     = en
-family   = wikipedia
-url      =
-base     = MediaWiki:Gadget-
-
-Every time:
-- `cd` to your twinkle directory
-- `git checkout master`
-- In your browser, go to GitHub, go to your Twinkle fork, and check if it says it is out of date. If so, click "Sync fork"
-- `git pull`
-- `cd scripts`
-- `perl deploy.pl --mode=deploy --all`
-- it'll ask yes/no. type y
-- if it prompts you for any edit summaries, just hit enter to skip
-- there will be lots of "Warning: unable to close filehandle" messages, and some other problems such as displaying ←[0m←[96m for line breaks. you can ignore these. shouldn't be a problem.
-```
 
 ### Dependencies
 
