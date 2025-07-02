@@ -143,6 +143,6 @@ Here is a checklist for writing a patch to add a speedy deletion criteria:
     * create Template:Db-XX-notice onwiki, which will be placed on the user talk page of the author when tagging
     * create Template:Db-XX-deleted onwiki, which will be placed on the user talk page of the author when deleting
 * If you want some of the config options to be on by default (instead of off by default), add to:
-	* twinkle.js -> `Twinkle.defaultConfig`
+    * twinkle.js -> `Twinkle.defaultConfig`
 
 Example patch: https://github.com/wikimedia-gadgets/twinkle/pull/2097/files
