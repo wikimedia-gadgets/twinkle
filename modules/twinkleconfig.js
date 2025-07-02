@@ -42,7 +42,7 @@ Twinkle.config.commonSets = {
 		'u1', 'u2', 'u5',
 		'f1', 'f2', 'f3', 'f7', 'f8', 'f9',
 		'c1', 'c4',
-		't5', 't5',
+		't5',
 		'r2', 'r3', 'r4'
 	],
 	csdCriteriaNotification: {
@@ -63,7 +63,7 @@ Twinkle.config.commonSets = {
 		'u5',
 		'f1', 'f2', 'f3', 'f7', 'f9',
 		'c1',
-		't5', 't5',
+		't5',
 		'r2', 'r3', 'r4'
 	],
 	csdAndImageDeletionCriteria: {
@@ -83,7 +83,7 @@ Twinkle.config.commonSets = {
 		'u1', 'u2', 'u5',
 		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f11',
 		'c1', 'c4',
-		't5', 't5',
+		't5',
 		'r2', 'r3', 'r4'
 	],
 	namespacesNoSpecial: {
