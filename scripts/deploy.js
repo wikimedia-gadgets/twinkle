@@ -319,19 +319,20 @@ async function main() {
 
     // If deploying to MediaWiki:Gadgets-definition, check gadget definition file
     if (conf.base === 'MediaWiki:Gadget-') {
+		const gadgetDefFile = path.join(repoRoot, 'gadget.txt');
+		const localGadgetDef = await fs.readFile(gadgetDefFile, 'utf8');
+		let numLines = localGadgetDef.split('\n').filter(Boolean).length;
         let wikiGadgetDef = '';
         try {
             const allGadgetDefs = await bot.read('MediaWiki:Gadgets-definition');
             const lines = (allGadgetDefs.revisions[0]?.content || '').split('\n');
             let twLine = lines.findIndex(l => /\* ?Twinkle ?\[/.test(l));
             if (twLine !== -1) {
-                wikiGadgetDef = lines.slice(twLine, twLine + 5).join('\n') + '\n';
+                wikiGadgetDef = lines.slice(twLine, twLine + numLines).join('\n') + '\n';
             }
         } catch (e) {
             console.log(chalk.red('Error fetching Gadgets-definition: ' + e.message));
         }
-        const gadgetFile = path.join(repoRoot, 'gadget.txt');
-        let localGadgetDef = await fs.readFile(gadgetFile, 'utf8');
         if (wikiGadgetDef === localGadgetDef) {
             console.log('Gadget definition up-to-date');
         } else {
