@@ -192,9 +192,9 @@ Twinkle.rollback.addLinks = {
 		if (mw.config.exists('wgRelevantUserName') || isRange) {
 			// Get the username these contributions are for
 			let username = mw.config.get('wgRelevantUserName');
-			if (Twinkle.getPref('showRollbackLinks').indexOf('contribs') !== -1 ||
-				(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').indexOf('others') !== -1) ||
-				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').indexOf('mine') !== -1)) {
+			if (Twinkle.getPref('showRollbackLinks').includes('contribs') ||
+				(mw.config.get('wgUserName') !== username && Twinkle.getPref('showRollbackLinks').includes('others')) ||
+				(mw.config.get('wgUserName') === username && Twinkle.getPref('showRollbackLinks').includes('mine'))) {
 				const $list = $('#mw-content-text').find('ul li:has(span.mw-uctop):has(.mw-changeslist-diff)');
 
 				$list.each((key, current) => {
@@ -218,7 +218,7 @@ Twinkle.rollback.addLinks = {
 	},
 
 	recentchanges: function() {
-		if (Twinkle.getPref('showRollbackLinks').indexOf('recent') !== -1) {
+		if (Twinkle.getPref('showRollbackLinks').includes('recent')) {
 			// Latest and revertable (not page creations, logs, categorizations, etc.)
 			let $list = $('.mw-changeslist .mw-changeslist-last.mw-changeslist-src-mw-edit');
 			// Exclude top-level header if "group changes" preference is used
@@ -238,7 +238,7 @@ Twinkle.rollback.addLinks = {
 	},
 
 	history: function() {
-		if (Twinkle.getPref('showRollbackLinks').indexOf('history') !== -1) {
+		if (Twinkle.getPref('showRollbackLinks').includes('history')) {
 			// All revs
 			const histList = $('#pagehistory li').toArray();
 
@@ -280,13 +280,13 @@ Twinkle.rollback.addLinks = {
 		const warnFromTalk = function(xtitle) {
 			const $talkLink = $('#mw-diff-' + xtitle + '2 .mw-usertoollinks a').first();
 			if ($talkLink.length) {
-				let extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&' + 'noautowarn=true';
+				let extraParams = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm) + '&noautowarn=true';
 				// diffIDs for vanarticlerevid
 				extraParams += '&vanarticlerevid=';
 				extraParams += xtitle === 'otitle' ? mw.config.get('wgDiffOldId') : mw.config.get('wgDiffNewId');
 
 				const href = $talkLink.attr('href');
-				if (href.indexOf('?') === -1) {
+				if (!href.includes('?')) {
 					$talkLink.attr('href', href + '?' + extraParams);
 				} else {
 					$talkLink.attr('href', href + '&' + extraParams);
@@ -311,7 +311,7 @@ Twinkle.rollback.addLinks = {
 			// Not latest revision, add [restore this revision] link to newer revision
 			const newTitle = document.getElementById('mw-diff-ntitle1').parentNode;
 			newTitle.insertBefore(Twinkle.rollback.linkBuilder.restoreThisRevisionLink('wgDiffNewId'), newTitle.firstChild);
-		} else if (Twinkle.getPref('showRollbackLinks').indexOf('diff') !== -1 && mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId') || document.getElementById('differences-prevlink'))) {
+		} else if (Twinkle.getPref('showRollbackLinks').includes('diff') && mw.config.get('wgDiffOldId') && (mw.config.get('wgDiffOldId') !== mw.config.get('wgDiffNewId') || document.getElementById('differences-prevlink'))) {
 			// Normally .mw-userlink is a link, but if the
 			// username is hidden, it will be a span with
 			// .history-deleted as well. When a sysop views the
@@ -459,11 +459,11 @@ Twinkle.rollback.callbacks = {
 			undoafter: revertToRevID,
 			basetimestamp: touched,
 			starttimestamp: loadtimestamp,
-			minor: Twinkle.getPref('markRevertedPagesAsMinor').indexOf('torev') !== -1 ? true : undefined,
+			minor: Twinkle.getPref('markRevertedPagesAsMinor').includes('torev') ? true : undefined,
 			format: 'json'
 		};
 		// Handle watching, possible expiry
-		if (Twinkle.getPref('watchRevertedPages').indexOf('torev') !== -1) {
+		if (Twinkle.getPref('watchRevertedPages').includes('torev')) {
 			const watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
 
 			if (!watchOrExpiry || watchOrExpiry === 'no') {
@@ -541,7 +541,7 @@ Twinkle.rollback.callbacks = {
 			} else if (params.type === 'vand' &&
 					// Okay to test on user since it will either fail or sysop will correctly access it
 					// Besides, none of the trusted bots are going to be revdel'd
-					Twinkle.rollback.trustedBots.indexOf(top.user) !== -1 && revs.length > 1 &&
+					Twinkle.rollback.trustedBots.includes(top.user) && revs.length > 1 &&
 					revs[1].revid === params.revid) {
 				Morebits.Status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.' ]);
 				index = 2;
@@ -557,7 +557,7 @@ Twinkle.rollback.callbacks = {
 			userNorm = params.user || Twinkle.rollback.hiddenName;
 		}
 
-		if (Twinkle.rollback.trustedBots.indexOf(params.user) !== -1) {
+		if (Twinkle.rollback.trustedBots.includes(params.user)) {
 			switch (params.type) {
 				case 'vand':
 					Morebits.Status.info('Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. As this is a trusted bot, we assume you wanted to revert vandalism made by the previous user instead.' ]);
@@ -685,7 +685,7 @@ Twinkle.rollback.callbacks = {
 		}
 
 		// Decide whether to notify the user on success
-		if (!Twinkle.rollback.skipTalk && Twinkle.getPref('openTalkPage').indexOf(params.type) !== -1 &&
+		if (!Twinkle.rollback.skipTalk && Twinkle.getPref('openTalkPage').includes(params.type) &&
 				!params.userHidden && mw.config.get('wgUserName') !== params.user) {
 			params.notifyUser = true;
 			// Pass along to the warn module
@@ -712,11 +712,11 @@ Twinkle.rollback.callbacks = {
 			undoafter: params.goodid,
 			basetimestamp: touched,
 			starttimestamp: loadtimestamp,
-			minor: Twinkle.getPref('markRevertedPagesAsMinor').indexOf(params.type) !== -1 ? true : undefined,
+			minor: Twinkle.getPref('markRevertedPagesAsMinor').includes(params.type) ? true : undefined,
 			format: 'json'
 		};
 		// Handle watching, possible expiry
-		if (Twinkle.getPref('watchRevertedPages').indexOf(params.type) !== -1) {
+		if (Twinkle.getPref('watchRevertedPages').includes(params.type)) {
 			const watchOrExpiry = Twinkle.getPref('watchRevertedExpiry');
 
 			if (!watchOrExpiry || watchOrExpiry === 'no') {

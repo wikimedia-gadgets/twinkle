@@ -53,23 +53,23 @@ server.listen(port, hostname, async () => {
 	if (!process.env.MW_OAUTH2_TOKEN && (!process.env.MW_USERNAME || !process.env.MW_PASSWORD)) {
 		return console.log("Ensure the Twinkle gadget version is disabled. If you provide your credentials as environment variables (either the BotPassword credentials as MW_USERNAME and MW_PASSWORD, or an owner-only OAuth2 consumer token as MW_OAUTH2_TOKEN), we'll try to automatically disable the gadget for you and re-enable it when you're done testing.");
 	}
-	let mwn, user, initTime;
+	let Mwn, user, initTime;
 	try {
-		mwn = require('mwn').mwn;
+		Mwn = require('mwn').Mwn;
 	} catch (_) {
 		return console.error("Failed to load mwn. Please run `npm install` and retry.");
 	}
 	try {
-		user = await mwn.init({
+		user = await Mwn.init({
 			"apiUrl": "https://en.wikipedia.org/w/api.php",
 			"username": process.env.MW_USERNAME,
 			"password": process.env.MW_PASSWORD,
-			"oauth2Token": process.env.MW_OAUTH2_TOKEN,
+			"OAuth2AccessToken": process.env.MW_OAUTH2_TOKEN,
 			"silent": true
 		});
 		initTime = Date.now();
 	} catch (e) {
-		if (e instanceof mwn.Error) {
+		if (e instanceof Mwn.Error) {
 			console.log(`[mwn]: can't disable twinkle as gadget: login failure: ${e}`);
 			console.log(e.stack);
 		}

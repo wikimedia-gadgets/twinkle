@@ -1,15 +1,17 @@
+'use strict';
+
 describe('Morebits.batchOperation', () => {
 	test('Contruction', () => {
-		assert.true(new Morebits.batchOperation() instanceof Morebits.batchOperation, 'Correct instance');
+		assert.true(new Morebits.BatchOperation() instanceof Morebits.BatchOperation, 'Correct instance');
 	});
-	var batch = new Morebits.batchOperation();
-	var pageList = ['Macbeth', 'Hamlet', 'Romeo and Juliet', 'Much Ado About Nothing', 'Tempest'];
+	const batch = new Morebits.BatchOperation();
+	const pageList = ['Macbeth', 'Hamlet', 'Romeo and Juliet', 'Much Ado About Nothing', 'Tempest'];
 	batch.setPageList(pageList);
-	var chunkLength = 2;
+	const chunkLength = 2;
 	batch.setOption('chunkSize', chunkLength);
 	test('Run', () => {
-		var all = '';
-		var runFunc = function (page) {
+		let all = '';
+		const runFunc = function (page) {
 			all += page;
 			batch.workerSuccess();
 		};
@@ -18,8 +20,8 @@ describe('Morebits.batchOperation', () => {
 	});
 	// Will leave a run hanging, who cares?
 	test('Chunksize', () => {
-		var list = [];
-		var runFunc = function (page) {
+		const list = [];
+		const runFunc = function (page) {
 			list.push(page);
 		};
 		batch.run(runFunc);
