@@ -6,7 +6,6 @@ module.exports = {
 	setupFilesAfterEnv: ['mock-mediawiki', '<rootDir>/tests/jest.setup.js'],
 	collectCoverageFrom: [
 		'morebits.js',
-		'twinkle.js',
 		'modules/**/*.{js,jsx,ts,tsx}'
 	]
 };
