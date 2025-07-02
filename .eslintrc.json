@@ -1,6 +1,6 @@
 {
 	"extends": [
-		"wikimedia/client/es6",
+		"wikimedia/client",
 		"wikimedia/jquery",
 		"wikimedia/mediawiki"
 	],
@@ -11,6 +11,7 @@
 		"Map": "readonly"
 	},
 	"rules": {
+		// default rules we don't like
 		"array-bracket-spacing": "off",
 		"computed-property-spacing": "off",
 		"es-x/no-array-prototype-includes": "off",
@@ -27,25 +28,15 @@
 		"space-in-parens": "off",
 		"template-curly-spacing": "off",
 
+		// non-default rules we do like
 		"no-nested-ternary": "error",
-		"no-restricted-syntax": [
-			"warn",
-			{
-				"message": "Using .done() is discouraged. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
-				"selector": "MemberExpression > Identifier[name=\"done\"]"
-			},
-			{
-				"message": "Using .fail() is discouraged. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
-				"selector": "MemberExpression > Identifier[name=\"fail\"]"
-			}
-		],
-		"unicorn/prefer-includes": "error",
-
+		
+		// rules we should probably fix someday
 		"camelcase": ["warn", {"properties": "never"}],
-		"es-x/no-object-values": "warn",
 		"mediawiki/class-doc": "warn",
 		"new-cap": "warn",
 		"no-jquery/no-constructor-attributes": "warn",
+		"no-jquery/no-done-fail": "warn",
 		"no-jquery/no-each-util": "warn",
 		"no-jquery/no-extend": "warn",
 		"no-jquery/no-grep": "warn",
