@@ -53,7 +53,6 @@ Twinkle.config.commonSets = {
 		u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9',
 		c1: 'C1',
-		t5: 'T5',
 		r2: 'R2', r3: 'R3', r4: 'R4'
 	},
 	csdCriteriaNotificationDisplayOrder: [
@@ -63,7 +62,6 @@ Twinkle.config.commonSets = {
 		'u5',
 		'f1', 'f2', 'f3', 'f7', 'f9',
 		'c1',
-		't5',
 		'r2', 'r3', 'r4'
 	],
 	csdAndImageDeletionCriteria: {
