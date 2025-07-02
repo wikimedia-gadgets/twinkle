@@ -141,7 +141,9 @@ Here is a checklist for writing a patch to add a speedy deletion criteria:
     * modules/twinkleconfig.js -> `csdCriteriaNotification`
     * modules/twinkleconfig.js -> `csdCriteriaNotificationDisplayOrder`
     * create Template:Db-XX-notice onwiki, which will be placed on the user talk page of the author when tagging
+    * create Template:Db-XX-notice/doc onwiki
     * create Template:Db-XX-deleted onwiki, which will be placed on the user talk page of the author when deleting
+    * create Template:Db-XX-deleted/doc onwiki
 * If you want some of the config options to be on by default (instead of off by default), add to:
     * twinkle.js -> `Twinkle.defaultConfig`
 
