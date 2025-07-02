@@ -33,7 +33,6 @@
 		
 		// rules we should probably fix someday
 		"camelcase": ["warn", {"properties": "never"}],
-		"es-x/no-object-values": "warn",
 		"mediawiki/class-doc": "warn",
 		"new-cap": "warn",
 		"no-jquery/no-constructor-attributes": "warn",
