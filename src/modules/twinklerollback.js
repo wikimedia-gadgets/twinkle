@@ -227,9 +227,7 @@ Twinkle.rollback.addLinks = {
 		if (Twinkle.getPref('showRollbackLinks').includes('recent')) {
 			// Latest and revertable (not page creations, logs, categorizations, etc.)
 			const selector = '.mw-changeslist-last.mw-changeslist-src-mw-edit';
-			let $list = $context.hasClass('mw-changeslist')
-				? $context.find(selector)
-				: $context.find('.mw-changeslist ' + selector);
+			let $list = $context.hasClass('mw-changeslist') ? $context.find(selector) : $context.find('.mw-changeslist ' + selector);
 			if (!$list.length) {
 				return;
 			}
