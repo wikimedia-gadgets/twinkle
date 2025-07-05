@@ -36,14 +36,18 @@ Twinkle.rollback = function twinklerollback() {
 			// Reload with recent changes updates
 			// structuredChangeFilters.ui.initialized is just on load
 			mw.hook('wikipage.content').add(($context) => {
-				if (!$context || !$context.is('div')) return;
+				if (!$context || !$context.is('div')) {
+					return;
+				}
 				Twinkle.rollback.addLinks.recentchanges($context);
 			});
 		}
 	}
 	// Reload when revision slider or other scripts dynamically load diff content.
 	mw.hook('wikipage.diff').add(($context) => {
-		if (!$context) return;
+		if (!$context) {
+			return;
+		}
 		// Only proceed if the user can actually edit the page in question,
 		// wgDiffOldId included for clarity in if else loop [[phab:T214985]]
 		if (mw.config.get('wgIsProbablyEditable') && (mw.config.get('wgDiffNewId') || mw.config.get('wgDiffOldId'))) {
@@ -226,7 +230,9 @@ Twinkle.rollback.addLinks = {
 			let $list = $context.hasClass('mw-changeslist')
 				? $context.find(selector)
 				: $context.find('.mw-changeslist ' + selector);
-			if (!$list.length) return;
+			if (!$list.length) {
+				return;
+			}
 
 			// Exclude top-level header if "group changes" preference is used
 			// and find only individual lines or nested lines
