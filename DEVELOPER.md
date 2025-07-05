@@ -13,7 +13,7 @@ Things to watch out for:
 
 ## Deploying
 
-There are two ways to upload Twinkle scripts to Wikipedia or another destination. 1) You can use the deploy script by creating a scripts/credentials.json file and then doing `npm run deploy` (see below section for more details). There are also some [on-wiki instructions](https://en.wikipedia.org/wiki/Wikipedia:WikiProject_Articles_for_creation/Helper_script/Deploying). Or 2) you can visit https://gadget-deploy.toolforge.org/, log in, then click the deploy button.
+There are two ways to upload Twinkle scripts to Wikipedia or another destination. 1) You can use the deploy script by creating a scripts/credentials.json file and then doing `npm run deploy` (see below section for more details). Or 2) you can visit https://gadget-deploy.toolforge.org/, log in, then click the deploy button.
 
 After the files are synced, ensure that [MediaWiki:Gadgets-definition][] contains the gadget definition found in [gadget.txt](./gadget.txt) (`deploy.pl` will report its status). In addition to the `Twinkle` definition, the gadget installs the `morebits` library as a hidden gadget, making it efficiently available for other tools to use. `Twinkle-pagestyles` is a hidden [peer gadget](https://www.mediawiki.org/wiki/ResourceLoader/Migration_guide_(users)#Gadget_peers) of Twinkle. Before Twinkle has loaded, it adds space where the TW menu would go in the Vector skin, so that the top bar does not "jump".
 
