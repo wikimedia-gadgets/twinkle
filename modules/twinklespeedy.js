@@ -301,6 +301,13 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				}
 				break;
 
+			case 10: // template
+			case 11: // template talk
+			case 828: // module
+			case 829: // module talk
+				appendList('Templates and modules', Twinkle.speedy.templateList);
+				break;
+
 			case 14: // category
 			case 15: // category talk
 				appendList('Categories', Twinkle.speedy.categoryList);
@@ -708,6 +715,14 @@ Twinkle.speedy.categoryList = [
 	}
 ];
 
+Twinkle.speedy.templateList = [
+	{
+		label: 'T5: Unused template subpages',
+		value: 't5',
+		tooltip: 'Unused subpages of templates and Lua modules. This does not apply to /testcases and /sandbox subpages, or subpages of Module:Sandbox.'
+	}
+];
+
 Twinkle.speedy.userList = [
 	{
 		label: 'U1: User request',
@@ -986,6 +1001,11 @@ Twinkle.speedy.redirectList = [
 		value: 'redirnone',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true
+	},
+	{
+		label: 'X3: Redirects with no space before a parenthetical disambiguation',
+		value: 'x3',
+		tooltip: 'This excludes terms that can plausibly be searched for without spaces, or if the redirect contains substantive page history (e.g. from a merge).'
 	}
 ];
 
@@ -1034,6 +1054,7 @@ Twinkle.speedy.normalizeHash = {
 	rediruser: 'r2',
 	redirtypo: 'r3',
 	redircom: 'r4',
+	x3: 'x3',
 	redundantimage: 'f1',
 	noimage: 'f2',
 	fpcfail: 'f2',
@@ -1048,6 +1069,7 @@ Twinkle.speedy.normalizeHash = {
 	nopermission: 'f11',
 	catempty: 'c1',
 	c4: 'c4',
+	t5: 't5',
 	userreq: 'u1',
 	nouser: 'u2',
 	notwebhost: 'u5'
