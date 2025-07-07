@@ -715,7 +715,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
 			{ tag: 'Fanpov', description: "written from a fan's point of view" },
 			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
-			{ tag: 'Manual', description: 'written like a manual or guidebook' },
+			{ tag: 'How-to', description: 'written like a manual or guidebook' },
 			{ tag: 'Over-quotation', description: 'too many or too-lengthy quotations for an encyclopedic entry' },
 			{ tag: 'Promotional', description: 'contains promotional content or is written like an advertisement' },
 			{ tag: 'Prose', description: 'written in a list format but may read better as prose' },
