@@ -11,45 +11,13 @@ Things to watch out for:
 - The goal is for Twinkle and Morebits to support the same [browsers for which MediaWiki provides Grade A support](https://www.mediawiki.org/wiki/Browser_compatibility). The Twinkle gadget on enwiki is configured so that we can use up to JavaScript version ES6. However, due to the MediaWiki minifier, we must not use keywords from ES2016 or later, such as async/await and RegEx /s flag. New functions from ES2016 or later, such as Array.includes() should be okay since these will not break the minifier.
 - Certain positional jQuery selectors like `:first`, `:last`, and `:eq` were [deprecated in jQuery version 3.4.0](https://blog.jquery.com/2019/04/10/jquery-3-4-0-released/) and should probably not be reintroduced. Instead, use methods like `.first()`, `.last()`, or `.eq()`.
 
-## Updating scripts on Wikipedia
+## Deploying
 
-There are two ways to upload Twinkle scripts to Wikipedia or another destination. You can do it with a [Perl script](#synchronization-using-syncpl) (recommended) or [manually](#manual-synchronization).
+There are two ways to upload Twinkle scripts to Wikipedia or another destination. 1) You can use the deploy script by creating a scripts/credentials.json file and then doing `npm run deploy` (see below section for more details). Or 2) you can visit https://gadget-deploy.toolforge.org/, log in, then click the deploy button.
 
-After the files are synced, ensure that [MediaWiki:Gadgets-definition][] contains the gadget definition found in [gadget.txt](./gadget.txt) (`deploy.pl` will report its status). In addition to the `Twinkle` definition, the gadget installs the `morebits` library as a hidden gadget, making it efficiently available for other tools to use. `Twinkle-pagestyles` is a hidden [peer gadget](https://www.mediawiki.org/wiki/ResourceLoader/Migration_guide_(users)#Gadget_peers) of Twinkle. Before Twinkle has loaded, it adds space where the TW menu would go in the Vector skin, so that the top bar does not "jump".
+After the files are synced, ensure that [MediaWiki:Gadgets-definition][] contains the gadget definition found in [gadget.txt](./gadget.txt) (`deploy.js` will report its status). In addition to the `Twinkle` definition, the gadget installs the `morebits` library as a hidden gadget, making it efficiently available for other tools to use. `Twinkle-pagestyles` is a hidden [peer gadget](https://www.mediawiki.org/wiki/ResourceLoader/Migration_guide_(users)#Gadget_peers) of Twinkle. Before Twinkle has loaded, it adds space where the TW menu would go in the Vector skin, so that the top bar does not "jump".
 
 [select2][] is also uploaded as a hidden gadget for better menus and to take advantage of the Resource Loader over the [Toolforge CDN](https://tools.wmflabs.org/cdnjs/); it is done so under the [MIT license](https://github.com/select2/select2/blob/develop/LICENSE.md). Loading via the ResourceLoader causes it to register as a nodejs/commonjs environment with `module.exports`, so a slight tweak has been made, eliminating that check. Ideally, this will be handled differently (see [external libraries](https://www.mediawiki.org/wiki/ResourceLoader/Migration_guide_for_extension_developers#Special_case_of_external_libraries) and [T108655](https://phabricator.wikimedia.org/T108655). As such, be careful when updating select2 from upstream.
-
-### Manual synchronization
-
-Each Twinkle module and dependency lives on the wiki as a separate file. The list of modules and what pages they should be on are as follows:
-
-- `twinkle.js` &rarr; [MediaWiki:Gadget-Twinkle.js][]
-- `twinkle.css` &rarr; [MediaWiki:Gadget-Twinkle.css][]
-- `twinkle-pagestyles.css` &rarr; [MediaWiki:Gadget-Twinkle-pagestyles.css][]
-- `morebits.js` &rarr; [MediaWiki:Gadget-morebits.js][]
-- `morebits.css` &rarr; [MediaWiki:Gadget-morebits.css][]
-- `select2.min.js` &rarr; [MediaWiki:Gadget-select2.min.js][]
-- `select2.min.css` &rarr; [MediaWiki:Gadget-select2.min.css][]
-- `modules/twinklearv.js` &rarr; [MediaWiki:Gadget-twinklearv.js][]
-- `modules/twinklebatchdelete.js` &rarr; [MediaWiki:Gadget-twinklebatchdelete.js][]
-- `modules/twinklebatchprotect.js` &rarr; [MediaWiki:Gadget-twinklebatchprotect.js][]
-- `modules/twinklebatchundelete.js` &rarr; [MediaWiki:Gadget-twinklebatchundelete.js][]
-- `modules/twinkleblock.js` &rarr; [MediaWiki:Gadget-twinkleblock.js][]
-- `modules/twinkleconfig.js` &rarr; [MediaWiki:Gadget-twinkleconfig.js][]
-- `modules/twinkledeprod.js` &rarr; [MediaWiki:Gadget-twinkledeprod.js][]
-- `modules/twinklediff.js` &rarr; [MediaWiki:Gadget-twinklediff.js][]
-- `modules/twinkleimage.js` &rarr; [MediaWiki:Gadget-twinkleimage.js][]
-- `modules/twinkleprod.js` &rarr; [MediaWiki:Gadget-twinkleprod.js][]
-- `modules/twinkleprotect.js` &rarr; [MediaWiki:Gadget-twinkleprotect.js][]
-- `modules/twinklerollback.js` &rarr; [MediaWiki:Gadget-twinklerollback.js][]
-- `modules/twinkleshared.js` &rarr; [MediaWiki:Gadget-twinkleshared.js][]
-- `modules/twinklespeedy.js` &rarr; [MediaWiki:Gadget-twinklespeedy.js][]
-- `modules/twinkletag.js` &rarr; [MediaWiki:Gadget-twinkletag.js][]
-- `modules/twinkletalkback.js` &rarr; [MediaWiki:Gadget-twinkletalkback.js][]
-- `modules/twinkleunlink.js` &rarr; [MediaWiki:Gadget-twinkleunlink.js][]
-- `modules/twinklewarn.js` &rarr; [MediaWiki:Gadget-twinklewarn.js][]
-- `modules/twinklewelcome.js` &rarr; [MediaWiki:Gadget-twinklewelcome.js][]
-- `modules/twinklexfd.js` &rarr; [MediaWiki:Gadget-twinklexfd.js][]
 
 ### Deployment using `deploy.js`
 
@@ -110,7 +78,40 @@ The script will parse the latest on-wiki edit summary for last deployed commit h
 [intadmin]: https://en.wikipedia.org/wiki/Wikipedia:Interface_administrators
 [special_botpass]: https://en.wikipedia.org/wiki/Special:BotPasswords
 
-### Dependencies
+
+### Manual synchronization
+
+Each Twinkle module and dependency lives on the wiki as a separate file. The list of modules and what pages they should be on are as follows:
+
+- `twinkle.js` &rarr; [MediaWiki:Gadget-Twinkle.js][]
+- `twinkle.css` &rarr; [MediaWiki:Gadget-Twinkle.css][]
+- `twinkle-pagestyles.css` &rarr; [MediaWiki:Gadget-Twinkle-pagestyles.css][]
+- `morebits.js` &rarr; [MediaWiki:Gadget-morebits.js][]
+- `morebits.css` &rarr; [MediaWiki:Gadget-morebits.css][]
+- `select2.min.js` &rarr; [MediaWiki:Gadget-select2.min.js][]
+- `select2.min.css` &rarr; [MediaWiki:Gadget-select2.min.css][]
+- `modules/twinklearv.js` &rarr; [MediaWiki:Gadget-twinklearv.js][]
+- `modules/twinklebatchdelete.js` &rarr; [MediaWiki:Gadget-twinklebatchdelete.js][]
+- `modules/twinklebatchprotect.js` &rarr; [MediaWiki:Gadget-twinklebatchprotect.js][]
+- `modules/twinklebatchundelete.js` &rarr; [MediaWiki:Gadget-twinklebatchundelete.js][]
+- `modules/twinkleblock.js` &rarr; [MediaWiki:Gadget-twinkleblock.js][]
+- `modules/twinkleconfig.js` &rarr; [MediaWiki:Gadget-twinkleconfig.js][]
+- `modules/twinkledeprod.js` &rarr; [MediaWiki:Gadget-twinkledeprod.js][]
+- `modules/twinklediff.js` &rarr; [MediaWiki:Gadget-twinklediff.js][]
+- `modules/twinkleimage.js` &rarr; [MediaWiki:Gadget-twinkleimage.js][]
+- `modules/twinkleprod.js` &rarr; [MediaWiki:Gadget-twinkleprod.js][]
+- `modules/twinkleprotect.js` &rarr; [MediaWiki:Gadget-twinkleprotect.js][]
+- `modules/twinklerollback.js` &rarr; [MediaWiki:Gadget-twinklerollback.js][]
+- `modules/twinkleshared.js` &rarr; [MediaWiki:Gadget-twinkleshared.js][]
+- `modules/twinklespeedy.js` &rarr; [MediaWiki:Gadget-twinklespeedy.js][]
+- `modules/twinkletag.js` &rarr; [MediaWiki:Gadget-twinkletag.js][]
+- `modules/twinkletalkback.js` &rarr; [MediaWiki:Gadget-twinkletalkback.js][]
+- `modules/twinkleunlink.js` &rarr; [MediaWiki:Gadget-twinkleunlink.js][]
+- `modules/twinklewarn.js` &rarr; [MediaWiki:Gadget-twinklewarn.js][]
+- `modules/twinklewelcome.js` &rarr; [MediaWiki:Gadget-twinklewelcome.js][]
+- `modules/twinklexfd.js` &rarr; [MediaWiki:Gadget-twinklexfd.js][]
+
+## Dependencies
 
 All the dependencies that Twinkle uses are JavaScript **dev** dependencies. They are not used at all on-wiki and are just used during development. Here's what they are and what they do.
 
@@ -122,7 +123,7 @@ All the dependencies that Twinkle uses are JavaScript **dev** dependencies. They
 
 When updating dependencies, CI should take care of testing most of that. Manually testing `npm start` should be the only additional check needed.
 
-### Adding a CSD
+## Adding a CSD
 
 Here is a checklist for writing a patch to add a speedy deletion criteria called A1:
 
