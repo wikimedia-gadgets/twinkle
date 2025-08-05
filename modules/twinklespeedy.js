@@ -969,6 +969,41 @@ Twinkle.speedy.generalList = [
 		label: 'G14: Unnecessary disambiguation page',
 		value: 'disambig',
 		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate only one existing Wikipedia page and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguate no (zero) existing Wikipedia pages, regardless of its title.  It also applies to orphan "Foo (disambiguation)" redirects that target pages that are not disambiguation or similar disambiguation-like pages (such as set index articles or lists)'
+	},
+	{
+		label: 'G15: Unreviewed LLM content',
+		value: 'llm',
+		tooltip: 'This only applies to pages containing any of: (1) communication intended for the user (e.g., "Here is your Wikipedia article on..."); (2) implausible non-existent references; or (3) nonsensical citations, that would otherwise have been removed with human review.',
+		subgroup: [
+			{
+				name: 'subcriteria',
+				type: 'radio',
+				list: [
+					{
+						label: 'Communication intended for the user',
+						value: 'communication',
+						tooltip: 'The page contains communication intended for the user, such as "Here is your Wikipedia article on...".'
+					},
+					{
+						label: 'Implausible non-existent references',
+						value: 'implausible',
+						tooltip: 'The page contains implausible non-existent references.'
+					},
+					{
+						label: 'Nonsensical citations',
+						value: 'nonsensical',
+						tooltip: 'The page contains nonsensical citations.'
+					}
+				]
+			},
+			{
+				name: 'reason',
+				type: 'input',
+				label: 'Extended reason (optional):',
+				tooltip: 'Specify why one of the three criteria apply to this page.',
+				size: 60
+			}
+		]
 	}
 ];
 
@@ -1020,6 +1055,7 @@ Twinkle.speedy.normalizeHash = {
 	error: 'g6',
 	move: 'g6',
 	'afc-move': 'g6',
+	llm: 'g15',
 	xfd: 'g6',
 	movedab: 'g6',
 	copypaste: 'g6',
@@ -1748,6 +1784,29 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 
 			case 'afc': // G13
 				currentParams.ts = '$TIMESTAMP'; // to be replaced by the last revision timestamp when page is saved
+				break;
+
+			case 'llm': // G15
+				if ( form['csd.subcriteria'] && form['csd.subcriteria'].value) {
+					if (form['csd.subcriteria'].value === 'communication') {
+						currentParams.communication = 'yes';
+					} else if (form['csd.subcriteria'].value === 'nonsensical' || form['csd.subcriteria'].value === 'implausible') {
+						currentParams.references = 'yes';
+						if ( form['csd.subcriteria'].value === 'nonsensical' ) {
+							currentParams.reason = 'Nonsensical references';
+						} else {
+							currentParams.reason = 'Implausible references';
+						}
+
+						if (form['csd.reason'] && form['csd.reason'].value) {
+							currentParams.reason += ': ' + form['csd.reason'].value;
+						}
+					}
+				}
+
+				if (form['csd.reason'] && form['csd.reason'].value && !(form['csd.subcriteria'] && form['csd.subcriteria'].value)) {
+					currentParams.reason = form['csd.reason'].value;
+				}
 				break;
 
 			case 'redundantimage': // F1

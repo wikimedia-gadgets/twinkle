@@ -27,7 +27,7 @@ Twinkle.config.watchlistEnums = {
 Twinkle.config.commonSets = {
 	csdCriteria: {
 		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
+		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
 		u1: 'U1', u2: 'U2', u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9',
@@ -37,7 +37,7 @@ Twinkle.config.commonSets = {
 	},
 	csdCriteriaDisplayOrder: [
 		'db',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
+		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15',
 		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
 		'u1', 'u2', 'u5',
 		'f1', 'f2', 'f3', 'f7', 'f8', 'f9',
@@ -48,7 +48,7 @@ Twinkle.config.commonSets = {
 	csdCriteriaNotification: {
 		db: 'Custom rationale ({{db}})',
 		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g6: 'G6 ("copy-paste move" only)',
-		g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
+		g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
 		u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9',
@@ -57,7 +57,7 @@ Twinkle.config.commonSets = {
 	},
 	csdCriteriaNotificationDisplayOrder: [
 		'db',
-		'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14',
+		'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15',
 		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
 		'u5',
 		'f1', 'f2', 'f3', 'f7', 'f9',
@@ -66,7 +66,7 @@ Twinkle.config.commonSets = {
 	],
 	csdAndImageDeletionCriteria: {
 		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
+		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
 		u1: 'U1', u2: 'U2', u5: 'U5',
 		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f11: 'F11',
@@ -76,7 +76,7 @@ Twinkle.config.commonSets = {
 	},
 	csdAndImageDeletionCriteriaDisplayOrder: [
 		'db',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
+		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15',
 		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
 		'u1', 'u2', 'u5',
 		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f11',
