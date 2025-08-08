@@ -125,11 +125,27 @@ When updating dependencies, CI should take care of testing most of that. Manuall
 
 ## Adding a CSD
 
-Here is a checklist for writing a patch to add a speedy deletion criteria called A1:
+Here is a checklist for writing a patch to add a speedy deletion criteria:
 
-* Write a patch similar to this one: https://github.com/wikimedia-gadgets/twinkle/pull/2097/files
-* If you want any of the config options to be on by default (instead of off by default), modify twinkle.js -> Twinkle.defaultConfig.
-* On wiki, create these pages. Copy an existing template and adjust as needed.
-    * Template:Db-a1, which will be placed on the page tagged for deletion.
-    * Template:Db-a1-notice, which will be placed on the user talk page of the author of the page tagged for deletion.
-    * Template:Db-a1-deleted, which will be placed on the user talk page of the author of the page deleted.
+* make sure Template:Db-XX exists onwiki. This template will be placed on the page when tagging
+    * make sure this template also exists on testwiki when you're testing, to avoid the error "The "reason" for deleting was not provided, or Twinkle was unable to compute it. Aborting."
+* modules/twinklespeedy.js -> add it to one of the "lists", such as "articleList", "talkList", or "templateList"
+    * If you create a new list, make sure to add the new list to the `Twinkle.speedy.callback.modeChanged()` function, as a case in the `switch (namespace)` statement
+* add to modules/twinklespeedy.js -> `normalizeHash`
+* To allow the preference "add tagged/deleted page to watchlist" (should usually do this), add to:
+    * modules/twinkleconfig.js -> `csdCriteria`
+    * modules/twinkleconfig.js -> `csdCriteriaDisplayOrder`
+* To allow the preferences "allow editing of deletion summary" and "do not create a userspace log entry" (should usually do this), add to:
+    * modules/twinkleconfig.js -> `csdAndImageDeletionCriteria`
+    * modules/twinkleconfig.js -> `csdAndImageDeletionCriteriaDisplayOrder`
+* To allow the preferences "welcome page creator when notifying", "notify page creator when tagging", and "notify page creator when deleting" (should usually do this, unless it's an uncontroversial maintenance CSD, sockpuppet CSD, etc.), add to:
+    * modules/twinkleconfig.js -> `csdCriteriaNotification`
+    * modules/twinkleconfig.js -> `csdCriteriaNotificationDisplayOrder`
+    * create Template:Db-XX-notice onwiki, which will be placed on the user talk page of the author when tagging
+    * create Template:Db-XX-notice/doc onwiki
+    * create Template:Db-XX-deleted onwiki, which will be placed on the user talk page of the author when deleting
+    * create Template:Db-XX-deleted/doc onwiki
+* If you want some of the config options to be on by default (instead of off by default), add to:
+    * twinkle.js -> `Twinkle.defaultConfig`
+
+Example patch: https://github.com/wikimedia-gadgets/twinkle/pull/2097/files
