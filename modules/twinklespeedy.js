@@ -31,6 +31,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'customRationale',
 		label: 'Custom rationale' + (Morebits.userIsSysop ? ' (custom deletion reason)' : ' using {{db}} template'),
+		code: 'db',
 		db: 'reason',
 		tooltip: '{{db}} is short for "delete because". At least one of the other deletion criteria must still apply to the page, and you must make mention of this in your rationale. This is not a "catch-all" for when you can\'t find any criteria that fit.',
 		subgroup: {
@@ -44,12 +45,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'talkList',
 		label: 'G8: Talk pages with no corresponding subject page',
+		code: 'g8',
 		db: 'talk',
 		tooltip: 'This excludes any page that is useful to the project - in particular, user talk pages, talk page archives, and talk pages for files that exist on Wikimedia Commons.'
 	},
 	{
 		list: 'fileList',
 		label: 'F1: Redundant file',
+		code: 'f1',
 		db: 'redundantimage',
 		tooltip: 'Any file that is a redundant copy, in the same file format and same or lower resolution, of something else on Wikipedia. Likewise, other media that is a redundant copy, in the same format and of the same or lower quality. This does not apply to files duplicated on Wikimedia Commons, because of licence issues; these should be tagged with {{subst:ncd|Image:newname.ext}} or {{subst:ncd}} instead',
 		subgroup: {
@@ -62,12 +65,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'fileList',
 		label: 'F2: Corrupt, missing, or empty file',
+		code: 'f2',
 		db: 'noimage',
 		tooltip: 'Before deleting this type of file, verify that the MediaWiki engine cannot read it by previewing a resized thumbnail of it. This also includes empty (i.e., no content) file description pages for Commons files'
 	},
 	{
 		list: 'fileList',
 		label: 'F2: Unneeded file description page for a file on Commons',
+		code: 'f2',
 		db: 'fpcfail',
 		tooltip: 'An image, hosted on Commons, but with tags or information on its English Wikipedia description page that are no longer needed. (For example, a failed featured picture candidate.)',
 		hideWhenMultiple: true
@@ -75,12 +80,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'fileList',
 		label: 'F3: Improper license',
+		code: 'f3',
 		db: 'noncom',
 		tooltip: 'Files licensed as "for non-commercial use only", "non-derivative use" or "used with permission" that were uploaded on or after 2005-05-19, except where they have been shown to comply with the limited standards for the use of non-free content. This includes files licensed under a "Non-commercial Creative Commons License". Such files uploaded before 2005-05-19 may also be speedily deleted if they are not used in any articles'
 	},
 	{
 		list: 'fileList',
 		label: 'F4: Lack of licensing information',
+		code: 'f4',
 		db: 'unksource',
 		tooltip: 'Files in category "Files with unknown source", "Files with unknown copyright status", or "Files with no copyright tag" that have been tagged with a template that places them in the category for more than seven days, regardless of when uploaded. Note, users sometimes specify their source in the upload summary, so be sure to check the circumstances of the file.',
 		hideWhenUser: true
@@ -88,13 +95,15 @@ Twinkle.speedy.data = [
 	{
 		list: 'fileList',
 		label: 'F5: Unused non-free copyrighted file',
-		db: 'f5',
+		code: 'f5',
+		db: 'unfree',
 		tooltip: 'Files that are not under a free license or in the public domain that are not used in any article, whose only use is in a deleted article, and that are very unlikely to be used on any other article. Reasonable exceptions may be made for files uploaded for an upcoming article. For other unused non-free files, use the "Orphaned non-free use" option in Twinkle\'s DI tab.',
 		hideWhenUser: true
 	},
 	{
 		list: 'fileList',
 		label: 'F6: Missing fair-use rationale',
+		code: 'f6',
 		db: 'norat',
 		tooltip: 'Any file without a fair use rationale may be deleted seven days after it is uploaded.  Boilerplate fair use templates do not constitute a fair use rationale.  Files uploaded before 2006-05-04 should not be deleted immediately; instead, the uploader should be notified that a fair-use rationale is needed.  Files uploaded after 2006-05-04 can be tagged using the "No non-free use rationale" option in Twinkle\'s DI module. Such files can be found in the dated subcategories of Category:Files with no non-free use rationale.',
 		hideWhenUser: true
@@ -102,6 +111,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'fileList',
 		label: 'F7: Fair-use media from a commercial image agency which is not the subject of sourced commentary',
+		code: 'f7',
 		db: 'badfairuse',
 		tooltip: 'Non-free images or media from a commercial source (e.g., Associated Press, Getty), where the file itself is not the subject of sourced commentary, are considered an invalid claim of fair use and fail the strict requirements of WP:NFCC. For cases that require a waiting period (invalid or otherwise disputed rationales or replaceable images), use the options on Twinkle\'s DI tab.',
 		subgroup: {
@@ -115,6 +125,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'fileList',
 		label: 'F8: File available as an identical or higher-resolution copy on Wikimedia Commons',
+		code: 'f8',
 		db: 'commons',
 		tooltip: 'Provided the following conditions are met: 1: The file format of both images is the same. 2: The file\'s license and source status is beyond reasonable doubt, and the license is undoubtedly accepted at Commons. 3: All information on the file description page is present on the Commons file description page. That includes the complete upload history with links to the uploader\'s local user pages. 4: The file is not protected, and the file description page does not contain a request not to move it to Commons. 5: If the file is available on Commons under a different name than locally, all local references to the file must be updated to point to the title used at Commons. 6: For {{c-uploaded}} files: They may be speedily deleted as soon as they are off the Main Page',
 		subgroup: {
@@ -129,6 +140,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'fileList',
 		label: 'F9: Unambiguous copyright infringement',
+		code: 'f9',
 		db: 'imgcopyvio',
 		tooltip: 'The file was copied from a website or other source that does not have a license compatible with Wikipedia, and the uploader neither claims fair use nor makes a credible assertion of permission of free use. Sources that do not have a license compatible with Wikipedia include stock photo libraries such as Getty Images or Corbis. Non-blatant copyright infringements should be discussed at Wikipedia:Files for deletion',
 		subgroup: [
@@ -149,6 +161,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'fileList',
 		label: 'F11: No evidence of permission',
+		code: 'f11',
 		db: 'nopermission',
 		tooltip: 'If an uploader has specified a license and has named a third party as the source/copyright holder without providing evidence that this third party has in fact agreed, the item may be deleted seven days after notification of the uploader',
 		hideWhenUser: true
@@ -156,18 +169,21 @@ Twinkle.speedy.data = [
 	{
 		list: 'fileList',
 		label: 'G8: File description page with no corresponding file',
+		code: 'g8',
 		db: 'imagepage',
 		tooltip: 'This is only for use when the file doesn\'t exist at all. Corrupt files, and local description pages for files on Commons, should use F2; implausible redirects should use R3; and broken Commons redirects should use R4.'
 	},
 	{
 		list: 'articleList',
 		label: 'A1: No context. Articles lacking sufficient context to identify the subject of the article.',
+		code: 'a1',
 		db: 'nocontext',
 		tooltip: 'Example: "He is a funny man with a red car. He makes people laugh." This applies only to very short articles. Context is different from content, treated in A3, below.'
 	},
 	{
 		list: 'articleList',
 		label: 'A2: Foreign language articles that exist on another Wikimedia project',
+		code: 'a2',
 		db: 'foreign',
 		tooltip: 'If the article in question does not exist on another project, the template {{notenglish}} should be used instead. All articles in a non-English language that do not meet this criteria (and do not meet any other criteria for speedy deletion) should be listed at Pages Needing Translation (PNT) for review and possible translation',
 		subgroup: {
@@ -180,12 +196,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'articleList',
 		label: 'A3: No content whatsoever',
+		code: 'a3',
 		db: 'nocontent',
 		tooltip: 'Any article consisting only of links elsewhere (including hyperlinks, category tags and "see also" sections), a rephrasing of the title, and/or attempts to correspond with the person or group named by its title. This does not include disambiguation pages'
 	},
 	{
 		list: 'articleList',
 		label: 'A7: No indication of importance (people, groups, companies, web content, individual animals, or organized events)',
+		code: 'a7',
 		db: 'a7',
 		tooltip: 'An article about a real person, group of people, band, club, company, web content, individual animal, tour, or party that does not assert the importance or significance of its subject. If controversial, or if a previous AfD has resulted in the article being kept, the article should be nominated for AfD instead',
 		hideWhenSingle: true
@@ -193,6 +211,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'articleList',
 		label: 'A7: No indication of importance (person)',
+		code: 'a7',
 		db: 'person',
 		tooltip: 'An article about a real person that does not assert the importance or significance of its subject. If controversial, or if there has been a previous AfD that resulted in the article being kept, the article should be nominated for AfD instead',
 		hideWhenMultiple: true
@@ -200,6 +219,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'articleList',
 		label: 'A7: No indication of importance (musician(s) or band)',
+		code: 'a7',
 		db: 'band',
 		tooltip: 'Article about a band, singer, musician, or musical ensemble that does not assert the importance or significance of the subject',
 		hideWhenMultiple: true
@@ -207,6 +227,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'articleList',
 		label: 'A7: No indication of importance (club, society or group)',
+		code: 'a7',
 		db: 'club',
 		tooltip: 'Article about a club, society or group that does not assert the importance or significance of the subject',
 		hideWhenMultiple: true
@@ -214,6 +235,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'articleList',
 		label: 'A7: No indication of importance (company or organization)',
+		code: 'a7',
 		db: 'corp',
 		tooltip: 'Article about a company or organization that does not assert the importance or significance of the subject',
 		hideWhenMultiple: true
@@ -221,6 +243,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'articleList',
 		label: 'A7: No indication of importance (website or web content)',
+		code: 'a7',
 		db: 'web',
 		tooltip: 'Article about a web site, blog, online forum, webcomic, podcast, or similar web content that does not assert the importance or significance of its subject',
 		hideWhenMultiple: true
@@ -228,6 +251,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'articleList',
 		label: 'A7: No indication of importance (individual animal)',
+		code: 'a7',
 		db: 'animal',
 		tooltip: 'Article about an individual animal (e.g. pet) that does not assert the importance or significance of its subject',
 		hideWhenMultiple: true
@@ -235,6 +259,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'articleList',
 		label: 'A7: No indication of importance (organized event)',
+		code: 'a7',
 		db: 'event',
 		tooltip: 'Article about an organized event (tour, function, meeting, party, etc.) that does not assert the importance or significance of its subject',
 		hideWhenMultiple: true
@@ -242,12 +267,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'articleList',
 		label: 'A9: Unremarkable musical recording where artist\'s article doesn\'t exist',
+		code: 'a9',
 		db: 'a9',
 		tooltip: 'An article about a musical recording which does not indicate why its subject is important or significant, and where the artist\'s article has never existed or has been deleted'
 	},
 	{
 		list: 'articleList',
 		label: 'A10: Recently created article that duplicates an existing topic',
+		code: 'a10',
 		db: 'a10',
 		tooltip: 'A recently created article with no relevant page history that does not aim to expand upon, detail or improve information within any existing article(s) on the subject, and where the title is not a plausible redirect. This does not include content forks, split pages or any article that aims at expanding or detailing an existing one.',
 		subgroup: {
@@ -259,18 +286,21 @@ Twinkle.speedy.data = [
 	{
 		list: 'articleList',
 		label: 'A11: Obviously made up by creator, and no claim of significance',
+		code: 'a11',
 		db: 'madeup',
 		tooltip: 'An article which plainly indicates that the subject was invented/coined/discovered by the article\'s creator or someone they know personally, and does not credibly indicate why its subject is important or significant'
 	},
 	{
 		list: 'categoryList',
 		label: 'C1: Empty categories',
+		code: 'c1',
 		db: 'catempty',
 		tooltip: 'Categories that have been unpopulated for at least seven days. This does not apply to categories being discussed at WP:CFD, disambiguation categories, and certain other exceptions. If the category isn\'t relatively new, it possibly contained articles earlier, and deeper investigation is needed'
 	},
 	{
 		list: 'categoryList',
 		label: 'C4: Permanently unused maintenance categories',
+		code: 'c4',
 		db: 'c4',
 		tooltip: 'Unused maintenance categories, such as empty dated maintenance categories for dates in the past, tracking categories no longer used by a template after a rewrite, or empty subcategories of Category:Wikipedia sockpuppets or Category:Suspected Wikipedia sockpuppets. Empty maintenance categories are not necessarily unused—this criterion is for categories which will always be empty, not just currently empty.',
 		subgroup: {
@@ -283,12 +313,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'templateList',
 		label: 'T5: Unused template subpages',
+		code: 't5',
 		db: 't5',
 		tooltip: 'Unused subpages of templates and Lua modules. This does not apply to /testcases and /sandbox subpages, or subpages of Module:Sandbox.'
 	},
 	{
 		list: 'userList',
 		label: 'U1: User request',
+		code: 'u1',
 		db: 'userreq',
 		tooltip: 'Personal subpages, upon request by their user. In some rare cases there may be administrative need to retain the page. Also, sometimes, main user pages may be deleted as well. See Wikipedia:User page for full instructions and guidelines',
 		subgroup: mw.config.get('wgNamespaceNumber') === 3 && !mw.config.get('wgTitle').includes('/') ? {
@@ -302,6 +334,7 @@ Twinkle.speedy.data = [
 	},
 	{
 		list: 'userList',
+		code: 'u2',
 		label: 'U2: Nonexistent user',
 		db: 'nouser',
 		tooltip: 'User pages of users that do not exist (Check Special:Listusers)'
@@ -309,6 +342,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'userList',
 		label: 'U5: A non-contributor misusing Wikipedia as a web host',
+		code: 'u5',
 		db: 'notwebhost',
 		tooltip: 'Pages in userspace consisting of writings, information, discussions, or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of user pages, except for plausible drafts and pages adhering to WP:UPYES. It applies regardless of the age of the page in question.',
 		hideWhenRedirect: true
@@ -316,6 +350,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'userList',
 		label: 'G11: Promotional user page under a promotional user name',
+		code: 'g11',
 		db: 'spamuser',
 		tooltip: 'A promotional user page, with a username that promotes or implies affiliation with the thing being promoted. Note that simply having a page on a company or product in one\'s userspace does not qualify it for deletion. If a user page is spammy but the username is not, then consider tagging with regular G11 instead.',
 		hideWhenMultiple: true,
@@ -324,6 +359,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'userList',
 		label: 'G13: AfC draft submission or a blank draft, stale by over 6 months',
+		code: 'g13',
 		db: 'afc',
 		tooltip: 'Any rejected or unsubmitted AfC draft submission or a blank draft, that has not been edited in over 6 months (excluding bot edits).',
 		hideWhenMultiple: true,
@@ -332,6 +368,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G1: Patent nonsense. Pages consisting purely of incoherent text or gibberish with no meaningful content or history.',
+		code: 'g1',
 		db: 'nonsense',
 		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.',
 		hideInNamespaces: [ 2 ] // Not applicable in userspace
@@ -339,6 +376,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G2: Test page',
+		code: 'g2',
 		db: 'test',
 		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates.',
 		hideInNamespaces: [ 2 ] // Not applicable in userspace
@@ -346,12 +384,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G3: Pure vandalism',
+		code: 'g3',
 		db: 'vandalism',
 		tooltip: 'Plain pure vandalism (including redirects left behind from pagemove vandalism)'
 	},
 	{
 		list: 'generalList',
 		label: 'G3: Blatant hoax',
+		code: 'g3',
 		db: 'hoax',
 		tooltip: 'Blatant and obvious hoax, to the point of vandalism',
 		hideWhenMultiple: true
@@ -359,6 +399,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G4: Recreation of material deleted via a deletion discussion',
+		code: 'g4',
 		db: 'repost',
 		tooltip: 'A copy, by any title, of a page that was deleted via an XfD process or Deletion review, provided that the copy is substantially identical to the deleted version. This clause does not apply to content that has been "userfied", to content undeleted as a result of Deletion review, or if the prior deletions were proposed or speedy deletions, although in this last case, other speedy deletion criteria may still apply',
 		subgroup: {
@@ -372,6 +413,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G5: Created by a banned or blocked user',
+		code: 'g5',
 		db: 'banned',
 		tooltip: 'Pages created by banned or blocked users in violation of their ban or block, and which have no substantial edits by others',
 		subgroup: {
@@ -384,6 +426,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G6: Error',
+		code: 'g6',
 		db: 'error',
 		tooltip: 'A page that was obviously created in error, or a redirect left over from moving a page that was obviously created at the wrong title.',
 		hideWhenMultiple: true
@@ -391,6 +434,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G6: Move',
+		code: 'g6',
 		db: 'move',
 		tooltip: 'Making way for an uncontroversial move like reversing a redirect',
 		subgroup: [
@@ -411,6 +455,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G6: XfD',
+		code: 'g6',
 		db: 'xfd',
 		tooltip: 'A deletion discussion (at AfD, FfD, RfD, TfD, CfD, or MfD) was closed as "delete", but the page wasn\'t actually deleted.',
 		subgroup: {
@@ -425,6 +470,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G6: AfC move',
+		code: 'g6',
 		db: 'afc-move',
 		tooltip: 'Making way for acceptance of a draft submitted to AfC',
 		subgroup: {
@@ -437,6 +483,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G6: Copy-and-paste page move',
+		code: 'g6',
 		db: 'copypaste',
 		tooltip: 'This only applies for a copy-and-paste page move of another page that needs to be temporarily deleted to make room for a clean page move.',
 		subgroup: {
@@ -449,6 +496,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G6: Housekeeping and non-controversial cleanup',
+		code: 'g6',
 		db: 'g6',
 		tooltip: 'Other routine maintenance tasks',
 		subgroup: {
@@ -461,6 +509,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G7: Author requests deletion, or author blanked',
+		code: 'g7',
 		db: 'author',
 		tooltip: 'Any page for which deletion is requested by the original author in good faith, provided the page\'s only substantial content was added by its author. If the author blanks the page, this can also be taken as a deletion request.',
 		subgroup: {
@@ -475,6 +524,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G8: Pages dependent on a non-existent or deleted page',
+		code: 'g8',
 		db: 'g8',
 		tooltip: 'such as talk pages with no corresponding subject page; subpages with no parent page; file pages without a corresponding file; redirects to non-existent targets; or categories populated by deleted or retargeted templates. This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		subgroup: {
@@ -488,6 +538,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G8: Subpages with no parent page',
+		code: 'g8',
 		db: 'subpage',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true,
@@ -496,12 +547,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G10: Attack page',
+		code: 'g10',
 		db: 'attack',
 		tooltip: 'Pages that serve no purpose but to disparage or threaten their subject or some other entity (e.g., "John Q. Doe is an imbecile"). This includes a biography of a living person that is negative in tone and unsourced, where there is no NPOV version in the history to revert to. Administrators deleting such pages should not quote the content of the page in the deletion summary!'
 	},
 	{
 		list: 'generalList',
 		label: 'G10: Wholly negative, unsourced BLP',
+		code: 'g10',
 		db: 'negublp',
 		tooltip: 'A biography of a living person that is entirely negative in tone and unsourced, where there is no neutral version in the history to revert to.',
 		hideWhenMultiple: true
@@ -509,12 +562,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G11: Unambiguous advertising or promotion',
+		code: 'g11',
 		db: 'spam',
 		tooltip: 'Pages which exclusively promote a company, product, group, service, or person and which would need to be fundamentally rewritten in order to become encyclopedic. Note that an article about a company or a product which describes its subject from a neutral point of view does not qualify for this criterion; an article that is blatant advertising should have inappropriate content as well'
 	},
 	{
 		list: 'generalList',
 		label: 'G12: Unambiguous copyright infringement',
+		code: 'g12',
 		db: 'copyvio',
 		tooltip: 'Either: (1) Material was copied from another website that does not have a license compatible with Wikipedia, or is photography from a stock photo seller (such as Getty Images or Corbis) or other commercial content provider; (2) There is no non-infringing content in the page history worth saving; or (3) The infringement was introduced at once by a single person rather than created organically on wiki and then copied by another website such as one of the many Wikipedia mirrors',
 		subgroup: [
@@ -544,6 +599,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G13: Page in draft namespace or userspace AfC submission, stale by over 6 months',
+		code: 'g13',
 		db: 'afc',
 		tooltip: 'Any rejected or unsubmitted AfC submission in userspace or any non-redirect page in draft namespace, that has not been edited for more than 6 months. Blank drafts in either namespace are also included.',
 		hideWhenRedirect: true,
@@ -552,12 +608,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'generalList',
 		label: 'G14: Unnecessary disambiguation page',
+		code: 'g14',
 		db: 'disambig',
 		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate only one existing Wikipedia page and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguate no (zero) existing Wikipedia pages, regardless of its title.  It also applies to orphan "Foo (disambiguation)" redirects that target pages that are not disambiguation or similar disambiguation-like pages (such as set index articles or lists)'
 	},
 	{
 		list: 'redirectList',
 		label: 'R2: Redirect from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
+		code: 'r2',
 		db: 'rediruser',
 		tooltip: 'This does not include the pseudo-namespace shortcuts. If this was the result of a page move, consider waiting a day or two before deleting the redirect',
 		showInNamespaces: [ 0 ]
@@ -565,12 +623,14 @@ Twinkle.speedy.data = [
 	{
 		list: 'redirectList',
 		label: 'R3: Recently created redirect from an implausible typo or misnomer',
+		code: 'r3',
 		db: 'redirtypo',
 		tooltip: 'However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages'
 	},
 	{
 		list: 'redirectList',
 		label: 'R4: File namespace redirect with a name that matches a Commons page',
+		code: 'r4',
 		db: 'redircom',
 		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).',
 		showInNamespaces: [ 6 ]
@@ -578,6 +638,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'redirectList',
 		label: 'G6: Redirect to malplaced disambiguation page',
+		code: 'g6',
 		db: 'movedab',
 		tooltip: 'This only applies for redirects to disambiguation pages ending in (disambiguation) where a primary topic does not exist.',
 		hideWhenMultiple: true
@@ -585,6 +646,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'redirectList',
 		label: 'G8: Redirects to non-existent targets',
+		code: 'g8',
 		db: 'redirnone',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true
@@ -592,6 +654,7 @@ Twinkle.speedy.data = [
 	{
 		list: 'redirectList',
 		label: 'X3: Redirects with no space before a parenthetical disambiguation',
+		code: 'x3',
 		db: 'x3',
 		tooltip: 'This excludes terms that can plausibly be searched for without spaces, or if the redirect contains substantive page history (e.g. from a merge).'
 	}
@@ -607,6 +670,7 @@ Twinkle.speedy.getCsdList = ( csdList ) => {
 			const copy = Object.assign({}, item);
 			// Change some things to match the old spec, from before I refactored this.
 			delete copy.list;
+			delete copy.code;
 			copy.value = copy.db;
 			delete copy.db;
 			list.push(copy);
@@ -625,71 +689,23 @@ Twinkle.speedy.userList = Twinkle.speedy.getCsdList( 'userList' );
 Twinkle.speedy.generalList = Twinkle.speedy.getCsdList( 'generalList' );
 Twinkle.speedy.redirectList = Twinkle.speedy.getCsdList( 'redirectList' );
 
-Twinkle.speedy.normalizeHash = {
-	reason: 'db',
-	nocontext: 'a1',
-	foreign: 'a2',
-	nocontent: 'a3',
-	a7: 'a7',
-	person: 'a7',
-	corp: 'a7',
-	web: 'a7',
-	band: 'a7',
-	club: 'a7',
-	animal: 'a7',
-	event: 'a7',
-	a9: 'a9',
-	a10: 'a10',
-	madeup: 'a11',
-	catempty: 'c1',
-	c4: 'c4',
-	redundantimage: 'f1',
-	noimage: 'f2',
-	fpcfail: 'f2',
-	noncom: 'f3',
-	unksource: 'f4',
-	unfree: 'f5',
-	f5: 'f5',
-	norat: 'f6',
-	badfairuse: 'f7',
-	commons: 'f8',
-	imgcopyvio: 'f9',
-	nopermission: 'f11',
-	nonsense: 'g1',
-	test: 'g2',
-	vandalism: 'g3',
-	hoax: 'g3',
-	repost: 'g4',
-	banned: 'g5',
-	error: 'g6',
-	move: 'g6',
-	'afc-move': 'g6',
-	xfd: 'g6',
-	movedab: 'g6',
-	copypaste: 'g6',
-	g6: 'g6',
-	author: 'g7',
-	g8: 'g8',
-	talk: 'g8',
-	subpage: 'g8',
-	redirnone: 'g8',
-	imagepage: 'g8',
-	attack: 'g10',
-	negublp: 'g10',
-	spam: 'g11',
-	spamuser: 'g11',
-	copyvio: 'g12',
-	afc: 'g13',
-	disambig: 'g14',
-	rediruser: 'r2',
-	redirtypo: 'r3',
-	redircom: 'r4',
-	t5: 't5',
-	userreq: 'u1',
-	nouser: 'u2',
-	notwebhost: 'u5',
-	x3: 'x3'
+/**
+ * Iterate over Twinkle.speedy.data. Turn `code: 'g8', db: 'redirnone',` into `redirnone: 'g8',`
+ */
+Twinkle.speedy.getNormalizeHash = () => {
+	const hash = {};
+	for (const item of Twinkle.speedy.data) {
+		if (item.code && item.db) {
+			hash[item.db] = item.code;
+		}
+	}
+	return hash;
 };
+
+/**
+ * This is a map of Db-word templates to CSD codes such as a1. For example, `"nocontext": "a1"`
+ */
+Twinkle.speedy.normalizeHash = Twinkle.speedy.getNormalizeHash();
 
 // This function is run when the CSD tab/header link is clicked
 Twinkle.speedy.callback = function twinklespeedyCallback() {
