@@ -129,9 +129,8 @@ Here is a checklist for writing a patch to add a speedy deletion criteria:
 
 * make sure Template:Db-XX exists onwiki. This template will be placed on the page when tagging
     * make sure this template also exists on testwiki when you're testing, to avoid the error "The "reason" for deleting was not provided, or Twinkle was unable to compute it. Aborting."
-* modules/twinklespeedy.js -> add it to one of the "lists", such as "articleList", "talkList", or "templateList"
-    * If you create a new list, make sure to add the new list to the `Twinkle.speedy.callback.modeChanged()` function, as a case in the `switch (namespace)` statement
-* add to modules/twinklespeedy.js -> `normalizeHash`
+* modules/twinklespeedy.js -> add it to Twinkle.speedy.data
+    * If you create a new list (examples of lists are fileList, redirectList, etc), make sure to create a new variable, add the new list to the `Twinkle.speedy.callback.modeChanged()` function, as a case in the `switch (namespace)` statement
 * To allow the preference "add tagged/deleted page to watchlist" (should usually do this), add to:
     * modules/twinkleconfig.js -> `csdCriteria`
     * modules/twinkleconfig.js -> `csdCriteriaDisplayOrder`
