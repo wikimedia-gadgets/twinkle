@@ -96,7 +96,7 @@ Twinkle.speedy.data = [
 		list: 'fileList',
 		label: 'F5: Unused non-free copyrighted file',
 		code: 'f5',
-		db: 'unfree',
+		db: 'f5',
 		tooltip: 'Files that are not under a free license or in the public domain that are not used in any article, whose only use is in a deleted article, and that are very unlikely to be used on any other article. Reasonable exceptions may be made for files uploaded for an upcoming article. For other unused non-free files, use the "Orphaned non-free use" option in Twinkle\'s DI tab.',
 		hideWhenUser: true
 	},
