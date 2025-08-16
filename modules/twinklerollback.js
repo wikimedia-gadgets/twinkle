@@ -73,9 +73,9 @@ Twinkle.rollback.linkBuilder = {
 
 	buildLink: function(color, text) {
 		const link = document.createElement('a');
-		link.appendChild(Twinkle.rollback.linkBuilder.spanTag('Black', '['));
+		link.appendChild(Twinkle.rollback.linkBuilder.spanTag('var(--color-base, black)', '['));
 		link.appendChild(Twinkle.rollback.linkBuilder.spanTag(color, text));
-		link.appendChild(Twinkle.rollback.linkBuilder.spanTag('Black', ']'));
+		link.appendChild(Twinkle.rollback.linkBuilder.spanTag('var(--color-base, black)', ']'));
 		link.href = '#';
 		return link;
 	},
@@ -112,8 +112,8 @@ Twinkle.rollback.linkBuilder = {
 		const normNode = document.createElement('span');
 		const vandNode = document.createElement('span');
 
-		const normLink = Twinkle.rollback.linkBuilder.buildLink('SteelBlue', 'rollback');
-		const vandLink = Twinkle.rollback.linkBuilder.buildLink('Red', 'vandalism');
+		const normLink = Twinkle.rollback.linkBuilder.buildLink('var(--color-progressive, steelblue)', 'rollback');
+		const vandLink = Twinkle.rollback.linkBuilder.buildLink('var(--color-destructive, red)', 'vandalism');
 
 		normLink.style.fontWeight = 'bold';
 		vandLink.style.fontWeight = 'bold';
@@ -140,7 +140,7 @@ Twinkle.rollback.linkBuilder = {
 
 		if (!inline) {
 			const agfNode = document.createElement('span');
-			const agfLink = Twinkle.rollback.linkBuilder.buildLink('DarkOliveGreen', 'rollback (AGF)');
+			const agfLink = Twinkle.rollback.linkBuilder.buildLink('var(--color-success, darkolivegreen)', 'rollback (AGF)');
 			$(agfLink).on('click', (e) => {
 				e.preventDefault();
 				Twinkle.rollback.revert('agf', vandal, rev, page);
@@ -169,7 +169,7 @@ Twinkle.rollback.linkBuilder = {
 		revertToRevisionNode.setAttribute('id', 'tw-revert-to-' + revisionRef);
 		revertToRevisionNode.style.fontWeight = 'bold';
 
-		const revertToRevisionLink = Twinkle.rollback.linkBuilder.buildLink('SaddleBrown', 'restore this version');
+		const revertToRevisionLink = Twinkle.rollback.linkBuilder.buildLink('var(--color-warning, saddlebrown)', 'restore this version');
 		$(revertToRevisionLink).on('click', (e) => {
 			e.preventDefault();
 			Twinkle.rollback.revertToRevision(revisionRef);
