@@ -36,17 +36,6 @@ Twinkle.config.commonSets = {
 		u1: 'U1', u2: 'U2', u5: 'U5',
 		x3: 'X3'
 	},
-	csdCriteriaDisplayOrder: [
-		'db',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'c1', 'c4',
-		'f1', 'f2', 'f3', 'f7', 'f8', 'f9',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'r2', 'r3', 'r4',
-		't5',
-		'u1', 'u2', 'u5',
-		'x3'
-	],
 	csdCriteriaNotification: {
 		db: 'Custom rationale ({{db}})',
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
@@ -57,16 +46,6 @@ Twinkle.config.commonSets = {
 		u5: 'U5',
 		x3: 'X3'
 	},
-	csdCriteriaNotificationDisplayOrder: [
-		'db',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'c1',
-		'f1', 'f2', 'f3', 'f7', 'f9',
-		'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'r2', 'r3', 'r4',
-		'u5',
-		'x3'
-	],
 	csdAndImageDeletionCriteria: {
 		db: 'Custom rationale ({{db}})',
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
@@ -78,17 +57,6 @@ Twinkle.config.commonSets = {
 		u1: 'U1', u2: 'U2', u5: 'U5',
 		x3: 'X3'
 	},
-	csdAndImageDeletionCriteriaDisplayOrder: [
-		'db',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'c1', 'c4',
-		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f11',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'r2', 'r3', 'r4',
-		't5',
-		'u1', 'u2', 'u5',
-		'x3'
-	],
 	namespacesNoSpecial: {
 		0: 'Article',
 		1: 'Talk (article)',
@@ -116,6 +84,29 @@ Twinkle.config.commonSets = {
 		829: 'Module talk'
 	}
 };
+
+/**
+ * Take a csdCriteria object such as { 'a': '123', 'b': '123' ) and turn it into [ 'a', 'b' ]. The display order will start with 'db', and then be alphabetical after that.
+ */
+Twinkle.config.getDisplayOrder = ( csdCriteria ) => {
+	const displayOrder = [];
+	for ( const key in csdCriteria ) {
+		if ( Object.prototype.hasOwnProperty.call( csdCriteria, key ) ) {
+			displayOrder.push( key );
+		}
+	}
+	// sort it, numerically not lexicographically, and make sure 'db' is first
+	displayOrder.sort((a, b) => a - b);
+	if ( displayOrder.includes( 'db' ) ) {
+		displayOrder.splice( displayOrder.indexOf( 'db' ), 1 );
+		displayOrder.unshift( 'db' );
+	}
+	return displayOrder;
+};
+
+Twinkle.config.commonSets.csdCriteriaDisplayOrder = Twinkle.config.getDisplayOrder( Twinkle.config.commonSets.csdCriteria );
+Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder = Twinkle.config.getDisplayOrder( Twinkle.config.commonSets.csdCriteriaNotification );
+Twinkle.config.commonSets.csdAndImageDeletionCriteriaDisplayOrder = Twinkle.config.getDisplayOrder( Twinkle.config.commonSets.csdAndImageDeletionCriteria );
 
 /**
  * Section entry format:
