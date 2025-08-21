@@ -89,12 +89,7 @@ Twinkle.config.commonSets = {
  * Take a csdCriteria object such as { 'a': '123', 'b': '123' ) and turn it into [ 'a', 'b' ]. The display order will start with 'db', and then be alphabetical after that.
  */
 Twinkle.config.getDisplayOrder = ( csdCriteria ) => {
-	const displayOrder = [];
-	for ( const key in csdCriteria ) {
-		if ( Object.prototype.hasOwnProperty.call( csdCriteria, key ) ) {
-			displayOrder.push( key );
-		}
-	}
+	const displayOrder = Object.keys( csdCriteria );
 	// sort it, numerically not lexicographically, and make sure 'db' is first
 	displayOrder.sort((a, b) => a - b);
 	if ( displayOrder.includes( 'db' ) ) {
