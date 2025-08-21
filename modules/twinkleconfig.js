@@ -85,23 +85,9 @@ Twinkle.config.commonSets = {
 	}
 };
 
-/**
- * Take a csdCriteria object such as { 'a': '123', 'b': '123' ) and turn it into [ 'a', 'b' ]. The display order will start with 'db', and then be alphabetical after that.
- */
-Twinkle.config.getDisplayOrder = ( csdCriteria ) => {
-	const displayOrder = Object.keys( csdCriteria );
-	// sort it, numerically not lexicographically, and make sure 'db' is first
-	displayOrder.sort((a, b) => a - b);
-	if ( displayOrder.includes( 'db' ) ) {
-		displayOrder.splice( displayOrder.indexOf( 'db' ), 1 );
-		displayOrder.unshift( 'db' );
-	}
-	return displayOrder;
-};
-
-Twinkle.config.commonSets.csdCriteriaDisplayOrder = Twinkle.config.getDisplayOrder( Twinkle.config.commonSets.csdCriteria );
-Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder = Twinkle.config.getDisplayOrder( Twinkle.config.commonSets.csdCriteriaNotification );
-Twinkle.config.commonSets.csdAndImageDeletionCriteriaDisplayOrder = Twinkle.config.getDisplayOrder( Twinkle.config.commonSets.csdAndImageDeletionCriteria );
+Twinkle.config.commonSets.csdCriteriaDisplayOrder = Object.keys( Twinkle.config.commonSets.csdCriteria );
+Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder = Object.keys( Twinkle.config.commonSets.csdCriteriaNotification );
+Twinkle.config.commonSets.csdAndImageDeletionCriteriaDisplayOrder = Object.keys( Twinkle.config.commonSets.csdAndImageDeletionCriteria );
 
 /**
  * Section entry format:
