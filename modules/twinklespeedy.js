@@ -613,6 +613,7 @@ Twinkle.speedy.data = [
 		tooltip: 'This only applies for orphaned disambiguation pages which either: (1) disambiguate only one existing Wikipedia page and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguate no (zero) existing Wikipedia pages, regardless of its title.  It also applies to orphan "Foo (disambiguation)" redirects that target pages that are not disambiguation or similar disambiguation-like pages (such as set index articles or lists)'
 	},
 	{
+		list: 'generalList',
 		label: 'G15: Unreviewed LLM content',
 		code: 'g15',
 		db: 'llm',
@@ -647,7 +648,7 @@ Twinkle.speedy.data = [
 				size: 60
 			}
 		]
-  },
+	},
 	{
 		list: 'redirectList',
 		label: 'R2: Redirect from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces',
