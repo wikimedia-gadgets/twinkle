@@ -512,6 +512,41 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
     "tooltip": "This only applies for orphaned disambiguation pages which either: (1) disambiguate only one existing Wikipedia page and whose title ends in "(disambiguation)" (i.e., there is a primary topic); or (2) disambiguate no (zero) existing Wikipedia pages, regardless of its title.  It also applies to orphan "Foo (disambiguation)" redirects that target pages that are not disambiguation or similar disambiguation-like pages (such as set index articles or lists)",
     "value": "disambig",
   },
+  {
+    "label": "G15: Unreviewed LLM content",
+    "subgroup": [
+      {
+        "list": [
+          {
+            "label": "Communication intended for the user",
+            "tooltip": "The page contains communication intended for the user, such as "Here is your Wikipedia article on...".",
+            "value": "communication",
+          },
+          {
+            "label": "Implausible non-existent references",
+            "tooltip": "The page contains implausible non-existent references.",
+            "value": "implausible",
+          },
+          {
+            "label": "Nonsensical citations",
+            "tooltip": "The page contains nonsensical citations.",
+            "value": "nonsensical",
+          },
+        ],
+        "name": "subcriteria",
+        "type": "radio",
+      },
+      {
+        "label": "Extended reason (optional):",
+        "name": "reason",
+        "size": 60,
+        "tooltip": "Specify why one of the three criteria apply to this page.",
+        "type": "input",
+      },
+    ],
+    "tooltip": "This only applies to pages containing any of: (1) communication intended for the user (e.g., "Here is your Wikipedia article on..."); (2) implausible non-existent references; or (3) nonsensical citations, that would otherwise have been removed with human review.",
+    "value": "llm",
+  },
 ]
 `;
 
@@ -589,6 +624,7 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
   "hoax": "g3",
   "imagepage": "g8",
   "imgcopyvio": "f9",
+  "llm": "g15",
   "madeup": "a11",
   "move": "g6",
   "movedab": "g6",
