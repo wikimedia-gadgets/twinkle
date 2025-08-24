@@ -1870,6 +1870,29 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				currentParams.ts = '$TIMESTAMP'; // to be replaced by the last revision timestamp when page is saved
 				break;
 
+			case 'llm': // G15
+				if ( form['csd.subcriteria'] && form['csd.subcriteria'].value) {
+					if (form['csd.subcriteria'].value === 'communication') {
+						currentParams.communication = 'yes';
+					} else if (form['csd.subcriteria'].value === 'nonsensical' || form['csd.subcriteria'].value === 'implausible') {
+						currentParams.references = 'yes';
+						if ( form['csd.subcriteria'].value === 'nonsensical' ) {
+							currentParams.reason = 'Nonsensical references';
+						} else {
+							currentParams.reason = 'Implausible references';
+						}
+
+						if (form['csd.reason'] && form['csd.reason'].value) {
+							currentParams.reason += ': ' + form['csd.reason'].value;
+						}
+					}
+				}
+
+				if (form['csd.reason'] && form['csd.reason'].value && !(form['csd.subcriteria'] && form['csd.subcriteria'].value)) {
+					currentParams.reason = form['csd.reason'].value;
+				}
+				break;
+
 			case 'redundantimage': // F1
 				if (form['csd.redundantimage_filename']) {
 					const redimage = form['csd.redundantimage_filename'].value;
