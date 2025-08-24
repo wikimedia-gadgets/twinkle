@@ -1,6 +1,6 @@
 'use strict';
 
-describe('modules/twinkleblock', () => {
+describe('modules/twinklespeedy', () => {
 	describe('Twinkle.speedy global variables', () => {
 		test('Should match snapshot', () => {
 			expect(Twinkle.speedy.customRationale).toMatchSnapshot();

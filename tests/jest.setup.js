@@ -10,6 +10,8 @@ require('../morebits.js');
 require('../twinkle.js');
 require('../modules/twinkleblock.js');
 require('../modules/twinklespeedy.js');
+// Load this after twinklespeedy.js. Needs to read Twinkle.speedy.data.
+require('../modules/twinkleconfig.js');
 require('../modules/twinkletag.js');
 require('../modules/twinklewarn.js');
 require('../modules/twinklexfd.js');

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`modules/twinkleblock Twinkle.speedy global variables Should match snapshot 1`] = `
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 1`] = `
 [
   {
     "hideWhenMultiple": true,
@@ -17,7 +17,7 @@ exports[`modules/twinkleblock Twinkle.speedy global variables Should match snaps
 ]
 `;
 
-exports[`modules/twinkleblock Twinkle.speedy global variables Should match snapshot 2`] = `
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 2`] = `
 [
   {
     "label": "G8: Talk pages with no corresponding subject page",
@@ -27,7 +27,7 @@ exports[`modules/twinkleblock Twinkle.speedy global variables Should match snaps
 ]
 `;
 
-exports[`modules/twinkleblock Twinkle.speedy global variables Should match snapshot 3`] = `
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 3`] = `
 [
   {
     "label": "F1: Redundant file",
@@ -132,7 +132,7 @@ exports[`modules/twinkleblock Twinkle.speedy global variables Should match snaps
 ]
 `;
 
-exports[`modules/twinkleblock Twinkle.speedy global variables Should match snapshot 4`] = `
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 4`] = `
 [
   {
     "label": "A1: No context. Articles lacking sufficient context to identify the subject of the article.",
@@ -226,7 +226,7 @@ exports[`modules/twinkleblock Twinkle.speedy global variables Should match snaps
 ]
 `;
 
-exports[`modules/twinkleblock Twinkle.speedy global variables Should match snapshot 5`] = `
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 5`] = `
 [
   {
     "label": "C1: Empty categories",
@@ -247,7 +247,7 @@ exports[`modules/twinkleblock Twinkle.speedy global variables Should match snaps
 ]
 `;
 
-exports[`modules/twinkleblock Twinkle.speedy global variables Should match snapshot 6`] = `
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 6`] = `
 [
   {
     "label": "T5: Unused template subpages",
@@ -257,7 +257,7 @@ exports[`modules/twinkleblock Twinkle.speedy global variables Should match snaps
 ]
 `;
 
-exports[`modules/twinkleblock Twinkle.speedy global variables Should match snapshot 7`] = `
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 7`] = `
 [
   {
     "hideSubgroupWhenMultiple": true,
@@ -294,7 +294,7 @@ exports[`modules/twinkleblock Twinkle.speedy global variables Should match snaps
 ]
 `;
 
-exports[`modules/twinkleblock Twinkle.speedy global variables Should match snapshot 8`] = `
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 8`] = `
 [
   {
     "hideInNamespaces": [
@@ -515,7 +515,7 @@ exports[`modules/twinkleblock Twinkle.speedy global variables Should match snaps
 ]
 `;
 
-exports[`modules/twinkleblock Twinkle.speedy global variables Should match snapshot 9`] = `
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 9`] = `
 [
   {
     "label": "R2: Redirect from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces",
@@ -558,7 +558,7 @@ exports[`modules/twinkleblock Twinkle.speedy global variables Should match snaps
 ]
 `;
 
-exports[`modules/twinkleblock Twinkle.speedy global variables Should match snapshot 10`] = `
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 10`] = `
 {
   "a10": "a10",
   "a7": "a7",

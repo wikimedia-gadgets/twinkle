@@ -130,17 +130,12 @@ Here is a checklist for writing a patch to add a speedy deletion criteria:
 * make sure Template:Db-XX exists onwiki. This template will be placed on the page when tagging
     * make sure this template also exists on testwiki when you're testing, to avoid the error "The "reason" for deleting was not provided, or Twinkle was unable to compute it. Aborting."
 * modules/twinklespeedy.js -> add it to Twinkle.speedy.data
-    * If you create a new list (examples of lists are fileList, redirectList, etc), make sure to create a new variable, add the new list to the `Twinkle.speedy.callback.modeChanged()` function, as a case in the `switch (namespace)` statement
-    * If the new CSD has some data it needs to collect (for example it will be adding a "subgroup" that contains a text box), and you need to do form validation on that data, modify the code in `Twinkle.speedy.getParameters()`
 * To allow the preference "add tagged/deleted page to watchlist" (should usually do this), add to:
     * modules/twinkleconfig.js -> `csdCriteria`
-    * modules/twinkleconfig.js -> `csdCriteriaDisplayOrder`
 * To allow the preferences "allow editing of deletion summary" and "do not create a userspace log entry" (should usually do this), add to:
     * modules/twinkleconfig.js -> `csdAndImageDeletionCriteria`
-    * modules/twinkleconfig.js -> `csdAndImageDeletionCriteriaDisplayOrder`
 * To allow the preferences "welcome page creator when notifying", "notify page creator when tagging", and "notify page creator when deleting" (should usually do this, unless it's an uncontroversial maintenance CSD, sockpuppet CSD, etc.), add to:
     * modules/twinkleconfig.js -> `csdCriteriaNotification`
-    * modules/twinkleconfig.js -> `csdCriteriaNotificationDisplayOrder`
     * create Template:Db-XX-notice onwiki, which will be placed on the user talk page of the author when tagging
     * create Template:Db-XX-notice/doc onwiki
     * create Template:Db-XX-deleted onwiki, which will be placed on the user talk page of the author when deleting
@@ -149,3 +144,9 @@ Here is a checklist for writing a patch to add a speedy deletion criteria:
     * twinkle.js -> `Twinkle.defaultConfig`
 
 Example patch: https://github.com/wikimedia-gadgets/twinkle/pull/2097/files
+
+## Load order
+
+The order that Twinkle files loads is set in MediaWiki:Gadgets-definition. twinkle.js is loaded first. Twinkle.js has a line of code `window.Twinkle = Twinkle;` that makes `Twinkle` a global variable. Twinkle files wrap their code in an IIFE, but then set Twinkle.* variables and functions, which are global.
+
+If you have a function or variable that needs to be used in multiple files, make sure to set it in the earliest file that uses it. And make sure it's assigned to a Twinkle.* variable.
