@@ -1165,6 +1165,10 @@ Twinkle.warn.messages = {
 			label: 'We use consensus, not voting',
 			summary: 'Notice: We use consensus, not voting'
 		},
+		'uw-orphantalk': {
+			label: 'Talk page created with no article',
+			summary: 'Notice: Talk page created with no article'
+		},
 		'uw-plagiarism': {
 			label: 'Copying from public domain sources without attribution',
 			summary: 'Notice: Copying from public domain sources without attribution'
