@@ -205,6 +205,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 //   suppressArticleInSummary (optional): Set to true to suppress showing the article name in the edit summary. Useful if the warning relates to attack pages, or some such.
 //   hideLinkedPage (optional): Set to true to hide the "Linked page" text box. Some warning templates do not have a linked article parameter.
 //   hideReason (optional): Set to true to hide the "Optional message" text box. Some warning templates do not have a reason parameter.
+//   alias (optional): Any useful search aliases, separated by spaces.
 Twinkle.warn.messages = {
 	levels: {
 		'Common warnings': {
@@ -291,19 +292,23 @@ Twinkle.warn.messages = {
 			'uw-ai': {
 				level1: {
 					label: 'Using a large language model',
-					summary: 'General note: Using a large language model'
+					summary: 'General note: Using a large language model',
+					alias: 'llm chatgpt'
 				},
 				level2: {
 					label: 'Using a large language model',
-					summary: 'Caution: Using a large language model'
+					summary: 'Caution: Using a large language model',
+					alias: 'llm chatgpt'
 				},
 				level3: {
 					label: 'Using a large language model',
-					summary: 'Warning: Using a large language model'
+					summary: 'Warning: Using a large language model',
+					alias: 'llm chatgpt'
 				},
 				level4: {
 					label: 'Using a large language model',
-					summary: 'Final warning: Using a large language model'
+					summary: 'Final warning: Using a large language model',
+					alias: 'llm chatgpt'
 				}
 			},
 			'uw-biog': {
@@ -1452,8 +1457,13 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 		if (wrapInOptgroup && $.client.profile().platform === 'iphone') {
 			let wrapperOptgroup = new Morebits.QuickForm.Element({
 				type: 'optgroup',
-				label: 'Available templates'
+				label: 'Available templates',
+				extra: {}
 			});
+
+			if (typeof (level ? itemProperties[val].alias : itemProperties.alias) !== 'undefined') {
+				elem.data.extra.alias = level ? itemProperties[val].alias : itemProperties.alias;
+			}
 			wrapperOptgroup = wrapperOptgroup.render();
 			container.appendChild(wrapperOptgroup);
 			container = wrapperOptgroup;
@@ -1589,6 +1599,61 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	}
 };
 
+// Checks for substrings, with the relevant safeguards
+const searchMatcher = function (params, data) {
+	var original = data.text.toUpperCase();
+    var term = params.term.toUpperCase();
+
+    var alias = "";
+	if (typeof data.element.extra !== 'undefined' && typeof data.element.extra.alias !== 'undefined') {
+	    alias = data.element.extra.alias.toUpperCase();
+	}
+
+    // Check if the text contains the term
+    return (original.indexOf(term) > -1 || alias.indexOf(term) > -1);
+};
+
+// Based on the default Select2 matcher at https://github.com/select2/select2/blob/develop/src/js/select2/defaults.js
+// Modified to check aliases and to return all children of a matching optgroup
+const optgroupFullAlias = function (params, data) {
+    // Always return the object if there is nothing to compare
+    if (params.term == null || params.term.trim() === '') {
+    	return data;
+    }
+
+	// If there is a match in the text, return the object with all of its children
+    if (searchMatcher(params, data)) {
+        return data;
+    }
+
+    // If there is no direct match, do a recursive check for options with children
+    if (data.children && data.children.length > 0) {
+        // Clone the data object if there are children
+        // This is required as we modify the object to remove any non-matches
+        var match = $.extend(true, {}, data);
+
+        // Check each child of the option
+        for (var c = data.children.length - 1; c >= 0; c--) {
+        	var child = data.children[c];
+
+          	var matches = optgroupFullAlias(params, child);
+
+          	// If there wasn't a match, remove the object in the array
+          	if (matches == null) {
+            	match.children.splice(c, 1);
+          	}
+        }
+
+        // If any children matched, return the new object
+        if (match.children.length > 0) {
+          	return match;
+        }
+    }
+
+    // If it doesn't contain the term, don't return anything
+    return null;
+};
+
 Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCategoryCleanup(e) {
 	// clear overridden label on article textbox
 	Morebits.QuickForm.setElementTooltipVisibility(e.target.root.article, true);
@@ -1602,7 +1667,7 @@ Twinkle.warn.callback.postCategoryCleanup = function twinklewarnCallbackPostCate
 			.select2({
 				theme: 'default select2-morebits',
 				width: '100%',
-				matcher: Morebits.select2.matchers.optgroupFull,
+				matcher: optgroupFullAlias,
 				templateResult: Morebits.select2.highlightSearchMatches,
 				language: {
 					searching: Morebits.select2.queryInterceptor
