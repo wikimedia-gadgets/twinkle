@@ -1631,13 +1631,13 @@ const optgroupFullAlias = function (params, data) {
     if (data.children && data.children.length > 0) {
         // Clone the data object if there are children
         // This is required as we modify the object to remove any non-matches
-        let match = $.extend(true, {}, data);
+        const match = $.extend(true, {}, data);
 
         // Check each child of the option
 		for (let c = data.children.length - 1; c >= 0; c--) {
-			let child = data.children[c];
+			const child = data.children[c];
 
-			let matches = optgroupFullAlias(params, child);
+			const matches = optgroupFullAlias(params, child);
 
 			// If there wasn't a match, remove the object in the array
 			if (matches === null) {
