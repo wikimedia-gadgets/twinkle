@@ -1460,10 +1460,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 				label: 'Available templates',
 				extra: {}
 			});
-
-			if (typeof (level ? itemProperties[val].alias : itemProperties.alias) !== 'undefined') {
-				elem.data.extra.alias = level ? itemProperties[val].alias : itemProperties.alias;
-			}
+			
 			wrapperOptgroup = wrapperOptgroup.render();
 			container.appendChild(wrapperOptgroup);
 			container = wrapperOptgroup;
@@ -1482,6 +1479,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 				label: '{{' + template + '}}: ' + (level ? itemProperties[val].label : itemProperties.label),
 				value: template
 			});
+
+			if (typeof (level ? itemProperties[val].alias : itemProperties.alias) !== 'undefined') {
+				elem.data.extra.alias = level ? itemProperties[val].alias : itemProperties.alias;
+			}
 
 			// Select item best corresponding to previous selection
 			if (!selected && old_subvalue && old_subvalue_re.test(template)) {
@@ -1604,21 +1605,21 @@ const searchMatcher = function (params, data) {
 	var original = data.text.toUpperCase();
     var term = params.term.toUpperCase();
 
-    var alias = "";
+    var alias = '';
 	if (typeof data.element.extra !== 'undefined' && typeof data.element.extra.alias !== 'undefined') {
-	    alias = data.element.extra.alias.toUpperCase();
+		alias = data.element.extra.alias.toUpperCase();
 	}
 
     // Check if the text contains the term
-    return (original.indexOf(term) > -1 || alias.indexOf(term) > -1);
+    return (original.includes(term) || alias.includes(term));
 };
 
 // Based on the default Select2 matcher at https://github.com/select2/select2/blob/develop/src/js/select2/defaults.js
 // Modified to check aliases and to return all children of a matching optgroup
 const optgroupFullAlias = function (params, data) {
     // Always return the object if there is nothing to compare
-    if (params.term == null || params.term.trim() === '') {
-    	return data;
+    if (params.term === null || params.term.trim() === '') {
+		return data;
     }
 
 	// If there is a match in the text, return the object with all of its children
@@ -1633,20 +1634,20 @@ const optgroupFullAlias = function (params, data) {
         var match = $.extend(true, {}, data);
 
         // Check each child of the option
-        for (var c = data.children.length - 1; c >= 0; c--) {
-        	var child = data.children[c];
+		for (var c = data.children.length - 1; c >= 0; c--) {
+			var child = data.children[c];
 
-          	var matches = optgroupFullAlias(params, child);
+			var matches = optgroupFullAlias(params, child);
 
-          	// If there wasn't a match, remove the object in the array
-          	if (matches == null) {
-            	match.children.splice(c, 1);
-          	}
+			// If there wasn't a match, remove the object in the array
+			if (matches === null) {
+				match.children.splice(c, 1);
+			}
         }
 
         // If any children matched, return the new object
         if (match.children.length > 0) {
-          	return match;
+			return match;
         }
     }
 
