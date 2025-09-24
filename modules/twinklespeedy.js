@@ -1799,6 +1799,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 					currentParams.user = form['csd.banned_user'].value.replace(/^\s*User:/i, '');
 				}
 				break;
+				
+			case 'gs': // G5
+				if (form['csd.code']) {
+					currentParams.code = form['csd.code'].value;
+				}
+				break;
 
 			case 'move': // G6
 				if (form['csd.move_page'] && form['csd.move_reason']) {
