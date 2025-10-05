@@ -1018,6 +1018,10 @@ Twinkle.warn.messages = {
 	},
 
 	singlenotice: {
+		'uw-addalink': {
+			label: 'Mistakes with the Add a Link newcomer task',
+			summary: 'Notice: Mistakes with the Add a Link newcomer task'
+		},
 		'uw-agf-sock': {
 			label: 'Use of multiple accounts (assuming good faith)',
 			summary: 'Notice: Using multiple accounts'
