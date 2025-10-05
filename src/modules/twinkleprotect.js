@@ -467,13 +467,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				type: 'div',
 				name: 'protectReason_notes',
 				label: 'Notes:',
-				style: 'display:inline-block; margin-top:4px;',
-				tooltip: 'Add a note to the protection log that this was requested at RfPP.'
+				style: 'margin-top:4px;'
 			});
 			field2.append({
 				type: 'checkbox',
 				event: Twinkle.protect.callback.annotateProtectReason,
-				style: 'display:inline-block; margin-top:4px;',
 				list: [
 					{
 						label: 'RfPP request',
@@ -481,7 +479,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						checked: false,
 						value: 'requested at [[WP:RfPP]]'
 					}
-				]
+				],
+				tooltip: 'Add a note to the protection log that this was requested at RfPP.'
 			});
 			field2.append({
 				type: 'input',
@@ -490,6 +489,27 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				name: 'protectReason_notes_rfppRevid',
 				value: '',
 				tooltip: 'Optional revision ID of the RfPP page where protection was requested.'
+			});
+			field2.append({
+				type: 'checkbox',
+				event: Twinkle.protect.callback.annotateProtectReason,
+				list: [
+					{
+						label: 'CTOP action',
+						name: 'protectReason_notes_ctop',
+						checked: false,
+						value: 'arbitration enforcement per [[WP:CT]]'
+					}
+				],
+				tooltip: 'Add a note to the protection log that this is an arbitration enforcement action.'
+			});
+			field2.append({
+				type: 'select',
+				event: Twinkle.protect.callback.annotateProtectReason,
+				label: 'CTOP code',
+				name: 'protectReason_notes_ctopCode',
+				list: Twinkle.protect.ctopCodes,
+				tooltip: 'Code of the contentious topic in which arbitration enforcement takes place.'
 			});
 			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto' || mw.config.get('wgNamespaceNumber') === 710) { // tagging isn't relevant for non-existing, module, or TimedText pages
 				break;
@@ -592,7 +612,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 		// reduce vertical height of dialog
 		$(e.target.form).find('fieldset[name="field2"] select').parent().css({ display: 'inline-block', marginRight: '0.5em' });
-		$(e.target.form).find('fieldset[name="field2"] input[name="protectReason_notes_rfppRevid"]').parent().css({display: 'inline-block', marginLeft: '15px'}).hide();
+		$(e.target.form).find('fieldset[name="field2"] input[name="protectReason_notes_rfppRevid"]').parent().css({marginLeft: '15px'}).hide();
+		$(e.target.form).find('fieldset[name="field2"] select[name="protectReason_notes_ctopCode"]').parent().css({ display: 'block', marginLeft: '15px'}).hide(); // override inline-block
 	}
 
 	// re-add protection level and log info, if it's available
@@ -998,6 +1019,17 @@ Twinkle.protect.protectionTags = [
 // Filter FlaggedRevs
 .filter((type) => hasFlaggedRevs || type.label !== 'Pending changes templates');
 
+Twinkle.protect.ctopCodes = [
+	{ label: 'Specify a code...', value: '' },
+	{ label: 'RUSUKR – Russo-Ukrainian War', value: 'RUSUKR' },
+	{ label: 'A-I – Arab-Israeli conflict', value: 'A-I' },
+	{ label: 'KURD – Kurds and Kurdistan', value: 'KURD' },
+	{ label: 'A-A – Armenia-Azerbaijan', value: 'A-A' },
+	{ label: 'APL – Antisemitism in Poland', value: 'APL' },
+	{ label: 'SASG – South Asian social groups', value: 'SASG' },
+	{ label: 'IMH – Indian military history', value: 'IMH' }
+];
+
 Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
 	const form = e.target.form;
 
@@ -1394,9 +1426,11 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 };
 
 Twinkle.protect.protectReasonAnnotations = [];
+Twinkle.protect.protectCtop = 'arbitration enforcement per [[WP:CT]]';
+Twinkle.protect.protectCtopDisplay = false;
 Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallbackAnnotateProtectReason(e) {
 	const form = e.target.form;
-	const protectReason = form.protectReason.value.replace(new RegExp('(?:; )?' + mw.util.escapeRegExp(Twinkle.protect.protectReasonAnnotations.join(': '))), '');
+	const protectReason = form.protectReason.value.replace(new RegExp('(?:; )?' + mw.util.escapeRegExp(Twinkle.protect.protectReasonAnnotations.join(': '))), '').replace(new RegExp('(?:; )?' + mw.util.escapeRegExp(Twinkle.protect.protectCtop)), '');
 
 	if (this.name === 'protectReason_notes_rfpp') {
 		if (this.checked) {
@@ -1413,12 +1447,29 @@ Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallback
 			const permalink = '[[Special:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + ']]';
 			Twinkle.protect.protectReasonAnnotations.push(permalink);
 		}
+	} else if (this.name === 'protectReason_notes_ctop') {
+		Twinkle.protect.protectCtopDisplay = this.checked;
+		if (this.checked) {
+			$(form.protectReason_notes_ctopCode).parent().show();
+		} else {
+			$(form.protectReason_notes_ctopCode).parent().hide();
+		}
+	} else if (this.name === 'protectReason_notes_ctopCode') {
+		if (e.target.value.length) {
+			Twinkle.protect.protectCtop = 'arbitration enforcement per [[WP:CT/' + e.target.value + ']]';
+		} else {
+			Twinkle.protect.protectCtop = 'arbitration enforcement per [[WP:CT]]';
+		}
 	}
 
 	if (!Twinkle.protect.protectReasonAnnotations.length) {
 		form.protectReason.value = protectReason;
 	} else {
 		form.protectReason.value = (protectReason ? protectReason + '; ' : '') + Twinkle.protect.protectReasonAnnotations.join(': ');
+	}
+
+	if (Twinkle.protect.protectCtopDisplay) {
+		form.protectReason.value += (form.protectReason.value ? '; ' : '') + Twinkle.protect.protectCtop;
 	}
 };
 
