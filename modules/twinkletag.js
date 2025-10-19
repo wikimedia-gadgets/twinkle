@@ -1120,6 +1120,7 @@ Twinkle.tag.redirectList = {
 	Miscellaneous: {
 		'Related information': [
 			{ tag: 'R to article without mention', description: 'redirect to an article without any mention of the redirected word or phrase', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from company name', description: 'redirect from a company name to a related article', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R to decade', description: 'redirect from a year to the decade article', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from domain name', description: 'redirect from a domain name to an article about a website', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from emoji', description: 'redirect from an emoji to an article describing the depicted concept or the emoji itself' },
