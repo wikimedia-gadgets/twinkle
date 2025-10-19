@@ -822,6 +822,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'BLP sources', description: 'BLP that needs additional references or sources for verification' },
 			{ tag: 'BLP unreferenced', description: 'BLP does not cite any sources at all (use BLP PROD instead for new articles)' },
 			{ tag: 'More citations needed', description: 'needs additional references or sources for verification' },
+			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' },
 			{ tag: 'No significant coverage', description: 'does not cite any sources containing significant coverage' },
 			{ tag: 'No significant coverage (sports)', description: 'sports biography that does not cite any sources containing significant coverage' },
 			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
@@ -892,7 +893,6 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Citation style', description: 'unclear or inconsistent citation style' },
 			{ tag: 'Cleanup bare URLs', description: 'uses bare URLs for references, which are prone to link rot' },
 			{ tag: 'More footnotes needed', description: 'has some references, but insufficient inline citations' },
-			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' },
 			{ tag: 'Parenthetical referencing', description: 'uses parenthetical referencing, which is deprecated on Wikipedia' }
 		],
 		Categories: [
