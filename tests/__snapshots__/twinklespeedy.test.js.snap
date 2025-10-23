@@ -347,6 +347,53 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
     "value": "banned",
   },
   {
+    "label": "G5: Created in violation of a general sanction",
+    "subgroup": {
+      "label": "Code of the relevant general sanction:",
+      "list": [
+        {
+          "label": "RUSUKR – Russo-Ukrainian War",
+          "type": "option",
+          "value": "rusukr",
+        },
+        {
+          "label": "A-I – Arab-Israeli conflict",
+          "type": "option",
+          "value": "a-i",
+        },
+        {
+          "label": "KURD – Kurds and Kurdistan",
+          "type": "option",
+          "value": "kurd",
+        },
+        {
+          "label": "A-A – Armenia-Azerbaijan",
+          "type": "option",
+          "value": "a-a",
+        },
+        {
+          "label": "APL – Antisemitism in Poland",
+          "type": "option",
+          "value": "apl",
+        },
+        {
+          "label": "SASG – South Asian social groups",
+          "type": "option",
+          "value": "sasg",
+        },
+        {
+          "label": "IMH – Indian military history",
+          "type": "option",
+          "value": "imh",
+        },
+      ],
+      "name": "code",
+      "type": "select",
+    },
+    "tooltip": "Pages created in violation of a contentious topic restriction or other general sanction, with no substantial edits by others",
+    "value": "gs",
+  },
+  {
     "hideWhenMultiple": true,
     "label": "G6: Error",
     "tooltip": "A page that was obviously created in error, or a redirect left over from moving a page that was obviously created at the wrong title.",
@@ -621,6 +668,7 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
   "fpcfail": "f2",
   "g6": "g6",
   "g8": "g8",
+  "gs": "g5",
   "hoax": "g3",
   "imagepage": "g8",
   "imgcopyvio": "f9",

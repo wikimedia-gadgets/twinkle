@@ -425,6 +425,27 @@ Twinkle.speedy.data = [
 	},
 	{
 		list: 'generalList',
+		label: 'G5: Created in violation of a general sanction',
+		code: 'g5',
+		db: 'gs',
+		tooltip: 'Pages created in violation of a contentious topic restriction or other general sanction, with no substantial edits by others',
+		subgroup: {
+			name: 'code',
+			type: 'select',
+			label: 'Code of the relevant general sanction:',
+			list: [
+					{ type: 'option', value: 'rusukr', label: 'RUSUKR – Russo-Ukrainian War' },
+					{ type: 'option', value: 'a-i', label: 'A-I – Arab-Israeli conflict' },
+					{ type: 'option', value: 'kurd', label: 'KURD – Kurds and Kurdistan' },
+					{ type: 'option', value: 'a-a', label: 'A-A – Armenia-Azerbaijan' },
+					{ type: 'option', value: 'apl', label: 'APL – Antisemitism in Poland' },
+					{ type: 'option', value: 'sasg', label: 'SASG – South Asian social groups' },
+					{ type: 'option', value: 'imh', label: 'IMH – Indian military history' }
+				]
+		}
+	},
+	{
+		list: 'generalList',
 		label: 'G6: Error',
 		code: 'g6',
 		db: 'error',
@@ -1776,6 +1797,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 			case 'banned': // G5
 				if (form['csd.banned_user'] && form['csd.banned_user'].value) {
 					currentParams.user = form['csd.banned_user'].value.replace(/^\s*User:/i, '');
+				}
+				break;
+
+			case 'gs': // G5
+				if (form['csd.code']) {
+					currentParams.code = form['csd.code'].value;
 				}
 				break;
 
