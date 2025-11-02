@@ -353,7 +353,39 @@ Twinkle.speedy.data = [
 		code: 'u7',
 		db: 'u7',
 		tooltip: 'User subpages of users who have made few or no edits outside of user space, were created more than six months ago, could not be interpreted as draft articles (even very bad ones), and consist entirely of creative writing, lengthy professional or personal content, or commercial links.',
-		hideWhenRedirect: true
+		hideWhenRedirect: true,
+		subgroup: [
+			{
+				name: 'u7_subcriteria',
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Creative or persuasive writing unrelated to Wikipedia',
+						value: 'creative',
+						name: 'creative',
+						tooltip: 'The page contains creative or persuasive writing unrelated to Wikipedia (e.g. fan fictions or political essays).'
+					},
+					{
+						label: 'Lengthy descriptions of a person\'s professional accomplishments',
+						value: 'professional',
+						name: 'professional',
+						tooltip: 'The page contains lengthy descriptions of a person\'s professional accomplishments that are written in the first person or are formatted like a résumé or curriculum vitae, and do not serve as paid-contribution disclosures'
+					},
+					{
+						label: 'Lengthy content about the user\'s personal life',
+						value: 'personal',
+						name: 'personal',
+						tooltip: 'The page contains lengthy content about the user\'s personal life, things in their environment (e.g. friends, pets, or belongings), or things they have invented.'
+					},
+					{
+						label: 'Links to commercial websites',
+						value: 'links',
+						name: 'links',
+						tooltip: 'The page contains links to websites that are primarily commercial in nature.'
+					}
+				]
+			}
+		]
 	},
 	{
 		list: 'userList',
@@ -1790,6 +1822,21 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						return false;
 					}
 					currentParams.rationale = u1rationale;
+				}
+				break;
+
+			case 'u7': // U7
+				if (form.creative.checked) {
+					currentParams.creative = 'yes';
+				}
+				if (form.professional.checked) {
+					currentParams.professional = 'yes';
+				}
+				if (form.personal.checked) {
+					currentParams.personal = 'yes';
+				}
+				if (form.links.checked) {
+					currentParams.links = 'yes';
 				}
 				break;
 
