@@ -280,6 +280,38 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
   {
     "hideWhenRedirect": true,
     "label": "U7: Excessively unrelated non-draft subpages",
+    "subgroup": [
+      {
+        "list": [
+          {
+            "label": "Creative or persuasive writing unrelated to Wikipedia",
+            "name": "creative",
+            "tooltip": "The page contains creative or persuasive writing unrelated to Wikipedia (e.g. fan fictions or political essays).",
+            "value": "creative",
+          },
+          {
+            "label": "Lengthy descriptions of a person's professional accomplishments",
+            "name": "professional",
+            "tooltip": "The page contains lengthy descriptions of a person's professional accomplishments that are written in the first person or are formatted like a résumé or curriculum vitae, and do not serve as paid-contribution disclosures",
+            "value": "professional",
+          },
+          {
+            "label": "Lengthy content about the user's personal life",
+            "name": "personal",
+            "tooltip": "The page contains lengthy content about the user's personal life, things in their environment (e.g. friends, pets, or belongings), or things they have invented.",
+            "value": "personal",
+          },
+          {
+            "label": "Links to commercial websites",
+            "name": "links",
+            "tooltip": "The page contains links to websites that are primarily commercial in nature.",
+            "value": "links",
+          },
+        ],
+        "name": "u7_subcriteria",
+        "type": "checkbox",
+      },
+    ],
     "tooltip": "User subpages of users who have made few or no edits outside of user space, were created more than six months ago, could not be interpreted as draft articles (even very bad ones), and consist entirely of creative writing, lengthy professional or personal content, or commercial links.",
     "value": "u7",
   },
