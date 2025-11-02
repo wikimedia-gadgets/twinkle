@@ -642,7 +642,7 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				.select2({
 					theme: 'default select2-morebits',
 					width: '80%',
-					matcher: $.fn.select2.defaults.defaults.matcher,
+					matcher: Morebits.select2.matchers.dashInsensitive,
 					templateResult: Morebits.select2.highlightSearchMatches,
 					language: {
 						searching: Morebits.select2.queryInterceptor
@@ -1072,9 +1072,9 @@ Twinkle.protect.protectionTags = [
 
 Twinkle.protect.ctopCodes = [
 	{ value: '', label: 'Specify a code...' },
-	{ value: 'A-A', label: 'Armenia-Azerbaijan', aliases: ['AA'] },
+	{ value: 'A-A', label: 'Armenia-Azerbaijan' },
 	{ value: 'AB', label: 'Abortion' },
-	{ value: 'A-I', label: 'Palestine-Israel articles', aliases: ['AI', 'PIA'] },
+	{ value: 'A-I', label: 'Palestine-Israel articles', aliases: ['PIA'] },
 	{ value: 'AP', label: 'American politics' },
 	{ value: 'APL', label: 'Antisemitism in Poland' },
 	{ value: 'AT', label: 'Article titles and capitalisation' },

@@ -1668,6 +1668,23 @@ Morebits.select2 = {
 				return result;
 			}
 			return null;
+		},
+
+		dashInsensitive: function(params, data) {
+			const originalMatcher = $.fn.select2.defaults.defaults.matcher;
+			const modifiedParams = $.extend(true, {}, params);
+			if (modifiedParams.term) {
+				modifiedParams.term = modifiedParams.term.replace(/-/g, '');
+			}
+			const modifiedData = $.extend(true, {}, data);
+			modifiedData.text = modifiedData.text.replace(/-/g, '');
+
+			const result = originalMatcher(modifiedParams, modifiedData);
+
+			if (result) {
+				return data;
+			}
+			return null;
 		}
 	},
 
