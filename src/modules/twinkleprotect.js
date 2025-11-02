@@ -636,6 +636,35 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 		$(e.target.form).find('fieldset[name="field2"] input[name="protectReason_notes_rfppRevid"]').parent().css({marginLeft: '15px'}).hide();
 		$(e.target.form).find('fieldset[name="field2"] select[name="protectReason_notes_ctopCode"]').parent().css({ display: 'block', marginLeft: '15px'}).hide(); // override inline-block
 		$(e.target.form).find('fieldset[name="field2"] select[name="protectReason_notes_gsCode"]').parent().css({ display: 'block', marginLeft: '15px'}).hide();
+
+		if (!Twinkle.getPref('oldSelect')) {
+			$('select[name=protectReason_notes_ctopCode], select[name=protectReason_notes_gsCode]')
+				.select2({
+					theme: 'default select2-morebits',
+					width: '80%',
+					matcher: $.fn.select2.defaults.defaults.matcher,
+					templateResult: Morebits.select2.highlightSearchMatches,
+					language: {
+						searching: Morebits.select2.queryInterceptor
+					}
+				})
+				.change(Twinkle.protect.callback.annotateProtectReason);
+
+			$('.select2-selection').on('keydown', Morebits.select2.autoStart).trigger('focus');
+
+			mw.util.addCSS(
+				// Increase height
+				'.select2-container .select2-dropdown .select2-results > .select2-results__options { max-height: 250px; }' +
+
+				// Reduce padding
+				'.select2-results .select2-results__option { padding-top: 1px; padding-bottom: 1px; }' +
+				'.select2-results .select2-results__group { padding-top: 1px; padding-bottom: 1px; } ' +
+
+				// Adjust font size
+				'.select2-container .select2-dropdown .select2-results { font-size: 13px; }' +
+				'.select2-container .selection .select2-selection__rendered { font-size: 13px; }'
+			);
+		}
 	}
 
 	// re-add protection level and log info, if it's available
@@ -1043,9 +1072,9 @@ Twinkle.protect.protectionTags = [
 
 Twinkle.protect.ctopCodes = [
 	{ value: '', label: 'Specify a code...' },
-	{ value: 'A-A', label: 'Armenia-Azerbaijan' },
+	{ value: 'A-A', label: 'Armenia-Azerbaijan', aliases: ['AA'] },
 	{ value: 'AB', label: 'Abortion' },
-	{ value: 'A-I', label: 'Palestine-Israel articles' },
+	{ value: 'A-I', label: 'Palestine-Israel articles', aliases: ['AI', 'PIA'] },
 	{ value: 'AP', label: 'American politics' },
 	{ value: 'APL', label: 'Antisemitism in Poland' },
 	{ value: 'AT', label: 'Article titles and capitalisation' },
@@ -1067,7 +1096,7 @@ Twinkle.protect.ctopCodes = [
 	{ value: 'RI', label: 'Race and intelligence' },
 	{ value: 'RNE', label: 'Historical elections' },
 	{ value: 'SA', label: 'South Asia' },
-	{ value: 'SASG', label: 'South Asian social groups' },
+	{ value: 'SASG', label: 'South Asian social groups', aliases: ['GSCASTE'] },
 	{ value: 'TT', label: 'The Troubles' },
 	{ value: 'YA', label: 'Yasuke' }
 ];
@@ -1075,7 +1104,11 @@ Twinkle.protect.ctopCodes = [
 // We add the code at the front of each label
 Twinkle.protect.ctopCodes.forEach((item) => {
 	if (item.value) {
-		item.label = `${item.value} – ${item.label}`;
+		if (item.aliases) {
+			item.label = `${item.value}, ${item.aliases.join(', ')} – ${item.label}`;
+		} else {
+			item.label = `${item.value} – ${item.label}`;
+		}
 	}
 });
 
