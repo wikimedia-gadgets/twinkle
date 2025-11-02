@@ -28,7 +28,8 @@ exports[`modules/twinkle Twinkle.defaultConfig global variables Should match sna
   "f7",
   "f9",
   "r3",
-  "u5",
+  "u6",
+  "u7",
 ]
 `;
 
@@ -60,7 +61,8 @@ exports[`modules/twinkle Twinkle.defaultConfig global variables Should match sna
   "f7",
   "f9",
   "r3",
-  "u5",
+  "u6",
+  "u7",
 ]
 `;
 
@@ -92,6 +94,7 @@ exports[`modules/twinkle Twinkle.defaultConfig global variables Should match sna
   "f7",
   "f9",
   "r3",
-  "u5",
+  "u6",
+  "u7",
 ]
 `;
