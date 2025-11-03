@@ -1825,7 +1825,25 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
+			case 'u6': // U6
+				if (mw.config.get('wgNamespaceNumber') !== 2 || !(/\//).test(mw.config.get('wgTitle'))) {
+					alert('CSD U6:  Please only nominate user subpages.');
+					parameters = null;
+					return false;
+				}
+				break;
+
 			case 'u7': // U7
+				if (mw.config.get('wgNamespaceNumber') !== 2) {
+					alert('CSD U7:  Please only nominate user subpages.');
+					parameters = null;
+					return false;
+				}
+				if (!(/\//).test(mw.config.get('wgTitle'))) {
+					alert('CSD U7:  Please only nominate user subpages. Top-level userpages matching U7 criteria can be blanked instead.');
+					parameters = null;
+					return false;
+				}
 				if (form.creative.checked) {
 					currentParams.creative = 'yes';
 				}
