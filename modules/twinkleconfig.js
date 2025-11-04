@@ -41,7 +41,7 @@ Twinkle.config.commonSets = {
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
 		c1: 'C1',
 		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5 ("general sanction violation")', g6: 'G6 ("copy-paste move" only)', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
+		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5 ("general sanction violation" only)', g6: 'G6 ("copy-paste move" only)', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
 		r2: 'R2', r3: 'R3', r4: 'R4',
 		u6: 'U6', u7: 'U7',
 		x3: 'X3'
