@@ -125,7 +125,7 @@ When updating dependencies, CI should take care of testing most of that. Manuall
 
 ## Adding a CSD
 
-Here is a checklist for writing a patch to add a speedy deletion criteria:
+Here is a checklist for writing a patch to add a speedy deletion criteria (CSD). This assumes things like leaving notifications on user talk pages (which most CSDs do). If a CSD has unusual defaults, then the steps to write the patch may need to be altered slightly:
 
 * create the following pages onwiki (and Special:Import these to testwiki for easier testing):
     * Template:Db-XX
@@ -134,7 +134,7 @@ Here is a checklist for writing a patch to add a speedy deletion criteria:
     * Template:Db-XX-notice/doc
     * Template:Db-XX-deleted
     * Template:Db-XX-deleted/doc
-* make the following code changes (works for most CSDs. may need to change more or less code if the CSD shouldn't post a user talk notification or other unusual things):
+* make the following code changes:
     * twinkle.js -> welcomeUserOnSpeedyDeletionNotification
     * twinkle.js -> notifyUserOnSpeedyDeletionNomination
     * twinkle.js -> warnUserOnSpeedyDelete
