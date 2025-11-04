@@ -1313,9 +1313,9 @@ Twinkle.warn.messages = {
 			label: 'Editing while logged out',
 			summary: 'Warning: Editing while logged out'
 		},
-		'uw-multipleIPs': {
-			label: 'Usage of multiple IPs',
-			summary: 'Warning: Vandalism using multiple IPs'
+		'uw-multipleTAs': {
+			label: 'Usage of multiple temporary accounts',
+			summary: 'Warning: Vandalism using multiple temporary accounts'
 		},
 		'uw-paraphrase': {
 			label: 'Close paraphrasing',
@@ -1799,7 +1799,7 @@ Twinkle.warn.callbacks = {
 		} else if (latest.type) { // Non-numbered warning
 			// Try to leverage existing categorization of
 			// warnings, all but one are universally lowercased
-			const loweredType = /uw-multipleIPs/i.test(latest.type) ? 'uw-multipleIPs' : latest.type.toLowerCase();
+			const loweredType = /uw-multipleTAs/i.test(latest.type) ? 'uw-multipleTAs' : latest.type.toLowerCase();
 			// It would be nice to account for blocks, but in most
 			// cases the hidden message is terminal, not the sig
 			if (Twinkle.warn.messages.singlewarn[loweredType]) {
