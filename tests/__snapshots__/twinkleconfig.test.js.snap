@@ -38,7 +38,8 @@ exports[`modules/twinkleconfig Twinkle.config global variables Should match snap
   "t5": "T5",
   "u1": "U1",
   "u2": "U2",
-  "u5": "U5",
+  "u6": "U6",
+  "u7": "U7",
   "x3": "X3",
 }
 `;
@@ -81,7 +82,8 @@ exports[`modules/twinkleconfig Twinkle.config global variables Should match snap
   "t5",
   "u1",
   "u2",
-  "u5",
+  "u6",
+  "u7",
   "x3",
 ]
 `;
@@ -112,11 +114,13 @@ exports[`modules/twinkleconfig Twinkle.config global variables Should match snap
   "g2": "G2",
   "g3": "G3",
   "g4": "G4",
+  "g5": "G5 ("general sanction violation" only)",
   "g6": "G6 ("copy-paste move" only)",
   "r2": "R2",
   "r3": "R3",
   "r4": "R4",
-  "u5": "U5",
+  "u6": "U6",
+  "u7": "U7",
   "x3": "X3",
 }
 `;
@@ -141,6 +145,7 @@ exports[`modules/twinkleconfig Twinkle.config global variables Should match snap
   "g2",
   "g3",
   "g4",
+  "g5",
   "g6",
   "g10",
   "g11",
@@ -151,7 +156,8 @@ exports[`modules/twinkleconfig Twinkle.config global variables Should match snap
   "r2",
   "r3",
   "r4",
-  "u5",
+  "u6",
+  "u7",
   "x3",
 ]
 `;
@@ -198,7 +204,8 @@ exports[`modules/twinkleconfig Twinkle.config global variables Should match snap
   "t5": "T5",
   "u1": "U1",
   "u2": "U2",
-  "u5": "U5",
+  "u6": "U6",
+  "u7": "U7",
   "x3": "X3",
 }
 `;
@@ -245,7 +252,8 @@ exports[`modules/twinkleconfig Twinkle.config global variables Should match snap
   "t5",
   "u1",
   "u2",
-  "u5",
+  "u6",
+  "u7",
   "x3",
 ]
 `;

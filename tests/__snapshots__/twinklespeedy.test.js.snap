@@ -273,9 +273,47 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
   },
   {
     "hideWhenRedirect": true,
-    "label": "U5: A non-contributor misusing Wikipedia as a web host",
-    "tooltip": "Pages in userspace consisting of writings, information, discussions, or activities not closely related to Wikipedia's goals, where the owner has made few or no edits outside of user pages, except for plausible drafts and pages adhering to WP:UPYES. It applies regardless of the age of the page in question.",
-    "value": "notwebhost",
+    "label": "U6: Abandoned user subpages",
+    "tooltip": "User subpages of users who have made few or no edits outside of user space, which have not been edited by a human in at least six months, excluding redirects, .js pages, .css pages, and Wikipedia Books. Promising drafts may be moved to draftspace by any editor as an alternative to deletion.",
+    "value": "u6",
+  },
+  {
+    "hideWhenRedirect": true,
+    "label": "U7: Excessively unrelated non-draft subpages",
+    "subgroup": [
+      {
+        "list": [
+          {
+            "label": "Creative or persuasive writing unrelated to Wikipedia",
+            "name": "creative",
+            "tooltip": "The page contains creative or persuasive writing unrelated to Wikipedia (e.g. fan fictions or political essays).",
+            "value": "creative",
+          },
+          {
+            "label": "Lengthy descriptions of a person's professional accomplishments",
+            "name": "professional",
+            "tooltip": "The page contains lengthy descriptions of a person's professional accomplishments that are written in the first person or are formatted like a résumé or curriculum vitae, and do not serve as paid-contribution disclosures",
+            "value": "professional",
+          },
+          {
+            "label": "Lengthy content about the user's personal life",
+            "name": "personal",
+            "tooltip": "The page contains lengthy content about the user's personal life, things in their environment (e.g. friends, pets, or belongings), or things they have invented.",
+            "value": "personal",
+          },
+          {
+            "label": "Links to commercial websites",
+            "name": "links",
+            "tooltip": "The page contains links to websites that are primarily commercial in nature.",
+            "value": "links",
+          },
+        ],
+        "name": "u7_subcriteria",
+        "type": "checkbox",
+      },
+    ],
+    "tooltip": "User subpages of users who have made few or no edits outside of user space, were created more than six months ago, could not be interpreted as draft articles (even very bad ones), and consist entirely of creative writing, lengthy professional or personal content, or commercial links.",
+    "value": "u7",
   },
   {
     "hideWhenMultiple": true,
@@ -345,6 +383,53 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
     },
     "tooltip": "Pages created by banned or blocked users in violation of their ban or block, and which have no substantial edits by others",
     "value": "banned",
+  },
+  {
+    "label": "G5: Created in violation of a general sanction",
+    "subgroup": {
+      "label": "Code of the relevant general sanction:",
+      "list": [
+        {
+          "label": "RUSUKR – Russo-Ukrainian War",
+          "type": "option",
+          "value": "rusukr",
+        },
+        {
+          "label": "A-I – Arab-Israeli conflict",
+          "type": "option",
+          "value": "a-i",
+        },
+        {
+          "label": "KURD – Kurds and Kurdistan",
+          "type": "option",
+          "value": "kurd",
+        },
+        {
+          "label": "A-A – Armenia-Azerbaijan",
+          "type": "option",
+          "value": "a-a",
+        },
+        {
+          "label": "APL – Antisemitism in Poland",
+          "type": "option",
+          "value": "apl",
+        },
+        {
+          "label": "SASG – South Asian social groups",
+          "type": "option",
+          "value": "sasg",
+        },
+        {
+          "label": "IMH – Indian military history",
+          "type": "option",
+          "value": "imh",
+        },
+      ],
+      "name": "code",
+      "type": "select",
+    },
+    "tooltip": "Pages created in violation of a contentious topic restriction or other general sanction, with no substantial edits by others",
+    "value": "gs",
   },
   {
     "hideWhenMultiple": true,
@@ -621,6 +706,7 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
   "fpcfail": "f2",
   "g6": "g6",
   "g8": "g8",
+  "gs": "g5",
   "hoax": "g3",
   "imagepage": "g8",
   "imgcopyvio": "f9",
@@ -636,7 +722,6 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
   "nonsense": "g1",
   "nopermission": "f11",
   "norat": "f6",
-  "notwebhost": "u5",
   "nouser": "u2",
   "person": "a7",
   "reason": "db",
@@ -652,6 +737,8 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
   "t5": "t5",
   "talk": "g8",
   "test": "g2",
+  "u6": "u6",
+  "u7": "u7",
   "unksource": "f4",
   "userreq": "u1",
   "vandalism": "g3",

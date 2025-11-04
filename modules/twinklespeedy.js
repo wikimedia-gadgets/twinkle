@@ -341,11 +341,51 @@ Twinkle.speedy.data = [
 	},
 	{
 		list: 'userList',
-		label: 'U5: A non-contributor misusing Wikipedia as a web host',
-		code: 'u5',
-		db: 'notwebhost',
-		tooltip: 'Pages in userspace consisting of writings, information, discussions, or activities not closely related to Wikipedia\'s goals, where the owner has made few or no edits outside of user pages, except for plausible drafts and pages adhering to WP:UPYES. It applies regardless of the age of the page in question.',
+		label: 'U6: Abandoned user subpages',
+		code: 'u6',
+		db: 'u6',
+		tooltip: 'User subpages of users who have made few or no edits outside of user space, which have not been edited by a human in at least six months, excluding redirects, .js pages, .css pages, and Wikipedia Books. Promising drafts may be moved to draftspace by any editor as an alternative to deletion.',
 		hideWhenRedirect: true
+	},
+	{
+		list: 'userList',
+		label: 'U7: Excessively unrelated non-draft subpages',
+		code: 'u7',
+		db: 'u7',
+		tooltip: 'User subpages of users who have made few or no edits outside of user space, were created more than six months ago, could not be interpreted as draft articles (even very bad ones), and consist entirely of creative writing, lengthy professional or personal content, or commercial links.',
+		hideWhenRedirect: true,
+		subgroup: [
+			{
+				name: 'u7_subcriteria',
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Creative or persuasive writing unrelated to Wikipedia',
+						value: 'creative',
+						name: 'creative',
+						tooltip: 'The page contains creative or persuasive writing unrelated to Wikipedia (e.g. fan fictions or political essays).'
+					},
+					{
+						label: 'Lengthy descriptions of a person\'s professional accomplishments',
+						value: 'professional',
+						name: 'professional',
+						tooltip: 'The page contains lengthy descriptions of a person\'s professional accomplishments that are written in the first person or are formatted like a résumé or curriculum vitae, and do not serve as paid-contribution disclosures'
+					},
+					{
+						label: 'Lengthy content about the user\'s personal life',
+						value: 'personal',
+						name: 'personal',
+						tooltip: 'The page contains lengthy content about the user\'s personal life, things in their environment (e.g. friends, pets, or belongings), or things they have invented.'
+					},
+					{
+						label: 'Links to commercial websites',
+						value: 'links',
+						name: 'links',
+						tooltip: 'The page contains links to websites that are primarily commercial in nature.'
+					}
+				]
+			}
+		]
 	},
 	{
 		list: 'userList',
@@ -421,6 +461,27 @@ Twinkle.speedy.data = [
 			type: 'input',
 			label: 'Username of banned user (if available):',
 			tooltip: 'Should not start with "User:"'
+		}
+	},
+	{
+		list: 'generalList',
+		label: 'G5: Created in violation of a general sanction',
+		code: 'g5',
+		db: 'gs',
+		tooltip: 'Pages created in violation of a contentious topic restriction or other general sanction, with no substantial edits by others',
+		subgroup: {
+			name: 'code',
+			type: 'select',
+			label: 'Code of the relevant general sanction:',
+			list: [
+					{ type: 'option', value: 'rusukr', label: 'RUSUKR – Russo-Ukrainian War' },
+					{ type: 'option', value: 'a-i', label: 'A-I – Arab-Israeli conflict' },
+					{ type: 'option', value: 'kurd', label: 'KURD – Kurds and Kurdistan' },
+					{ type: 'option', value: 'a-a', label: 'A-A – Armenia-Azerbaijan' },
+					{ type: 'option', value: 'apl', label: 'APL – Antisemitism in Poland' },
+					{ type: 'option', value: 'sasg', label: 'SASG – South Asian social groups' },
+					{ type: 'option', value: 'imh', label: 'IMH – Indian military history' }
+				]
 		}
 	},
 	{
@@ -1764,6 +1825,39 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				}
 				break;
 
+			case 'u6': // U6
+				if (mw.config.get('wgNamespaceNumber') !== 2 || !(/\//).test(mw.config.get('wgTitle'))) {
+					alert('CSD U6:  Please only nominate user subpages.');
+					parameters = null;
+					return false;
+				}
+				break;
+
+			case 'u7': // U7
+				if (mw.config.get('wgNamespaceNumber') !== 2) {
+					alert('CSD U7:  Please only nominate user subpages.');
+					parameters = null;
+					return false;
+				}
+				if (!(/\//).test(mw.config.get('wgTitle'))) {
+					alert('CSD U7:  Please only nominate user subpages. Top-level userpages matching U7 criteria can be blanked instead.');
+					parameters = null;
+					return false;
+				}
+				if (form.creative.checked) {
+					currentParams.creative = 'yes';
+				}
+				if (form.professional.checked) {
+					currentParams.professional = 'yes';
+				}
+				if (form.personal.checked) {
+					currentParams.personal = 'yes';
+				}
+				if (form.links.checked) {
+					currentParams.links = 'yes';
+				}
+				break;
+
 			case 'repost': // G4
 				if (form['csd.repost_xfd']) {
 					const deldisc = form['csd.repost_xfd'].value;
@@ -1776,6 +1870,12 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 			case 'banned': // G5
 				if (form['csd.banned_user'] && form['csd.banned_user'].value) {
 					currentParams.user = form['csd.banned_user'].value.replace(/^\s*User:/i, '');
+				}
+				break;
+
+			case 'gs': // G5
+				if (form['csd.code']) {
+					currentParams.code = form['csd.code'].value;
 				}
 				break;
 
@@ -2074,7 +2174,7 @@ Twinkle.speedy.callback.evaluateSysop = function twinklespeedyCallbackEvaluateSy
 	});
 
 	const warnusertalk = form.warnusertalk.checked && normalizeds.some((norm, index) => Twinkle.getPref('warnUserOnSpeedyDelete').includes(norm) &&
-			!(norm === 'g6' && values[index] !== 'copypaste'));
+			!(norm === 'g6' && values[index] !== 'copypaste') && !(norm === 'g5' && values[index] !== 'gs'));
 
 	const welcomeuser = warnusertalk && normalizeds.some((norm) => Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').includes(norm));
 
@@ -2121,7 +2221,7 @@ Twinkle.speedy.callback.evaluateUser = function twinklespeedyCallbackEvaluateUse
 	const watchPage = normalizeds.some((csdCriteria) => Twinkle.getPref('watchSpeedyPages').includes(csdCriteria)) && Twinkle.getPref('watchSpeedyExpiry');
 
 	const notifyuser = form.notify.checked && normalizeds.some((norm, index) => Twinkle.getPref('notifyUserOnSpeedyDeletionNomination').includes(norm) &&
-			!(norm === 'g6' && values[index] !== 'copypaste'));
+			!(norm === 'g6' && values[index] !== 'copypaste') && !(norm === 'g5' && values[index] !== 'gs'));
 	const welcomeuser = notifyuser && normalizeds.some((norm) => Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').includes(norm));
 	const csdlog = Twinkle.getPref('logSpeedyNominations') && normalizeds.some((norm) => !Twinkle.getPref('noLogOnSpeedyNomination').includes(norm));
 
