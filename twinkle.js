@@ -358,7 +358,7 @@ $.ajax({
 Twinkle.load = function () {
 	// Don't activate on special pages other than those listed here, so
 	// that others load faster, especially the watchlist.
-	let activeSpecialPageList = [ 'Block', 'Contributions', 'Recentchanges', 'Recentchangeslinked' ]; // wgRelevantUserName defined for non-sysops on Special:Block
+	let activeSpecialPageList = [ 'Block', 'Contributions', 'IPContributions', 'Recentchanges', 'Recentchangeslinked' ]; // wgRelevantUserName defined for non-sysops on Special:Block
 	if (Morebits.userIsSysop) {
 		activeSpecialPageList = activeSpecialPageList.concat([ 'DeletedContributions', 'Prefixindex' ]);
 	}
