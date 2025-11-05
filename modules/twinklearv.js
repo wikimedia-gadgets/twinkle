@@ -28,8 +28,6 @@ Twinkle.arv = function twinklearv() {
 	}, 'ARV', 'tw-arv', 'Report ' + userType + ' to administrators');
 };
 
-Twinkle.arv.temporaryAccountNotice = 'You are reporting a new temporary account. These accounts, with usernames like ~2025-12345-67, have replaced IP addresses. Before reporting any temporary accounts, please familiarize yourself with [[Wikipedia:Temporary accounts|how they work]].';
-
 Twinkle.arv.callback = function (uid, isIP) {
 	const Window = new Morebits.SimpleWindow(600, 500);
 	Window.setTitle('Advance Reporting and Vetting'); // Backronym
@@ -93,7 +91,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 
 		temporaryAccountNotice.append({
 			type: 'div',
-			label: Twinkle.arv.temporaryAccountNotice
+			label: 'You are reporting a new temporary account. These accounts, with usernames like ~2025-12345-67, have replaced IP addresses. Before reporting any temporary accounts, please familiarize yourself with [[Wikipedia:Temporary accounts|how they work]].'
 		});
 	}
 
