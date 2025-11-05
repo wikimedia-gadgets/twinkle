@@ -134,6 +134,8 @@ Here is a checklist for writing a patch to add a speedy deletion criteria (CSD).
     * Template:Db-XX-notice/doc
     * Template:Db-XX-deleted
     * Template:Db-XX-deleted/doc
+* modify the following template onwiki:
+    * Template:Db-deleted-multiple
 * make the following code changes:
     * twinkle.js -> welcomeUserOnSpeedyDeletionNotification
     * twinkle.js -> notifyUserOnSpeedyDeletionNomination
