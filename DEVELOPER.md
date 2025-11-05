@@ -127,16 +127,17 @@ When updating dependencies, CI should take care of testing most of that. Manuall
 
 Here is a checklist for writing a patch to add a speedy deletion criteria (CSD). This assumes things like leaving notifications on user talk pages (which most CSDs do). If a CSD has unusual defaults, then the steps to write the patch may need to be altered slightly:
 
-* create the following pages onwiki (and Special:Import these to testwiki for easier testing). Replace XX with the CSD code, in lowercase, such as u2 or a7:
+* Create the following pages onwiki (and Special:Import these to testwiki for easier testing). Replace XX with the CSD code, in lowercase, such as u2 or a7:
     * Template:Db-XX
     * Template:Db-XX/doc
     * Template:Db-XX-notice
     * Template:Db-XX-notice/doc
     * Template:Db-XX-deleted
     * Template:Db-XX-deleted/doc
-* modify the following template onwiki:
+* Modify the following templates onwiki:
+    * Template:Db-notice-multiple
     * Template:Db-deleted-multiple
-* make the following code changes:
+* Make the following code changes:
     * twinkle.js -> welcomeUserOnSpeedyDeletionNotification
     * twinkle.js -> notifyUserOnSpeedyDeletionNomination
     * twinkle.js -> warnUserOnSpeedyDelete
@@ -144,9 +145,9 @@ Here is a checklist for writing a patch to add a speedy deletion criteria (CSD).
     * modules/twinkleconfig.js -> csdAndImageDeletionCriteria
     * modules/twinkleconfig.js -> csdCriteriaNotification
     * modules/twinklespeedy.js -> Twinkle.speedy.data
-* if Template:Db-XX takes any parameters, make the following code changes:
+* If Template:Db-XX takes any parameters, make the following code changes:
     * modules/twinklespeedy.js -> Twinkle.speedy.getParameters
-* update snapshot tests using `npx jest -u`
+* Update snapshot tests using `npx jest -u`
 
 Example patch: https://github.com/wikimedia-gadgets/twinkle/pull/2210/files
 
