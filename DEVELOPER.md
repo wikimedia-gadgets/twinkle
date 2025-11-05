@@ -142,6 +142,8 @@ Here is a checklist for writing a patch to add a speedy deletion criteria (CSD).
     * modules/twinkleconfig.js -> csdAndImageDeletionCriteria
     * modules/twinkleconfig.js -> csdCriteriaNotification
     * modules/twinklespeedy.js -> Twinkle.speedy.data
+* if Template:Db-XX takes any parameters, make the following code changes:
+    * modules/twinklespeedy.js -> Twinkle.speedy.getParameters
 * update snapshot tests using `npx jest -u`
 
 Example patch: https://github.com/wikimedia-gadgets/twinkle/pull/2210/files
