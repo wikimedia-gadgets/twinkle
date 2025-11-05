@@ -1336,7 +1336,7 @@ Twinkle.speedy.callbacks = {
 			initialContrib = null;
 
 		// Check for already existing tags
-		} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('The page is has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
+		} else if (Twinkle.speedy.hasCSD && params.warnUser && !confirm('The page has a deletion-related tag, and thus the creator has likely been notified.  Do you want to notify them for this deletion as well?')) {
 			Morebits.Status.info('Notifying initial contributor', 'canceled by user; skipping notification.');
 			initialContrib = null;
 		}
