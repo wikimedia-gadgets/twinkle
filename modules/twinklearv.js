@@ -81,7 +81,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 	});
 
 	// Temporary account notice
-	if (mw.config.get('wgRelevantUserName') && mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'))) {
+	if (mw.config.get('wgRelevantUserName') && mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName')) && !mw.config.get('wgCheckUserTemporaryAccountIPRevealAllowed')) {
 		const temporaryAccountNotice = form.append({
 			type: 'field',
 			label: 'Temporary account notice',
