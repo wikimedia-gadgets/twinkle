@@ -91,7 +91,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 
 		temporaryAccountNotice.append({
 			type: 'div',
-			label: 'You are reporting a new temporary account. These accounts, with usernames like ~2025-12345-67, have replaced IP addresses. Before reporting any temporary accounts, please familiarize yourself with [[Wikipedia:Temporary accounts|how they work]].'
+			label: 'You are reporting a [[Wikipedia:Temporary accounts|temporary account]]. These accounts, with usernames like ~2025-12345-67, have replaced IP addresses. Please be careful when reporting for sockpuppetry and when blocking, because other users and temporary accounts on the same IP may end up as collateral damage.'
 		});
 	}
 
