@@ -1490,21 +1490,21 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 
 			const blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
 
-			let registrationRestrict;
-			// for both regular users and temporary accounts
+			let allowedUserType;
+			// for regular users and temporary accounts
 			if (blockSettings.forRegisteredOnly) {
-				registrationRestrict = Twinkle.block.isRegistered;
-			// for IPs only
+				allowedUserType = Twinkle.block.isRegistered;
+			// for IPs
 			} else if (blockSettings.forIPsOnly) {
-				registrationRestrict = !Twinkle.block.isRegistered;
-			// for both IPs and temporary accounts
+				allowedUserType = !Twinkle.block.isRegistered;
+			// for IPs and temporary accounts
 			} else if (blockSettings.forUnnamedOnly) {
-				registrationRestrict = !Twinkle.block.isRegistered || mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'));
+				allowedUserType = !Twinkle.block.isRegistered || mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'));
 			} else {
-				registrationRestrict = true;
+				allowedUserType = true;
 			}
 
-			if (!(blockSettings.templateName && show_template) && registrationRestrict) {
+			if (!(blockSettings.templateName && show_template) && allowedUserType) {
 				const templateName = blockSettings.templateName || blockPreset.value;
 				return {
 					label: (show_template ? '{{' + templateName + '}}: ' : '') + blockPreset.label,
