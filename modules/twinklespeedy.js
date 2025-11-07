@@ -2103,6 +2103,9 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 			case 'g4':
 				param = 'xfd';
 				break;
+			case 'g5': // Only for db-gs, as db-g5 doesn't send a notice
+				param = 'code';
+				break;
 			case 'a2':
 				param = 'source';
 				break;
