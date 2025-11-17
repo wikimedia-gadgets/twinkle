@@ -822,7 +822,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   disabletalk: <disable user from editing their own talk page while blocked>
  *   expiry: <string - expiry timestamp, can include relative times like "5 months", "2 weeks" etc>
  *   forIPsOnly: <show block option in the interface only if the relevant user is an IP>
- *   forUnnamedOnly: <show block option in the interface only if the relevant user is an IP or a temporary account>
  *   forTempAccountsOnly: <show block option in the interface only if the relevant user is a temporary account>
  *   forRegisteredOnly: <show block option in the interface only if the relevant user is a temporary account or regular account>
  *   label: <string - label for the option of the dropdown in the interface (keep brief)>
@@ -1509,9 +1508,6 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 			// for IPs
 			} else if (blockSettings.forIPsOnly) {
 				allowedUserType = !Twinkle.block.isRegistered;
-			// for IPs and temporary accounts
-			} else if (blockSettings.forUnnamedOnly) {
-				allowedUserType = !Twinkle.block.isRegistered || mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'));
 			} else {
 				allowedUserType = true;
 			}
