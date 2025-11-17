@@ -836,7 +836,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					value: 'tag_only',
 					name: 'tag_only',
 					tooltip: 'If you just want to tag the page, instead of deleting it now',
-					checked: !(Twinkle.speedy.hasCSD || Twinkle.getPref('deleteSysopDefaultToDelete')),
+					checked: !(Twinkle.speedy.hasCSD || (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName')) || Twinkle.getPref('deleteSysopDefaultToDelete')),
 					event: function(event) {
 						const cForm = event.target.form;
 						const cChecked = event.target.checked;
