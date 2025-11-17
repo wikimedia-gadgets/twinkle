@@ -1091,7 +1091,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users'
 	},
 	'uw-ipevadeblock': {
-		forUnnamedOnly: true,
+		forIPOnly: true,
 		nocreate: true,
 		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
 		summary: 'Your IP address has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]'
@@ -1182,6 +1182,14 @@ Twinkle.block.blockPresetsInfo = {
 		prependReason: true,
 		summary: 'Your user talk page access has been disabled',
 		useInitialOptions: true
+	},
+	'uw-tempevadeblock': {
+		autoblock: true,
+		forUnnamedOnly: true,
+		forRegisteredOnly: true,
+		nocreate: true,
+		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
+		summary: 'Your temporary account has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]'
 	},
 	'uw-ublock': {
 		expiry: 'infinity',
@@ -1381,7 +1389,8 @@ Twinkle.block.blockGroups = [
 		list: [
 			{ label: 'Advertising', value: 'uw-adblock' },
 			{ label: 'Arbitration enforcement', value: 'uw-aeblock' },
-			{ label: 'Block evasion', value: 'uw-ipevadeblock' },
+			{ label: 'Block evasion - IP', value: 'uw-ipevadeblock' },
+			{ label: 'Block evasion - TA', value: 'uw-tempevadeblock' },
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
 			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
