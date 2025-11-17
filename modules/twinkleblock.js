@@ -1389,7 +1389,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Advertising', value: 'uw-adblock' },
 			{ label: 'Arbitration enforcement', value: 'uw-aeblock' },
 			{ label: 'Block evasion - IP', value: 'uw-ipevadeblock' },
-			{ label: 'Block evasion - TA', value: 'uw-tempevadeblock' },
+			{ label: 'Block evasion - Temporary account', value: 'uw-tempevadeblock' },
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
 			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
@@ -1504,7 +1504,7 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 				allowedUserType = Twinkle.block.isRegistered;
 			// for temporary accounts
 			} else if (blockSettings.forTempAccountsOnly) {
-				allowedUserType = Twinkle.block.isRegistered && mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'));
+				allowedUserType = mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'));
 			// for IPs
 			} else if (blockSettings.forIPsOnly) {
 				allowedUserType = !Twinkle.block.isRegistered;
