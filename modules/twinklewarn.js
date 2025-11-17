@@ -1688,8 +1688,7 @@ Twinkle.warn.callbacks = {
 		}
 		if (reason && !isCustom) {
 			// add extra message
-			if (templateName === 'uw-csd' || templateName === 'uw-probation' ||
-				templateName === 'uw-userspacenoindex' || templateName === 'uw-userpage') {
+			if (templateName === 'uw-userpage') {
 				text += "|3=''" + reason + "''";
 			} else {
 				text += "|2=''" + reason + "''";
