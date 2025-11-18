@@ -792,7 +792,7 @@ Twinkle.protect.protectionPresetsInfo = {
 	'pp-sock-noticeboard': {
 		edit: 'autoconfirmed',
 		expiry: '2 hours',
-		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]] of a high-traffic forum',
+		reason: 'Persistent [[WP:Sock puppetry|sock puppetry]] of a high-traffic noticeboard',
 		template: 'pp-sock'
 	},
 	'pp-vandalism': {
