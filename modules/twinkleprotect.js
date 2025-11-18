@@ -1321,7 +1321,7 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 				case 'pp-semi-usertalk':
 					typereason = 'Inappropriate use of user talk page while blocked';
 					break;
-				case 'pp-noticeboard-sock':
+				case 'pp-sock-noticeboard':
 				case 'pp-semi-sock':
 				case 'pp-30-500-sock':
 					typereason = 'Persistent [[WP:SOCK|sockpuppetry]]';
