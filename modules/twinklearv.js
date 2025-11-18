@@ -394,9 +394,11 @@ Twinkle.arv.callback.changeCategory = function (e) {
 									const $entry = $('<div>')
 										.addClass('entry');
 									const $input = $('<input>')
-										.attr('type', 'checkbox')
-										.attr('name', 's_' + field)
-										.attr('value', rev.revid);
+										.attr({
+											type: 'checkbox',
+											name: 's_' + field,
+											value: rev.revid
+										});
 									$input.data('revinfo', rev);
 									$input.appendTo($entry);
 									let comment = '<span>';
@@ -416,8 +418,10 @@ Twinkle.arv.callback.changeCategory = function (e) {
 								const $free_entry = $('<div>')
 									.addClass('entry');
 								const $free_input = $('<input>')
-									.attr('type', 'text')
-									.attr('name', 's_resolves_free');
+									.attr({
+										type: 'text',
+										name: 's_resolves_free'
+									});
 								const $free_label = $('<label>')
 									.attr('for', 's_resolves_free')
 									.html('URL link of diff with additional discussions: ');
