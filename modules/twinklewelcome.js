@@ -136,7 +136,7 @@ Twinkle.welcome.callback = function twinklewelcomeCallback(uid) {
 		event: Twinkle.welcome.populateWelcomeList,
 		list: [
 			{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
-			{ type: 'option', value: 'unregistered', label: 'IP user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
+			{ type: 'option', value: 'unregistered', label: 'Unregistered user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) || mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName')) },
 			{ type: 'option', value: 'wikiProject', label: 'WikiProject welcomes' },
 			{ type: 'option', value: 'nonEnglish', label: 'Non-English welcomes' }
 		]
@@ -314,6 +314,11 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}'
 			},
+			'welcome-unsourced': {
+				description: 'for someone whose initial efforts are unsourced',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-unsourced|$ARTICLE$|$USERNAME$}} ~~~~'
+			},
 			welcomelaws: {
 				description: 'welcome with information about copyrights, NPOV, the sandbox, and vandalism',
 				syntax: '{{subst:welcomelaws|$USERNAME$}} ~~~~'
@@ -322,11 +327,6 @@ Twinkle.welcome.templates = {
 				description: 'for someone whose initial efforts do not adhere to the neutral point of view policy',
 				linkedArticle: true,
 				syntax: '{{subst:welcomenpov|$ARTICLE$|$USERNAME$}} ~~~~'
-			},
-			welcomeunsourced: {
-				description: 'for someone whose initial efforts are unsourced',
-				linkedArticle: true,
-				syntax: '{{subst:welcomeunsourced|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			welcomevandal: {
 				description: 'for someone whose initial efforts appear to be vandalism',

@@ -2,8 +2,9 @@
 
 (function() {
 
-let api = new mw.Api(), relevantUserName, blockedUserName;
-const menuFormattedNamespaces = Object.assign({}, mw.config.get('wgFormattedNamespaces'));
+const api = new mw.Api();
+let relevantUserName, blockedUserName, blockWindow;
+const menuFormattedNamespaces = $.extend({}, mw.config.get('wgFormattedNamespaces'));
 menuFormattedNamespaces[0] = '(Article)';
 
 /*
@@ -33,18 +34,18 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	Twinkle.block.field_block_options = {};
 	Twinkle.block.field_template_options = {};
 
-	const Window = new Morebits.SimpleWindow(650, 530);
+	blockWindow = new Morebits.SimpleWindow(650, 530);
 	// need to be verbose about who we're blocking
-	Window.setTitle('Block or issue block template to ' + relevantUserName);
-	Window.setScriptName('Twinkle');
-	Window.addFooterLink('Block templates', 'Template:Uw-block/doc/Block_templates');
-	Window.addFooterLink('Block policy', 'WP:BLOCK');
-	Window.addFooterLink('Block prefs', 'WP:TW/PREF#block');
-	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
-	Window.addFooterLink('Give feedback', 'WT:TW');
+	blockWindow.setTitle('Block or issue block template to ' + relevantUserName);
+	blockWindow.setScriptName('Twinkle');
+	blockWindow.addFooterLink('Block templates', 'Template:Uw-block/doc/Block_templates');
+	blockWindow.addFooterLink('Block policy', 'WP:BLOCK');
+	blockWindow.addFooterLink('Block prefs', 'WP:TW/PREF#block');
+	blockWindow.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
+	blockWindow.addFooterLink('Give feedback', 'WT:TW');
 
 	// Always added, hidden later if actual user not blocked
-	Window.addFooterLink('Unblock this user', 'Special:Unblock/' + relevantUserName, true);
+	blockWindow.addFooterLink('Unblock this user', 'Special:Unblock/' + relevantUserName, true);
 
 	const form = new Morebits.QuickForm(Twinkle.block.callback.evaluate);
 	const actionfield = form.append({
@@ -124,8 +125,8 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	form.append({ type: 'submit' });
 
 	const result = form.render();
-	Window.setContent(result);
-	Window.display();
+	blockWindow.setContent(result);
+	blockWindow.display();
 	result.root = result;
 
 	Twinkle.block.fetchUserInfo(() => {
@@ -153,11 +154,22 @@ Twinkle.block.callback = function twinkleblockCallback() {
 
 // Store fetched user data, only relevant if switching IPv6 to a /64
 Twinkle.block.fetchedData = {};
-// Processes the data from a a query response, separated from
+// Processes the data from a query response, separated from
 // Twinkle.block.fetchUserInfo to allow reprocessing of already-fetched data
 Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
-	let blockinfo = data.query.blocks[0],
-		userinfo = data.query.users[0];
+	let blockinfo = data.query.blocks[0];
+	// Soft redirect to Special:Block if the user is multi-blocked (#2178)
+	if (blockinfo && data.query.blocks.length > 1) {
+		// Remove submission buttons.
+		$(blockWindow.content).dialog('widget').find('.morebits-dialog-buttons').empty();
+		Morebits.Status.init(blockWindow.content.querySelector('form'));
+		Morebits.Status.warn(
+			`This target has ${data.query.blocks.length} active blocks`,
+			`Multiblocks is not supported by Twinkle. Use [[Special:Block/${relevantUserName}]] instead.`
+		);
+		return;
+	}
+	const userinfo = data.query.users[0];
 	// If an IP is blocked *and* rangeblocked, the above finds
 	// whichever block is more recent, not necessarily correct.
 	// Three seems... unlikely
@@ -169,7 +181,7 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 
 	Twinkle.block.isRegistered = !!userinfo.userid;
 	if (Twinkle.block.isRegistered) {
-		Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map((e) => e.group).indexOf('bot') !== -1;
+		Twinkle.block.userIsBot = !!userinfo.groupmemberships && userinfo.groupmemberships.map((e) => e.group).includes('bot');
 	} else {
 		Twinkle.block.userIsBot = false;
 	}
@@ -296,7 +308,8 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 };
 
 Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction(e) {
-	let field_preset, field_template_options, field_block_options, $form = $(e.target.form);
+	let field_preset, field_template_options, field_block_options;
+	const $form = $(e.target.form);
 	// Make ifs shorter
 	const blockBox = $form.find('[name=actiontype][value=block]').is(':checked');
 	const templateBox = $form.find('[name=actiontype][value=template]').is(':checked');
@@ -808,8 +821,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   autoblock: <autoblock any IP addresses used (for registered users only)>
  *   disabletalk: <disable user from editing their own talk page while blocked>
  *   expiry: <string - expiry timestamp, can include relative times like "5 months", "2 weeks" etc>
- *   forUnregisteredOnly: <show block option in the interface only if the relevant user is an IP>
- *   forRegisteredOnly: <show block option in the interface only if the relevant user is registered>
+ *   forIPsOnly: <show block option in the interface only if the relevant user is an IP>
+ *   forUnnamedOnly: <show block option in the interface only if the relevant user is an IP or a temporary account>
+ *   forRegisteredOnly: <show block option in the interface only if the relevant user is a temporary account or regular account>
  *   label: <string - label for the option of the dropdown in the interface (keep brief)>
  *   noemail: prevent the user from sending email through Special:Emailuser
  *   pageParam: <set if the associated block template accepts a page parameter>
@@ -832,7 +846,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 Twinkle.block.blockPresetsInfo = {
 	anonblock: {
 		expiry: '31 hours',
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{anonblock}}',
@@ -840,7 +854,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'anonblock - school': {
 		expiry: '36 hours',
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{anonblock}} <!-- Likely a school based on behavioral evidence -->',
@@ -849,7 +863,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'blocked proxy': {
 		expiry: '1 year',
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		hardblock: true,
@@ -858,7 +872,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'CheckUser block': {
 		expiry: '1 week',
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{CheckUser block}}',
@@ -874,7 +888,7 @@ Twinkle.block.blockPresetsInfo = {
 		sig: '~~~~'
 	},
 	'checkuserblock-wide': {
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{checkuserblock-wide}}',
@@ -882,7 +896,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	colocationwebhost: {
 		expiry: '1 year',
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nonstandard: true,
 		reason: '{{colocationwebhost}}',
 		sig: null
@@ -896,14 +910,14 @@ Twinkle.block.blockPresetsInfo = {
 		sig: '~~~~'
 	},
 	'school block': {
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{school block}}',
 		sig: '~~~~'
 	},
 	spamblacklistblock: {
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		expiry: '1 month',
 		disabletalk: true,
 		nocreate: true,
@@ -913,19 +927,19 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '{{rangeblock}}',
 		nocreate: true,
 		nonstandard: true,
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		sig: '~~~~'
 	},
 	tor: {
 		expiry: '1 year',
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nonstandard: true,
 		reason: '{{Tor}}',
 		sig: null
 	},
 	webhostblock: {
 		expiry: '1 year',
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nonstandard: true,
 		reason: '{{webhostblock}}',
 		sig: null
@@ -942,7 +956,7 @@ Twinkle.block.blockPresetsInfo = {
 	'uw-ablock': {
 		autoblock: true,
 		expiry: '31 hours',
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nocreate: true,
 		pageParam: true,
 		reasonParam: true,
@@ -992,7 +1006,9 @@ Twinkle.block.blockPresetsInfo = {
 		suppressArticleInSummary: true
 	},
 	'uw-blocknotalk': {
+		autoblock: true,
 		disabletalk: true,
+		nocreate: true,
 		pageParam: true,
 		reasonParam: true,
 		summary: 'You have been blocked from editing and your user talk page access has been disabled',
@@ -1075,7 +1091,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users'
 	},
 	'uw-ipevadeblock': {
-		forUnregisteredOnly: true,
+		forUnnamedOnly: true,
 		nocreate: true,
 		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
 		summary: 'Your IP address has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]'
@@ -1248,7 +1264,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'zombie proxy': {
 		expiry: '1 month',
-		forUnregisteredOnly: true,
+		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{zombie proxy}}',
@@ -1365,7 +1381,7 @@ Twinkle.block.blockGroups = [
 		list: [
 			{ label: 'Advertising', value: 'uw-adblock' },
 			{ label: 'Arbitration enforcement', value: 'uw-aeblock' },
-			{ label: 'Block evasion - IP', value: 'uw-ipevadeblock' },
+			{ label: 'Block evasion', value: 'uw-ipevadeblock' },
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
 			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
@@ -1474,16 +1490,21 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 
 			const blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
 
-			let registrationRestrict;
+			let allowedUserType;
+			// for regular users and temporary accounts
 			if (blockSettings.forRegisteredOnly) {
-				registrationRestrict = Twinkle.block.isRegistered;
-			} else if (blockSettings.forUnregisteredOnly) {
-				registrationRestrict = !Twinkle.block.isRegistered;
+				allowedUserType = Twinkle.block.isRegistered;
+			// for IPs
+			} else if (blockSettings.forIPsOnly) {
+				allowedUserType = !Twinkle.block.isRegistered;
+			// for IPs and temporary accounts
+			} else if (blockSettings.forUnnamedOnly) {
+				allowedUserType = !Twinkle.block.isRegistered || mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'));
 			} else {
-				registrationRestrict = true;
+				allowedUserType = true;
 			}
 
-			if (!(blockSettings.templateName && show_template) && registrationRestrict) {
+			if (!(blockSettings.templateName && show_template) && allowedUserType) {
 				const templateName = blockSettings.templateName || blockPreset.value;
 				return {
 					label: (show_template ? '{{' + templateName + '}}: ' : '') + blockPreset.label,
@@ -1534,7 +1555,7 @@ Twinkle.block.callback.change_expiry = function twinkleblockCallbackChangeExpiry
 Twinkle.block.seeAlsos = [];
 Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSeeAlso() {
 	const reason = this.form.reason.value.replace(
-		new RegExp('( <!--|;) ' + 'see also ' + Twinkle.block.seeAlsos.join(' and ') + '( -->)?'), ''
+		new RegExp('( <!--|;) see also ' + Twinkle.block.seeAlsos.join(' and ') + '( -->)?'), ''
 	);
 
 	Twinkle.block.seeAlsos = Twinkle.block.seeAlsos.filter((el) => el !== this.value);
@@ -1546,7 +1567,7 @@ Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSee
 
 	if (!Twinkle.block.seeAlsos.length) {
 		this.form.reason.value = reason;
-	} else if (reason.indexOf('{{') !== -1) {
+	} else if (reason.includes('{{')) {
 		this.form.reason.value = reason + ' <!-- see also ' + seeAlsoMessage + ' -->';
 	} else {
 		this.form.reason.value = reason + '; see also ' + seeAlsoMessage;
@@ -1572,7 +1593,8 @@ Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSR
 };
 
 Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, data) {
-	let form = e.target.form, expiry = data.expiry;
+	const form = e.target.form;
+	let expiry = data.expiry;
 
 	// don't override original expiry if useInitialOptions is set
 	if (!data.useInitialOptions) {
@@ -1723,11 +1745,11 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 };
 
 Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
-	let $form = $(e.target),
+	const $form = $(e.target),
 		toBlock = $form.find('[name=actiontype][value=block]').is(':checked'),
 		toWarn = $form.find('[name=actiontype][value=template]').is(':checked'),
-		toPartial = $form.find('[name=actiontype][value=partial]').is(':checked'),
-		blockoptions = {}, templateoptions = {};
+		toPartial = $form.find('[name=actiontype][value=partial]').is(':checked');
+	let blockoptions = {}, templateoptions = {};
 
 	Twinkle.block.callback.saveFieldset($form.find('[name=field_block_options]'));
 	Twinkle.block.callback.saveFieldset($form.find('[name=field_template_options]'));
@@ -1757,7 +1779,7 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 
 	if (toBlock) {
 		if (blockoptions.partial) {
-			if (blockoptions.disabletalk && blockoptions.namespacerestrictions.indexOf('3') === -1) {
+			if (blockoptions.disabletalk && !blockoptions.namespacerestrictions.includes('3')) {
 				return alert('Partial blocks cannot prevent talk page access unless also restricting them from editing User talk space!');
 			}
 			if (!blockoptions.namespacerestrictions && !blockoptions.pagerestrictions) {
@@ -1899,13 +1921,14 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	// "talk page" of an IP range (which does not exist)
 	const userTalkPage = 'User_talk:' + mw.config.get('wgRelevantUserName');
 
-	const params = Object.assign(formData || {}, {
-		messageData: Twinkle.block.blockPresetsInfo[formData.template],
-		reason: Twinkle.block.field_template_options.block_reason,
-		disabletalk: Twinkle.block.field_template_options.notalk,
-		noemail: Twinkle.block.field_template_options.noemail_template,
-		nocreate: Twinkle.block.field_template_options.nocreate_template
-	});
+	const params = Twinkle.block.combineFormDataAndFieldTemplateOptions(
+		formData,
+		Twinkle.block.blockPresetsInfo[formData.template],
+		Twinkle.block.field_template_options.block_reason,
+		Twinkle.block.field_template_options.notalk,
+		Twinkle.block.field_template_options.noemail_template,
+		Twinkle.block.field_template_options.nocreate_template
+	);
 
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = 'Actions complete, loading user talk page in a few seconds';
@@ -1915,8 +1938,19 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	wikipedia_page.load(Twinkle.block.callback.main);
 };
 
+Twinkle.block.combineFormDataAndFieldTemplateOptions = function(formData, messageData, reason, disabletalk, noemail, nocreate) {
+	return $.extend(formData, {
+		messageData: messageData,
+		reason: reason,
+		disabletalk: disabletalk,
+		noemail: noemail,
+		nocreate: nocreate
+	});
+};
+
 Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
-	let text = '{{', settings = Twinkle.block.blockPresetsInfo[params.template];
+	let text = '{{';
+	const settings = Twinkle.block.blockPresetsInfo[params.template];
 	if (!settings.nonstandard) {
 		text += 'subst:' + params.template;
 		if (params.article && settings.pageParam) {
@@ -1990,10 +2024,10 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 };
 
 Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
-	let params = pageobj.getCallbackParameters(),
+	const params = pageobj.getCallbackParameters(),
 		date = new Morebits.Date(pageobj.getLoadTime()),
-		messageData = params.messageData,
-		text;
+		messageData = params.messageData;
+	let text;
 
 	params.indefinite = Morebits.string.isInfinity(params.expiry);
 
@@ -2003,7 +2037,8 @@ Twinkle.block.callback.main = function twinkleblockcallbackMain(pageobj) {
 	} else {
 		text = pageobj.getPageText();
 
-		let dateHeaderRegex = date.monthHeaderRegex(), dateHeaderRegexLast, dateHeaderRegexResult;
+		const dateHeaderRegex = date.monthHeaderRegex();
+		let dateHeaderRegexLast, dateHeaderRegexResult;
 		while ((dateHeaderRegexLast = dateHeaderRegex.exec(text)) !== null) {
 			dateHeaderRegexResult = dateHeaderRegexLast;
 		}

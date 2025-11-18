@@ -36,7 +36,7 @@ Twinkle.warn = function twinklewarn() {
 			// Can't provide vanarticlerevid as only wgCurRevisionId is provided
 			const extraParam = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm);
 			const href = $vandalTalkLink.attr('href');
-			if (href.indexOf('?') === -1) {
+			if (!href.includes('?')) {
 				$vandalTalkLink.attr('href', href + '?' + extraParam);
 			} else {
 				$vandalTalkLink.attr('href', href + '&' + extraParam);
@@ -54,9 +54,8 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 		return;
 	}
 
-	let dialog;
 	Twinkle.warn.dialog = new Morebits.SimpleWindow(600, 440);
-	dialog = Twinkle.warn.dialog;
+	const dialog = Twinkle.warn.dialog;
 	dialog.setTitle('Warn/notify user');
 	dialog.setScriptName('Twinkle');
 	dialog.addFooterLink('Choosing a warning level', 'WP:UWUL#Levels');
@@ -1282,6 +1281,10 @@ Twinkle.warn.messages = {
 			label: 'Removing {{copyvio}} template from articles',
 			summary: 'Warning: Removing {{copyvio}} templates'
 		},
+		'uw-derogatory': {
+			label: 'Addition of derogatory/hateful content',
+			summary: 'Warning: Addition of derogatory content'
+		},
 		'uw-efsummary': {
 			label: 'Edit summary triggering the edit filter',
 			summary: 'Warning: Edit summary triggering the edit filter'
@@ -1310,9 +1313,9 @@ Twinkle.warn.messages = {
 			label: 'Editing while logged out',
 			summary: 'Warning: Editing while logged out'
 		},
-		'uw-multipleIPs': {
-			label: 'Usage of multiple IPs',
-			summary: 'Warning: Vandalism using multiple IPs'
+		'uw-multipleTAs': {
+			label: 'Usage of multiple temporary accounts',
+			summary: 'Warning: Vandalism using multiple temporary accounts'
 		},
 		'uw-paraphrase': {
 			label: 'Close paraphrasing',
@@ -1363,7 +1366,7 @@ Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyNam
 		const level = isNumberedTemplate[0];
 		const numberedWarnings = {};
 		$.each(templates.levels, (key, val) => {
-			Object.assign(numberedWarnings, val);
+			$.extend(numberedWarnings, val);
 		});
 		$.each(numberedWarnings, (key) => {
 			if (key === unNumberedTemplateName) {
@@ -1376,7 +1379,7 @@ Twinkle.warn.getTemplateProperty = function(templates, templateName, propertyNam
 	const otherWarnings = {};
 	$.each(templates, (key, val) => {
 		if (key !== 'levels') {
-			Object.assign(otherWarnings, val);
+			$.extend(otherWarnings, val);
 		}
 	});
 	$.each(otherWarnings, (key) => {
@@ -1469,7 +1472,7 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 			createEntries(Twinkle.warn.messages[value], sub_group, true);
 			break;
 		case 'singlecombined':
-			var unSortedSinglets = Object.assign({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
+			var unSortedSinglets = $.extend({}, Twinkle.warn.messages.singlenotice, Twinkle.warn.messages.singlewarn);
 			var sortedSingletMessages = {};
 			Object.keys(unSortedSinglets).sort().forEach((key) => {
 				sortedSingletMessages[key] = unSortedSinglets[key];
@@ -1630,7 +1633,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		'uw-aiv': 'Optional username that was reported (without User:) '
 	};
 
-	const hasLevel = ['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].indexOf(selected_main_group) !== -1;
+	const hasLevel = ['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].includes(selected_main_group);
 	if (hasLevel) {
 		if (notLinkedArticle[selected_template]) {
 			if (Twinkle.warn.prev_article === null) {
@@ -1705,9 +1708,7 @@ Twinkle.warn.callbacks = {
 		// Provided on autolevel, not otherwise
 		templatename = templatename || input.sub_group;
 		const linkedarticle = input.article;
-		let templatetext;
-
-		templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
+		const templatetext = Twinkle.warn.callbacks.getWarningWikitext(templatename, linkedarticle,
 			input.reason, input.main_group === 'custom');
 
 		form.previewer.beginRender(templatetext, 'User_talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
@@ -1797,7 +1798,7 @@ Twinkle.warn.callbacks = {
 		} else if (latest.type) { // Non-numbered warning
 			// Try to leverage existing categorization of
 			// warnings, all but one are universally lowercased
-			const loweredType = /uw-multipleIPs/i.test(latest.type) ? 'uw-multipleIPs' : latest.type.toLowerCase();
+			const loweredType = /uw-multipleTAs/i.test(latest.type) ? 'uw-multipleTAs' : latest.type.toLowerCase();
 			// It would be nice to account for blocks, but in most
 			// cases the hidden message is terminal, not the sig
 			if (Twinkle.warn.messages.singlewarn[loweredType]) {
@@ -1916,7 +1917,7 @@ Twinkle.warn.callbacks = {
 		const customProcess = function(template) {
 			template = template.split('|')[0];
 			let prefix;
-			switch (template.substr(-1)) {
+			switch (template.slice(-1)) {
 				case '1':
 					prefix = 'General note';
 					break;
@@ -1930,7 +1931,7 @@ Twinkle.warn.callbacks = {
 					prefix = 'Final warning';
 					break;
 				case 'm':
-					if (template.substr(-3) === '4im') {
+					if (template.slice(-3) === '4im') {
 						prefix = 'Only warning';
 						break;
 					}
@@ -1948,9 +1949,9 @@ Twinkle.warn.callbacks = {
 		} else {
 			// Normalize kitchensink to the 1-4im style
 			if (params.main_group === 'kitchensink' && !/^D+$/.test(params.sub_group)) {
-				let sub = params.sub_group.substr(-1);
+				let sub = params.sub_group.slice(-1);
 				if (sub === 'm') {
-					sub = params.sub_group.substr(-3);
+					sub = params.sub_group.slice(-3);
 				}
 				// Don't overwrite uw-3rr, technically unnecessary
 				if (/\d/.test(sub)) {

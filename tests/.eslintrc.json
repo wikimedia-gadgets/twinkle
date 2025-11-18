@@ -1,0 +1,26 @@
+{
+	"extends": [
+		"wikimedia/server"
+	],
+	"env": {
+		"jest": true
+	},
+	"globals": {
+		"assert": "readonly",
+		"document": "readonly",
+		"jQuery": "readonly",
+		"Morebits": "readonly",
+		"mw": "readonly",
+		"Twinkle": "readonly",
+		"window": "readonly"
+	},
+	"root": true,
+	"rules": {
+		"array-bracket-spacing": "off",
+		"computed-property-spacing": "off",
+		"max-len": "off",
+		"no-shadow": "off",
+		"object-curly-spacing": "off",
+		"space-in-parens": "off"
+	}
+}

@@ -1,6 +1,6 @@
 {
 	"extends": [
-		"wikimedia/client/es6",
+		"wikimedia/client",
 		"wikimedia/jquery",
 		"wikimedia/mediawiki"
 	],
@@ -11,9 +11,10 @@
 		"Map": "readonly"
 	},
 	"rules": {
+		// default rules we don't like
 		"array-bracket-spacing": "off",
-		"camelcase": "off",
 		"computed-property-spacing": "off",
+		"es-x/no-array-prototype-includes": "off",
 		"indent": "off",
 		"jsdoc/require-param": "off",
 		"jsdoc/require-returns": "off",
@@ -22,31 +23,21 @@
 		"no-jquery/no-class-state": "off",
 		"no-jquery/no-global-selector": "off",
 		"no-shadow": "off",
-		"no-underscore-dangle": "off",
 		"object-curly-spacing": "off",
 		"space-before-function-paren": "off",
 		"space-in-parens": "off",
 		"template-curly-spacing": "off",
-		"unicorn/prefer-string-slice": "off",
 
+		// non-default rules we do like
 		"no-nested-ternary": "error",
-		"no-restricted-syntax": [
-			"warn",
-			{
-				"message": "Using .done() is discouraged. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
-				"selector": "MemberExpression > Identifier[name=\"done\"]"
-			},
-			{
-				"message": "Using .fail() is discouraged. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
-				"selector": "MemberExpression > Identifier[name=\"fail\"]"
-			}
-		],
-
-		"es-x/no-array-prototype-includes": "warn",
-		"es-x/no-object-values": "warn",
+		
+		// rules we should probably fix someday
+		"camelcase": ["warn", {"properties": "never"}],
 		"mediawiki/class-doc": "warn",
 		"new-cap": "warn",
+		"no-jquery/no-done-fail": "warn",
 		"no-jquery/no-each-util": "warn",
+		"no-jquery/no-extend": "warn",
 		"no-jquery/no-grep": "warn",
 		"no-jquery/no-in-array": "warn",
 		"no-jquery/no-map-util": "warn",
@@ -54,13 +45,10 @@
 		"no-jquery/no-sizzle": "warn",
 		"no-loop-func": "warn",
 		"no-new": "warn",
-		"no-return-assign": "warn",
 		"no-script-url": "warn",
-		"no-throw-literal": "warn",
 		"no-unused-expressions": "warn",
 		"no-use-before-define": "warn",
-		"no-useless-concat": "warn",
 		"no-var": "warn",
-		"prefer-const": "warn"
+		"unicorn/prefer-string-slice": "warn"
 	}
 }

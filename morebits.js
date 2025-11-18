@@ -131,7 +131,7 @@ Morebits.l10n = {
  * @return {boolean}
  */
 Morebits.userIsInGroup = function (group) {
-	return mw.config.get('wgUserGroups').indexOf(group) !== -1;
+	return mw.config.get('wgUserGroups').includes(group);
 };
 /**
  * Hardcodes whether the user is a sysop, used a lot.
@@ -266,9 +266,10 @@ Morebits.namespaceRegex = function(namespaces) {
 	if (!Array.isArray(namespaces)) {
 		namespaces = [namespaces];
 	}
-	let aliases = [], regex;
+	const aliases = [];
+	let regex;
 	$.each(mw.config.get('wgNamespaceIds'), (name, number) => {
-		if (namespaces.indexOf(number) !== -1) {
+		if (namespaces.includes(number)) {
 			// Namespaces are completely agnostic as to case,
 			// and a regex string is more useful/compatible than a RegExp object,
 			// so we accept any casing for any letter.
@@ -601,7 +602,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 							id: id + '_' + i + '_subgroup'
 						});
 						$.each(tmpgroup, (idx, el) => {
-							const newEl = Object.assign({}, el);
+							const newEl = $.extend({}, el);
 							if (!newEl.type) {
 								newEl.type = data.type;
 							}
@@ -758,7 +759,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createElement('div');
 
 			data.inputs.forEach((subdata) => {
-				const cell = new Morebits.quickForm.element(Object.assign(subdata || {}, { type: '_dyninput_cell' }));
+				const cell = new Morebits.quickForm.element($.extend(subdata, { type: '_dyninput_cell' }));
 				node.appendChild(cell.render());
 			});
 			if (data.remove) {
@@ -1404,6 +1405,7 @@ Morebits.ip = {
 		}
 		ipv6 = Morebits.ip.sanitizeIPv6(ipv6);
 		const ip_re = /^((?:[0-9A-F]{1,4}:){4})(?:[0-9A-F]{1,4}:){3}[0-9A-F]{1,4}(?:\/\d{1,3})?$/;
+		// eslint-disable-next-line no-useless-concat
 		return ipv6.replace(ip_re, '$1' + '0:0:0:0/64');
 	}
 };
@@ -1421,7 +1423,7 @@ Morebits.string = {
 	 */
 	toUpperCaseFirstChar: function(str) {
 		str = str.toString();
-		return str.substr(0, 1).toUpperCase() + str.substr(1);
+		return str.slice(0, 1).toUpperCase() + str.slice(1);
 	},
 	/**
 	 * @param {string} str
@@ -1429,7 +1431,7 @@ Morebits.string = {
 	 */
 	toLowerCaseFirstChar: function(str) {
 		str = str.toString();
-		return str.substr(0, 1).toLowerCase() + str.substr(1);
+		return str.slice(0, 1).toLowerCase() + str.slice(1);
 	},
 
 	/**
@@ -1500,6 +1502,7 @@ Morebits.string = {
 	formatReasonText: function(str, addSig) {
 		let reason = (str || '').toString().trim();
 		const unbinder = new Morebits.unbinder(reason);
+		// eslint-disable-next-line no-useless-concat
 		unbinder.unbind('<no' + 'wiki>', '</no' + 'wiki>');
 		unbinder.content = unbinder.content.replace(/\|/g, '{{subst:!}}');
 		reason = unbinder.rebind();
@@ -1554,7 +1557,7 @@ Morebits.string = {
 	 * @return {boolean}
 	 */
 	isInfinity: function morebitsStringIsInfinity(expiry) {
-		return ['indefinite', 'infinity', 'infinite', 'never'].indexOf(expiry) !== -1;
+		return ['indefinite', 'infinity', 'infinite', 'never'].includes(expiry);
 	},
 
 	/**
@@ -1585,7 +1588,7 @@ Morebits.array = {
 	 */
 	uniq: function(arr) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.uniq';
+			throw new Error('A non-array object passed to Morebits.array.uniq');
 		}
 		return arr.filter((item, idx) => arr.indexOf(item) === idx);
 	},
@@ -1600,7 +1603,7 @@ Morebits.array = {
 	 */
 	dups: function(arr) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.dups';
+			throw new Error('A non-array object passed to Morebits.array.dups');
 		}
 		return arr.filter((item, idx) => arr.indexOf(item) !== idx);
 	},
@@ -1615,7 +1618,7 @@ Morebits.array = {
 	 */
 	chunk: function(arr, size) {
 		if (!Array.isArray(arr)) {
-			throw 'A non-array object passed to Morebits.array.chunk';
+			throw new Error('A non-array object passed to Morebits.array.chunk');
 		}
 		if (typeof size !== 'number' || size <= 0) { // pretty impossible to do anything :)
 			return [ arr ]; // we return an array consisting of this array.
@@ -1650,7 +1653,7 @@ Morebits.select2 = {
 			const result = originalMatcher(params, data);
 
 			if (result && params.term &&
-				data.text.toUpperCase().indexOf(params.term.toUpperCase()) !== -1) {
+				data.text.toUpperCase().includes(params.term.toUpperCase())) {
 				result.children = data.children;
 			}
 			return result;
@@ -1811,20 +1814,20 @@ Morebits.date = function() {
 			const digitMatch = /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(param);
 			if (digitMatch) {
 				// ..... year ... month .. date ... hour .... minute ..... second
-				this._d = new Date(Date.UTC.apply(null, [digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]]));
+				this.privateDate = new Date(Date.UTC.apply(null, [digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]]));
 			}
 		} else if (typeof param === 'string') {
 			// Wikitext signature timestamp
 			const dateParts = Morebits.l10n.signatureTimestampFormat(param);
 			if (dateParts) {
-				this._d = new Date(Date.UTC.apply(null, dateParts));
+				this.privateDate = new Date(Date.UTC.apply(null, dateParts));
 			}
 		}
 	}
 
-	if (!this._d) {
+	if (!this.privateDate) {
 		// Try standard date
-		this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)))();
+		this.privateDate = new (Function.prototype.bind.apply(Date, [Date].concat(args)))();
 	}
 
 	// Still no?
@@ -2145,7 +2148,7 @@ Morebits.date.prototype = {
 // Allow native Date.prototype methods to be used on Morebits.date objects
 Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
 	Morebits.date.prototype[func] = function() {
-		return this._d[func].apply(this._d, Array.prototype.slice.call(arguments));
+		return this.privateDate[func].apply(this.privateDate, Array.prototype.slice.call(arguments));
 	};
 });
 
@@ -2281,7 +2284,7 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 	this.query = query;
 	this.query.assert = 'user';
 	// Enforce newer error formats, preferring html
-	if (!query.errorformat || ['wikitext', 'plaintext'].indexOf(query.errorformat) === -1) {
+	if (!query.errorformat || !['wikitext', 'plaintext'].includes(query.errorformat)) {
 		this.query.errorformat = 'html';
 	}
 	// Explicitly use the wiki's content language to minimize confusion,
@@ -2302,12 +2305,12 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 		this.query.format = 'xml';
 	} else if (query.format === 'json' && !query.formatversion) {
 		this.query.formatversion = '2';
-	} else if (['xml', 'json'].indexOf(query.format) === -1) {
+	} else if (!['xml', 'json'].includes(query.format)) {
 		this.statelem.error('Invalid API format: only xml and json are supported.');
 	}
 
 	// Ignore tags for queries and most common unsupported actions, produces warnings
-	if (query.action && ['query', 'review', 'stabilize', 'pagetriageaction', 'watch'].indexOf(query.action) !== -1) {
+	if (query.action && ['query', 'review', 'stabilize', 'pagetriageaction', 'watch'].includes(query.action)) {
 		delete query.tags;
 	} else if (!query.tags && morebitsWikiChangeTag) {
 		query.tags = morebitsWikiChangeTag;
@@ -2363,7 +2366,7 @@ Morebits.wiki.api.prototype = {
 		}).join('&').replace(/^(.*?)(\btoken=[^&]*)&(.*)/, '$1$3&$2');
 		// token should always be the last item in the query string (bug TW-B-0013)
 
-		const ajaxparams = Object.assign({}, {
+		const ajaxparams = $.extend({}, {
 			context: this,
 			type: this.query.action === 'query' ? 'GET' : 'POST',
 			url: mw.util.wikiScript('api'),
@@ -2897,7 +2900,7 @@ Morebits.wiki.page = function(pageName, status) {
 				break;
 		}
 
-		if (['recreate', 'createonly', 'nocreate'].indexOf(ctx.createOption) !== -1) {
+		if (['recreate', 'createonly', 'nocreate'].includes(ctx.createOption)) {
 			query[ctx.createOption] = '';
 		}
 
@@ -3429,7 +3432,7 @@ Morebits.wiki.page = function(pageName, status) {
 
 	/** @return {boolean} whether or not you can edit the page */
 	this.canEdit = function() {
-		return !!ctx.testActions && ctx.testActions.indexOf('edit') !== -1;
+		return !!ctx.testActions && ctx.testActions.includes('edit');
 	};
 
 	/**
@@ -3591,7 +3594,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 */
 	this.triage = function() {
 		// Fall back to patrol if not a valid triage namespace
-		if (mw.config.get('pageTriageNamespaces').indexOf(new mw.Title(ctx.pageName).getNamespaceId()) === -1) {
+		if (!mw.config.get('pageTriageNamespaces').includes(new mw.Title(ctx.pageName).getNamespaceId())) {
 			this.patrol();
 		} else {
 			if (!Morebits.userIsSysop && !Morebits.userIsInGroup('patroller')) {
@@ -3775,7 +3778,7 @@ Morebits.wiki.page = function(pageName, status) {
 			// wgRestrictionEdit is null on non-existent pages,
 			// so this neatly handles nonexistent pages
 			const editRestriction = mw.config.get('wgRestrictionEdit');
-			if (!editRestriction || editRestriction.indexOf('sysop') !== -1) {
+			if (!editRestriction || editRestriction.includes('sysop')) {
 				return false;
 			}
 		}
@@ -3831,7 +3834,8 @@ Morebits.wiki.page = function(pageName, status) {
 			return; // abort
 		}
 
-		let page = response.pages[0], rev;
+		const page = response.pages[0];
+		let rev;
 		ctx.pageExists = !page.missing;
 		if (ctx.pageExists) {
 			rev = page.revisions[0];
@@ -4227,7 +4231,7 @@ Morebits.wiki.page = function(pageName, status) {
 		const missing = response.pages[0].missing;
 
 		// No undelete as an existing page could have deleted revisions
-		const actionMissing = missing && ['delete', 'stabilize', 'move'].indexOf(action) !== -1;
+		const actionMissing = missing && ['delete', 'stabilize', 'move'].includes(action);
 		const protectMissing = action === 'protect' && missing && (ctx.protectEdit || ctx.protectMove);
 		const saltMissing = action === 'protect' && !missing && ctx.protectCreate;
 
@@ -4830,7 +4834,7 @@ Morebits.wikitext.parseTemplate = function(text, start) {
 	function findParam(final) {
 		// Nothing found yet, this must be the template name
 		if (count === -1) {
-			result.name = current.substring(2).trim();
+			result.name = current.slice(2).trim();
 			++count;
 		} else {
 			// In a parameter
@@ -4940,7 +4944,7 @@ Morebits.wikitext.page.prototype = {
 
 		// For most namespaces, unlink both [[User:Test]] and [[:User:Test]]
 		// For files and categories, only unlink [[:Category:Test]]. Do not unlink [[Category:Test]]
-		const isFileOrCategory = [6, 14].indexOf(namespaceID) !== -1;
+		const isFileOrCategory = [6, 14].includes(namespaceID);
 		const colon = isFileOrCategory ? ':' : ':?';
 
 		const simple_link_regex = new RegExp('\\[\\[' + colon + '(' + link_regex_string + ')\\]\\]', 'g');
@@ -5231,7 +5235,7 @@ Morebits.status.onError = function(handler) {
 	if (typeof handler === 'function') {
 		Morebits.status.errorEvent = handler;
 	} else {
-		throw 'Morebits.status.onError: handler is not a function';
+		throw new Error('Morebits.status.onError: handler is not a function');
 	}
 };
 
