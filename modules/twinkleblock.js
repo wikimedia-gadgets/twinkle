@@ -1092,6 +1092,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'uw-ipevadeblock': {
 		forIPsOnly: true,
+		expiry: '1 week',
 		nocreate: true,
 		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
 		summary: 'Your IP address has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]'
@@ -1185,6 +1186,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'uw-tempevadeblock': {
 		autoblock: true,
+		expiry: 'infinity',
 		forTempAccountsOnly: true,
 		nocreate: true,
 		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
