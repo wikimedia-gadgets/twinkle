@@ -1288,8 +1288,10 @@ Twinkle.speedy.callbacks = {
 				$link = $('<a>')
 					.attr('href', '#')
 					.text('click here to go to the Unlink tool')
-					.css('fontSize', '130%')
-					.css('fontWeight', 'bold')
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					})
 					.on('click', () => {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
@@ -1297,15 +1299,19 @@ Twinkle.speedy.callbacks = {
 					});
 				$bigtext = $('<span>')
 					.text('To orphan backlinks and remove instances of file usage')
-					.css('fontSize', '130%')
-					.css('fontWeight', 'bold');
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					});
 				Morebits.Status.info($bigtext[0], $link[0]);
 			} else if (params.normalized !== 'f8') {
 				$link = $('<a>')
 					.attr('href', '#')
 					.text('click here to go to the Unlink tool')
-					.css('fontSize', '130%')
-					.css('fontWeight', 'bold')
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					})
 					.on('click', () => {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
@@ -1313,8 +1319,10 @@ Twinkle.speedy.callbacks = {
 					} );
 				$bigtext = $('<span>')
 					.text('To orphan backlinks')
-					.css('fontSize', '130%')
-					.css('fontWeight', 'bold');
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					});
 				Morebits.Status.info($bigtext[0], $link[0]);
 			}
 		},
