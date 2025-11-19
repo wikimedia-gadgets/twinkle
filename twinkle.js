@@ -99,9 +99,9 @@ Twinkle.defaultConfig = {
 	watchSpeedyUser: '1 month',
 
 	// these next two should probably be identical by default
-	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u5' ],
-	notifyUserOnSpeedyDeletionNomination: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u5' ],
-	warnUserOnSpeedyDelete: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u5' ],
+	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u6', 'u7' ],
+	notifyUserOnSpeedyDeletionNomination: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u6', 'u7' ],
+	warnUserOnSpeedyDelete: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u6', 'u7' ],
 	promptForSpeedyDeletionSummary: [],
 	deleteTalkPageOnDelete: true,
 	deleteRedirectsOnDelete: true,
@@ -358,12 +358,12 @@ $.ajax({
 Twinkle.load = function () {
 	// Don't activate on special pages other than those listed here, so
 	// that others load faster, especially the watchlist.
-	let activeSpecialPageList = [ 'Block', 'Contributions', 'Recentchanges', 'Recentchangeslinked' ]; // wgRelevantUserName defined for non-sysops on Special:Block
+	let activeSpecialPageList = [ 'Block', 'Contributions', 'IPContributions', 'Recentchanges', 'Recentchangeslinked' ]; // wgRelevantUserName defined for non-sysops on Special:Block
 	if (Morebits.userIsSysop) {
 		activeSpecialPageList = activeSpecialPageList.concat([ 'DeletedContributions', 'Prefixindex' ]);
 	}
 	if (mw.config.get('wgNamespaceNumber') === -1 &&
-		activeSpecialPageList.indexOf(mw.config.get('wgCanonicalSpecialPageName')) === -1) {
+		!activeSpecialPageList.includes(mw.config.get('wgCanonicalSpecialPageName'))) {
 		return;
 	}
 
@@ -380,7 +380,7 @@ Twinkle.load = function () {
 	// Redefine addInitCallback so that any modules being loaded now on are directly
 	// initialised rather than added to initCallbacks array
 	Twinkle.addInitCallback = function(func, name) {
-		if (!name || Twinkle.disabledModules.indexOf(name) === -1) {
+		if (!name || !Twinkle.disabledModules.includes(name)) {
 			func();
 		}
 	};

@@ -131,7 +131,7 @@ Morebits.l10n = {
  * @return {boolean}
  */
 Morebits.userIsInGroup = function (group) {
-	return mw.config.get('wgUserGroups').indexOf(group) !== -1;
+	return mw.config.get('wgUserGroups').includes(group);
 };
 /**
  * Hardcodes whether the user is a sysop, used a lot.
@@ -269,7 +269,7 @@ Morebits.namespaceRegex = function(namespaces) {
 	const aliases = [];
 	let regex;
 	$.each(mw.config.get('wgNamespaceIds'), (name, number) => {
-		if (namespaces.indexOf(number) !== -1) {
+		if (namespaces.includes(number)) {
 			// Namespaces are completely agnostic as to case,
 			// and a regex string is more useful/compatible than a RegExp object,
 			// so we accept any casing for any letter.
@@ -1557,7 +1557,7 @@ Morebits.string = {
 	 * @return {boolean}
 	 */
 	isInfinity: function morebitsStringIsInfinity(expiry) {
-		return ['indefinite', 'infinity', 'infinite', 'never'].indexOf(expiry) !== -1;
+		return ['indefinite', 'infinity', 'infinite', 'never'].includes(expiry);
 	},
 
 	/**
@@ -1653,7 +1653,7 @@ Morebits.select2 = {
 			const result = originalMatcher(params, data);
 
 			if (result && params.term &&
-				data.text.toUpperCase().indexOf(params.term.toUpperCase()) !== -1) {
+				data.text.toUpperCase().includes(params.term.toUpperCase())) {
 				result.children = data.children;
 			}
 			return result;
@@ -1814,20 +1814,20 @@ Morebits.date = function() {
 			const digitMatch = /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(param);
 			if (digitMatch) {
 				// ..... year ... month .. date ... hour .... minute ..... second
-				this._d = new Date(Date.UTC.apply(null, [digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]]));
+				this.privateDate = new Date(Date.UTC.apply(null, [digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]]));
 			}
 		} else if (typeof param === 'string') {
 			// Wikitext signature timestamp
 			const dateParts = Morebits.l10n.signatureTimestampFormat(param);
 			if (dateParts) {
-				this._d = new Date(Date.UTC.apply(null, dateParts));
+				this.privateDate = new Date(Date.UTC.apply(null, dateParts));
 			}
 		}
 	}
 
-	if (!this._d) {
+	if (!this.privateDate) {
 		// Try standard date
-		this._d = new (Function.prototype.bind.apply(Date, [Date].concat(args)))();
+		this.privateDate = new (Function.prototype.bind.apply(Date, [Date].concat(args)))();
 	}
 
 	// Still no?
@@ -2148,7 +2148,7 @@ Morebits.date.prototype = {
 // Allow native Date.prototype methods to be used on Morebits.date objects
 Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
 	Morebits.date.prototype[func] = function() {
-		return this._d[func].apply(this._d, Array.prototype.slice.call(arguments));
+		return this.privateDate[func].apply(this.privateDate, Array.prototype.slice.call(arguments));
 	};
 });
 
@@ -2284,7 +2284,7 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 	this.query = query;
 	this.query.assert = 'user';
 	// Enforce newer error formats, preferring html
-	if (!query.errorformat || ['wikitext', 'plaintext'].indexOf(query.errorformat) === -1) {
+	if (!query.errorformat || !['wikitext', 'plaintext'].includes(query.errorformat)) {
 		this.query.errorformat = 'html';
 	}
 	// Explicitly use the wiki's content language to minimize confusion,
@@ -2305,12 +2305,12 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 		this.query.format = 'xml';
 	} else if (query.format === 'json' && !query.formatversion) {
 		this.query.formatversion = '2';
-	} else if (['xml', 'json'].indexOf(query.format) === -1) {
+	} else if (!['xml', 'json'].includes(query.format)) {
 		this.statelem.error('Invalid API format: only xml and json are supported.');
 	}
 
 	// Ignore tags for queries and most common unsupported actions, produces warnings
-	if (query.action && ['query', 'review', 'stabilize', 'pagetriageaction', 'watch'].indexOf(query.action) !== -1) {
+	if (query.action && ['query', 'review', 'stabilize', 'pagetriageaction', 'watch'].includes(query.action)) {
 		delete query.tags;
 	} else if (!query.tags && morebitsWikiChangeTag) {
 		query.tags = morebitsWikiChangeTag;
@@ -2900,7 +2900,7 @@ Morebits.wiki.page = function(pageName, status) {
 				break;
 		}
 
-		if (['recreate', 'createonly', 'nocreate'].indexOf(ctx.createOption) !== -1) {
+		if (['recreate', 'createonly', 'nocreate'].includes(ctx.createOption)) {
 			query[ctx.createOption] = '';
 		}
 
@@ -3432,7 +3432,7 @@ Morebits.wiki.page = function(pageName, status) {
 
 	/** @return {boolean} whether or not you can edit the page */
 	this.canEdit = function() {
-		return !!ctx.testActions && ctx.testActions.indexOf('edit') !== -1;
+		return !!ctx.testActions && ctx.testActions.includes('edit');
 	};
 
 	/**
@@ -3594,7 +3594,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 */
 	this.triage = function() {
 		// Fall back to patrol if not a valid triage namespace
-		if (mw.config.get('pageTriageNamespaces').indexOf(new mw.Title(ctx.pageName).getNamespaceId()) === -1) {
+		if (!mw.config.get('pageTriageNamespaces').includes(new mw.Title(ctx.pageName).getNamespaceId())) {
 			this.patrol();
 		} else {
 			if (!Morebits.userIsSysop && !Morebits.userIsInGroup('patroller')) {
@@ -3778,7 +3778,7 @@ Morebits.wiki.page = function(pageName, status) {
 			// wgRestrictionEdit is null on non-existent pages,
 			// so this neatly handles nonexistent pages
 			const editRestriction = mw.config.get('wgRestrictionEdit');
-			if (!editRestriction || editRestriction.indexOf('sysop') !== -1) {
+			if (!editRestriction || editRestriction.includes('sysop')) {
 				return false;
 			}
 		}
@@ -4231,7 +4231,7 @@ Morebits.wiki.page = function(pageName, status) {
 		const missing = response.pages[0].missing;
 
 		// No undelete as an existing page could have deleted revisions
-		const actionMissing = missing && ['delete', 'stabilize', 'move'].indexOf(action) !== -1;
+		const actionMissing = missing && ['delete', 'stabilize', 'move'].includes(action);
 		const protectMissing = action === 'protect' && missing && (ctx.protectEdit || ctx.protectMove);
 		const saltMissing = action === 'protect' && !missing && ctx.protectCreate;
 
@@ -4944,7 +4944,7 @@ Morebits.wikitext.page.prototype = {
 
 		// For most namespaces, unlink both [[User:Test]] and [[:User:Test]]
 		// For files and categories, only unlink [[:Category:Test]]. Do not unlink [[Category:Test]]
-		const isFileOrCategory = [6, 14].indexOf(namespaceID) !== -1;
+		const isFileOrCategory = [6, 14].includes(namespaceID);
 		const colon = isFileOrCategory ? ':' : ':?';
 
 		const simple_link_regex = new RegExp('\\[\\[' + colon + '(' + link_regex_string + ')\\]\\]', 'g');

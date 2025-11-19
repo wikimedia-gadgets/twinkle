@@ -10,10 +10,6 @@
                            and adds an ad box to the top of user subpages belonging to the
                            currently logged-in user which end in '.js'
  * Active on:              What I just said.  Yeah.
-
- I, [[User:This, that and the other]], originally wrote this.  If the code is misbehaving, or you have any
- questions, don't hesitate to ask me.  (This doesn't at all imply [[WP:OWN]]ership - it's just meant to
- point you in the right direction.)  -- TTO
  */
 
 Twinkle.config = {};
@@ -31,59 +27,36 @@ Twinkle.config.watchlistEnums = {
 Twinkle.config.commonSets = {
 	csdCriteria: {
 		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u1: 'U1', u2: 'U2', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9',
 		c1: 'C1', c4: 'C4',
-		r2: 'R2', r3: 'R3', r4: 'R4'
+		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f8: 'F8', f9: 'F9',
+		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
+		r2: 'R2', r3: 'R3', r4: 'R4',
+		t5: 'T5',
+		u1: 'U1', u2: 'U2', u6: 'U6', u7: 'U7',
+		x3: 'X3'
 	},
-	csdCriteriaDisplayOrder: [
-		'db',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'u1', 'u2', 'u5',
-		'f1', 'f2', 'f3', 'f7', 'f8', 'f9',
-		'c1', 'c4',
-		'r2', 'r3', 'r4'
-	],
 	csdCriteriaNotification: {
 		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g6: 'G6 ("copy-paste move" only)',
-		g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9',
 		c1: 'C1',
-		r2: 'R2', r3: 'R3', r4: 'R4'
+		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9',
+		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5 ("general sanction violation" only)', g6: 'G6 ("copy-paste move" only)', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
+		r2: 'R2', r3: 'R3', r4: 'R4',
+		u6: 'U6', u7: 'U7',
+		x3: 'X3'
 	},
-	csdCriteriaNotificationDisplayOrder: [
-		'db',
-		'g1', 'g2', 'g3', 'g4', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'u5',
-		'f1', 'f2', 'f3', 'f7', 'f9',
-		'c1',
-		'r2', 'r3', 'r4'
-	],
 	csdAndImageDeletionCriteria: {
 		db: 'Custom rationale ({{db}})',
-		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14',
 		a1: 'A1', a2: 'A2', a3: 'A3', a7: 'A7', a9: 'A9', a10: 'A10', a11: 'A11',
-		u1: 'U1', u2: 'U2', u5: 'U5',
-		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f11: 'F11',
 		c1: 'C1', c4: 'C4',
-		r2: 'R2', r3: 'R3', r4: 'R4'
+		f1: 'F1', f2: 'F2', f3: 'F3', f4: 'F4', f5: 'F5', f6: 'F6', f7: 'F7', f8: 'F8', f9: 'F9', f11: 'F11',
+		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
+		r2: 'R2', r3: 'R3', r4: 'R4',
+		t5: 'T5',
+		u1: 'U1', u2: 'U2', u6: 'U6', u7: 'U7',
+		x3: 'X3'
 	},
-	csdAndImageDeletionCriteriaDisplayOrder: [
-		'db',
-		'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g10', 'g11', 'g12', 'g13', 'g14',
-		'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11',
-		'u1', 'u2', 'u5',
-		'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f11',
-		'c1', 'c4',
-		'r2', 'r3', 'r4'
-	],
 	namespacesNoSpecial: {
 		0: 'Article',
 		1: 'Talk (article)',
@@ -111,6 +84,10 @@ Twinkle.config.commonSets = {
 		829: 'Module talk'
 	}
 };
+
+Twinkle.config.commonSets.csdCriteriaDisplayOrder = Object.keys( Twinkle.config.commonSets.csdCriteria );
+Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder = Object.keys( Twinkle.config.commonSets.csdCriteriaNotification );
+Twinkle.config.commonSets.csdAndImageDeletionCriteriaDisplayOrder = Object.keys( Twinkle.config.commonSets.csdAndImageDeletionCriteria );
 
 /**
  * Section entry format:
@@ -1175,12 +1152,12 @@ Twinkle.config.init = function twinkleconfigInit() {
 							check.setAttribute('type', 'checkbox');
 							check.setAttribute('id', pref.name + '_' + itemkey);
 							check.setAttribute('name', pref.name + '_' + itemkey);
-							if (gotPref && gotPref.indexOf(itemkey) !== -1) {
+							if (gotPref && gotPref.includes(itemkey)) {
 								check.setAttribute('checked', 'checked');
 							}
 							// cater for legacy integer array values for unlinkNamespaces (this can be removed a few years down the track...)
 							if (pref.name === 'unlinkNamespaces') {
-								if (gotPref && gotPref.indexOf(parseInt(itemkey, 10)) !== -1) {
+								if (gotPref && gotPref.includes(parseInt(itemkey, 10))) {
 									check.setAttribute('checked', 'checked');
 								}
 							}
@@ -1318,7 +1295,7 @@ Twinkle.config.init = function twinkleconfigInit() {
 			box.appendChild(document.createTextNode(', or by editing this page.'));
 			$(box).insertAfter($('#contentSub'));
 
-		} else if (['monobook', 'vector', 'vector-2022', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].indexOf(scriptPageName) !== -1) {
+		} else if (['monobook', 'vector', 'vector-2022', 'cologneblue', 'modern', 'timeless', 'minerva', 'common'].includes(scriptPageName)) {
 			// place "Looking for Twinkle options?" notice
 			box.setAttribute('class', 'config-userskin-box');
 
@@ -1541,7 +1518,7 @@ Twinkle.config.resetPref = function twinkleconfigResetPref(pref) {
 		case 'set':
 			$.each(pref.setValues, (itemkey) => {
 				if (document.getElementById(pref.name + '_' + itemkey)) {
-					document.getElementById(pref.name + '_' + itemkey).checked = Twinkle.defaultConfig[pref.name].indexOf(itemkey) !== -1;
+					document.getElementById(pref.name + '_' + itemkey).checked = Twinkle.defaultConfig[pref.name].includes(itemkey);
 				}
 			});
 			break;

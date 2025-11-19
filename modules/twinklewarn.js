@@ -36,7 +36,7 @@ Twinkle.warn = function twinklewarn() {
 			// Can't provide vanarticlerevid as only wgCurRevisionId is provided
 			const extraParam = 'vanarticle=' + mw.util.rawurlencode(Morebits.pageNameNorm);
 			const href = $vandalTalkLink.attr('href');
-			if (href.indexOf('?') === -1) {
+			if (!href.includes('?')) {
 				$vandalTalkLink.attr('href', href + '?' + extraParam);
 			} else {
 				$vandalTalkLink.attr('href', href + '&' + extraParam);
@@ -1165,6 +1165,10 @@ Twinkle.warn.messages = {
 			label: 'We use consensus, not voting',
 			summary: 'Notice: We use consensus, not voting'
 		},
+		'uw-orphantalk': {
+			label: 'Talk page created with no article',
+			summary: 'Notice: Talk page created with no article'
+		},
 		'uw-plagiarism': {
 			label: 'Copying from public domain sources without attribution',
 			summary: 'Notice: Copying from public domain sources without attribution'
@@ -1313,9 +1317,9 @@ Twinkle.warn.messages = {
 			label: 'Editing while logged out',
 			summary: 'Warning: Editing while logged out'
 		},
-		'uw-multipleIPs': {
-			label: 'Usage of multiple IPs',
-			summary: 'Warning: Vandalism using multiple IPs'
+		'uw-multipleTAs': {
+			label: 'Usage of multiple temporary accounts',
+			summary: 'Warning: Vandalism using multiple temporary accounts'
 		},
 		'uw-paraphrase': {
 			label: 'Close paraphrasing',
@@ -1634,7 +1638,7 @@ Twinkle.warn.callback.change_subcategory = function twinklewarnCallbackChangeSub
 		'uw-aiv': 'Optional username that was reported (without User:) '
 	};
 
-	const hasLevel = ['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].indexOf(selected_main_group) !== -1;
+	const hasLevel = ['singlenotice', 'singlewarn', 'singlecombined', 'kitchensink'].includes(selected_main_group);
 	if (hasLevel) {
 		if (notLinkedArticle[selected_template]) {
 			if (Twinkle.warn.prev_article === null) {
@@ -1799,7 +1803,7 @@ Twinkle.warn.callbacks = {
 		} else if (latest.type) { // Non-numbered warning
 			// Try to leverage existing categorization of
 			// warnings, all but one are universally lowercased
-			const loweredType = /uw-multipleIPs/i.test(latest.type) ? 'uw-multipleIPs' : latest.type.toLowerCase();
+			const loweredType = /uw-multipleTAs/i.test(latest.type) ? 'uw-multipleTAs' : latest.type.toLowerCase();
 			// It would be nice to account for blocks, but in most
 			// cases the hidden message is terminal, not the sig
 			if (Twinkle.warn.messages.singlewarn[loweredType]) {

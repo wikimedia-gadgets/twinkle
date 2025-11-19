@@ -80,6 +80,21 @@ Twinkle.arv.callback = function (uid, isIP) {
 		id: 'twinkle-arv-blockwarning'
 	});
 
+	// Temporary account notice
+	if (mw.config.get('wgRelevantUserName') && mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName')) && !mw.config.get('wgCheckUserTemporaryAccountIPRevealAllowed')) {
+		const temporaryAccountNotice = form.append({
+			type: 'field',
+			label: 'Temporary account notice',
+			name: 'ta_notice',
+			style: 'color: var(--morebits-color-warning, #FF4500)'
+		});
+
+		temporaryAccountNotice.append({
+			type: 'div',
+			label: 'You are reporting a [[Wikipedia:Temporary accounts|temporary account]]. These accounts, with usernames like ~2025-12345-67, have replaced IP addresses. Please be careful when reporting for sockpuppetry and when blocking, because other users and temporary accounts on the same IP may end up as collateral damage.'
+		});
+	}
+
 	form.append({
 		type: 'field',
 		label: 'Work area',
