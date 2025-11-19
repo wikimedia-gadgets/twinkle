@@ -793,7 +793,7 @@ Twinkle.speedy.templateList = Twinkle.speedy.getCsdList( 'templateList' );
 Twinkle.speedy.userList = Twinkle.speedy.getCsdList( 'userList' );
 Twinkle.speedy.generalList = Twinkle.speedy.getCsdList( 'generalList' );
 Twinkle.speedy.redirectList = Twinkle.speedy.getCsdList( 'redirectList' );
-Twinkle.speedy.redirectList = Twinkle.speedy.getCsdList( 'timedTextList' );
+Twinkle.speedy.timedTextList = Twinkle.speedy.getCsdList( 'timedTextList' );
 
 /**
  * Iterate over Twinkle.speedy.data. Turn `code: 'g8', db: 'redirnone',` into `redirnone: 'g8',`

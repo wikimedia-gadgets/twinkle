@@ -638,9 +638,42 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
 exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 9`] = `
 [
   {
-    "label": "G8: Timed Text pages with no corresponding file",
+    "label": "R2: Redirect from mainspace to any other namespace except the Category:, Template:, Wikipedia:, Help: and Portal: namespaces",
+    "showInNamespaces": [
+      0,
+    ],
+    "tooltip": "This does not include the pseudo-namespace shortcuts. If this was the result of a page move, consider waiting a day or two before deleting the redirect",
+    "value": "rediruser",
+  },
+  {
+    "label": "R3: Recently created redirect from an implausible typo or misnomer",
+    "tooltip": "However, redirects from common misspellings or misnomers are generally useful, as are redirects in other languages",
+    "value": "redirtypo",
+  },
+  {
+    "label": "R4: File namespace redirect with a name that matches a Commons page",
+    "showInNamespaces": [
+      6,
+    ],
+    "tooltip": "The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).",
+    "value": "redircom",
+  },
+  {
+    "hideWhenMultiple": true,
+    "label": "G6: Redirect to malplaced disambiguation page",
+    "tooltip": "This only applies for redirects to disambiguation pages ending in (disambiguation) where a primary topic does not exist.",
+    "value": "movedab",
+  },
+  {
+    "hideWhenMultiple": true,
+    "label": "G8: Redirects to non-existent targets",
     "tooltip": "This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.",
-    "value": "timedtext",
+    "value": "redirnone",
+  },
+  {
+    "label": "X3: Redirects with no space before a parenthetical disambiguation",
+    "tooltip": "This excludes terms that can plausibly be searched for without spaces, or if the redirect contains substantive page history (e.g. from a merge).",
+    "value": "x3",
   },
 ]
 `;
