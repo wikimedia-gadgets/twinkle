@@ -924,6 +924,7 @@ Twinkle.arv.callback.getAn3ReportData = function(input) {
 			return '"' + rev.comment.replace(/\{/g, '&#123;').replace(/\}/g, '&#125;') + '"';
 		};
 
+		// TODO: The logic for filling the |orig= parameter in the report template seems to be broken. The API call does not seem to be parsed properly. It appears as if the data parameter of the callback is being used as if it were an array, but it isn't one - it's actually the entire API response object. I think adding queryResponse = queryResponse.query.pages[queryResponse.query.pageids[0]].revisions; after `let orig;` would convert it to the array it thinks it's dealing with, but I really have no idea what the actual goal is, so I can't figure out whether or not that's correct. -- Tollens
 		let orig;
 		if (queryResponse.length) {
 			const sha1 = queryResponse[0].sha1;
