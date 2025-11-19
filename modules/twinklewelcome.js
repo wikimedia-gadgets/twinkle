@@ -136,7 +136,7 @@ Twinkle.welcome.callback = function twinklewelcomeCallback(uid) {
 		event: Twinkle.welcome.populateWelcomeList,
 		list: [
 			{ type: 'option', value: 'standard', label: 'Standard welcomes', selected: !mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
-			{ type: 'option', value: 'unregistered', label: 'IP user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) },
+			{ type: 'option', value: 'unregistered', label: 'Unregistered user welcomes', selected: mw.util.isIPAddress(mw.config.get('wgRelevantUserName')) || mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName')) },
 			{ type: 'option', value: 'wikiProject', label: 'WikiProject welcomes' },
 			{ type: 'option', value: 'nonEnglish', label: 'Non-English welcomes' }
 		]

@@ -167,7 +167,7 @@ var callback_commit = function(event) {
 		}
 
 		const page = new Morebits.wiki.Page('Talk:' + apiobj.params.page, 'Deleting talk page of page ' + apiobj.params.page);
-		page.setEditSummary('[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page "' + apiobj.params.page + '"');
+		page.setEditSummary('[[WP:CSD#G8|G8]]: [[Help:Talk page|Talk page]] of deleted page [[' + apiobj.params.page + ']]');
 		page.setChangeTags(Twinkle.changeTags);
 		page.deletePage();
 	},
@@ -177,7 +177,7 @@ var callback_commit = function(event) {
 		redirects.forEach((rd) => {
 			const title = rd.title;
 			const page = new Morebits.wiki.Page(title, 'Deleting redirecting page ' + title);
-			page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page "' + apiobj.params.page + '"');
+			page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page [[' + apiobj.params.page + ']]');
 			page.setChangeTags(Twinkle.changeTags);
 			page.deletePage();
 		});
