@@ -1167,6 +1167,10 @@ Twinkle.warn.messages = {
 			label: 'Incorrect use of minor edits check box',
 			summary: 'Notice: Incorrect use of minor edits check box'
 		},
+		'uw-mostm': {
+			label: 'Formatting of trademarks',
+			summary: 'Notice: Formatting of trademarks'
+		},
 		'uw-multiple-accts': {
 			label: 'Inappropriate use of alternative accounts',
 			summary: 'Notice: Inappropriate use of alternative accounts'
