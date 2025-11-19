@@ -823,6 +823,24 @@ Twinkle.warn.messages = {
 					label: 'Removing speedy deletion tags',
 					summary: 'Final warning: Removing speedy deletion tags'
 				}
+			},
+			'uw-rfd': {
+				level1: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'General note: Removing redirects for discussion tags'
+				},
+				level2: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'Caution: Removing redirects for discussion tags'
+				},
+				level3: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'Warning: Removing redirects for discussion tags'
+				},
+				level4: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'Final warning: Removing redirects for discussion tags'
+				}
 			}
 		},
 		Other: {
@@ -1165,6 +1183,10 @@ Twinkle.warn.messages = {
 			label: 'We use consensus, not voting',
 			summary: 'Notice: We use consensus, not voting'
 		},
+		'uw-orphantalk': {
+			label: 'Talk page created with no article',
+			summary: 'Notice: Talk page created with no article'
+		},
 		'uw-plagiarism': {
 			label: 'Copying from public domain sources without attribution',
 			summary: 'Notice: Copying from public domain sources without attribution'
@@ -1313,9 +1335,9 @@ Twinkle.warn.messages = {
 			label: 'Editing while logged out',
 			summary: 'Warning: Editing while logged out'
 		},
-		'uw-multipleIPs': {
-			label: 'Usage of multiple IPs',
-			summary: 'Warning: Vandalism using multiple IPs'
+		'uw-multipleTAs': {
+			label: 'Usage of multiple temporary accounts',
+			summary: 'Warning: Vandalism using multiple temporary accounts'
 		},
 		'uw-paraphrase': {
 			label: 'Close paraphrasing',
@@ -1799,7 +1821,7 @@ Twinkle.warn.callbacks = {
 		} else if (latest.type) { // Non-numbered warning
 			// Try to leverage existing categorization of
 			// warnings, all but one are universally lowercased
-			const loweredType = /uw-multipleIPs/i.test(latest.type) ? 'uw-multipleIPs' : latest.type.toLowerCase();
+			const loweredType = /uw-multipleTAs/i.test(latest.type) ? 'uw-multipleTAs' : latest.type.toLowerCase();
 			// It would be nice to account for blocks, but in most
 			// cases the hidden message is terminal, not the sig
 			if (Twinkle.warn.messages.singlewarn[loweredType]) {

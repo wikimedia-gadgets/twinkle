@@ -18,6 +18,7 @@
 	"rules": {
 		"array-bracket-spacing": "off",
 		"computed-property-spacing": "off",
+		"max-len": "off",
 		"no-shadow": "off",
 		"object-curly-spacing": "off",
 		"space-in-parens": "off"
