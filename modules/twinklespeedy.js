@@ -1684,15 +1684,15 @@ Twinkle.speedy.callbacks = {
 
 					pageobj.getStatusElement().warn('Unable to edit page, placing tag on talk page');
 
-					const talk_page = new Morebits.wiki.Page(talkName, 'Automatically placing tag on talk page');
-					talk_page.setNewSectionTitle(pageobj.getPageName() + ' nominated for CSD, request deletion');
-					talk_page.setNewSectionText(code + '\n\nI was unable to tag ' + pageobj.getPageName() + ' so please delete it. ~~~~');
-					talk_page.setCreateOption('recreate');
-					talk_page.setFollowRedirect(true);
-					talk_page.setWatchlist(params.watch);
-					talk_page.setChangeTags(Twinkle.changeTags);
-					talk_page.setCallbackParameters(params);
-					talk_page.newSection(Twinkle.speedy.callbacks.user.tagComplete);
+					const talkPage = new Morebits.wiki.Page(talkName, 'Automatically placing tag on talk page');
+					talkPage.setNewSectionTitle(pageobj.getPageName() + ' nominated for CSD, request deletion');
+					talkPage.setNewSectionText(code + '\n\nI was unable to tag ' + pageobj.getPageName() + ' directly, so I have placed the speedy deletion tag on this page. I request deletion of the other page. ~~~~');
+					talkPage.setCreateOption('recreate');
+					talkPage.setFollowRedirect(true);
+					talkPage.setWatchlist(params.watch);
+					talkPage.setChangeTags(Twinkle.changeTags);
+					talkPage.setCallbackParameters(params);
+					talkPage.newSection(Twinkle.speedy.callbacks.user.tagComplete);
 				} else {
 					pageobj.getStatusElement().error('Page cannot be edited and no other location to place a speedy deletion request, aborting');
 				}
