@@ -826,6 +826,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'No significant coverage', description: 'does not cite any sources containing significant coverage' },
 			{ tag: 'No significant coverage (sports)', description: 'sports biography that does not cite any sources containing significant coverage' },
 			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
+			{ tag: 'Only primary sources', description: 'relies only on references to primary sources, and needs secondary sources' },
 			{ tag: 'Original research', description: 'contains original research' },
 			{ tag: 'Primary sources', description: 'relies too much on references to primary sources, and needs secondary sources' },
 			{ tag: 'Self-published', description: 'contains excessive or inappropriate references to self-published sources' },
