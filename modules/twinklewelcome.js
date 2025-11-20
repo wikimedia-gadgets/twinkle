@@ -314,6 +314,14 @@ Twinkle.welcome.templates = {
 				linkedArticle: true,
 				syntax: '{{subst:welcome-image|$USERNAME$|art=$ARTICLE$}}'
 			},
+			'welcome-LLM': {
+				description: 'for someone whose initial efforts seem to be made with a large language model',
+				syntax: '{{subst:welcome-LLM}} ~~~~'
+			},
+			'welcome-translation': {
+				description: 'for someone whose initial efforts are unattributed translations from another language Wikipedia',
+				syntax: '{{subst:welcome-translation}}'
+			},
 			'welcome-unsourced': {
 				description: 'for someone whose initial efforts are unsourced',
 				linkedArticle: true,
