@@ -299,16 +299,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				name: 'evidence',
 				tooltip: 'Your evidence should make it clear that each of these users is likely to be abusing multiple accounts. Usually this means diffs, page histories or other information that justifies why the users are a) the same and b) disruptive. This should be just evidence and information needed to judge the matter. Avoid all other discussion that is not evidence of sockpuppetry.'
 			});
-			work_area.append({
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Request CheckUser',
-						name: 'checkuser',
-						tooltip: 'CheckUser is a tool used to obtain technical evidence related to a sockpuppetry allegation. It will not be used without good cause, which you must clearly demonstrate. Make sure your evidence explains why using the tool is appropriate. It will not be used to publicly connect user accounts and IP addresses.'
-					}
-				]
-			});
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
 			break;
@@ -332,14 +322,6 @@ Twinkle.arv.callback.changeCategory = function (e) {
 				label: 'Evidence:',
 				name: 'evidence',
 				tooltip: 'Your evidence should make it clear that each of these users is likely to be abusing multiple accounts. Usually this means diffs, page histories or other information that justifies why the users are a) the same and b) disruptive. This should be just evidence and information needed to judge the matter. Avoid all other discussion that is not evidence of sockpuppetry.'
-			});
-			work_area.append({
-				type: 'checkbox',
-				list: [ {
-					label: 'Request CheckUser',
-					name: 'checkuser',
-					tooltip: 'CheckUser is a tool used to obtain technical evidence related to a sockpuppetry allegation. It will not be used without good cause, which you must clearly demonstrate. Make sure your evidence explains why using the tool is appropriate. It will not be used to publicly connect user accounts and IP addresses.'
-				} ]
 			});
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
@@ -858,9 +840,6 @@ Twinkle.arv.callback.getSpiReportData = function(input) {
 	let text = '\n{{subst:SPI report|' +
 		input.sockpuppets.map((sock, index) => (index + 1) + '=' + sock).join('|') + '\n|evidence=' + input.evidence + ' \n';
 
-	if (input.checkuser) {
-		text += '|checkuser=yes';
-	}
 	text += '}}';
 
 	return {
