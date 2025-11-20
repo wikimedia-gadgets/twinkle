@@ -1088,10 +1088,6 @@ Twinkle.warn.messages = {
 			summary: 'Notice: Conflict of interest',
 			heading: 'Managing a conflict of interest'
 		},
-		'uw-controversial': {
-			label: 'Introducing controversial material',
-			summary: 'Notice: Introducing controversial material'
-		},
 		'uw-copying': {
 			label: 'Copying text to another page',
 			summary: 'Notice: Copying text to another page'
