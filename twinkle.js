@@ -494,11 +494,6 @@ Twinkle.generateBatchPageLinks = function (checkbox) {
 	$checkbox.next().prepend([link, ' ']);
 };
 
-/**
- * remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
- */
-Twinkle.removeMoveToCommonsTagsFromWikicode = ( wikicode ) => wikicode.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
-
 }());
 
 // </nowiki>

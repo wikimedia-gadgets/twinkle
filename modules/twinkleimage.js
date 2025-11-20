@@ -249,7 +249,8 @@ Twinkle.image.callbacks = {
 		let text = pageobj.getPageText();
 		const params = pageobj.getCallbackParameters();
 
-		text = Twinkle.removeMoveToCommonsTagsFromWikicode( text );
+		// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
+		text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)[^}]*\}\}/gi, '');
 
 		let tag = '{{di-' + params.templatename + '|date={{subst:#time:j F Y}}';
 		switch (params.type) {
