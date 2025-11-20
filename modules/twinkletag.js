@@ -715,7 +715,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Essay-like', description: 'written like a personal reflection, personal essay, or argumentative essay' },
 			{ tag: 'Fanpov', description: "written from a fan's point of view" },
 			{ tag: 'Inappropriate person', description: 'uses first-person or second-person inappropiately' },
-			{ tag: 'Manual', description: 'written like a manual or guidebook' },
+			{ tag: 'How-to', description: 'written like a manual or guidebook' },
 			{ tag: 'Over-quotation', description: 'too many or too-lengthy quotations for an encyclopedic entry' },
 			{ tag: 'Promotional', description: 'contains promotional content or is written like an advertisement' },
 			{ tag: 'Prose', description: 'written in a list format but may read better as prose' },
@@ -725,7 +725,6 @@ Twinkle.tag.article.tagList = {
 		],
 		'Sense (or lack thereof)': [
 			{ tag: 'Confusing', description: 'confusing or unclear' },
-			{ tag: 'Incomprehensible', description: 'very hard to understand or incomprehensible' },
 			{ tag: 'Unfocused', description: 'lacks focus or is about more than one topic' }
 		],
 		'Information and detail': [
@@ -823,9 +822,11 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'BLP sources', description: 'BLP that needs additional references or sources for verification' },
 			{ tag: 'BLP unreferenced', description: 'BLP does not cite any sources at all (use BLP PROD instead for new articles)' },
 			{ tag: 'More citations needed', description: 'needs additional references or sources for verification' },
+			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' },
 			{ tag: 'No significant coverage', description: 'does not cite any sources containing significant coverage' },
 			{ tag: 'No significant coverage (sports)', description: 'sports biography that does not cite any sources containing significant coverage' },
 			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
+			{ tag: 'Only primary sources', description: 'relies only on references to primary sources, and needs secondary sources' },
 			{ tag: 'Original research', description: 'contains original research' },
 			{ tag: 'Primary sources', description: 'relies too much on references to primary sources, and needs secondary sources' },
 			{ tag: 'Self-published', description: 'contains excessive or inappropriate references to self-published sources' },
@@ -893,7 +894,6 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'Citation style', description: 'unclear or inconsistent citation style' },
 			{ tag: 'Cleanup bare URLs', description: 'uses bare URLs for references, which are prone to link rot' },
 			{ tag: 'More footnotes needed', description: 'has some references, but insufficient inline citations' },
-			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' },
 			{ tag: 'Parenthetical referencing', description: 'uses parenthetical referencing, which is deprecated on Wikipedia' }
 		],
 		Categories: [
@@ -937,6 +937,10 @@ Twinkle.tag.article.tagList = {
 			subgroup: getMergeSubgroups('Merge from') },
 		{ tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true,
 			subgroup: getMergeSubgroups('Merge to') }
+	],
+	Splitting: [
+		{ tag: 'Split', description: 'should be split into multiple pages' },
+		{ tag: 'Split dab', description: 'disambiguation page should be split into multiple pages' }
 	],
 	Informational: [
 		{ tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeMI: true },
@@ -1121,6 +1125,7 @@ Twinkle.tag.redirectList = {
 	Miscellaneous: {
 		'Related information': [
 			{ tag: 'R to article without mention', description: 'redirect to an article without any mention of the redirected word or phrase', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from company name', description: 'redirect from a company name to a related article', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R to decade', description: 'redirect from a year to the decade article', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from domain name', description: 'redirect from a domain name to an article about a website', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from emoji', description: 'redirect from an emoji to an article describing the depicted concept or the emoji itself' },

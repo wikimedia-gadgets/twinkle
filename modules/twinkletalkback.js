@@ -218,6 +218,11 @@ Twinkle.talkback.changeTarget = function(e) {
 };
 
 Twinkle.talkback.noticeboards = {
+	ae: {
+		label: 'WP:AE (Arbitration/Requests/Enforcement)',
+		text: '{{subst:AE-notice|$SECTION}} ~~~~',
+		editSummary: 'Notice of discussion at [[Wikipedia:Arbitration/Requests/Enforcement]]'
+	},
 	an: {
 		label: "WP:AN (Administrators' noticeboard)",
 		text: '{{subst:AN-notice|thread=$SECTION}} ~~~~',
@@ -292,9 +297,9 @@ Twinkle.talkback.noticeboards = {
 		editSummary: 'Notice of discussion at [[Wikipedia:Reliable sources/Noticeboard]]'
 	},
 	th: {
-		label: 'WP:THQ (Teahouse question forum)',
-		text: "== Teahouse talkback: you've got messages! ==\n{{WP:Teahouse/Teahouse talkback|WP:Teahouse/Questions|$SECTION|ts=~~~~}}",
-		editSummary: 'You have replies at the [[Wikipedia:Teahouse/Questions|Teahouse question board]]'
+		label: 'WP:TH (Teahouse)',
+		text: "== Teahouse talkback: you've got messages! ==\n{{WP:Teahouse/Teahouse talkback|WP:Teahouse|$SECTION|ts=~~~~}}",
+		editSummary: 'You have replies at the [[Wikipedia:Teahouse|Teahouse question board]]'
 	},
 	vrt: {
 		label: 'WP:VRTN (VRT noticeboard)',
