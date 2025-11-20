@@ -938,6 +938,10 @@ Twinkle.tag.article.tagList = {
 		{ tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true,
 			subgroup: getMergeSubgroups('Merge to') }
 	],
+	Splitting: [
+		{ tag: 'Split', description: 'should be split into multiple pages' },
+		{ tag: 'Split dab', description: 'disambiguation page should be split into multiple pages' }
+	],
 	Informational: [
 		{ tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeMI: true },
 		{ tag: 'In use', description: 'undergoing a major edit for a short while', excludeMI: true },
