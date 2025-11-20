@@ -320,7 +320,7 @@ Twinkle.welcome.templates = {
 			},
 			'welcome-translation': {
 				description: 'for someone whose initial efforts are unattributed translations from another language Wikipedia',
-				syntax: '{{subst:welcome-translation}} ~~~~'
+				syntax: '{{subst:welcome-translation}}'
 			},
 			'welcome-unsourced': {
 				description: 'for someone whose initial efforts are unsourced',
