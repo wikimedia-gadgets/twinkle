@@ -840,7 +840,8 @@ Twinkle.tag.article.tagList = {
 	'Specific content issues': {
 		Accessibility: [
 			{ tag: 'Cleanup colors', description: 'uses color as only way to convey information' },
-			{ tag: 'Overcoloured', description: 'overuses color'}
+			{ tag: 'Overcoloured', description: 'overuses color' },
+			{ tag: 'Dark mode problems', description: 'has problems when viewed in dark mode' }
 		],
 		Language: [
 			{ tag: 'Not English', description: 'written in a language other than English and needs translation',
