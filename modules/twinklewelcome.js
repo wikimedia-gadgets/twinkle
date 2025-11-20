@@ -419,7 +419,7 @@ Twinkle.welcome.templates = {
 			},
 			'welcome-cath': {
 				description: 'welcome for users with an apparent interest in Catholic topics',
-				syntax: '{{subst:welcome-cath}} ~~~~'
+				syntax: '{{subst:welcome-cath}}'
 			},
 			'welcome-conserv': {
 				description: 'welcome for users with an apparent interest in conservatism topics',
