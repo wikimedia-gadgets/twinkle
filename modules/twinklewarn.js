@@ -788,22 +788,22 @@ Twinkle.warn.messages = {
 					summary: 'Final warning: Removing file deletion tags'
 				}
 			},
-			'uw-tfd': {
+			'uw-rfd': {
 				level1: {
-					label: 'Removing {{tfd}} templates',
-					summary: 'General note: Removing {{tfd}} templates'
+					label: 'Removing redirects for discussion tags',
+					summary: 'General note: Removing redirects for discussion tags'
 				},
 				level2: {
-					label: 'Removing {{tfd}} templates',
-					summary: 'Caution: Removing {{tfd}} templates'
+					label: 'Removing redirects for discussion tags',
+					summary: 'Caution: Removing redirects for discussion tags'
 				},
 				level3: {
-					label: 'Removing {{tfd}} templates',
-					summary: 'Warning: Removing {{tfd}} templates'
+					label: 'Removing redirects for discussion tags',
+					summary: 'Warning: Removing redirects for discussion tags'
 				},
 				level4: {
-					label: 'Removing {{tfd}} templates',
-					summary: 'Final warning: Removing {{tfd}} templates'
+					label: 'Removing redirects for discussion tags',
+					summary: 'Final warning: Removing redirects for discussion tags'
 				}
 			},
 			'uw-speedy': {
@@ -824,22 +824,22 @@ Twinkle.warn.messages = {
 					summary: 'Final warning: Removing speedy deletion tags'
 				}
 			},
-			'uw-rfd': {
+			'uw-tfd': {
 				level1: {
-					label: 'Removing redirects for discussion tags',
-					summary: 'General note: Removing redirects for discussion tags'
+					label: 'Removing {{tfd}} templates',
+					summary: 'General note: Removing {{tfd}} templates'
 				},
 				level2: {
-					label: 'Removing redirects for discussion tags',
-					summary: 'Caution: Removing redirects for discussion tags'
+					label: 'Removing {{tfd}} templates',
+					summary: 'Caution: Removing {{tfd}} templates'
 				},
 				level3: {
-					label: 'Removing redirects for discussion tags',
-					summary: 'Warning: Removing redirects for discussion tags'
+					label: 'Removing {{tfd}} templates',
+					summary: 'Warning: Removing {{tfd}} templates'
 				},
 				level4: {
-					label: 'Removing redirects for discussion tags',
-					summary: 'Final warning: Removing redirects for discussion tags'
+					label: 'Removing {{tfd}} templates',
+					summary: 'Final warning: Removing {{tfd}} templates'
 				}
 			}
 		},
