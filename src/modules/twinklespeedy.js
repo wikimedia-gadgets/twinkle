@@ -1064,8 +1064,38 @@ Twinkle.speedy.instantDelete = function twinklespeedyInstantDelete() {
 };
 
 Twinkle.speedy.instantDecline = function twinklespeedyInstantDecline() {
-	// TODO
-	return;
+	const wikipediaPage = new Morebits.wiki.Page(mw.config.get('wgPageName'), 'Tagging page');
+	wikipediaPage.load(Twinkle.speedy.instantDecline.main);
+};
+
+Twinkle.speedy.instantDecline.main = function twinklespeedyInstantDeclineMain(pageObj) {
+	// finds the db template
+	const text = pageObj.getPageText();
+	const tag = /(?:\{\{\s*(db|delete|db-.*?|speedy deletion-.*?)(?:\s*\||\s*\}\}))/.exec(text)[1];
+	let wikitextObj = new Morebits.wikitext.page(text);
+
+	// and then removes it
+	wikitextObj.removeTemplate(tag);
+
+	if (wikitextObj.getText()[0] === '\n') {
+		wikitextObj = new Morebits.wikitext.page(wikitextObj.getText().slice(1));
+	}
+
+	pageObj.setPageText(wikitextObj.getText());
+
+	const splitTag = tag.split(/-(.*)/).length > 1 ? tag.split(/-(.*)/)[1] : tag;
+
+	if (splitTag in Twinkle.speedy.normalizeHash) {
+		if (Twinkle.speedy.normalizeHash[splitTag] === 'db') {
+				pageObj.setEditSummary('Declining speedy deletion (no code provided).');
+		} else {
+				pageObj.setEditSummary('Declining speedy deletion ([[WP:CSD#' + Twinkle.speedy.normalizeHash[splitTag].toUpperCase() + '|CSD ' + Twinkle.speedy.normalizeHash[splitTag].toUpperCase() + ']]).');
+		}
+	} else {
+		pageObj.setEditSummary('Declining speedy deletion (multiple criteria).');
+	}
+	pageObj.setChangeTags(Twinkle.changeTags);
+	pageObj.save(window.location.reload.bind(window.location));
 };
 
 // Adds a quick "Delete" button to a speedy deletion template
