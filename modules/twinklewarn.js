@@ -823,6 +823,24 @@ Twinkle.warn.messages = {
 					label: 'Removing speedy deletion tags',
 					summary: 'Final warning: Removing speedy deletion tags'
 				}
+			},
+			'uw-rfd': {
+				level1: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'General note: Removing redirects for discussion tags'
+				},
+				level2: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'Caution: Removing redirects for discussion tags'
+				},
+				level3: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'Warning: Removing redirects for discussion tags'
+				},
+				level4: {
+					label: 'Removing redirects for discussion tags',
+					summary: 'Final warning: Removing redirects for discussion tags'
+				}
 			}
 		},
 		Other: {
@@ -1018,6 +1036,10 @@ Twinkle.warn.messages = {
 	},
 
 	singlenotice: {
+		'uw-addalink': {
+			label: 'Mistakes with the Add a Link newcomer task',
+			summary: 'Notice: Mistakes with the Add a Link newcomer task'
+		},
 		'uw-agf-sock': {
 			label: 'Use of multiple accounts (assuming good faith)',
 			summary: 'Notice: Using multiple accounts'
@@ -1065,10 +1087,6 @@ Twinkle.warn.messages = {
 			label: 'Conflict of interest',
 			summary: 'Notice: Conflict of interest',
 			heading: 'Managing a conflict of interest'
-		},
-		'uw-controversial': {
-			label: 'Introducing controversial material',
-			summary: 'Notice: Introducing controversial material'
 		},
 		'uw-copying': {
 			label: 'Copying text to another page',
@@ -1148,6 +1166,10 @@ Twinkle.warn.messages = {
 		'uw-minor': {
 			label: 'Incorrect use of minor edits check box',
 			summary: 'Notice: Incorrect use of minor edits check box'
+		},
+		'uw-mostm': {
+			label: 'Formatting of trademarks',
+			summary: 'Notice: Formatting of trademarks'
 		},
 		'uw-multiple-accts': {
 			label: 'Inappropriate use of alternative accounts',

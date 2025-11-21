@@ -12,6 +12,7 @@ describe('modules/twinklespeedy', () => {
 			expect(Twinkle.speedy.userList).toMatchSnapshot();
 			expect(Twinkle.speedy.generalList).toMatchSnapshot();
 			expect(Twinkle.speedy.redirectList).toMatchSnapshot();
+			expect(Twinkle.speedy.timedTextList).toMatchSnapshot();
 			expect(Twinkle.speedy.normalizeHash).toMatchSnapshot();
 		});
 	});
