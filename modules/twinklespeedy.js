@@ -750,6 +750,13 @@ Twinkle.speedy.data = [
 		hideWhenMultiple: true
 	},
 	{
+		list: 'timedTextList',
+		label: 'G8: Timed Text pages with no corresponding file',
+		code: 'g8',
+		db: 'timedtext',
+		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.'
+	},
+	{
 		list: 'redirectList',
 		label: 'X3: Redirects with no space before a parenthetical disambiguation',
 		code: 'x3',
@@ -786,6 +793,7 @@ Twinkle.speedy.templateList = Twinkle.speedy.getCsdList( 'templateList' );
 Twinkle.speedy.userList = Twinkle.speedy.getCsdList( 'userList' );
 Twinkle.speedy.generalList = Twinkle.speedy.getCsdList( 'generalList' );
 Twinkle.speedy.redirectList = Twinkle.speedy.getCsdList( 'redirectList' );
+Twinkle.speedy.timedTextList = Twinkle.speedy.getCsdList( 'timedTextList' );
 
 /**
  * Iterate over Twinkle.speedy.data. Turn `code: 'g8', db: 'redirnone',` into `redirnone: 'g8',`
@@ -1089,6 +1097,11 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 			case 14: // category
 			case 15: // category talk
 				appendList('Categories', Twinkle.speedy.categoryList);
+				break;
+
+			case 710: // timed text
+			case 711: // timed text talk
+				appendList('Timed Text pages', Twinkle.speedy.timedTextList);
 				break;
 
 			default:
@@ -2110,6 +2123,9 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
 		switch (normalized) {
 			case 'g4':
 				param = 'xfd';
+				break;
+			case 'g5': // Only for db-gs, as db-g5 doesn't send a notice
+				param = 'code';
 				break;
 			case 'a2':
 				param = 'source';

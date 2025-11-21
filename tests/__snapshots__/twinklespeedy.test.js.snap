@@ -679,6 +679,16 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
 `;
 
 exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 10`] = `
+[
+  {
+    "label": "G8: Timed Text pages with no corresponding file",
+    "tooltip": "This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.",
+    "value": "timedtext",
+  },
+]
+`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 11`] = `
 {
   "a10": "a10",
   "a7": "a7",
@@ -737,6 +747,7 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
   "t5": "t5",
   "talk": "g8",
   "test": "g2",
+  "timedtext": "g8",
   "u6": "u6",
   "u7": "u7",
   "unksource": "f4",

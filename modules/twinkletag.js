@@ -826,6 +826,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'No significant coverage', description: 'does not cite any sources containing significant coverage' },
 			{ tag: 'No significant coverage (sports)', description: 'sports biography that does not cite any sources containing significant coverage' },
 			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
+			{ tag: 'Only primary sources', description: 'relies only on references to primary sources, and needs secondary sources' },
 			{ tag: 'Original research', description: 'contains original research' },
 			{ tag: 'Primary sources', description: 'relies too much on references to primary sources, and needs secondary sources' },
 			{ tag: 'Self-published', description: 'contains excessive or inappropriate references to self-published sources' },
@@ -839,7 +840,8 @@ Twinkle.tag.article.tagList = {
 	'Specific content issues': {
 		Accessibility: [
 			{ tag: 'Cleanup colors', description: 'uses color as only way to convey information' },
-			{ tag: 'Overcoloured', description: 'overuses color'}
+			{ tag: 'Overcoloured', description: 'overuses color' },
+			{ tag: 'Dark mode problems', description: 'has problems when viewed in dark mode' }
 		],
 		Language: [
 			{ tag: 'Not English', description: 'written in a language other than English and needs translation',
@@ -936,6 +938,10 @@ Twinkle.tag.article.tagList = {
 			subgroup: getMergeSubgroups('Merge from') },
 		{ tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true,
 			subgroup: getMergeSubgroups('Merge to') }
+	],
+	Splitting: [
+		{ tag: 'Split', description: 'should be split into multiple pages' },
+		{ tag: 'Split dab', description: 'disambiguation page should be split into multiple pages' }
 	],
 	Informational: [
 		{ tag: 'GOCEinuse', description: 'currently undergoing a major copy edit by the Guild of Copy Editors', excludeMI: true },

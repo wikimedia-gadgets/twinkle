@@ -822,7 +822,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   disabletalk: <disable user from editing their own talk page while blocked>
  *   expiry: <string - expiry timestamp, can include relative times like "5 months", "2 weeks" etc>
  *   forIPsOnly: <show block option in the interface only if the relevant user is an IP>
- *   forUnnamedOnly: <show block option in the interface only if the relevant user is an IP or a temporary account>
+ *   forTempAccountsOnly: <show block option in the interface only if the relevant user is a temporary account>
  *   forRegisteredOnly: <show block option in the interface only if the relevant user is a temporary account or regular account>
  *   label: <string - label for the option of the dropdown in the interface (keep brief)>
  *   noemail: prevent the user from sending email through Special:Emailuser
@@ -1091,7 +1091,8 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users'
 	},
 	'uw-ipevadeblock': {
-		forUnnamedOnly: true,
+		forIPsOnly: true,
+		expiry: '1 week',
 		nocreate: true,
 		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
 		summary: 'Your IP address has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]'
@@ -1182,6 +1183,14 @@ Twinkle.block.blockPresetsInfo = {
 		prependReason: true,
 		summary: 'Your user talk page access has been disabled',
 		useInitialOptions: true
+	},
+	'uw-tempevadeblock': {
+		autoblock: true,
+		expiry: 'infinity',
+		forTempAccountsOnly: true,
+		nocreate: true,
+		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
+		summary: 'Your temporary account has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]'
 	},
 	'uw-ublock': {
 		expiry: 'infinity',
@@ -1381,7 +1390,8 @@ Twinkle.block.blockGroups = [
 		list: [
 			{ label: 'Advertising', value: 'uw-adblock' },
 			{ label: 'Arbitration enforcement', value: 'uw-aeblock' },
-			{ label: 'Block evasion', value: 'uw-ipevadeblock' },
+			{ label: 'Block evasion - IP', value: 'uw-ipevadeblock' },
+			{ label: 'Block evasion - Temporary account', value: 'uw-tempevadeblock' },
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
 			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
@@ -1494,12 +1504,12 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 			// for regular users and temporary accounts
 			if (blockSettings.forRegisteredOnly) {
 				allowedUserType = Twinkle.block.isRegistered;
+			// for temporary accounts
+			} else if (blockSettings.forTempAccountsOnly) {
+				allowedUserType = mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'));
 			// for IPs
 			} else if (blockSettings.forIPsOnly) {
 				allowedUserType = !Twinkle.block.isRegistered;
-			// for IPs and temporary accounts
-			} else if (blockSettings.forUnnamedOnly) {
-				allowedUserType = !Twinkle.block.isRegistered || mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'));
 			} else {
 				allowedUserType = true;
 			}
