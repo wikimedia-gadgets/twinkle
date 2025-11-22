@@ -315,10 +315,12 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 	Morebits.Status[statusLevel]('Current protection level', protectionNode);
 };
 
-Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
+Twinkle.protect.callback.changeAction = async function twinkleprotectCallbackChangeAction(e) {
 	let field_preset;
 	let field1;
 	let field2;
+	let ctopCodes;
+	let gsCodes;
 
 	switch (e.target.values) {
 		case 'protect':
@@ -467,13 +469,11 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				type: 'div',
 				name: 'protectReason_notes',
 				label: 'Notes:',
-				style: 'display:inline-block; margin-top:4px;',
-				tooltip: 'Add a note to the protection log that this was requested at RfPP.'
+				style: 'margin-top:4px;'
 			});
 			field2.append({
 				type: 'checkbox',
 				event: Twinkle.protect.callback.annotateProtectReason,
-				style: 'display:inline-block; margin-top:4px;',
 				list: [
 					{
 						label: 'RfPP request',
@@ -481,7 +481,8 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 						checked: false,
 						value: 'requested at [[WP:RfPP]]'
 					}
-				]
+				],
+				tooltip: 'Add a note to the protection log that this was requested at RfPP.'
 			});
 			field2.append({
 				type: 'input',
@@ -490,6 +491,49 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				name: 'protectReason_notes_rfppRevid',
 				value: '',
 				tooltip: 'Optional revision ID of the RfPP page where protection was requested.'
+			});
+			field2.append({
+				type: 'checkbox',
+				event: Twinkle.protect.callback.annotateProtectReason,
+				list: [
+					{
+						label: 'CTOP action',
+						name: 'protectReason_notes_ctop',
+						checked: false,
+						value: 'arbitration enforcement per [[WP:CT]]'
+					}
+				],
+				tooltip: 'Add a note to the protection log that this is an arbitration enforcement action.'
+			});
+			[ctopCodes, gsCodes] = await Twinkle.protect.fetchTopics();
+			field2.append({
+				type: 'select',
+				event: Twinkle.protect.callback.annotateProtectReason,
+				label: 'CTOP code',
+				name: 'protectReason_notes_ctopCode',
+				list: ctopCodes,
+				tooltip: 'Code of the contentious topic in which arbitration enforcement takes place.'
+			});
+			field2.append({
+				type: 'checkbox',
+				event: Twinkle.protect.callback.annotateProtectReason,
+				list: [
+					{
+						label: 'GS action',
+						name: 'protectReason_notes_gs',
+						checked: false,
+						value: 'general sanctions enforcement per [[WP:GS]]'
+					}
+				],
+				tooltip: 'Add a note to the protection log that this is a general sanctions enforcement action.'
+			});
+			field2.append({
+				type: 'select',
+				event: Twinkle.protect.callback.annotateProtectReason,
+				label: 'GS code',
+				name: 'protectReason_notes_gsCode',
+				list: gsCodes,
+				tooltip: 'Code of the general sanction in which enforcement takes place.'
 			});
 			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto' || mw.config.get('wgNamespaceNumber') === 710) { // tagging isn't relevant for non-existing, module, or TimedText pages
 				break;
@@ -592,7 +636,38 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 
 		// reduce vertical height of dialog
 		$(e.target.form).find('fieldset[name="field2"] select').parent().css({ display: 'inline-block', marginRight: '0.5em' });
-		$(e.target.form).find('fieldset[name="field2"] input[name="protectReason_notes_rfppRevid"]').parent().css({display: 'inline-block', marginLeft: '15px'}).hide();
+		$(e.target.form).find('fieldset[name="field2"] input[name="protectReason_notes_rfppRevid"]').parent().css({marginLeft: '15px'}).hide();
+		$(e.target.form).find('fieldset[name="field2"] select[name="protectReason_notes_ctopCode"]').parent().css({ display: 'block', marginLeft: '15px'}).hide(); // override inline-block
+		$(e.target.form).find('fieldset[name="field2"] select[name="protectReason_notes_gsCode"]').parent().css({ display: 'block', marginLeft: '15px'}).hide();
+
+		if (!Twinkle.getPref('oldSelect')) {
+			$('select[name=protectReason_notes_ctopCode], select[name=protectReason_notes_gsCode]')
+				.select2({
+					theme: 'default select2-morebits',
+					width: '80%',
+					matcher: Morebits.select2.matchers.dashInsensitive,
+					templateResult: Morebits.select2.highlightSearchMatches,
+					language: {
+						searching: Morebits.select2.queryInterceptor
+					}
+				})
+				.change(Twinkle.protect.callback.annotateProtectReason);
+
+			$('.select2-selection').on('keydown', Morebits.select2.autoStart).trigger('focus');
+
+			mw.util.addCSS(
+				// Increase height
+				'.select2-container .select2-dropdown .select2-results > .select2-results__options { max-height: 250px; }' +
+
+				// Reduce padding
+				'.select2-results .select2-results__option { padding-top: 1px; padding-bottom: 1px; }' +
+				'.select2-results .select2-results__group { padding-top: 1px; padding-bottom: 1px; } ' +
+
+				// Adjust font size
+				'.select2-container .select2-dropdown .select2-results { font-size: 13px; }' +
+				'.select2-container .selection .select2-selection__rendered { font-size: 13px; }'
+			);
+		}
 	}
 
 	// re-add protection level and log info, if it's available
@@ -998,6 +1073,63 @@ Twinkle.protect.protectionTags = [
 // Filter FlaggedRevs
 .filter((type) => hasFlaggedRevs || type.label !== 'Pending changes templates');
 
+Twinkle.protect.fetchTopics = async function twinkleprotectFetchTopics() {
+	let ctopCodes, gsCodes;
+	ctopCodes = Morebits.wiki.getCachedJson('Template:Ds/topics.json');
+
+	ctopCodes = ctopCodes.then((ctopCodes) => {
+
+	// These codes are not added to the template as they are not standalone contentious topics
+	ctopCodes['Indian military history'] = { code: 'imh', label: 'Indian military history' };
+	ctopCodes['South Asian social groups'] = { code: 'sasg', label: 'South Asian social groups', aliases: ['gscaste'] };
+
+	const codes = Object.values(ctopCodes).sort((a, b) => a.code.localeCompare(b.code));
+	codes.forEach((val) => {
+		val.value = val.code.toUpperCase();
+		if (val.value) {
+			if (val.page) {
+				val.label = val.page.split('/').pop();
+			}
+			if (val.aliases) {
+				val.aliases = val.aliases.map((alias) => alias.toUpperCase());
+				val.label = `${val.value}, ${val.aliases.join(', ')} – ${val.label}`;
+			} else {
+				val.label = `${val.value} – ${val.label}`;
+			}
+		} else {
+			val.label = 'Specify a code...';
+		}
+	});
+
+	return codes;
+	});
+
+	gsCodes = Morebits.wiki.getCachedJson('Template:Gs/topics.json');
+
+	gsCodes = gsCodes.then((gsCodes) => {
+
+	const codes = Object.values(gsCodes).sort((a, b) => a.value.localeCompare(b.value));
+
+	codes.forEach((val) => {
+		val.value = val.code.toUpperCase();
+		if (val.value && val.page) {
+			if (val.aliases) {
+				val.aliases = val.aliases.map((alias) => alias.toUpperCase());
+				val.label = `${val.value}, ${val.aliases.join(', ')} – ${val.label}`;
+			} else {
+				val.label = `${val.value} – ${val.label}`;
+			}
+		} else {
+			val.label = 'Specify a code...';
+		}
+	});
+
+	return codes;
+	});
+
+	return Promise.all([ctopCodes, gsCodes]);
+};
+
 Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
 	const form = e.target.form;
 
@@ -1394,9 +1526,13 @@ Twinkle.protect.callback.evaluate = function twinkleprotectCallbackEvaluate(e) {
 };
 
 Twinkle.protect.protectReasonAnnotations = [];
+Twinkle.protect.protectText = {ctop: 'arbitration enforcement per [[WP:CT]]', gs: 'general sanctions enforcement per [[WP:GS]]'};
+Twinkle.protect.protectDisplay = {ctop: false, gs: false};
 Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallbackAnnotateProtectReason(e) {
 	const form = e.target.form;
-	const protectReason = form.protectReason.value.replace(new RegExp('(?:; )?' + mw.util.escapeRegExp(Twinkle.protect.protectReasonAnnotations.join(': '))), '');
+	const protectReason = form.protectReason.value.replace(new RegExp('(?:; )?' + mw.util.escapeRegExp(Twinkle.protect.protectReasonAnnotations.join(': '))), '')
+						.replace(new RegExp('(?:; )?' + mw.util.escapeRegExp(Twinkle.protect.protectText.ctop)), '')
+						.replace(new RegExp('(?:; )?' + mw.util.escapeRegExp(Twinkle.protect.protectText.gs)), '');
 
 	if (this.name === 'protectReason_notes_rfpp') {
 		if (this.checked) {
@@ -1413,12 +1549,46 @@ Twinkle.protect.callback.annotateProtectReason = function twinkleprotectCallback
 			const permalink = '[[Special:Permalink/' + e.target.value + '#' + Morebits.pageNameNorm + ']]';
 			Twinkle.protect.protectReasonAnnotations.push(permalink);
 		}
+	} else if (this.name === 'protectReason_notes_ctop') {
+		Twinkle.protect.protectDisplay.ctop = this.checked;
+		if (this.checked) {
+			$(form.protectReason_notes_ctopCode).parent().show();
+		} else {
+			$(form.protectReason_notes_ctopCode).parent().hide();
+		}
+	} else if (this.name === 'protectReason_notes_ctopCode') {
+		if (e.target.value.length) {
+			Twinkle.protect.protectText.ctop = 'arbitration enforcement per [[WP:CT/' + e.target.value + ']]';
+		} else {
+			Twinkle.protect.protectText.ctop = 'arbitration enforcement per [[WP:CT]]';
+		}
+	} else if (this.name === 'protectReason_notes_gs') {
+		Twinkle.protect.protectDisplay.gs = this.checked;
+		if (this.checked) {
+			$(form.protectReason_notes_gsCode).parent().show();
+		} else {
+			$(form.protectReason_notes_gsCode).parent().hide();
+		}
+	} else if (this.name === 'protectReason_notes_gsCode') {
+		if (e.target.value.length) {
+			Twinkle.protect.protectText.gs = 'general sanctions enforcement per [[WP:GS/' + e.target.value + ']]';
+		} else {
+			Twinkle.protect.protectText.gs = 'general sanctions enforcement per [[WP:GS]]';
+		}
 	}
 
 	if (!Twinkle.protect.protectReasonAnnotations.length) {
 		form.protectReason.value = protectReason;
 	} else {
 		form.protectReason.value = (protectReason ? protectReason + '; ' : '') + Twinkle.protect.protectReasonAnnotations.join(': ');
+	}
+
+	if (Twinkle.protect.protectDisplay.ctop) {
+		form.protectReason.value += (form.protectReason.value ? '; ' : '') + Twinkle.protect.protectText.ctop;
+	}
+
+	if (Twinkle.protect.protectDisplay.gs) {
+		form.protectReason.value += (form.protectReason.value ? '; ' : '') + Twinkle.protect.protectText.gs;
 	}
 };
 
