@@ -505,7 +505,7 @@ Twinkle.protect.callback.changeAction = async function twinkleprotectCallbackCha
 				],
 				tooltip: 'Add a note to the protection log that this is an arbitration enforcement action.'
 			});
-			ctopCodes = await Twinkle.protect.ctopCodes;
+			[ctopCodes, gsCodes] = await Twinkle.protect.fetchTopics();
 			field2.append({
 				type: 'select',
 				event: Twinkle.protect.callback.annotateProtectReason,
@@ -527,7 +527,6 @@ Twinkle.protect.callback.changeAction = async function twinkleprotectCallbackCha
 				],
 				tooltip: 'Add a note to the protection log that this is a general sanctions enforcement action.'
 			});
-			gsCodes = await Twinkle.protect.gsCodes;
 			field2.append({
 				type: 'select',
 				event: Twinkle.protect.callback.annotateProtectReason,
@@ -1074,57 +1073,62 @@ Twinkle.protect.protectionTags = [
 // Filter FlaggedRevs
 .filter((type) => hasFlaggedRevs || type.label !== 'Pending changes templates');
 
-Twinkle.protect.ctopCodes = Morebits.wiki.getCachedJson('Template:Ds/topics.json');
+Twinkle.protect.fetchTopics = async function twinkleprotectFetchTopics() {
+	let ctopCodes, gsCodes;
+	ctopCodes = Morebits.wiki.getCachedJson('Template:Ds/topics.json');
 
-Twinkle.protect.ctopCodes = Twinkle.protect.ctopCodes.then((ctopCodes) => {
+	ctopCodes = ctopCodes.then((ctopCodes) => {
 
-// These codes are not added to the template as they are not standalone contentious topics
-ctopCodes['Indian military history'] = { code: 'imh', label: 'Indian military history' };
-ctopCodes['South Asian social groups'] = { code: 'sasg', label: 'South Asian social groups', aliases: ['gscaste'] };
+	// These codes are not added to the template as they are not standalone contentious topics
+	ctopCodes['Indian military history'] = { code: 'imh', label: 'Indian military history' };
+	ctopCodes['South Asian social groups'] = { code: 'sasg', label: 'South Asian social groups', aliases: ['gscaste'] };
 
-const codes = Object.values(ctopCodes).sort((a, b) => a.code.localeCompare(b.code));
-codes.forEach((val) => {
-	val.value = val.code.toUpperCase();
-	if (val.value) {
-		if (val.page) {
-			val.label = val.page.split('/').pop();
-		}
-		if (val.aliases) {
-			val.aliases = val.aliases.map((alias) => alias.toUpperCase());
-			val.label = `${val.value}, ${val.aliases.join(', ')} – ${val.label}`;
+	const codes = Object.values(ctopCodes).sort((a, b) => a.code.localeCompare(b.code));
+	codes.forEach((val) => {
+		val.value = val.code.toUpperCase();
+		if (val.value) {
+			if (val.page) {
+				val.label = val.page.split('/').pop();
+			}
+			if (val.aliases) {
+				val.aliases = val.aliases.map((alias) => alias.toUpperCase());
+				val.label = `${val.value}, ${val.aliases.join(', ')} – ${val.label}`;
+			} else {
+				val.label = `${val.value} – ${val.label}`;
+			}
 		} else {
-			val.label = `${val.value} – ${val.label}`;
+			val.label = 'Specify a code...';
 		}
-	} else {
-		val.label = 'Specify a code...';
-	}
-});
+	});
 
-return codes;
-});
+	return codes;
+	});
 
-Twinkle.protect.gsCodes = Morebits.wiki.getCachedJson('Template:Gs/topics.json');
+	gsCodes = Morebits.wiki.getCachedJson('Template:Gs/topics.json');
 
-Twinkle.protect.gsCodes = Twinkle.protect.gsCodes.then((gsCodes) => {
+	gsCodes = gsCodes.then((gsCodes) => {
 
-const codes = Object.values(gsCodes).sort((a, b) => a.code.localeCompare(b.code));
+	const codes = Object.values(gsCodes).sort((a, b) => a.value.localeCompare(b.value));
 
-codes.forEach((val) => {
-	val.value = val.code.toUpperCase();
-	if (val.value && val.page) {
-		if (val.aliases) {
-			val.aliases = val.aliases.map((alias) => alias.toUpperCase());
-			val.label = `${val.value}, ${val.aliases.join(', ')} – ${val.label}`;
+	codes.forEach((val) => {
+		val.value = val.code.toUpperCase();
+		if (val.value && val.page) {
+			if (val.aliases) {
+				val.aliases = val.aliases.map((alias) => alias.toUpperCase());
+				val.label = `${val.value}, ${val.aliases.join(', ')} – ${val.label}`;
+			} else {
+				val.label = `${val.value} – ${val.label}`;
+			}
 		} else {
-			val.label = `${val.value} – ${val.label}`;
+			val.label = 'Specify a code...';
 		}
-	} else {
-		val.label = 'Specify a code...';
-	}
-});
+	});
 
-return codes;
-});
+	return codes;
+	});
+
+	return Promise.all([ctopCodes, gsCodes]);
+};
 
 Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
 	const form = e.target.form;
