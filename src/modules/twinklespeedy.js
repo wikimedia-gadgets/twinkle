@@ -1098,56 +1098,56 @@ Twinkle.speedy.instantDecline.main = function twinklespeedyInstantDeclineMain(pa
 	pageObj.save(window.location.reload.bind(window.location));
 };
 
+Twinkle.speedy.createCodexButton = function twinkleSpeedyCreateCodexButton({ label, action = 'neutral', weight = 'normal', size = 'medium', onClick }) {
+	const button = document.createElement('button');
+	button.classList.add('cdx-button');
+
+	// Action classes
+	if (action !== 'neutral') {
+		button.classList.add(`cdx-button--action-${action}`);
+	}
+
+	// Weight classes
+	if (weight !== 'normal') {
+		button.classList.add(`cdx-button--weight-${weight}`);
+	}
+
+	// Size classes
+	if (size !== 'medium') {
+		button.classList.add(`cdx-button--size-${size}`);
+	}
+
+	button.textContent = label;
+
+	if (typeof onClick === 'function') {
+		button.addEventListener('click', onClick);
+	}
+
+	return button;
+};
+
 // Adds a quick "Delete" button to a speedy deletion template
 Twinkle.speedy.addButton = function twinklespeedyAddButton() {
 	if (!Morebits.userIsSysop) {
 		return;
 	}
 
-	function createCodexButton({ label, action = 'neutral', weight = 'normal', size = 'medium', onClick }) {
-		const button = document.createElement('button');
-		button.classList.add('cdx-button');
-
-		// Action classes
-		if (action !== 'neutral') {
-			button.classList.add(`cdx-button--action-${action}`);
-		}
-
-		// Weight classes
-		if (weight !== 'normal') {
-			button.classList.add(`cdx-button--weight-${weight}`);
-		}
-
-		// Size classes
-		if (size !== 'medium') {
-			button.classList.add(`cdx-button--size-${size}`);
-		}
-
-		button.textContent = label;
-
-		if (typeof onClick === 'function') {
-			button.addEventListener('click', onClick);
-		}
-
-		return button;
-	}
-
 	const buttonNodes = {
-		delete: createCodexButton( { label: 'Delete', action: 'destructive', weight: 'primary', size: 'medium', onClick: Twinkle.speedy.instantDelete } ),
-		decline: createCodexButton( { label: 'Decline', action: 'neutral', weight: 'normal', size: 'medium', onClick: Twinkle.speedy.instantDecline } )
+		delete: Twinkle.speedy.createCodexButton( { label: 'Delete', action: 'destructive', weight: 'primary', size: 'medium', onClick: Twinkle.speedy.instantDelete } ),
+		decline: Twinkle.speedy.createCodexButton( { label: 'Decline', action: 'neutral', weight: 'normal', size: 'medium', onClick: Twinkle.speedy.instantDecline } )
 	};
 
 	const buttonContainer = document.createElement('div');
-	buttonContainer.classList.add('cdx-button-group'); // Codex-style grouping
-	buttonContainer.style.marginLeft = 'auto';
-	buttonContainer.style.marginRight = 'auto';
+	buttonContainer.style.display = 'flex';
+	buttonContainer.style.gap = '1em';
+	buttonContainer.style.justifyContent = 'center';
 
 	// Append the buttons to the container
 	buttonContainer.appendChild(buttonNodes.delete);
 	buttonContainer.appendChild(buttonNodes.decline);
 
 	const contestButton = document.querySelector(
-	'table.ambox-speedy form[name="commentbox"].mw-inputbox-form-inline'
+		'table.ambox-speedy form[name="commentbox"].mw-inputbox-form-inline'
 	);
 
 	if (contestButton) {
