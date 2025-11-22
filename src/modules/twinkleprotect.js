@@ -315,10 +315,12 @@ Twinkle.protect.callback.showLogAndCurrentProtectInfo = function twinkleprotectC
 	Morebits.Status[statusLevel]('Current protection level', protectionNode);
 };
 
-Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAction(e) {
+Twinkle.protect.callback.changeAction = async function twinkleprotectCallbackChangeAction(e) {
 	let field_preset;
 	let field1;
 	let field2;
+	let ctopCodes;
+	let gsCodes;
 
 	switch (e.target.values) {
 		case 'protect':
@@ -503,12 +505,13 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				],
 				tooltip: 'Add a note to the protection log that this is an arbitration enforcement action.'
 			});
+			ctopCodes = await Twinkle.protect.ctopCodes;
 			field2.append({
 				type: 'select',
 				event: Twinkle.protect.callback.annotateProtectReason,
 				label: 'CTOP code',
 				name: 'protectReason_notes_ctopCode',
-				list: Twinkle.protect.ctopCodes,
+				list: ctopCodes,
 				tooltip: 'Code of the contentious topic in which arbitration enforcement takes place.'
 			});
 			field2.append({
@@ -524,12 +527,13 @@ Twinkle.protect.callback.changeAction = function twinkleprotectCallbackChangeAct
 				],
 				tooltip: 'Add a note to the protection log that this is a general sanctions enforcement action.'
 			});
+			gsCodes = await Twinkle.protect.gsCodes;
 			field2.append({
 				type: 'select',
 				event: Twinkle.protect.callback.annotateProtectReason,
 				label: 'GS code',
 				name: 'protectReason_notes_gsCode',
-				list: Twinkle.protect.gsCodes,
+				list: gsCodes,
 				tooltip: 'Code of the general sanction in which enforcement takes place.'
 			});
 			if (!mw.config.get('wgArticleId') || mw.config.get('wgPageContentModel') === 'Scribunto' || mw.config.get('wgNamespaceNumber') === 710) { // tagging isn't relevant for non-existing, module, or TimedText pages
@@ -1070,68 +1074,56 @@ Twinkle.protect.protectionTags = [
 // Filter FlaggedRevs
 .filter((type) => hasFlaggedRevs || type.label !== 'Pending changes templates');
 
-Twinkle.protect.ctopCodes = [
-	{ value: '', label: 'Specify a code...' },
-	{ value: 'A-A', label: 'Armenia-Azerbaijan' },
-	{ value: 'AB', label: 'Abortion' },
-	{ value: 'A-I', label: 'Palestine-Israel articles', aliases: ['PIA'] },
-	{ value: 'AP', label: 'American politics' },
-	{ value: 'APL', label: 'Antisemitism in Poland' },
-	{ value: 'AT', label: 'Article titles and capitalisation' },
-	{ value: 'BLP', label: 'Editing of Biographies of Living Persons' },
-	{ value: 'CAM', label: 'Acupuncture' },
-	{ value: 'CC', label: 'Climate change' },
-	{ value: 'CF', label: 'Pseudoscience' },
-	{ value: 'CID', label: 'Civility in infobox discussions' },
-	{ value: 'COVID', label: 'COVID-19' },
-	{ value: 'EE', label: 'Eastern Europe' },
-	{ value: 'FG', label: 'Falun Gong' },
-	{ value: 'GC', label: 'Gun control' },
-	{ value: 'GG', label: 'Gender and sexuality' },
-	{ value: 'GMO', label: 'Genetically modified organisms' },
-	{ value: 'HORN', label: 'Horn of Africa' },
-	{ value: 'IMH', label: 'Indian military history' },
-	{ value: 'IRP', label: 'Iranian politics' },
-	{ value: 'KURD', label: 'Kurds and Kurdistan' },
-	{ value: 'RI', label: 'Race and intelligence' },
-	{ value: 'RNE', label: 'Historical elections' },
-	{ value: 'SA', label: 'South Asia' },
-	{ value: 'SASG', label: 'South Asian social groups', aliases: ['GSCASTE'] },
-	{ value: 'TT', label: 'The Troubles' },
-	{ value: 'YA', label: 'Yasuke' }
-];
+Twinkle.protect.ctopCodes = Morebits.wiki.getCachedJson('Template:Ds/topics.json');
 
-// We add the code at the front of each label
-Twinkle.protect.ctopCodes.forEach((item) => {
-	if (item.value) {
-		if (item.aliases) {
-			item.label = `${item.value}, ${item.aliases.join(', ')} – ${item.label}`;
-		} else {
-			item.label = `${item.value} – ${item.label}`;
+Twinkle.protect.ctopCodes = Twinkle.protect.ctopCodes.then((ctopCodes) => {
+
+// These codes are not added to the template as they are not standalone contentious topics
+ctopCodes['Indian military history'] = { code: 'imh', label: 'Indian military history' };
+ctopCodes['South Asian social groups'] = { code: 'sasg', label: 'South Asian social groups', aliases: ['gscaste'] };
+
+const codes = Object.values(ctopCodes).sort((a, b) => a.code.localeCompare(b.code));
+codes.forEach((val) => {
+	val.value = val.code.toUpperCase();
+	if (val.value) {
+		if (val.page) {
+			val.label = val.page.split('/').pop();
 		}
+		if (val.aliases) {
+			val.aliases = val.aliases.map((alias) => alias.toUpperCase());
+			val.label = `${val.value}, ${val.aliases.join(', ')} – ${val.label}`;
+		} else {
+			val.label = `${val.value} – ${val.label}`;
+		}
+	} else {
+		val.label = 'Specify a code...';
 	}
 });
 
-Twinkle.protect.gsCodes = [
-	{ value: '', label: 'Specify a code...' },
-	{ value: 'AA', label: 'Armenia and Azerbaijan' },
-	{ value: 'ACAS', label: 'Assyrian, Chaldean, Aramean and Syriac topics' },
-	{ value: 'CRYPTO', label: 'Blockchain and cryptocurrency' },
-	{ value: 'KURD', label: 'Kurds and Kurdistan' },
-	{ value: 'MJ', label: 'Michael Jackson' },
-	{ value: 'PAGEANT', label: 'Beauty pageants' },
-	{ value: 'PW', label: 'Professional wrestling' },
-	{ value: 'RUSUKR', label: 'Russo-Ukrainian War' },
-	{ value: 'SCW&ISIL', label: 'Syrian Civil War and ISIL' },
-	{ value: 'UKU', label: 'Units in the United Kingdom' },
-	{ value: 'UYGHUR', label: 'Uyghur genocide' }
-];
+return codes;
+});
 
-// We add the code at the front of each label
-Twinkle.protect.gsCodes.forEach((item) => {
-	if (item.value) {
-		item.label = `${item.value} – ${item.label}`;
+Twinkle.protect.gsCodes = Morebits.wiki.getCachedJson('Template:Gs/topics.json');
+
+Twinkle.protect.gsCodes = Twinkle.protect.gsCodes.then((gsCodes) => {
+
+const codes = Object.values(gsCodes).sort((a, b) => a.code.localeCompare(b.code));
+
+codes.forEach((val) => {
+	val.value = val.code.toUpperCase();
+	if (val.value && val.page) {
+		if (val.aliases) {
+			val.aliases = val.aliases.map((alias) => alias.toUpperCase());
+			val.label = `${val.value}, ${val.aliases.join(', ')} – ${val.label}`;
+		} else {
+			val.label = `${val.value} – ${val.label}`;
+		}
+	} else {
+		val.label = 'Specify a code...';
 	}
+});
+
+return codes;
 });
 
 Twinkle.protect.callback.changePreset = function twinkleprotectCallbackChangePreset(e) {
