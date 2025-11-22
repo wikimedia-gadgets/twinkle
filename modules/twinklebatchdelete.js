@@ -164,7 +164,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	Twinkle.batchdelete.pages = {};
 
 	const statelem = new Morebits.Status('Grabbing list of pages');
-	const wikipedia_api = new Morebits.wiki.Api('loading...', query, ((apiobj) => {
+	const wikipediaApi = new Morebits.wiki.Api('loading...', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		let pages = (response.query && response.query.pages) || [];
 		pages = pages.filter((page) => !page.missing && page.imagerepository !== 'shared');
@@ -236,8 +236,8 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 
 	}), statelem);
 
-	wikipedia_api.params = { form: form, Window: Window };
-	wikipedia_api.post();
+	wikipediaApi.params = { form: form, Window: Window };
+	wikipediaApi.post();
 };
 
 Twinkle.batchdelete.generateNewPageList = function(form) {
@@ -310,7 +310,7 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 				return;
 			}
 
-			const wikipedia_api = new Morebits.wiki.Api('Getting list of subpages of ' + pageName, {
+			const wikipediaApi = new Morebits.wiki.Api('Getting list of subpages of ' + pageName, {
 				action: 'query',
 				prop: 'revisions|info|imageinfo',
 				generator: 'allpages',
@@ -365,8 +365,8 @@ Twinkle.batchdelete.callback.toggleSubpages = function twDbatchToggleSubpages(e)
 			}), null /* statusElement */, (() => {
 				subpageLister.workerFailure();
 			}));
-			wikipedia_api.params = { pageNameFull: pageName }; // Used in onSuccess()
-			wikipedia_api.post();
+			wikipediaApi.params = { pageNameFull: pageName }; // Used in onSuccess()
+			wikipediaApi.post();
 
 		}, () => {
 			// List 'em on the interface
@@ -443,15 +443,15 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 			pageDeleter: pageDeleter
 		};
 
-		const wikipedia_page = new Morebits.wiki.Page(pageName, 'Deleting page ' + pageName);
-		wikipedia_page.setCallbackParameters(params);
+		const wikipediaPage = new Morebits.wiki.Page(pageName, 'Deleting page ' + pageName);
+		wikipediaPage.setCallbackParameters(params);
 		if (input.delete_page) {
-			wikipedia_page.setEditSummary(input.reason);
-			wikipedia_page.setChangeTags(Twinkle.changeTags);
-			wikipedia_page.suppressProtectWarning();
-			wikipedia_page.deletePage(Twinkle.batchdelete.callbacks.doExtras, pageDeleter.workerFailure);
+			wikipediaPage.setEditSummary(input.reason);
+			wikipediaPage.setChangeTags(Twinkle.changeTags);
+			wikipediaPage.suppressProtectWarning();
+			wikipediaPage.deletePage(Twinkle.batchdelete.callbacks.doExtras, pageDeleter.workerFailure);
 		} else {
-			Twinkle.batchdelete.callbacks.doExtras(wikipedia_page);
+			Twinkle.batchdelete.callbacks.doExtras(wikipediaPage);
 		}
 	}, () => {
 		if (input.delete_subpages && input.subpages) {
@@ -471,12 +471,12 @@ Twinkle.batchdelete.callback.evaluate = function twinklebatchdeleteCallbackEvalu
 					pageDeleter: subpageDeleter
 				};
 
-				const wikipedia_page = new Morebits.wiki.Page(pageName, 'Deleting subpage ' + pageName);
-				wikipedia_page.setCallbackParameters(params);
-				wikipedia_page.setEditSummary(input.reason);
-				wikipedia_page.setChangeTags(Twinkle.changeTags);
-				wikipedia_page.suppressProtectWarning();
-				wikipedia_page.deletePage(Twinkle.batchdelete.callbacks.doExtras, pageDeleter.workerFailure);
+				const wikipediaPage = new Morebits.wiki.Page(pageName, 'Deleting subpage ' + pageName);
+				wikipediaPage.setCallbackParameters(params);
+				wikipediaPage.setEditSummary(input.reason);
+				wikipediaPage.setChangeTags(Twinkle.changeTags);
+				wikipediaPage.suppressProtectWarning();
+				wikipediaPage.deletePage(Twinkle.batchdelete.callbacks.doExtras, pageDeleter.workerFailure);
 			});
 		}
 	});
@@ -492,7 +492,7 @@ Twinkle.batchdelete.callbacks = {
 		// succeeded by now
 		params.pageDeleter.workerSuccess(thingWithParameters);
 
-		let query, wikipedia_api;
+		let query, wikipediaApi;
 
 		if (params.unlink_page) {
 			Twinkle.batchdelete.unlinkCache = {};
@@ -505,9 +505,9 @@ Twinkle.batchdelete.callbacks = {
 				bllimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
 			};
-			wikipedia_api = new Morebits.wiki.Api('Grabbing backlinks', query, Twinkle.batchdelete.callbacks.unlinkBacklinksMain);
-			wikipedia_api.params = params;
-			wikipedia_api.post();
+			wikipediaApi = new Morebits.wiki.Api('Grabbing backlinks', query, Twinkle.batchdelete.callbacks.unlinkBacklinksMain);
+			wikipediaApi.params = params;
+			wikipediaApi.post();
 		}
 
 		if (params.unlink_file) {
@@ -518,9 +518,9 @@ Twinkle.batchdelete.callbacks = {
 				iulimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
 			};
-			wikipedia_api = new Morebits.wiki.Api('Grabbing file links', query, Twinkle.batchdelete.callbacks.unlinkImageInstancesMain);
-			wikipedia_api.params = params;
-			wikipedia_api.post();
+			wikipediaApi = new Morebits.wiki.Api('Grabbing file links', query, Twinkle.batchdelete.callbacks.unlinkImageInstancesMain);
+			wikipediaApi.params = params;
+			wikipediaApi.post();
 		}
 
 		if (params.delete_page) {
@@ -532,9 +532,9 @@ Twinkle.batchdelete.callbacks = {
 					rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 					format: 'json'
 				};
-				wikipedia_api = new Morebits.wiki.Api('Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain);
-				wikipedia_api.params = params;
-				wikipedia_api.post();
+				wikipediaApi = new Morebits.wiki.Api('Grabbing redirects', query, Twinkle.batchdelete.callbacks.deleteRedirectsMain);
+				wikipediaApi.params = params;
+				wikipediaApi.post();
 			}
 			if (params.delete_talk) {
 				const pageTitle = mw.Title.newFromText(params.page);
@@ -545,10 +545,10 @@ Twinkle.batchdelete.callbacks = {
 						titles: pageTitle.toText(),
 						format: 'json'
 					};
-					wikipedia_api = new Morebits.wiki.Api('Checking whether talk page exists', query, Twinkle.batchdelete.callbacks.deleteTalk);
-					wikipedia_api.params = params;
-					wikipedia_api.params.talkPage = pageTitle.toText();
-					wikipedia_api.post();
+					wikipediaApi = new Morebits.wiki.Api('Checking whether talk page exists', query, Twinkle.batchdelete.callbacks.deleteTalk);
+					wikipediaApi.params = params;
+					wikipediaApi.params.talkPage = pageTitle.toText();
+					wikipediaApi.post();
 				}
 			}
 		}
@@ -565,10 +565,10 @@ Twinkle.batchdelete.callbacks = {
 		redirectDeleter.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		redirectDeleter.setPageList(pages);
 		redirectDeleter.run((pageName) => {
-			const wikipedia_page = new Morebits.wiki.Page(pageName, 'Deleting ' + pageName);
-			wikipedia_page.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page [[' + apiobj.params.page + ']]');
-			wikipedia_page.setChangeTags(Twinkle.changeTags);
-			wikipedia_page.deletePage(redirectDeleter.workerSuccess, redirectDeleter.workerFailure);
+			const wikipediaPage = new Morebits.wiki.Page(pageName, 'Deleting ' + pageName);
+			wikipediaPage.setEditSummary('[[WP:CSD#G8|G8]]: Redirect to deleted page [[' + apiobj.params.page + ']]');
+			wikipediaPage.setChangeTags(Twinkle.changeTags);
+			wikipediaPage.deletePage(redirectDeleter.workerSuccess, redirectDeleter.workerFailure);
 		});
 	},
 	deleteTalk: function(apiobj) {
@@ -596,12 +596,12 @@ Twinkle.batchdelete.callbacks = {
 		unlinker.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		unlinker.setPageList(pages);
 		unlinker.run((pageName) => {
-			const wikipedia_page = new Morebits.wiki.Page(pageName, 'Unlinking on ' + pageName);
+			const wikipediaPage = new Morebits.wiki.Page(pageName, 'Unlinking on ' + pageName);
 			const params = $.extend({}, apiobj.params);
 			params.title = pageName;
 			params.unlinker = unlinker;
-			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(Twinkle.batchdelete.callbacks.unlinkBacklinks);
+			wikipediaPage.setCallbackParameters(params);
+			wikipediaPage.load(Twinkle.batchdelete.callbacks.unlinkBacklinks);
 		});
 	},
 	unlinkBacklinks: function(pageobj) {
@@ -618,12 +618,12 @@ Twinkle.batchdelete.callbacks = {
 		} else {
 			text = pageobj.getPageText();
 		}
-		const old_text = text;
+		const oldText = text;
 		const wikiPage = new Morebits.wikitext.Page(text);
 		text = wikiPage.removeLink(params.page).getText();
 
 		Twinkle.batchdelete.unlinkCache[params.title] = text;
-		if (text === old_text) {
+		if (text === oldText) {
 			// Nothing to do, return
 			params.unlinker.workerSuccess(pageobj);
 			return;
@@ -647,12 +647,12 @@ Twinkle.batchdelete.callbacks = {
 		unlinker.setOption('chunkSize', Twinkle.getPref('batchChunks'));
 		unlinker.setPageList(pages);
 		unlinker.run((pageName) => {
-			const wikipedia_page = new Morebits.wiki.Page(pageName, 'Removing file usages on ' + pageName);
+			const wikipediaPage = new Morebits.wiki.Page(pageName, 'Removing file usages on ' + pageName);
 			const params = $.extend({}, apiobj.params);
 			params.title = pageName;
 			params.unlinker = unlinker;
-			wikipedia_page.setCallbackParameters(params);
-			wikipedia_page.load(Twinkle.batchdelete.callbacks.unlinkImageInstances);
+			wikipediaPage.setCallbackParameters(params);
+			wikipediaPage.load(Twinkle.batchdelete.callbacks.unlinkImageInstances);
 		});
 	},
 	unlinkImageInstances: function(pageobj) {
@@ -670,12 +670,12 @@ Twinkle.batchdelete.callbacks = {
 		} else {
 			text = pageobj.getPageText();
 		}
-		const old_text = text;
+		const oldText = text;
 		const wikiPage = new Morebits.wikitext.Page(text);
 		text = wikiPage.commentOutImage(image, 'Commented out because image was deleted').getText();
 
 		Twinkle.batchdelete.unlinkCache[params.title] = text;
-		if (text === old_text) {
+		if (text === oldText) {
 			pageobj.getStatusElement().error('failed to unlink image ' + image + ' from ' + pageobj.getPageName());
 			params.unlinker.workerFailure(pageobj);
 			return;

@@ -1553,9 +1553,9 @@ Twinkle.config.save = function twinkleconfigSave(e) {
 	Morebits.Status.init(document.getElementById('twinkle-config-content'));
 
 	const userjs = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user] + ':' + mw.config.get('wgUserName') + '/twinkleoptions.js';
-	const wikipedia_page = new Morebits.wiki.Page(userjs, 'Saving preferences to ' + userjs);
-	wikipedia_page.setCallbackParameters(e.target);
-	wikipedia_page.load(Twinkle.config.writePrefs);
+	const wikipediaPage = new Morebits.wiki.Page(userjs, 'Saving preferences to ' + userjs);
+	wikipediaPage.setCallbackParameters(e.target);
+	wikipediaPage.load(Twinkle.config.writePrefs);
 
 	return false;
 };

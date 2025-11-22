@@ -52,7 +52,7 @@ Twinkle.deprod.callback = function() {
 	};
 
 	const statelem = new Morebits.Status('Grabbing list of pages');
-	const wikipedia_api = new Morebits.wiki.Api('loading...', query, ((apiobj) => {
+	const wikipediaApi = new Morebits.wiki.Api('loading...', query, ((apiobj) => {
 		const response = apiobj.getResponse();
 		const pages = (response.query && response.query.pages) || [];
 		const list = [];
@@ -112,8 +112,8 @@ Twinkle.deprod.callback = function() {
 		Morebits.QuickForm.getElements(rendered, 'pages').forEach(Twinkle.generateBatchPageLinks);
 	}), statelem);
 
-	wikipedia_api.params = { form: form, Window: Window };
-	wikipedia_api.post();
+	wikipediaApi.params = { form: form, Window: Window };
+	wikipediaApi.post();
 };
 
 var callback_commit = function(event) {
@@ -134,9 +134,9 @@ var callback_commit = function(event) {
 				rdlimit: 'max', // 500 is max for normal users, 5000 for bots and sysops
 				format: 'json'
 			};
-			let wikipedia_api = new Morebits.wiki.Api('Grabbing redirects', query, callback_deleteRedirects);
-			wikipedia_api.params = params;
-			wikipedia_api.post();
+			let wikipediaApi = new Morebits.wiki.Api('Grabbing redirects', query, callback_deleteRedirects);
+			wikipediaApi.params = params;
+			wikipediaApi.post();
 
 			const pageTitle = mw.Title.newFromText(pageName);
 			// Don't delete user talk pages, limiting this to Talk: pages since only article and user pages appear in deprod
@@ -147,10 +147,10 @@ var callback_commit = function(event) {
 					titles: pageTitle.toText(),
 					format: 'json'
 				};
-				wikipedia_api = new Morebits.wiki.Api('Checking whether ' + pageName + ' has a talk page', query,
+				wikipediaApi = new Morebits.wiki.Api('Checking whether ' + pageName + ' has a talk page', query,
 					callback_deleteTalk);
-				wikipedia_api.params = params;
-				wikipedia_api.post();
+				wikipediaApi.params = params;
+				wikipediaApi.post();
 			}
 
 			var page = new Morebits.wiki.Page(pageName, 'Deleting page ' + pageName);
