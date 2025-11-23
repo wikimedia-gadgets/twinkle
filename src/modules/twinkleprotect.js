@@ -1111,7 +1111,7 @@ Twinkle.protect.fetchTopics = async function twinkleprotectFetchTopics() {
 	const codes = Object.values(gsCodes).sort((a, b) => a.value.localeCompare(b.value));
 
 	codes.forEach((val) => {
-		val.value = val.code.toUpperCase();
+		val.value = val.value.toUpperCase();
 		if (val.value && val.page) {
 			if (val.aliases) {
 				val.aliases = val.aliases.map((alias) => alias.toUpperCase());
