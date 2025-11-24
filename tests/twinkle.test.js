@@ -27,6 +27,15 @@ describe('modules/twinkle', () => {
 			expect(Twinkle.removeMoveToCommonsTagsFromWikicode('{{Move to Wikimedia Commons}}')).toBe('');
 		});
 
+		test('Should not remove {{Copy to Wikimedia Commons in}}', () => {
+			expect(Twinkle.removeMoveToCommonsTagsFromWikicode('{{Copy to Wikimedia Commons in}}')).toBe('{{Copy to Wikimedia Commons in}}');
+			expect(Twinkle.removeMoveToCommonsTagsFromWikicode('{{Copy to Wikimedia Commons in|2038}}')).toBe('{{Copy to Wikimedia Commons in|2038}}');
+			// Redirects to {{Copy to Wikimedia Commons in}}
+			expect(Twinkle.removeMoveToCommonsTagsFromWikicode('{{Out of copyright in|2038}}')).toBe('{{Out of copyright in|2038}}');
+			// Template contains {{Copy to Wikimedia Commons in}} in its code
+			expect(Twinkle.removeMoveToCommonsTagsFromWikicode('{{PD-US-expired-abroad|out_of_copyright_in=2054}}')).toBe('{{PD-US-expired-abroad|out_of_copyright_in=2054}}');
+		});
+
 		test('Should not remove unrelated templates', () => {
 			expect(Twinkle.removeMoveToCommonsTagsFromWikicode('{{Move to}}')).toBe('{{Move to}}');
 			expect(Twinkle.removeMoveToCommonsTagsFromWikicode('{{Copy}}')).toBe('{{Copy}}');
