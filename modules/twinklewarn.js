@@ -1036,6 +1036,10 @@ Twinkle.warn.messages = {
 	},
 
 	singlenotice: {
+		'uw-addalink': {
+			label: 'Mistakes with the Add a Link newcomer task',
+			summary: 'Notice: Mistakes with the Add a Link newcomer task'
+		},
 		'uw-agf-sock': {
 			label: 'Use of multiple accounts (assuming good faith)',
 			summary: 'Notice: Using multiple accounts'
@@ -1083,10 +1087,6 @@ Twinkle.warn.messages = {
 			label: 'Conflict of interest',
 			summary: 'Notice: Conflict of interest',
 			heading: 'Managing a conflict of interest'
-		},
-		'uw-controversial': {
-			label: 'Introducing controversial material',
-			summary: 'Notice: Introducing controversial material'
 		},
 		'uw-copying': {
 			label: 'Copying text to another page',
@@ -1166,6 +1166,10 @@ Twinkle.warn.messages = {
 		'uw-minor': {
 			label: 'Incorrect use of minor edits check box',
 			summary: 'Notice: Incorrect use of minor edits check box'
+		},
+		'uw-mostm': {
+			label: 'Formatting of trademarks',
+			summary: 'Notice: Formatting of trademarks'
 		},
 		'uw-multiple-accts': {
 			label: 'Inappropriate use of alternative accounts',
@@ -1710,8 +1714,7 @@ Twinkle.warn.callbacks = {
 		}
 		if (reason && !isCustom) {
 			// add extra message
-			if (templateName === 'uw-csd' || templateName === 'uw-probation' ||
-				templateName === 'uw-userspacenoindex' || templateName === 'uw-userpage') {
+			if (templateName === 'uw-userpage') {
 				text += "|3=''" + reason + "''";
 			} else {
 				text += "|2=''" + reason + "''";
