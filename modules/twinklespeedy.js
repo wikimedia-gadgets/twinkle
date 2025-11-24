@@ -844,7 +844,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					value: 'tag_only',
 					name: 'tag_only',
 					tooltip: 'If you just want to tag the page, instead of deleting it now',
-					checked: !(Twinkle.speedy.hasCSD || Twinkle.getPref('deleteSysopDefaultToDelete')),
+					checked: !(Twinkle.speedy.hasCSD || (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName')) || Twinkle.getPref('deleteSysopDefaultToDelete')),
 					event: function(event) {
 						const cForm = event.target.form;
 						const cChecked = event.target.checked;
@@ -1500,36 +1500,44 @@ Twinkle.speedy.callbacks = {
 			// promote Unlink tool
 			let $link, $bigtext;
 			if (mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8') {
-				$link = $('<a>', {
-					href: '#',
-					text: 'click here to go to the Unlink tool',
-					css: { fontSize: '130%', fontWeight: 'bold' },
-					click: function() {
+				$link = $('<a>')
+					.attr('href', '#')
+					.text('click here to go to the Unlink tool')
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					})
+					.on('click', () => {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback('Removing usages of and/or links to deleted file ' + Morebits.pageNameNorm);
-					}
-				});
-				$bigtext = $('<span>', {
-					text: 'To orphan backlinks and remove instances of file usage',
-					css: { fontSize: '130%', fontWeight: 'bold' }
-				});
+					});
+				$bigtext = $('<span>')
+					.text('To orphan backlinks and remove instances of file usage')
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					});
 				Morebits.Status.info($bigtext[0], $link[0]);
 			} else if (params.normalized !== 'f8') {
-				$link = $('<a>', {
-					href: '#',
-					text: 'click here to go to the Unlink tool',
-					css: { fontSize: '130%', fontWeight: 'bold' },
-					click: function() {
+				$link = $('<a>')
+					.attr('href', '#')
+					.text('click here to go to the Unlink tool')
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					})
+					.on('click', () => {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback('Removing links to deleted page ' + Morebits.pageNameNorm);
-					}
-				});
-				$bigtext = $('<span>', {
-					text: 'To orphan backlinks',
-					css: { fontSize: '130%', fontWeight: 'bold' }
-				});
+					} );
+				$bigtext = $('<span>')
+					.text('To orphan backlinks')
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					});
 				Morebits.Status.info($bigtext[0], $link[0]);
 			}
 		},
@@ -1623,8 +1631,7 @@ Twinkle.speedy.callbacks = {
 				// Remove tags that become superfluous with this action
 				text = text.replace(/\{\{\s*([Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, '');
 				if (mw.config.get('wgNamespaceNumber') === 6) {
-					// remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
-					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)(?!( in))\}\}/gi, '');
+					text = Twinkle.removeMoveToCommonsTagsFromWikicode( text );
 				}
 
 				if (params.requestsalt) {
@@ -1684,15 +1691,15 @@ Twinkle.speedy.callbacks = {
 
 					pageobj.getStatusElement().warn('Unable to edit page, placing tag on talk page');
 
-					const talk_page = new Morebits.wiki.Page(talkName, 'Automatically placing tag on talk page');
-					talk_page.setNewSectionTitle(pageobj.getPageName() + ' nominated for CSD, request deletion');
-					talk_page.setNewSectionText(code + '\n\nI was unable to tag ' + pageobj.getPageName() + ' so please delete it. ~~~~');
-					talk_page.setCreateOption('recreate');
-					talk_page.setFollowRedirect(true);
-					talk_page.setWatchlist(params.watch);
-					talk_page.setChangeTags(Twinkle.changeTags);
-					talk_page.setCallbackParameters(params);
-					talk_page.newSection(Twinkle.speedy.callbacks.user.tagComplete);
+					const talkPage = new Morebits.wiki.Page(talkName, 'Automatically placing tag on talk page');
+					talkPage.setNewSectionTitle(pageobj.getPageName() + ' nominated for CSD, request deletion');
+					talkPage.setNewSectionText(code + '\n\nI was unable to tag ' + pageobj.getPageName() + ' directly, so I have placed the speedy deletion tag on this page. I request deletion of the other page. ~~~~');
+					talkPage.setCreateOption('recreate');
+					talkPage.setFollowRedirect(true);
+					talkPage.setWatchlist(params.watch);
+					talkPage.setChangeTags(Twinkle.changeTags);
+					talkPage.setCallbackParameters(params);
+					talkPage.newSection(Twinkle.speedy.callbacks.user.tagComplete);
 				} else {
 					pageobj.getStatusElement().error('Page cannot be edited and no other location to place a speedy deletion request, aborting');
 				}

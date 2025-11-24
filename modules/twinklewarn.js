@@ -788,22 +788,22 @@ Twinkle.warn.messages = {
 					summary: 'Final warning: Removing file deletion tags'
 				}
 			},
-			'uw-tfd': {
+			'uw-rfd': {
 				level1: {
-					label: 'Removing {{tfd}} templates',
-					summary: 'General note: Removing {{tfd}} templates'
+					label: 'Removing redirects for discussion tags',
+					summary: 'General note: Removing redirects for discussion tags'
 				},
 				level2: {
-					label: 'Removing {{tfd}} templates',
-					summary: 'Caution: Removing {{tfd}} templates'
+					label: 'Removing redirects for discussion tags',
+					summary: 'Caution: Removing redirects for discussion tags'
 				},
 				level3: {
-					label: 'Removing {{tfd}} templates',
-					summary: 'Warning: Removing {{tfd}} templates'
+					label: 'Removing redirects for discussion tags',
+					summary: 'Warning: Removing redirects for discussion tags'
 				},
 				level4: {
-					label: 'Removing {{tfd}} templates',
-					summary: 'Final warning: Removing {{tfd}} templates'
+					label: 'Removing redirects for discussion tags',
+					summary: 'Final warning: Removing redirects for discussion tags'
 				}
 			},
 			'uw-speedy': {
@@ -824,22 +824,22 @@ Twinkle.warn.messages = {
 					summary: 'Final warning: Removing speedy deletion tags'
 				}
 			},
-			'uw-rfd': {
+			'uw-tfd': {
 				level1: {
-					label: 'Removing redirects for discussion tags',
-					summary: 'General note: Removing redirects for discussion tags'
+					label: 'Removing {{tfd}} templates',
+					summary: 'General note: Removing {{tfd}} templates'
 				},
 				level2: {
-					label: 'Removing redirects for discussion tags',
-					summary: 'Caution: Removing redirects for discussion tags'
+					label: 'Removing {{tfd}} templates',
+					summary: 'Caution: Removing {{tfd}} templates'
 				},
 				level3: {
-					label: 'Removing redirects for discussion tags',
-					summary: 'Warning: Removing redirects for discussion tags'
+					label: 'Removing {{tfd}} templates',
+					summary: 'Warning: Removing {{tfd}} templates'
 				},
 				level4: {
-					label: 'Removing redirects for discussion tags',
-					summary: 'Final warning: Removing redirects for discussion tags'
+					label: 'Removing {{tfd}} templates',
+					summary: 'Final warning: Removing {{tfd}} templates'
 				}
 			}
 		},
@@ -1087,10 +1087,6 @@ Twinkle.warn.messages = {
 			label: 'Conflict of interest',
 			summary: 'Notice: Conflict of interest',
 			heading: 'Managing a conflict of interest'
-		},
-		'uw-controversial': {
-			label: 'Introducing controversial material',
-			summary: 'Notice: Introducing controversial material'
 		},
 		'uw-copying': {
 			label: 'Copying text to another page',
@@ -1567,11 +1563,10 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 					// Catch and warn if the talkpage can't load,
 					// most likely because it's a cross-namespace redirect
 					// Supersedes the typical $autolevelMessage added in autolevelParseWikitext
-					const $noTalkPageNode = $('<strong>', {
-						text: 'Unable to load user talk page; it might be a cross-namespace redirect.  Autolevel detection will not work.',
-						id: 'twinkle-warn-autolevel-message',
-						css: {color: 'red' }
-					});
+					const $noTalkPageNode = $('<strong>')
+						.text('Unable to load user talk page; it might be a cross-namespace redirect. Autolevel detection will not work.')
+						.attr('id', 'twinkle-warn-autolevel-message')
+						.css('color', 'red');
 					$noTalkPageNode.insertBefore($('#twinkle-warn-warning-messages'));
 					// If a preview was opened while in a different mode, close it
 					// Should nullify the need to catch the error in preview callback
@@ -1718,8 +1713,7 @@ Twinkle.warn.callbacks = {
 		}
 		if (reason && !isCustom) {
 			// add extra message
-			if (templateName === 'uw-csd' || templateName === 'uw-probation' ||
-				templateName === 'uw-userspacenoindex' || templateName === 'uw-userpage') {
+			if (templateName === 'uw-userpage') {
 				text += "|3=''" + reason + "''";
 			} else {
 				text += "|2=''" + reason + "''";
@@ -1839,7 +1833,8 @@ Twinkle.warn.callbacks = {
 			}
 		}
 
-		const $autolevelMessage = $('<div>', {id: 'twinkle-warn-autolevel-message'});
+		const $autolevelMessage = $('<div>')
+			.attr('id', 'twinkle-warn-autolevel-message');
 
 		if (isNaN(level)) { // No prior warnings found, this is the first
 			level = 1;
@@ -1860,22 +1855,20 @@ Twinkle.warn.callbacks = {
 					// Basically indicates whether we're in the final Main evaluation or not,
 					// and thus whether we can continue or need to display the warning and link
 					if (!statelem) {
-						const $link = $('<a>', {
-							href: '#',
-							text: 'click here to open the ARV tool.',
-							css: { fontWeight: 'bold' },
-							click: function() {
+						const $link = $('<a>')
+							.attr('href', '#')
+							.text('click here to open the ARV tool.')
+							.css('fontWeight', 'bold')
+							.on('click', () => {
 								Morebits.wiki.actionCompleted.redirect = null;
 								Twinkle.warn.dialog.close();
 								Twinkle.arv.callback(mw.config.get('wgRelevantUserName'));
 								$('input[name=page]').val(params.article); // Target page
 								$('input[value=final]').prop('checked', true); // Vandalism after final
-							}
-						});
-						const $statusNode = $('<div>', {
-							text: mw.config.get('wgRelevantUserName') + ' recently received a level 4 warning (' + latest.type + ') so it might be better to report them instead; ',
-							css: {color: 'red' }
-						});
+							});
+						const $statusNode = $('<div>')
+							.text(mw.config.get('wgRelevantUserName') + ' recently received a level 4 warning (' + latest.type + ') so it might be better to report them instead; ')
+							.css('color', 'red');
 						$statusNode.append($link[0]);
 						$autolevelMessage.append($statusNode);
 					}

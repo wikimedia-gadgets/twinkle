@@ -840,7 +840,8 @@ Twinkle.tag.article.tagList = {
 	'Specific content issues': {
 		Accessibility: [
 			{ tag: 'Cleanup colors', description: 'uses color as only way to convey information' },
-			{ tag: 'Overcoloured', description: 'overuses color'}
+			{ tag: 'Overcoloured', description: 'overuses color' },
+			{ tag: 'Dark mode problems', description: 'has problems when viewed in dark mode' }
 		],
 		Language: [
 			{ tag: 'Not English', description: 'written in a language other than English and needs translation',
@@ -1904,7 +1905,7 @@ Twinkle.tag.callbacks = {
 			$.each(params.tags, (k, tag) => {
 				// when other commons-related tags are placed, remove "move to Commons" tag
 				if (['Keep local', 'Do not move to Commons'].includes(tag)) {
-					text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)(?!( in))\}\}/gi, '');
+					text = Twinkle.removeMoveToCommonsTagsFromWikicode( text );
 				}
 
 				currentTag = tag;

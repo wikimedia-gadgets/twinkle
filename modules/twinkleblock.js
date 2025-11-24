@@ -308,7 +308,7 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 };
 
 Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction(e) {
-	let field_preset, field_template_options, field_block_options;
+	let fieldPreset, fieldTemplateOptions, fieldBlockOptions;
 	const $form = $(e.target.form);
 	// Make ifs shorter
 	const blockBox = $form.find('[name=actiontype][value=block]').is(':checked');
@@ -355,8 +355,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	Twinkle.block.callback.saveFieldset($('[name=field_template_options]'));
 
 	if (blockBox) {
-		field_preset = new Morebits.QuickForm.Element({ type: 'field', label: 'Preset', name: 'field_preset' });
-		field_preset.append({
+		fieldPreset = new Morebits.QuickForm.Element({ type: 'field', label: 'Preset', name: 'field_preset' });
+		fieldPreset.append({
 			type: 'select',
 			name: 'preset',
 			label: 'Choose a preset:',
@@ -364,10 +364,10 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			list: Twinkle.block.callback.filtered_block_groups(blockGroup)
 		});
 
-		field_block_options = new Morebits.QuickForm.Element({ type: 'field', label: 'Block options', name: 'field_block_options' });
-		field_block_options.append({ type: 'div', name: 'currentblock', label: ' ' });
-		field_block_options.append({ type: 'div', name: 'hasblocklog', label: ' ' });
-		field_block_options.append({
+		fieldBlockOptions = new Morebits.QuickForm.Element({ type: 'field', label: 'Block options', name: 'field_block_options' });
+		fieldBlockOptions.append({ type: 'div', name: 'currentblock', label: ' ' });
+		fieldBlockOptions.append({ type: 'div', name: 'hasblocklog', label: ' ' });
+		fieldBlockOptions.append({
 			type: 'select',
 			name: 'expiry_preset',
 			label: 'Expiry:',
@@ -393,7 +393,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				{ label: '3 years', value: '3 years' }
 			]
 		});
-		field_block_options.append({
+		fieldBlockOptions.append({
 			type: 'input',
 			name: 'expiry',
 			label: 'Custom expiry',
@@ -402,7 +402,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 
 		if (partialBox) { // Partial block
-			field_block_options.append({
+			fieldBlockOptions.append({
 				type: 'select',
 				multiple: true,
 				name: 'pagerestrictions',
@@ -410,7 +410,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				value: '',
 				tooltip: '10 page max.'
 			});
-			const ns = field_block_options.append({
+			const ns = fieldBlockOptions.append({
 				type: 'select',
 				multiple: true,
 				name: 'namespacerestrictions',
@@ -471,12 +471,12 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			value: '1'
 		});
 
-		field_block_options.append({
+		fieldBlockOptions.append({
 			type: 'checkbox',
 			name: 'blockoptions',
 			list: blockoptions
 		});
-		field_block_options.append({
+		fieldBlockOptions.append({
 			type: 'textarea',
 			label: 'Reason (for block log):',
 			name: 'reason',
@@ -484,14 +484,14 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			value: Twinkle.block.field_block_options.reason
 		});
 
-		field_block_options.append({
+		fieldBlockOptions.append({
 			type: 'div',
 			name: 'filerlog_label',
 			label: 'See also:',
 			style: 'display:inline-block;font-style:normal !important',
 			tooltip: 'Insert a "see also" message to indicate whether the filter log or deleted contributions played a role in the decision to block.'
 		});
-		field_block_options.append({
+		fieldBlockOptions.append({
 			type: 'checkbox',
 			name: 'filter_see_also',
 			event: Twinkle.block.callback.toggle_see_alsos,
@@ -504,7 +504,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				}
 			]
 		});
-		field_block_options.append({
+		fieldBlockOptions.append({
 			type: 'checkbox',
 			name: 'deleted_see_also',
 			event: Twinkle.block.callback.toggle_see_alsos,
@@ -520,7 +520,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 		// Yet-another-logevents-doesn't-handle-ranges-well
 		if (blockedUserName === relevantUserName) {
-			field_block_options.append({ type: 'hidden', name: 'reblock', value: '1' });
+			fieldBlockOptions.append({ type: 'hidden', name: 'reblock', value: '1' });
 		}
 	}
 
@@ -544,8 +544,8 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		event: Twinkle.block.callback.toggle_ds_reason
 	};
 	if (templateBox) {
-		field_template_options = new Morebits.QuickForm.Element({ type: 'field', label: 'Template options', name: 'field_template_options' });
-		field_template_options.append({
+		fieldTemplateOptions = new Morebits.QuickForm.Element({ type: 'field', label: 'Template options', name: 'field_template_options' });
+		fieldTemplateOptions.append({
 			type: 'select',
 			name: 'template',
 			label: 'Choose talk page template:',
@@ -555,9 +555,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 
 		// Only visible for aeblock and aepblock, toggled in change_template
-		field_template_options.append(dsSelectSettings);
+		fieldTemplateOptions.append(dsSelectSettings);
 
-		field_template_options.append({
+		fieldTemplateOptions.append({
 			type: 'input',
 			name: 'article',
 			label: 'Linked page',
@@ -566,7 +566,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 
 		// Only visible if partial and not blocking
-		field_template_options.append({
+		fieldTemplateOptions.append({
 			type: 'input',
 			name: 'area',
 			label: 'Area blocked from',
@@ -575,7 +575,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 
 		if (!blockBox) {
-			field_template_options.append({
+			fieldTemplateOptions.append({
 				type: 'input',
 				name: 'template_expiry',
 				label: 'Period of blocking:',
@@ -583,7 +583,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				tooltip: 'The period the blocking is due for, for example 24 hours, 2 weeks, indefinite etc...'
 			});
 		}
-		field_template_options.append({
+		fieldTemplateOptions.append({
 			type: 'input',
 			name: 'block_reason',
 			label: '"You have been blocked for ..."',
@@ -592,7 +592,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		});
 
 		if (blockBox) {
-			field_template_options.append({
+			fieldTemplateOptions.append({
 				type: 'checkbox',
 				name: 'blank_duration',
 				list: [
@@ -604,7 +604,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				]
 			});
 		} else {
-			field_template_options.append({
+			fieldTemplateOptions.append({
 				type: 'checkbox',
 				list: [
 					{
@@ -634,23 +634,23 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			Twinkle.block.callback.preview($form[0]);
 		});
 		$previewlink.css({cursor: 'pointer'});
-		field_template_options.append({ type: 'div', id: 'blockpreview', label: [ $previewlink[0] ] });
-		field_template_options.append({ type: 'div', id: 'twinkleblock-previewbox', style: 'display: none' });
-	} else if (field_preset) {
+		fieldTemplateOptions.append({ type: 'div', id: 'blockpreview', label: [ $previewlink[0] ] });
+		fieldTemplateOptions.append({ type: 'div', id: 'twinkleblock-previewbox', style: 'display: none' });
+	} else if (fieldPreset) {
 		// Only visible for arbitration enforcement, toggled in change_preset
-		field_preset.append(dsSelectSettings);
+		fieldPreset.append(dsSelectSettings);
 	}
 
 	let oldfield;
-	if (field_preset) {
+	if (fieldPreset) {
 		oldfield = $form.find('fieldset[name="field_preset"]')[0];
-		oldfield.parentNode.replaceChild(field_preset.render(), oldfield);
+		oldfield.parentNode.replaceChild(fieldPreset.render(), oldfield);
 	} else {
 		$form.find('fieldset[name="field_preset"]').hide();
 	}
-	if (field_block_options) {
+	if (fieldBlockOptions) {
 		oldfield = $form.find('fieldset[name="field_block_options"]')[0];
-		oldfield.parentNode.replaceChild(field_block_options.render(), oldfield);
+		oldfield.parentNode.replaceChild(fieldBlockOptions.render(), oldfield);
 		$form.find('fieldset[name="field_64"]').show();
 
 		$form.find('[name=pagerestrictions]').select2({
@@ -732,9 +732,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		$form.find('[name=namespacerestrictions]').val(null).trigger('change');
 	}
 
-	if (field_template_options) {
+	if (fieldTemplateOptions) {
 		oldfield = $form.find('fieldset[name="field_template_options"]')[0];
-		oldfield.parentNode.replaceChild(field_template_options.render(), oldfield);
+		oldfield.parentNode.replaceChild(fieldTemplateOptions.render(), oldfield);
 		e.target.form.root.previewer = new Morebits.wiki.Preview($(e.target.form.root).find('#twinkleblock-previewbox').last()[0]);
 	} else {
 		$form.find('fieldset[name="field_template_options"]').hide();
@@ -1467,7 +1467,7 @@ Twinkle.block.blockGroupsPartial = [
 	}
 ];
 
-Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(group, show_template) {
+Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilteredBlockGroups(group, showTemplate) {
 	return $.map(group, (blockGroup) => {
 		const list = $.map(blockGroup.list, (blockPreset) => {
 			switch (blockPreset.value) {
@@ -1514,10 +1514,10 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 				allowedUserType = true;
 			}
 
-			if (!(blockSettings.templateName && show_template) && allowedUserType) {
+			if (!(blockSettings.templateName && showTemplate) && allowedUserType) {
 				const templateName = blockSettings.templateName || blockPreset.value;
 				return {
-					label: (show_template ? '{{' + templateName + '}}: ' : '') + blockPreset.label,
+					label: (showTemplate ? '{{' + templateName + '}}: ' : '') + blockPreset.label,
 					value: blockPreset.value,
 					data: [{
 						name: 'template-name',
@@ -1943,9 +1943,9 @@ Twinkle.block.callback.issue_template = function twinkleblockCallbackIssueTempla
 	Morebits.wiki.actionCompleted.redirect = userTalkPage;
 	Morebits.wiki.actionCompleted.notice = 'Actions complete, loading user talk page in a few seconds';
 
-	const wikipedia_page = new Morebits.wiki.Page(userTalkPage, 'User talk page modification');
-	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(Twinkle.block.callback.main);
+	const wikipediaPage = new Morebits.wiki.Page(userTalkPage, 'User talk page modification');
+	wikipediaPage.setCallbackParameters(params);
+	wikipediaPage.load(Twinkle.block.callback.main);
 };
 
 Twinkle.block.combineFormDataAndFieldTemplateOptions = function(formData, messageData, reason, disabletalk, noemail, nocreate) {

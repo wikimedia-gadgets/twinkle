@@ -1651,7 +1651,7 @@ Twinkle.xfd.callbacks = {
 
 			params.tagText = '{{ffd|log=' + date + '|help=off}}\n';
 			if (pageobj.canEdit()) {
-				text = text.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)(?!( in))\}\}/gi, '');
+				text = Twinkle.removeMoveToCommonsTagsFromWikicode( text );
 
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
