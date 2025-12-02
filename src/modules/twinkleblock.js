@@ -489,7 +489,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			name: 'filerlog_label',
 			label: 'See also:',
 			style: 'display:inline-block;font-style:normal !important',
-			tooltip: 'Insert a "see also" message to indicate whether the filter log or deleted contributions played a role in the decision to block.'
+			tooltip: 'Insert a "see also" message to indicate whether the filter log, deleted contributions or related temporary accounts played a role in the decision to block.'
 		});
 		fieldBlockOptions.append({
 			type: 'checkbox',
