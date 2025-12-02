@@ -347,7 +347,7 @@ Twinkle.prod.callbacks = {
 		return def;
 	},
 
-	notifyAuthor: function twinkleprodNotifyAuthor() {
+	notifyAuthor: async function twinkleprodNotifyAuthor() {
 		const def = $.Deferred();
 
 		if (!params.blp && !params.usertalk) {
@@ -359,6 +359,11 @@ Twinkle.prod.callbacks = {
 			Morebits.Status.info('Notifying creator', 'You (' + params.initialContrib + ') created this page; skipping user notification');
 			return def.resolve();
 		}
+
+		if (await Twinkle.hasUserOptedOutOfNotice(params.initialContrib, ['prod'])) {
+			return def.resolve();
+		}
+
 		// [[Template:Proposed deletion notify]] supports File namespace
 		let notifyTemplate;
 		if (params.blp) {

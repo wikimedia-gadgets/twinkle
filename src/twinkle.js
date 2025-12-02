@@ -499,6 +499,54 @@ Twinkle.generateBatchPageLinks = function (checkbox) {
  */
 Twinkle.removeMoveToCommonsTagsFromWikicode = ( wikicode ) => wikicode.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)(?!( in))[^}]*\}\}/gi, '');
 
+/**
+ * Check if the user has opted out of talk pages notices of a given type.
+ *
+ * @param {string} username
+ * @param {string[]} types Multiple values are allowed so that multiple levels can be
+ * passed in (eg. ['xfd', 'afd'] to detect if user has opted out of just AFD notices,
+ * or all XFD notices.)
+ * @return {Promise<boolean>} Resolves to true if user has opted out of notification.
+ */
+Twinkle.hasUserOptedOutOfNotice = async function (username, types) {
+	const typesSet = new Set(types);
+	const status = new Morebits.Status('Checking for notification opt-out');
+	const api = new Morebits.wiki.Api('checking...', {
+		action: 'query',
+		format: 'json',
+		prop: 'extlinks',
+		titles: 'User talk:' + username,
+		elquery: 'optout.twinkle',
+		// There should be only one matching external link. If there are multiple of them,
+		// consider up to the first 10.
+		ellimit: 10
+	}, null, status);
+	return api.post().then((apiobj) => {
+		const page = apiobj.getResponse().query.pages[0];
+		if (page.missing) {
+			return false;
+		}
+		const extlinks = page.extlinks || [];
+		return extlinks.some((link) => {
+			try {
+				const url = new URL(link.url);
+				const typesFromLink = url.searchParams.get('types');
+				return typesFromLink && typesFromLink.split(',').some((e) => typesSet.has(e.trim().toLowerCase()));
+			} catch (e) {
+				// Invalid URL
+				return false;
+			}
+		});
+	}).then((isOptOut) => {
+		if (isOptOut) {
+			status.warn(`${username} has opted out of notification`);
+		} else {
+			status.info('Not opted out');
+		}
+		return isOptOut;
+	});
+};
+
 }());
 
 // </nowiki>
