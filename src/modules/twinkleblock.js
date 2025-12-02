@@ -508,7 +508,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			type: 'checkbox',
 			name: 'deleted_see_also',
 			event: Twinkle.block.callback.toggle_see_alsos,
-			style: 'display:inline-block',
+			style: 'display:inline-block; margin-right:5px',
 			list: [
 				{
 					label: 'Deleted contribs',
@@ -517,6 +517,21 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				}
 			]
 		});
+		if (mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'))) {
+			fieldBlockOptions.append({
+				type: 'checkbox',
+				name: 'related_see_also',
+				event: Twinkle.block.callback.toggle_see_alsos,
+				style: 'display:inline-block',
+				list: [
+					{
+						label: 'Related temporary accounts',
+						checked: false,
+						value: 'related temporary accounts'
+					}
+				]
+			});
+		}
 
 		// Yet-another-logevents-doesn't-handle-ranges-well
 		if (blockedUserName === relevantUserName) {
@@ -1564,8 +1579,15 @@ Twinkle.block.callback.change_expiry = function twinkleblockCallbackChangeExpiry
 
 Twinkle.block.seeAlsos = [];
 Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSeeAlso() {
+	function joinEnum(e) {
+		if (e.length >= 3) {
+			return e.slice(0, -1).join(', ') + ' and ' + e[e.length - 1];
+		} else {
+			return e.join(' and ');
+		}
+	}
 	const reason = this.form.reason.value.replace(
-		new RegExp('( <!--|;) see also ' + Twinkle.block.seeAlsos.join(' and ') + '( -->)?'), ''
+		new RegExp('( <!--|;) see also ' + joinEnum(Twinkle.block.seeAlsos) + '( -->)?'), ''
 	);
 
 	Twinkle.block.seeAlsos = Twinkle.block.seeAlsos.filter((el) => el !== this.value);
@@ -1573,7 +1595,7 @@ Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSee
 	if (this.checked) {
 		Twinkle.block.seeAlsos.push(this.value);
 	}
-	const seeAlsoMessage = Twinkle.block.seeAlsos.join(' and ');
+	const seeAlsoMessage = joinEnum(Twinkle.block.seeAlsos);
 
 	if (!Twinkle.block.seeAlsos.length) {
 		this.form.reason.value = reason;
