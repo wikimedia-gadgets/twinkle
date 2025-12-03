@@ -1579,13 +1579,13 @@ Twinkle.block.callback.change_expiry = function twinkleblockCallbackChangeExpiry
 
 Twinkle.block.seeAlsos = [];
 Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSeeAlso() {
-	function joinEnum(e) {
+	const joinEnum = function(e) {
 		if (e.length >= 3) {
 			return e.slice(0, -1).join(', ') + ' and ' + e[e.length - 1];
 		} else {
 			return e.join(' and ');
 		}
-	}
+	};
 	const reason = this.form.reason.value.replace(
 		new RegExp('( <!--|;) see also ' + joinEnum(Twinkle.block.seeAlsos) + '( -->)?'), ''
 	);
