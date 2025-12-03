@@ -6,15 +6,15 @@ mw.config.set({
 	wgUserGroups: ['interface-admin', 'sysop', '*', 'user', 'autoconfirmed']
 });
 
-require('../morebits.js');
-require('../twinkle.js');
-require('../modules/twinkleblock.js');
-require('../modules/twinklespeedy.js');
+require('../src/morebits.js');
+require('../src/twinkle.js');
+require('../src/modules/twinkleblock.js');
+require('../src/modules/twinklespeedy.js');
 // Load this after twinklespeedy.js. Needs to read Twinkle.speedy.data.
-require('../modules/twinkleconfig.js');
-require('../modules/twinkletag.js');
-require('../modules/twinklewarn.js');
-require('../modules/twinklexfd.js');
+require('../src/modules/twinkleconfig.js');
+require('../src/modules/twinkletag.js');
+require('../src/modules/twinklewarn.js');
+require('../src/modules/twinklexfd.js');
 global.Morebits = window.Morebits;
 
 global.assert = require('assert');

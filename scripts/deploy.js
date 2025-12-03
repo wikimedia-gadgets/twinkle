@@ -24,33 +24,33 @@ program
     .parse(process.argv);
 
 const GADGET_FILES = [
-    'twinkle.js',
-    'twinkle.css',
-    'twinkle-pagestyles.css',
-    'morebits.js',
-    'morebits.css',
+    'src/twinkle.js',
+    'src/twinkle.css',
+    'src/twinkle-pagestyles.css',
+    'src/morebits.js',
+    'src/morebits.css',
     'lib/select2.min.js',
     'lib/select2.min.css',
-    'modules/twinklearv.js',
-    'modules/twinklebatchdelete.js',
-    'modules/twinklebatchprotect.js',
-    'modules/twinklebatchundelete.js',
-    'modules/twinkleblock.js',
-    'modules/twinkleconfig.js',
-    'modules/twinkledeprod.js',
-    'modules/twinklediff.js',
-    'modules/twinkleimage.js',
-    'modules/twinkleprod.js',
-    'modules/twinkleprotect.js',
-    'modules/twinklerollback.js',
-    'modules/twinkleshared.js',
-    'modules/twinklespeedy.js',
-    'modules/twinkletag.js',
-    'modules/twinkletalkback.js',
-    'modules/twinkleunlink.js',
-    'modules/twinklewarn.js',
-    'modules/twinklewelcome.js',
-    'modules/twinklexfd.js'
+    'src/modules/twinklearv.js',
+    'src/modules/twinklebatchdelete.js',
+    'src/modules/twinklebatchprotect.js',
+    'src/modules/twinklebatchundelete.js',
+    'src/modules/twinkleblock.js',
+    'src/modules/twinkleconfig.js',
+    'src/modules/twinkledeprod.js',
+    'src/modules/twinklediff.js',
+    'src/modules/twinkleimage.js',
+    'src/modules/twinkleprod.js',
+    'src/modules/twinkleprotect.js',
+    'src/modules/twinklerollback.js',
+    'src/modules/twinkleshared.js',
+    'src/modules/twinklespeedy.js',
+    'src/modules/twinkletag.js',
+    'src/modules/twinkletalkback.js',
+    'src/modules/twinkleunlink.js',
+    'src/modules/twinklewarn.js',
+    'src/modules/twinklewelcome.js',
+    'src/modules/twinklexfd.js'
 ];
 
 const DEFAULT_CONF = {
@@ -242,7 +242,7 @@ async function main() {
         // Twinkle.js, Twinkle.css, and Twinkle-pagestyles.css have leading uppercase on-wiki
         // TODO: Remove once onwiki pages are renamed
         if (GADGET_FILES.indexOf(file) < 3) {
-            page = page.charAt(0).toUpperCase() + page.slice(1);
+            page = page.replace('twinkle', 'Twinkle');
         }
 
         if (!page.startsWith(conf.base)) {
