@@ -1714,9 +1714,9 @@ Twinkle.warn.callbacks = {
 		if (reason && !isCustom) {
 			// add extra message
 			if (templateName === 'uw-userpage') {
-				text += "|3=''" + reason + "''";
+				text += "|3=''" + Morebits.string.formatReasonText(reason) + "''";
 			} else {
-				text += "|2=''" + reason + "''";
+				text += "|2=''" + Morebits.string.formatReasonText(reason) + "''";
 			}
 		}
 		text += '}}';
