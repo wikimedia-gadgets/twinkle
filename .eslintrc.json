@@ -15,6 +15,7 @@
 		"array-bracket-spacing": "off",
 		"computed-property-spacing": "off",
 		"es-x/no-array-prototype-includes": "off",
+		"es-x/no-promise-prototype-finally": "off",
 		"indent": "off",
 		"jsdoc/require-param": "off",
 		"jsdoc/require-returns": "off",

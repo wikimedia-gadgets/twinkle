@@ -2412,24 +2412,41 @@ Morebits.wiki.Api.prototype = {
 
 };
 
-/** Retrieves wikitext from a page. Caching enabled, duration 1 day. */
-Morebits.wiki.getCachedJson = function(title) {
-	const query = {
+/**
+ * Retrieves wikitext from a page. Caching is enabled with a duration of 1 day.
+ *
+ * @param {string} title - Page title
+ * @return {Promise<string|null>} Returns page content, or null if the page doesn't exist.
+ */
+Morebits.wiki.getCachedPage = function(title) {
+	return new mw.Api({ userAgent: morebitsWikiApiUserAgent }).get({
 		action: 'query',
 		prop: 'revisions',
 		titles: title,
-		rvslots: '*',
 		rvprop: 'content',
+		rvslots: '*',
 		format: 'json',
+		formatversion: '2',
 		smaxage: '86400', // cache for 1 day
-		maxage: '86400' // cache for 1 day
-	};
-	return new Morebits.wiki.Api('', query).post().then((apiobj) => {
-		apiobj.getStatusElement().unlink();
-		const response = apiobj.getResponse();
-		const wikitext = response.query.pages[0].revisions[0].slots.main.content;
-		return JSON.parse(wikitext);
+		maxage: '86400', // cache for 1 day
+		uselang: 'content'
+	}).then((data) => {
+		const page = data.query.pages[0];
+		if (page.missing) {
+			return null;
+		}
+		return page.revisions[0].slots.main.content;
 	});
+};
+
+/**
+ * Retrieves JSON from a page. Caching is enabled with a duration of 1 day.
+ *
+ * @param {string} title - Page title
+ * @return {Promise<string>}
+ */
+Morebits.wiki.getCachedJson = function(title) {
+	return Morebits.wiki.getCachedPage(title).then((wikitext) => JSON.parse(wikitext));
 };
 
 var morebitsWikiApiUserAgent = 'morebits.js ([[w:WT:TW]])';
