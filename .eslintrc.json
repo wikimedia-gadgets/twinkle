@@ -34,7 +34,6 @@
 		// rules we should probably fix someday
 		"camelcase": ["off", {"properties": "never"}],
 		"mediawiki/class-doc": "off",
-		"new-cap": "off",
 		"no-jquery/no-done-fail": "off",
 		"no-jquery/no-each-util": "off",
 		"no-jquery/no-extend": "off",
