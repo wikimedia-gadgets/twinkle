@@ -13,9 +13,9 @@ async function readFiles(filePaths) {
 	return Promise.all(filePaths.map(path => fs.readFile(__dirname + '/../' + path).then(blob => blob.toString())));
 }
 const server = http.createServer(async (request, response) => {
-	const moduleFiles = (await fs.readdir('./modules')).filter(f => f.endsWith('.js'));
-	const jsFiles = ['morebits.js', 'twinkle.js'].concat(moduleFiles.map(f => 'modules/' + f));
-	const cssFiles = ['morebits.css', 'twinkle.css'];
+	const moduleFiles = (await fs.readdir('./src/modules')).filter(f => f.endsWith('.js'));
+	const jsFiles = ['src/morebits.js', 'src/twinkle.js'].concat(moduleFiles.map(f => 'src/modules/' + f));
+	const cssFiles = ['src/morebits.css', 'src/twinkle.css'];
 
 	let jsCode = `mw.loader.using(['jquery.ui', 'ext.gadget.select2']).then(function () {\n`;
 

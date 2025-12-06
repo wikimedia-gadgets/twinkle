@@ -1,44 +1,44 @@
 "Module: twinkle":
-  - twinkle.js
-  - twinkle.css
-  - twinkle-pagestyles.css
+  - src/twinkle.js
+  - src/twinkle.css
+  - src/twinkle-pagestyles.css
 "Module: morebits":
-  - morebits.js
-  - morebits.css
+  - src/morebits.js
+  - src/morebits.css
 "Module: arv":
-  - modules/twinklearv.js
+  - src/modules/twinklearv.js
 "Module: batch":
-  - modules/twinklebatchdelete.js
-  - modules/twinklebatchundelete.js
-  - modules/twinklebatchprotect.js
-  - modules/twinkledeprod.js
+  - src/modules/twinklebatchdelete.js
+  - src/modules/twinklebatchundelete.js
+  - src/modules/twinklebatchprotect.js
+  - src/modules/twinkledeprod.js
 "Module: block":
-  - modules/twinkleblock.js
+  - src/modules/twinkleblock.js
 "Module: config":
-  - modules/twinkleconfig.js
+  - src/modules/twinkleconfig.js
 "Module: diff":
-  - modules/twinklediff.js
+  - src/modules/twinklediff.js
 "Module: prod":
-  - modules/twinkleprod.js
+  - src/modules/twinkleprod.js
 "Module: protect":
-  - modules/twinkleprotect.js
+  - src/modules/twinkleprotect.js
 "Module: rollback":
-  - modules/twinklerollback.js
+  - src/modules/twinklerollback.js
 "Module: speedy":
-  - modules/twinklespeedy.js
-  - modules/twinkleimage.js
+  - src/modules/twinklespeedy.js
+  - src/modules/twinkleimage.js
 "Module: tag":
-  - modules/twinkletag.js
+  - src/modules/twinkletag.js
 "Module: talkback":
-  - modules/twinkletalkback.js
+  - src/modules/twinkletalkback.js
 "Module: unlink":
-  - modules/twinkleunlink.js
+  - src/modules/twinkleunlink.js
 "Module: warn":
-  - modules/twinklewarn.js
+  - src/modules/twinklewarn.js
 "Module: welcome":
-  - modules/twinklewelcome.js
+  - src/modules/twinklewelcome.js
 "Module: xfd":
-  - modules/twinklexfd.js
+  - src/modules/twinklexfd.js
 Tests:
   - tests/*
 Docs:
