@@ -30,25 +30,25 @@
 
 		// non-default rules we do like
 		"no-nested-ternary": "error",
-		
+
 		// rules we should probably fix someday
-		"camelcase": ["warn", {"properties": "never"}],
-		"mediawiki/class-doc": "warn",
-		"new-cap": "warn",
-		"no-jquery/no-done-fail": "warn",
-		"no-jquery/no-each-util": "warn",
-		"no-jquery/no-extend": "warn",
-		"no-jquery/no-grep": "warn",
-		"no-jquery/no-in-array": "warn",
-		"no-jquery/no-map-util": "warn",
-		"no-jquery/no-parse-html-literal": "warn",
-		"no-jquery/no-sizzle": "warn",
-		"no-loop-func": "warn",
-		"no-new": "warn",
-		"no-script-url": "warn",
-		"no-unused-expressions": "warn",
-		"no-use-before-define": "warn",
-		"no-var": "warn",
-		"unicorn/prefer-string-slice": "warn"
+		"camelcase": ["off", {"properties": "never"}],
+		"mediawiki/class-doc": "off",
+		"new-cap": "off",
+		"no-jquery/no-done-fail": "off",
+		"no-jquery/no-each-util": "off",
+		"no-jquery/no-extend": "off",
+		"no-jquery/no-grep": "off",
+		"no-jquery/no-in-array": "off",
+		"no-jquery/no-map-util": "off",
+		"no-jquery/no-parse-html-literal": "off",
+		"no-jquery/no-sizzle": "off",
+		"no-loop-func": "off",
+		"no-new": "off",
+		"no-script-url": "off",
+		"no-unused-expressions": "off",
+		"no-use-before-define": "off",
+		"no-var": "off",
+		"unicorn/prefer-string-slice": "off"
 	}
 }
