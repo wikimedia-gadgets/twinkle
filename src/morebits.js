@@ -2310,7 +2310,7 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 	}
 
 	// Ignore tags for queries and most common unsupported actions, produces warnings
-	if (query.action && ['query', 'review', 'stabilize', 'pagetriageaction', 'watch'].includes(query.action)) {
+	if (query.action && ['query', 'review', 'stabilize', 'watch'].includes(query.action)) {
 		delete query.tags;
 	} else if (!query.tags && morebitsWikiChangeTag) {
 		query.tags = morebitsWikiChangeTag;
@@ -3033,8 +3033,7 @@ Morebits.wiki.page = function(pageName, status) {
 	/**
 	 * Set any custom tag(s) to be applied to the API action.
 	 * A number of actions don't support it, most notably watch, review,
-	 * and stabilize ({@link https://phabricator.wikimedia.org/T247721|T247721}), and
-	 * pagetriageaction ({@link https://phabricator.wikimedia.org/T252980|T252980}).
+	 * and stabilize ({@link https://phabricator.wikimedia.org/T247721|T247721}).
 	 *
 	 * @param {string|string[]} tags - String or array of tag(s).
 	 */
@@ -4400,12 +4399,12 @@ Morebits.wiki.page = function(pageName, status) {
 				action: 'pagetriageaction',
 				pageid: ctx.pageID,
 				reviewed: 1,
-				// tags: ctx.changeTags, // pagetriage tag support: [[phab:T252980]]
-				// Could use an adder to modify/create note:
-				// summaryAd, but that seems overwrought
 				token: ctx.csrfToken,
 				format: 'json'
 			};
+			if (ctx.changeTags) {
+				query.tags = ctx.changeTags;
+			}
 			const triageStat = new Morebits.status('Marking page as curated');
 			ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, null, triageStat);
 			ctx.triageProcessApi.setParent(this);
