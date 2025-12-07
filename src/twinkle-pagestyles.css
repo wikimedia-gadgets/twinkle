@@ -8,6 +8,7 @@
 .client-js > body.skin-vector:not(.ns-special) #p-cactions,
 .client-js > body.skin-vector.mw-special-Block #p-cactions,
 .client-js > body.skin-vector.mw-special-Contributions #p-cactions,
+.client-js > body.skin-vector.mw-special-IPContributions #p-cactions,
 .client-js > body.skin-vector.mw-special-DeletedContributions #p-cactions,
 .client-js > body.skin-vector.mw-special-Prefixindex #p-cactions {
 	margin-right: 3.24em;

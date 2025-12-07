@@ -36,16 +36,21 @@ Twinkle.rollback = function twinklerollback() {
 		Twinkle.rollback.skipTalk = !Twinkle.getPref('openTalkPageOnAutoRevert');
 		Twinkle.rollback.rollbackInPlace = Twinkle.getPref('rollbackInPlace');
 
-		if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
-			Twinkle.rollback.addLinks.contributions();
-		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Recentchanges' || mw.config.get('wgCanonicalSpecialPageName') === 'Recentchangeslinked') {
-			// Reload with recent changes updates
-			// structuredChangeFilters.ui.initialized is just on load
-			mw.hook('wikipage.content').add((item) => {
-				if (item.is('div')) {
-					Twinkle.rollback.addLinks.recentchanges();
-				}
-			});
+		switch (mw.config.get('wgCanonicalSpecialPageName')) {
+			case 'Contributions':
+			case 'IPContributions':
+				Twinkle.rollback.addLinks.contributions();
+				break;
+			case 'Recentchanges':
+			case 'Recentchangeslinked':
+				// Reload with recent changes updates
+				// structuredChangeFilters.ui.initialized is just on load
+				mw.hook('wikipage.content').add((item) => {
+					if (item.is('div')) {
+						Twinkle.rollback.addLinks.recentchanges();
+					}
+				});
+				break;
 		}
 	}
 };
