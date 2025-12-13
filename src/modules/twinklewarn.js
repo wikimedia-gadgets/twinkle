@@ -1714,9 +1714,9 @@ Twinkle.warn.callbacks = {
 		if (reason && !isCustom) {
 			// add extra message
 			if (templateName === 'uw-userpage') {
-				text += "|3=''" + reason + "''";
+				text += "|3=''" + Morebits.string.formatReasonText(reason) + "''";
 			} else {
-				text += "|2=''" + reason + "''";
+				text += "|2=''" + Morebits.string.formatReasonText(reason) + "''";
 			}
 		}
 		text += '}}';
@@ -2008,12 +2008,8 @@ Twinkle.warn.callbacks = {
 		pageobj.setWatchlist(Twinkle.getPref('watchWarnings'));
 
 		// Get actual warning text
-		let warningText = Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
+		const warningText = Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
 			params.reason, params.main_group === 'custom');
-		if (Twinkle.getPref('showSharedIPNotice') && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
-			Morebits.Status.info('Info', 'Adding a shared IP notice');
-			warningText += '\n{{subst:Shared IP advice}}';
-		}
 
 		let sectionExists = false, sectionNumber = 0;
 		// Only check sections if there are sections or there's a chance we won't create our own

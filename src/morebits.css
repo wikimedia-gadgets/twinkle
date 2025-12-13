@@ -70,7 +70,6 @@ html {
 form.quickform
 {
 	width: 96%;
-	vertical-align: middle;
 	margin: auto;
 	padding: .5em;
 	color: var(--color-base, #202122);
@@ -212,11 +211,6 @@ div.morebits-previewbox
 	border: 2px inset;
 	margin: .4em auto .2em;
 	padding: .2em .4em;
-}
-
-div.morebits-previewbox *:not(img)
-{
-	vertical-align: baseline;
 }
 
 div.morebits-previewbox .mw-editsection

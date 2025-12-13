@@ -3,12 +3,12 @@
  * A library full of lots of goodness for user scripts on MediaWiki wikis, including Wikipedia.
  *
  * The highlights include:
- * - {@link Morebits.wiki.api} - make calls to the MediaWiki API
- * - {@link Morebits.wiki.page} - modify pages on the wiki (edit, revert, delete, etc.)
- * - {@link Morebits.date} - enhanced date object processing, sort of a light moment.js
- * - {@link Morebits.quickForm} - generate quick HTML forms on the fly
- * - {@link Morebits.simpleWindow} - a wrapper for jQuery UI Dialog with a custom look and extra features
- * - {@link Morebits.status} - a rough-and-ready status message displayer, used by the Morebits.wiki classes
+ * - {@link Morebits.wiki.Api} - make calls to the MediaWiki API
+ * - {@link Morebits.wiki.Page} - modify pages on the wiki (edit, revert, delete, etc.)
+ * - {@link Morebits.Date} - enhanced date object processing, sort of a light moment.js
+ * - {@link Morebits.QuickForm} - generate quick HTML forms on the fly
+ * - {@link Morebits.SimpleWindow} - a wrapper for jQuery UI Dialog with a custom look and extra features
+ * - {@link Morebits.Status} - a rough-and-ready status message displayer, used by the Morebits.wiki classes
  * - {@link Morebits.wikitext} - utilities for dealing with wikitext
  * - {@link Morebits.string} - utilities for manipulating strings
  * - {@link Morebits.array} - utilities for manipulating arrays
@@ -16,8 +16,8 @@
  *
  * Dependencies:
  * - The whole thing relies on jQuery.  But most wikis should provide this by default.
- * - {@link Morebits.quickForm}, {@link Morebits.simpleWindow}, and {@link Morebits.status} rely on the "morebits.css" file for their styling.
- * - {@link Morebits.simpleWindow} and {@link Morebits.quickForm} tooltips rely on jQuery UI Dialog (from ResourceLoader module name 'jquery.ui').
+ * - {@link Morebits.QuickForm}, {@link Morebits.SimpleWindow}, and {@link Morebits.Status} rely on the "morebits.css" file for their styling.
+ * - {@link Morebits.SimpleWindow} and {@link Morebits.QuickForm} tooltips rely on jQuery UI Dialog (from ResourceLoader module name 'jquery.ui').
  * - To create a gadget based on morebits.js, use this syntax in MediaWiki:Gadgets-definition:
  *     - `*GadgetName[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title,jquery.ui]|morebits.js|morebits.css|GadgetName.js`
  * - Alternatively, you can configure morebits.js as a hidden gadget in MediaWiki:Gadgets-definition:
@@ -115,7 +115,7 @@ Morebits.l10n = {
 		if (!match) {
 			return null;
 		}
-		const month = Morebits.date.localeData.months.indexOf(match[4]);
+		const month = Morebits.Date.localeData.months.indexOf(match[4]);
 		if (month === -1) {
 			return null;
 		}
@@ -199,7 +199,7 @@ Morebits.pageNameRegex = function(pageName) {
 /**
  * Converts string or array of DOM nodes into an HTML fragment.
  * Wikilink syntax (`[[...]]`) is transformed into HTML anchor.
- * Used in Morebits.quickForm and Morebits.status
+ * Used in Morebits.QuickForm and Morebits.Status
  *
  * @internal
  * @param {string|Node|(string|Node)[]} input
@@ -232,7 +232,7 @@ Morebits.createHtml = function(input) {
  * @return {string}
  */
 Morebits.createHtml.renderWikilinks = function (text) {
-	const ub = new Morebits.unbinder(text);
+	const ub = new Morebits.Unbinder(text);
 	// Don't convert wikilinks within code tags as they're used for displaying wiki-code
 	ub.unbind('<code>', '</code>');
 	ub.content = ub.content.replace(
@@ -290,27 +290,27 @@ Morebits.namespaceRegex = function(namespaces) {
 	return regex;
 };
 
-/* **************** Morebits.quickForm **************** */
+/* **************** Morebits.QuickForm **************** */
 /**
  * Creation of simple and standard forms without much specific coding.
  *
- * @namespace Morebits.quickForm
+ * @namespace Morebits.QuickForm
  * @memberof Morebits
  * @class
  * @param {event} event - Function to execute when form is submitted.
  * @param {string} [eventType=submit] - Type of the event.
  */
-Morebits.quickForm = function QuickForm(event, eventType) {
-	this.root = new Morebits.quickForm.element({ type: 'form', event: event, eventType: eventType });
+Morebits.QuickForm = function QuickForm(event, eventType) {
+	this.root = new Morebits.QuickForm.Element({ type: 'form', event: event, eventType: eventType });
 };
 
 /**
  * Renders the HTML output of the quickForm.
  *
- * @memberof Morebits.quickForm
+ * @memberof Morebits.QuickForm
  * @return {HTMLElement}
  */
-Morebits.quickForm.prototype.render = function QuickFormRender() {
+Morebits.QuickForm.prototype.render = function QuickFormRender() {
 	const ret = this.root.render();
 	ret.names = {};
 	return ret;
@@ -319,19 +319,19 @@ Morebits.quickForm.prototype.render = function QuickFormRender() {
 /**
  * Append element to the form.
  *
- * @memberof Morebits.quickForm
- * @param {(object|Morebits.quickForm.element)} data - A quickform element, or the object with which
+ * @memberof Morebits.QuickForm
+ * @param {(object|Morebits.QuickForm.Element)} data - A quickform element, or the object with which
  * a quickform element is constructed.
- * @return {Morebits.quickForm.element} - Same as what is passed to the function.
+ * @return {Morebits.QuickForm.Element} - Same as what is passed to the function.
  */
-Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
+Morebits.QuickForm.prototype.append = function QuickFormAppend(data) {
 	return this.root.append(data);
 };
 
 /**
  * Create a new element for the the form.
  *
- * Index to Morebits.quickForm.element types:
+ * Index to Morebits.QuickForm.Element types:
  * - Global attributes: id, className, style, tooltip, extra, $data, adminonly
  * - `select`: A combo box (aka drop-down).
  *     - Attributes: name, label, multiple, size, list, event, disabled
@@ -359,7 +359,7 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  *      - Attributes: label
  *  - `div`: A generic placeholder element or label.
  *      - Attributes: name, label
- *  - `submit`: A submit button. Morebits.simpleWindow moves these to the footer of the dialog.
+ *  - `submit`: A submit button. Morebits.SimpleWindow moves these to the footer of the dialog.
  *      - Attributes: name, label, disabled
  *  - `button`: A generic button.
  *      - Attributes: name, label, disabled, event
@@ -372,12 +372,12 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  * and the label item(s) can be `Element`s.
  * - `option`, `optgroup`, `_dyninput_cell`, `submit`, and `button` accept only a single string.
  *
- * @memberof Morebits.quickForm
+ * @memberof Morebits.QuickForm
  * @class
  * @param {Object} data - Object representing the quickform element. Should
  * specify one of the available types from the index above, as well as any
  * relevant and available attributes.
- * @example new Morebits.quickForm.element({
+ * @example new Morebits.QuickForm.Element({
  *     name: 'target',
  *     type: 'input',
  *     label: 'Your target:',
@@ -385,31 +385,31 @@ Morebits.quickForm.prototype.append = function QuickFormAppend(data) {
  *     required: true
  * });
  */
-Morebits.quickForm.element = function QuickFormElement(data) {
+Morebits.QuickForm.Element = function QuickFormElement(data) {
 	this.data = data;
 	this.childs = [];
 };
 
 /**
- * @memberof Morebits.quickForm.element
+ * @memberof Morebits.QuickForm.Element
  * @type {number}
  */
-Morebits.quickForm.element.id = 0;
+Morebits.QuickForm.Element.id = 0;
 
 /**
  * Appends an element to current element.
  *
- * @memberof Morebits.quickForm.element
- * @param {Morebits.quickForm.element} data - A quickForm element or the object required to
+ * @memberof Morebits.QuickForm.Element
+ * @param {Morebits.QuickForm.Element} data - A quickForm element or the object required to
  * create the quickForm element.
- * @return {Morebits.quickForm.element} The same element passed in.
+ * @return {Morebits.QuickForm.Element} The same element passed in.
  */
-Morebits.quickForm.element.prototype.append = function QuickFormElementAppend(data) {
+Morebits.QuickForm.Element.prototype.append = function QuickFormElementAppend(data) {
 	let child;
-	if (data instanceof Morebits.quickForm.element) {
+	if (data instanceof Morebits.QuickForm.Element) {
 		child = data;
 	} else {
-		child = new Morebits.quickForm.element(data);
+		child = new Morebits.QuickForm.Element(data);
 	}
 	this.childs.push(child);
 	return child;
@@ -419,10 +419,10 @@ Morebits.quickForm.element.prototype.append = function QuickFormElementAppend(da
  * Renders the HTML output for the quickForm element.  This should be called
  * without parameters: `form.render()`.
  *
- * @memberof Morebits.quickForm.element
+ * @memberof Morebits.QuickForm.Element
  * @return {HTMLElement}
  */
-Morebits.quickForm.element.prototype.render = function QuickFormElementRender(internal_subgroup_id) {
+Morebits.QuickForm.Element.prototype.render = function QuickFormElementRender(internal_subgroup_id) {
 	const currentNode = this.compute(this.data, internal_subgroup_id);
 
 	for (let i = 0; i < this.childs.length; ++i) {
@@ -432,12 +432,12 @@ Morebits.quickForm.element.prototype.render = function QuickFormElementRender(in
 	return currentNode[0];
 };
 
-/** @memberof Morebits.quickForm.element */
-Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(data, in_id) {
+/** @memberof Morebits.QuickForm.Element */
+Morebits.QuickForm.Element.prototype.compute = function QuickFormElementCompute(data, in_id) {
 	let node;
 	let childContainer = null;
 	let label;
-	const id = (in_id ? in_id + '_' : '') + 'node_' + Morebits.quickForm.element.id++;
+	const id = (in_id ? in_id + '_' : '') + 'node_' + Morebits.QuickForm.Element.id++;
 	if (data.adminonly && !Morebits.userIsSysop) {
 		// hell hack alpha
 		data.type = 'hidden';
@@ -552,7 +552,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 						cur_div = node.appendChild(document.createElement('h6'));
 						cur_div.appendChild(document.createTextNode(current.label));
 						if (current.tooltip) {
-							Morebits.quickForm.element.generateTooltip(cur_div, current);
+							Morebits.QuickForm.Element.generateTooltip(cur_div, current);
 						}
 						continue;
 					}
@@ -582,7 +582,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 					label.appendChild(Morebits.createHtml(current.label));
 					label.setAttribute('for', cur_id);
 					if (current.tooltip) {
-						Morebits.quickForm.element.generateTooltip(label, current);
+						Morebits.QuickForm.Element.generateTooltip(label, current);
 					}
 					// styles go on the label, doesn't make sense to style a checkbox/radio
 					if (current.style) {
@@ -597,7 +597,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 							tmpgroup = [ tmpgroup ];
 						}
 
-						var subgroupRaw = new Morebits.quickForm.element({
+						var subgroupRaw = new Morebits.QuickForm.Element({
 							type: 'div',
 							id: id + '_' + i + '_subgroup'
 						});
@@ -654,7 +654,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				}
 			}
 			if (data.shiftClickSupport && data.type === 'checkbox') {
-				Morebits.checkboxShiftClickSupport(Morebits.quickForm.getElements(node, data.name));
+				Morebits.checkboxShiftClickSupport(Morebits.QuickForm.getElements(node, data.name));
 			}
 			break;
 		// input is actually a text-type, so number here inherits the same stuff
@@ -695,7 +695,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				}
 			});
 			if (data.event) {
-				subnode.addEventListener('keyup', data.event, false);
+				subnode.addEventListener('input', data.event, false);
 			}
 
 			childContainer = subnode;
@@ -715,7 +715,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				label: 'more',
 				disabled: min >= max,
 				event: function(e) {
-					const new_node = new Morebits.quickForm.element(e.target.sublist);
+					const new_node = new Morebits.QuickForm.Element(e.target.sublist);
 					e.target.area.appendChild(new_node.render());
 
 					if (++e.target.counter >= e.target.max) {
@@ -743,7 +743,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			};
 
 			for (i = 0; i < min; ++i) {
-				const elem = new Morebits.quickForm.element(sublist);
+				const elem = new Morebits.QuickForm.Element(sublist);
 				listNode.appendChild(elem.render());
 			}
 			sublist.remove = true;
@@ -759,7 +759,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			node = document.createElement('div');
 
 			data.inputs.forEach((subdata) => {
-				const cell = new Morebits.quickForm.element($.extend(subdata, { type: '_dyninput_cell' }));
+				const cell = new Morebits.QuickForm.Element($.extend(subdata, { type: '_dyninput_cell' }));
 				node.appendChild(cell.render());
 			});
 			if (data.remove) {
@@ -815,7 +815,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				subnode.setAttribute('required', 'disabled');
 			}
 			if (data.event) {
-				subnode.addEventListener('keyup', data.event, false);
+				subnode.addEventListener('input', data.event, false);
 			}
 			node.style.marginRight = '3px';
 			break;
@@ -902,14 +902,14 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			childContainer = subnode;
 			break;
 		default:
-			throw new Error('Morebits.quickForm: unknown element type ' + data.type.toString());
+			throw new Error('Morebits.QuickForm: unknown element type ' + data.type.toString());
 	}
 
 	if (!childContainer) {
 		childContainer = node;
 	}
 	if (data.tooltip) {
-		Morebits.quickForm.element.generateTooltip(label || node, data);
+		Morebits.QuickForm.Element.generateTooltip(label || node, data);
 	}
 
 	if (data.extra) {
@@ -934,12 +934,12 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 /**
  * Create a jQuery UI-based tooltip.
  *
- * @memberof Morebits.quickForm.element
+ * @memberof Morebits.QuickForm.Element
  * @requires jQuery.ui
  * @param {HTMLElement} node - The HTML element beside which a tooltip is to be generated.
  * @param {Object} data - Tooltip-related configuration data.
  */
-Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTooltip(node, data) {
+Morebits.QuickForm.Element.generateTooltip = function QuickFormElementGenerateTooltip(node, data) {
 	const tooltipButton = node.appendChild(document.createElement('span'));
 	tooltipButton.className = 'morebits-tooltipButton';
 	tooltipButton.title = data.tooltip; // Provides the content for jQuery UI
@@ -958,11 +958,11 @@ Morebits.quickForm.element.generateTooltip = function QuickFormElementGenerateTo
  * Returns an object containing all filled form data entered by the user, with the object
  * keys being the form element names. Disabled fields will be ignored, but not hidden fields.
  *
- * @memberof Morebits.quickForm
+ * @memberof Morebits.QuickForm
  * @param {HTMLFormElement} form
  * @return {Object} With field names as keys, input data as values.
  */
-Morebits.quickForm.getInputData = function(form) {
+Morebits.QuickForm.getInputData = function(form) {
 	const result = {};
 
 	for (let i = 0; i < form.elements.length; i++) {
@@ -1017,12 +1017,12 @@ Morebits.quickForm.getInputData = function(form) {
 /**
  * Returns all form elements with a given field name or ID.
  *
- * @memberof Morebits.quickForm
+ * @memberof Morebits.QuickForm
  * @param {HTMLFormElement} form
  * @param {string} fieldName - The name or id of the fields.
  * @return {HTMLElement[]} - Array of matching form elements.
  */
-Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) {
+Morebits.QuickForm.getElements = function QuickFormGetElements(form, fieldName) {
 	const $form = $(form);
 	fieldName = $.escapeSelector(fieldName); // sanitize input
 	let $elements = $form.find('[name="' + fieldName + '"]');
@@ -1037,12 +1037,12 @@ Morebits.quickForm.getElements = function QuickFormGetElements(form, fieldName) 
  * Searches the array of elements for a checkbox or radio button with a certain
  * `value` attribute, and returns the first such element. Returns null if not found.
  *
- * @memberof Morebits.quickForm
+ * @memberof Morebits.QuickForm
  * @param {HTMLInputElement[]} elementArray - Array of checkbox or radio elements.
  * @param {string} value - Value to search for.
  * @return {HTMLInputElement}
  */
-Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(elementArray, value) {
+Morebits.QuickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(elementArray, value) {
 	const found = $.grep(elementArray, (el) => el.value === value);
 	if (found.length > 0) {
 		return found[0];
@@ -1054,11 +1054,11 @@ Morebits.quickForm.getCheckboxOrRadio = function QuickFormGetCheckboxOrRadio(ele
  * Returns the &lt;div> containing the form element, or the form element itself
  * May not work as expected on checkboxes or radios.
  *
- * @memberof Morebits.quickForm
+ * @memberof Morebits.QuickForm
  * @param {HTMLElement} element
  * @return {HTMLElement}
  */
-Morebits.quickForm.getElementContainer = function QuickFormGetElementContainer(element) {
+Morebits.QuickForm.getElementContainer = function QuickFormGetElementContainer(element) {
 	// for divs, headings and fieldsets, the container is the element itself
 	if (element instanceof HTMLFieldSetElement || element instanceof HTMLDivElement ||
 			element instanceof HTMLHeadingElement) {
@@ -1073,11 +1073,11 @@ Morebits.quickForm.getElementContainer = function QuickFormGetElementContainer(e
  * Gets the HTML element that contains the label of the given form element
  * (mainly for internal use).
  *
- * @memberof Morebits.quickForm
- * @param {(HTMLElement|Morebits.quickForm.element)} element
+ * @memberof Morebits.QuickForm
+ * @param {(HTMLElement|Morebits.QuickForm.Element)} element
  * @return {HTMLElement}
  */
-Morebits.quickForm.getElementLabelObject = function QuickFormGetElementLabelObject(element) {
+Morebits.QuickForm.getElementLabelObject = function QuickFormGetElementLabelObject(element) {
 	// for buttons, divs and headers, the label is on the element itself
 	if (element.type === 'button' || element.type === 'submit' ||
 			element instanceof HTMLDivElement || element instanceof HTMLHeadingElement) {
@@ -1096,12 +1096,12 @@ Morebits.quickForm.getElementLabelObject = function QuickFormGetElementLabelObje
 /**
  * Gets the label text of the element.
  *
- * @memberof Morebits.quickForm
- * @param {(HTMLElement|Morebits.quickForm.element)} element
+ * @memberof Morebits.QuickForm
+ * @param {(HTMLElement|Morebits.QuickForm.Element)} element
  * @return {string}
  */
-Morebits.quickForm.getElementLabel = function QuickFormGetElementLabel(element) {
-	const labelElement = Morebits.quickForm.getElementLabelObject(element);
+Morebits.QuickForm.getElementLabel = function QuickFormGetElementLabel(element) {
+	const labelElement = Morebits.QuickForm.getElementLabelObject(element);
 
 	if (!labelElement) {
 		return null;
@@ -1112,13 +1112,13 @@ Morebits.quickForm.getElementLabel = function QuickFormGetElementLabel(element) 
 /**
  * Sets the label of the element to the given text.
  *
- * @memberof Morebits.quickForm
- * @param {(HTMLElement|Morebits.quickForm.element)} element
+ * @memberof Morebits.QuickForm
+ * @param {(HTMLElement|Morebits.QuickForm.Element)} element
  * @param {string} labelText
  * @return {boolean} True if succeeded, false if the label element is unavailable.
  */
-Morebits.quickForm.setElementLabel = function QuickFormSetElementLabel(element, labelText) {
-	const labelElement = Morebits.quickForm.getElementLabelObject(element);
+Morebits.QuickForm.setElementLabel = function QuickFormSetElementLabel(element, labelText) {
+	const labelElement = Morebits.QuickForm.getElementLabelObject(element);
 
 	if (!labelElement) {
 		return false;
@@ -1130,28 +1130,28 @@ Morebits.quickForm.setElementLabel = function QuickFormSetElementLabel(element, 
 /**
  * Stores the element's current label, and temporarily sets the label to the given text.
  *
- * @memberof Morebits.quickForm
- * @param {(HTMLElement|Morebits.quickForm.element)} element
+ * @memberof Morebits.QuickForm
+ * @param {(HTMLElement|Morebits.QuickForm.Element)} element
  * @param {string} temporaryLabelText
  * @return {boolean} `true` if succeeded, `false` if the label element is unavailable.
  */
-Morebits.quickForm.overrideElementLabel = function QuickFormOverrideElementLabel(element, temporaryLabelText) {
+Morebits.QuickForm.overrideElementLabel = function QuickFormOverrideElementLabel(element, temporaryLabelText) {
 	if (!element.hasAttribute('data-oldlabel')) {
-		element.setAttribute('data-oldlabel', Morebits.quickForm.getElementLabel(element));
+		element.setAttribute('data-oldlabel', Morebits.QuickForm.getElementLabel(element));
 	}
-	return Morebits.quickForm.setElementLabel(element, temporaryLabelText);
+	return Morebits.QuickForm.setElementLabel(element, temporaryLabelText);
 };
 
 /**
  * Restores the label stored by overrideElementLabel.
  *
- * @memberof Morebits.quickForm
- * @param {(HTMLElement|Morebits.quickForm.element)} element
+ * @memberof Morebits.QuickForm
+ * @param {(HTMLElement|Morebits.QuickForm.Element)} element
  * @return {boolean} True if succeeded, false if the label element is unavailable.
  */
-Morebits.quickForm.resetElementLabel = function QuickFormResetElementLabel(element) {
+Morebits.QuickForm.resetElementLabel = function QuickFormResetElementLabel(element) {
 	if (element.hasAttribute('data-oldlabel')) {
-		return Morebits.quickForm.setElementLabel(element, element.getAttribute('data-oldlabel'));
+		return Morebits.QuickForm.setElementLabel(element, element.getAttribute('data-oldlabel'));
 	}
 	return null;
 };
@@ -1159,23 +1159,23 @@ Morebits.quickForm.resetElementLabel = function QuickFormResetElementLabel(eleme
 /**
  * Shows or hides a form element plus its label and tooltip.
  *
- * @memberof Morebits.quickForm
+ * @memberof Morebits.QuickForm
  * @param {(HTMLElement|jQuery|string)} element - HTML/jQuery element, or jQuery selector string.
  * @param {boolean} [visibility] - Skip this to toggle visibility.
  */
-Morebits.quickForm.setElementVisibility = function QuickFormSetElementVisibility(element, visibility) {
+Morebits.QuickForm.setElementVisibility = function QuickFormSetElementVisibility(element, visibility) {
 	$(element).toggle(visibility);
 };
 
 /**
  * Shows or hides the question mark icon (which displays the tooltip) next to a form element.
  *
- * @memberof Morebits.quickForm
+ * @memberof Morebits.QuickForm
  * @param {(HTMLElement|jQuery)} element
  * @param {boolean} [visibility] - Skip this to toggle visibility.
  */
-Morebits.quickForm.setElementTooltipVisibility = function QuickFormSetElementTooltipVisibility(element, visibility) {
-	$(Morebits.quickForm.getElementContainer(element)).find('.morebits-tooltipButton').toggle(visibility);
+Morebits.QuickForm.setElementTooltipVisibility = function QuickFormSetElementTooltipVisibility(element, visibility) {
+	$(Morebits.QuickForm.getElementContainer(element)).find('.morebits-tooltipButton').toggle(visibility);
 };
 
 /**
@@ -1501,7 +1501,7 @@ Morebits.string = {
 	 */
 	formatReasonText: function(str, addSig) {
 		let reason = (str || '').toString().trim();
-		const unbinder = new Morebits.unbinder(reason);
+		const unbinder = new Morebits.Unbinder(reason);
 		// eslint-disable-next-line no-useless-concat
 		unbinder.unbind('<no' + 'wiki>', '</no' + 'wiki>');
 		unbinder.content = unbinder.content.replace(/\|/g, '{{subst:!}}');
@@ -1720,17 +1720,17 @@ Morebits.select2 = {
 
 /**
  * Temporarily hide a part of a string while processing the rest of it.
- * Used by {@link Morebits.wikitext.page#commentOutImage|Morebits.wikitext.page.commentOutImage}.
+ * Used by {@link Morebits.wikitext.Page#commentOutImage|Morebits.wikitext.Page.commentOutImage}.
  *
  * @memberof Morebits
  * @class
  * @param {string} string - The initial text to process.
- * @example var u = new Morebits.unbinder('Hello world <!-- world --> world');
+ * @example var u = new Morebits.Unbinder('Hello world <!-- world --> world');
  * u.unbind('<!--', '-->'); // text inside comment remains intact
  * u.content = u.content.replace(/world/g, 'earth');
  * u.rebind(); // gives 'Hello earth <!-- world --> earth'
  */
-Morebits.unbinder = function Unbinder(string) {
+Morebits.Unbinder = function Unbinder(string) {
 	if (typeof string !== 'string') {
 		throw new Error('not a string');
 	}
@@ -1742,7 +1742,7 @@ Morebits.unbinder = function Unbinder(string) {
 	this.postfix = '::UNIQ%';
 };
 
-Morebits.unbinder.prototype = {
+Morebits.Unbinder.prototype = {
 	/**
 	 * Hide the region encapsulated by the `prefix` and `postfix` from
 	 * string processing.  `prefix` and `postfix` will be used in a
@@ -1757,7 +1757,7 @@ Morebits.unbinder.prototype = {
 			throw new Error('Both prefix and postfix must be provided');
 		}
 		const re = new RegExp(prefix + '([\\s\\S]*?)' + postfix, 'g');
-		this.content = this.content.replace(re, Morebits.unbinder.getCallback(this));
+		this.content = this.content.replace(re, Morebits.Unbinder.getCallback(this));
 	},
 
 	/**
@@ -1781,8 +1781,8 @@ Morebits.unbinder.prototype = {
 	counter: null, // 0++
 	history: null // {}
 };
-/** @memberof Morebits.unbinder */
-Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
+/** @memberof Morebits.Unbinder */
+Morebits.Unbinder.getCallback = function UnbinderGetCallback(self) {
 	return function UnbinderCallback(match) {
 		const current = self.prefix + self.counter + self.postfix;
 		self.history[current] = match;
@@ -1791,7 +1791,7 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
 	};
 };
 
-/* **************** Morebits.date **************** */
+/* **************** Morebits.Date **************** */
 /**
  * Create a date object with enhanced processing capabilities, a la
  * {@link https://momentjs.com/|moment.js}. MediaWiki timestamp format is also
@@ -1800,7 +1800,7 @@ Morebits.unbinder.getCallback = function UnbinderGetCallback(self) {
  * @memberof Morebits
  * @class
  */
-Morebits.date = function() {
+Morebits.Date = function() {
 	const args = Array.prototype.slice.call(arguments);
 
 	// Check MediaWiki formats
@@ -1832,14 +1832,14 @@ Morebits.date = function() {
 
 	// Still no?
 	if (!this.isValid()) {
-		mw.log.warn('Invalid Morebits.date initialisation:', args);
+		mw.log.warn('Invalid Morebits.Date initialisation:', args);
 	}
 };
 
 /**
  * Localized strings for date processing.
  *
- * @memberof Morebits.date
+ * @memberof Morebits.Date
  * @type {object.<string, string>}
  * @property {string[]} months
  * @property {string[]} monthsShort
@@ -1848,7 +1848,7 @@ Morebits.date = function() {
  * @property {object.<string, string>} relativeTimes
  * @private
  */
-Morebits.date.localeData = {
+Morebits.Date.localeData = {
 	// message names here correspond to MediaWiki message names
 	months: [msg('january', 'January'), msg('february', 'February'), msg('march', 'March'),
 		msg('april', 'April'), msg('may_long', 'May'), msg('june', 'June'),
@@ -1879,7 +1879,7 @@ Morebits.date.localeData = {
  * Map units with getter/setter function names, for `add` and `subtract`
  * methods.
  *
- * @memberof Morebits.date
+ * @memberof Morebits.Date
  * @type {object.<string, string>}
  * @property {string} seconds
  * @property {string} minutes
@@ -1889,7 +1889,7 @@ Morebits.date.localeData = {
  * @property {string} months
  * @property {string} years
  */
-Morebits.date.unitMap = {
+Morebits.Date.unitMap = {
 	seconds: 'Seconds',
 	minutes: 'Minutes',
 	hours: 'Hours',
@@ -1899,21 +1899,21 @@ Morebits.date.unitMap = {
 	years: 'FullYear'
 };
 
-Morebits.date.prototype = {
+Morebits.Date.prototype = {
 	/** @return {boolean} */
 	isValid: function() {
 		return !isNaN(this.getTime());
 	},
 
 	/**
-	 * @param {(Date|Morebits.date)} date
+	 * @param {(Date|Morebits.Date)} date
 	 * @return {boolean}
 	 */
 	isBefore: function(date) {
 		return this.getTime() < date.getTime();
 	},
 	/**
-	 * @param {(Date|Morebits.date)} date
+	 * @param {(Date|Morebits.Date)} date
 	 * @return {boolean}
 	 */
 	isAfter: function(date) {
@@ -1922,35 +1922,35 @@ Morebits.date.prototype = {
 
 	/** @return {string} */
 	getUTCMonthName: function() {
-		return Morebits.date.localeData.months[this.getUTCMonth()];
+		return Morebits.Date.localeData.months[this.getUTCMonth()];
 	},
 	/** @return {string} */
 	getUTCMonthNameAbbrev: function() {
-		return Morebits.date.localeData.monthsShort[this.getUTCMonth()];
+		return Morebits.Date.localeData.monthsShort[this.getUTCMonth()];
 	},
 	/** @return {string} */
 	getMonthName: function() {
-		return Morebits.date.localeData.months[this.getMonth()];
+		return Morebits.Date.localeData.months[this.getMonth()];
 	},
 	/** @return {string} */
 	getMonthNameAbbrev: function() {
-		return Morebits.date.localeData.monthsShort[this.getMonth()];
+		return Morebits.Date.localeData.monthsShort[this.getMonth()];
 	},
 	/** @return {string} */
 	getUTCDayName: function() {
-		return Morebits.date.localeData.days[this.getUTCDay()];
+		return Morebits.Date.localeData.days[this.getUTCDay()];
 	},
 	/** @return {string} */
 	getUTCDayNameAbbrev: function() {
-		return Morebits.date.localeData.daysShort[this.getUTCDay()];
+		return Morebits.Date.localeData.daysShort[this.getUTCDay()];
 	},
 	/** @return {string} */
 	getDayName: function() {
-		return Morebits.date.localeData.days[this.getDay()];
+		return Morebits.Date.localeData.days[this.getDay()];
 	},
 	/** @return {string} */
 	getDayNameAbbrev: function() {
-		return Morebits.date.localeData.daysShort[this.getDay()];
+		return Morebits.Date.localeData.daysShort[this.getDay()];
 	},
 
 	/**
@@ -1960,7 +1960,7 @@ Morebits.date.prototype = {
 	 * @param {number} number - Should be an integer.
 	 * @param {string} unit
 	 * @throws {Error} If invalid or unsupported unit is given.
-	 * @return {Morebits.date}
+	 * @return {Morebits.Date}
 	 */
 	add: function(number, unit) {
 		let num = parseInt(number, 10); // normalize
@@ -1968,7 +1968,7 @@ Morebits.date.prototype = {
 			throw new Error('Invalid number "' + number + '" provided.');
 		}
 		unit = unit.toLowerCase(); // normalize
-		const unitMap = Morebits.date.unitMap;
+		const unitMap = Morebits.Date.unitMap;
 		let unitNorm = unitMap[unit] || unitMap[unit + 's']; // so that both singular and  plural forms work
 		if (unitNorm) {
 			// No built-in week functions, so rather than build out ISO's getWeek/setWeek, just multiply
@@ -1990,7 +1990,7 @@ Morebits.date.prototype = {
 	 * @param {number} number - Should be an integer.
 	 * @param {string} unit
 	 * @throws {Error} If invalid or unsupported unit is given.
-	 * @return {Morebits.date}
+	 * @return {Morebits.Date}
 	 */
 	subtract: function(number, unit) {
 		return this.add(-number, unit);
@@ -2039,10 +2039,10 @@ Morebits.date.prototype = {
 		let udate = this;
 		// create a new date object that will contain the date to display as system time
 		if (zone === 'utc') {
-			udate = new Morebits.date(this.getTime()).add(this.getTimezoneOffset(), 'minutes');
+			udate = new Morebits.Date(this.getTime()).add(this.getTimezoneOffset(), 'minutes');
 		} else if (typeof zone === 'number') {
 			// convert to utc, then add the utc offset given
-			udate = new Morebits.date(this.getTime()).add(this.getTimezoneOffset() + zone, 'minutes');
+			udate = new Morebits.Date(this.getTime()).add(this.getTimezoneOffset() + zone, 'minutes');
 		}
 
 		// default to ISOString
@@ -2068,7 +2068,7 @@ Morebits.date.prototype = {
 			YYYY: Y, YY: pad(Y % 100), Y: Y
 		};
 
-		const unbinder = new Morebits.unbinder(formatstr); // escape stuff between [...]
+		const unbinder = new Morebits.Unbinder(formatstr); // escape stuff between [...]
 		unbinder.unbind('\\[', '\\]');
 		unbinder.content = unbinder.content.replace(
 			/* Regex notes:
@@ -2096,17 +2096,17 @@ Morebits.date.prototype = {
 			new Date(this).setHours(0, 0, 0, 0)) / 8.64e7;
 		switch (true) {
 			case dateDiff === 0:
-				return this.format(Morebits.date.localeData.relativeTimes.thisDay, zone);
+				return this.format(Morebits.Date.localeData.relativeTimes.thisDay, zone);
 			case dateDiff === 1:
-				return this.format(Morebits.date.localeData.relativeTimes.prevDay, zone);
+				return this.format(Morebits.Date.localeData.relativeTimes.prevDay, zone);
 			case dateDiff > 0 && dateDiff < 7:
-				return this.format(Morebits.date.localeData.relativeTimes.pastWeek, zone);
+				return this.format(Morebits.Date.localeData.relativeTimes.pastWeek, zone);
 			case dateDiff === -1:
-				return this.format(Morebits.date.localeData.relativeTimes.nextDay, zone);
+				return this.format(Morebits.Date.localeData.relativeTimes.nextDay, zone);
 			case dateDiff < 0 && dateDiff > -7:
-				return this.format(Morebits.date.localeData.relativeTimes.thisWeek, zone);
+				return this.format(Morebits.Date.localeData.relativeTimes.thisWeek, zone);
 			default:
-				return this.format(Morebits.date.localeData.relativeTimes.other, zone);
+				return this.format(Morebits.Date.localeData.relativeTimes.other, zone);
 		}
 	},
 
@@ -2145,9 +2145,9 @@ Morebits.date.prototype = {
 
 };
 
-// Allow native Date.prototype methods to be used on Morebits.date objects
+// Allow native Date.prototype methods to be used on Morebits.Date objects
 Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
-	Morebits.date.prototype[func] = function() {
+	Morebits.Date.prototype[func] = function() {
 		return this.privateDate[func].apply(this.privateDate, Array.prototype.slice.call(arguments));
 	};
 });
@@ -2155,7 +2155,7 @@ Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
 /* **************** Morebits.wiki **************** */
 /**
  * Various objects for wiki editing and API access, including
- * {@link Morebits.wiki.api} and {@link Morebits.wiki.page}.
+ * {@link Morebits.wiki.Api} and {@link Morebits.wiki.Page}.
  *
  * @namespace Morebits.wiki
  * @memberof Morebits
@@ -2187,9 +2187,9 @@ Morebits.wiki.nbrOfCheckpointsLeft = 0;
 /**
  * Display message and/or redirect to page upon completion of tasks.
  *
- * Every call to Morebits.wiki.api.post() results in the dispatch of an
+ * Every call to Morebits.wiki.Api.post() results in the dispatch of an
  * asynchronous callback. Each callback can in turn make an additional call to
- * Morebits.wiki.api.post() to continue a processing sequence. At the
+ * Morebits.wiki.Api.post() to continue a processing sequence. At the
  * conclusion of the final callback of a processing sequence, it is not
  * possible to simply return to the original caller because there is no call
  * stack leading back to the original context. Instead,
@@ -2199,9 +2199,9 @@ Morebits.wiki.nbrOfCheckpointsLeft = 0;
  * The determination of when to call Morebits.wiki.actionCompleted.event() is
  * managed through the globals Morebits.wiki.numberOfActionsLeft and
  * Morebits.wiki.nbrOfCheckpointsLeft. Morebits.wiki.numberOfActionsLeft is
- * incremented at the start of every Morebits.wiki.api call and decremented
+ * incremented at the start of every Morebits.wiki.Api call and decremented
  * after the completion of a callback function. If a callback function does
- * not create a new Morebits.wiki.api object before exiting, it is the final
+ * not create a new Morebits.wiki.Api object before exiting, it is the final
  * step in the processing chain and Morebits.wiki.actionCompleted.event() will
  * then be called.
  *
@@ -2222,7 +2222,7 @@ Morebits.wiki.actionCompleted = function(self) {
 /** @memberof Morebits.wiki */
 Morebits.wiki.actionCompleted.event = function() {
 	if (Morebits.wiki.actionCompleted.notice) {
-		Morebits.status.actionCompleted(Morebits.wiki.actionCompleted.notice);
+		Morebits.Status.actionCompleted(Morebits.wiki.actionCompleted.notice);
 	}
 	if (Morebits.wiki.actionCompleted.redirect) {
 		// if it isn't a URL, make it one. TODO: This breaks on the articles 'http://', 'ftp://', and similar ones.
@@ -2257,7 +2257,7 @@ Morebits.wiki.removeCheckpoint = function() {
 	}
 };
 
-/* **************** Morebits.wiki.api **************** */
+/* **************** Morebits.wiki.Api **************** */
 /**
  * An easy way to talk to the MediaWiki API.  Accepts either json or xml
  * (default) formats; if json is selected, will default to `formatversion=2`
@@ -2266,7 +2266,7 @@ Morebits.wiki.removeCheckpoint = function() {
  * content language.
  *
  * In new code, the use of the last 3 parameters should be avoided, instead
- * use {@link Morebits.wiki.api#setStatusElement|setStatusElement()} to bind
+ * use {@link Morebits.wiki.Api#setStatusElement|setStatusElement()} to bind
  * the status element (if needed) and use `.then()` or `.catch()` on the
  * promise returned by `post()`, rather than specify the `onSuccess` or
  * `onFailure` callbacks.
@@ -2276,10 +2276,10 @@ Morebits.wiki.removeCheckpoint = function() {
  * @param {string} currentAction - The current action (required).
  * @param {Object} query - The query (required).
  * @param {Function} [onSuccess] - The function to call when request is successful.
- * @param {Morebits.status} [statusElement] - A Morebits.status object to use for status messages.
+ * @param {Morebits.Status} [statusElement] - A Morebits.Status object to use for status messages.
  * @param {Function} [onError] - The function to call if an error occurs.
  */
-Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onError) {
+Morebits.wiki.Api = function(currentAction, query, onSuccess, statusElement, onError) {
 	this.currentAction = currentAction;
 	this.query = query;
 	this.query.assert = 'user';
@@ -2298,7 +2298,7 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 	if (statusElement) {
 		this.setStatusElement(statusElement);
 	} else {
-		this.statelem = new Morebits.status(currentAction);
+		this.statelem = new Morebits.Status(currentAction);
 	}
 	// JSON is used throughout Morebits/Twinkle, but xml remains the default for backwards compatibility
 	if (!query.format) {
@@ -2315,7 +2315,7 @@ Morebits.wiki.api = function(currentAction, query, onSuccess, statusElement, onE
 	}
 };
 
-Morebits.wiki.api.prototype = {
+Morebits.wiki.Api.prototype = {
 	currentAction: '',
 	onSuccess: null,
 	onError: null,
@@ -2338,7 +2338,7 @@ Morebits.wiki.api.prototype = {
 		this.parent = parent;
 	},
 
-	/** @param {Morebits.status} statusElement */
+	/** @param {Morebits.Status} statusElement */
 	setStatusElement: function(statusElement) {
 		this.statelem = statusElement;
 		this.statelem.status(this.currentAction);
@@ -2430,7 +2430,7 @@ Morebits.wiki.api.prototype = {
 			this.badtokenRetry = true;
 			// Get a new CSRF token and retry. If the original action needs a different
 			// type of action than CSRF, we do one pointless retry before bailing out
-			return Morebits.wiki.api.getToken().then((token) => {
+			return Morebits.wiki.Api.getToken().then((token) => {
 				this.query.token = token;
 				return this.post(callerAjaxParameters);
 			});
@@ -2484,7 +2484,7 @@ Morebits.wiki.getCachedJson = function(title) {
 		smaxage: '86400', // cache for 1 day
 		maxage: '86400' // cache for 1 day
 	};
-	return new Morebits.wiki.api('', query).post().then((apiobj) => {
+	return new Morebits.wiki.Api('', query).post().then((apiobj) => {
 		apiobj.getStatusElement().unlink();
 		const response = apiobj.getResponse();
 		const wikitext = response.query.pages[0].revisions[0].slots.main.content;
@@ -2495,29 +2495,29 @@ Morebits.wiki.getCachedJson = function(title) {
 var morebitsWikiApiUserAgent = 'morebits.js ([[w:WT:TW]])';
 /**
  * Set the custom user agent header, which is used for server-side logging.
- * Note that doing so will set the useragent for every `Morebits.wiki.api`
+ * Note that doing so will set the useragent for every `Morebits.wiki.Api`
  * process performed thereafter.
  *
  * @see {@link https://lists.wikimedia.org/pipermail/mediawiki-api-announce/2014-November/000075.html}
  * for original announcement.
  *
- * @memberof Morebits.wiki.api
+ * @memberof Morebits.wiki.Api
  * @param {string} [ua=morebits.js ([[w:WT:TW]])] - User agent.  The default
  * value of `morebits.js ([[w:WT:TW]])` will be appended to any provided
  * value.
  */
-Morebits.wiki.api.setApiUserAgent = function(ua) {
+Morebits.wiki.Api.setApiUserAgent = function(ua) {
 	morebitsWikiApiUserAgent = (ua ? ua + ' ' : '') + 'morebits.js ([[w:WT:TW]])';
 };
 
 /**
  * Get a new CSRF token on encountering token errors.
  *
- * @memberof Morebits.wiki.api
+ * @memberof Morebits.wiki.Api
  * @return {string} MediaWiki CSRF token.
  */
-Morebits.wiki.api.getToken = function() {
-	const tokenApi = new Morebits.wiki.api(msg('getting-token', 'Getting token'), {
+Morebits.wiki.Api.getToken = function() {
+	const tokenApi = new Morebits.wiki.Api(msg('getting-token', 'Getting token'), {
 		action: 'query',
 		meta: 'tokens',
 		type: 'csrf',
@@ -2526,7 +2526,7 @@ Morebits.wiki.api.getToken = function() {
 	return tokenApi.post().then((apiobj) => apiobj.response.query.tokens.csrftoken);
 };
 
-/* **************** Morebits.wiki.page **************** */
+/* **************** Morebits.wiki.Page **************** */
 /**
  * Use the MediaWiki API to load a page and optionally edit it, move it, etc.
  *
@@ -2534,11 +2534,11 @@ Morebits.wiki.api.getToken = function() {
  * All property access is through the appropriate get___() or set___() method.
  *
  * Callers should set {@link Morebits.wiki.actionCompleted.notice} and {@link Morebits.wiki.actionCompleted.redirect}
- * before the first call to {@link Morebits.wiki.page.load()}.
+ * before the first call to {@link Morebits.wiki.Page.load()}.
  *
  * Each of the callback functions takes one parameter, which is a
- * reference to the Morebits.wiki.page object that registered the callback.
- * Callback functions may invoke any Morebits.wiki.page prototype method using this reference.
+ * reference to the Morebits.wiki.Page object that registered the callback.
+ * Callback functions may invoke any Morebits.wiki.Page prototype method using this reference.
  *
  *
  * Call sequence for common operations (optional final user callbacks not shown):
@@ -2562,7 +2562,7 @@ Morebits.wiki.api.getToken = function() {
  * ctx.loadApi.post.success() -> ctx.fnSaveSuccess()`
  *
  * Notes:
- * 1. All functions following Morebits.wiki.api.post() are invoked asynchronously from the jQuery AJAX library.
+ * 1. All functions following Morebits.wiki.Api.post() are invoked asynchronously from the jQuery AJAX library.
  * 2. The sequence for append/prepend/newSection could be slightly shortened,
  * but it would require significant duplication of code for little benefit.
  *
@@ -2570,10 +2570,10 @@ Morebits.wiki.api.getToken = function() {
  * @class
  * @param {string} pageName - The name of the page, prefixed by the namespace (if any).
  * For the current page, use `mw.config.get('wgPageName')`.
- * @param {string|Morebits.status} [status] - A string describing the action about to be undertaken,
- * or a Morebits.status object
+ * @param {string|Morebits.Status} [status] - A string describing the action about to be undertaken,
+ * or a Morebits.Status object
  */
-Morebits.wiki.page = function(pageName, status) {
+Morebits.wiki.Page = function(pageName, status) {
 
 	if (!status) {
 		status = msg('opening-page', pageName, 'Opening page "' + pageName + '"');
@@ -2595,7 +2595,7 @@ Morebits.wiki.page = function(pageName, status) {
 		changeTags: null,
 		testActions: null, // array if any valid actions
 		callbackParameters: null,
-		statusElement: status instanceof Morebits.status ? status : new Morebits.status(status),
+		statusElement: status instanceof Morebits.Status ? status : new Morebits.Status(status),
 
 		// - edit
 		pageText: null,
@@ -2749,7 +2749,7 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.loadQuery.inprop += '|protection';
 		}
 
-		ctx.loadApi = new Morebits.wiki.api(msg('retrieving-page', 'Retrieving page...'), ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
+		ctx.loadApi = new Morebits.wiki.Api(msg('retrieving-page', 'Retrieving page...'), ctx.loadQuery, fnLoadSuccess, ctx.statusElement, ctx.onLoadFailure);
 		ctx.loadApi.setParent(this);
 		ctx.loadApi.post();
 	};
@@ -2801,7 +2801,7 @@ Morebits.wiki.page = function(pageName, status) {
 					) :
 					msg('protected-edit-warning', ctx.pageName, ctx.fullyProtected,
 						'You are about to make an edit to the fully protected page "' + ctx.pageName +
-					'" (protection expiring ' + new Morebits.date(ctx.fullyProtected).calendar('utc') + ' (UTC)).  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.'
+					'" (protection expiring ' + new Morebits.Date(ctx.fullyProtected).calendar('utc') + ' (UTC)).  \n\nClick OK to proceed with the edit, or Cancel to skip this edit.'
 					)
 			)
 		) {
@@ -2896,7 +2896,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.redirect = true;
 		}
 
-		ctx.saveApi = new Morebits.wiki.api(msg('saving-page', 'Saving page...'), query, fnSaveSuccess, ctx.statusElement, fnSaveError);
+		ctx.saveApi = new Morebits.wiki.Api(msg('saving-page', 'Saving page...'), query, fnSaveSuccess, ctx.statusElement, fnSaveError);
 		ctx.saveApi.setParent(this);
 		ctx.saveApi.post();
 	};
@@ -3080,7 +3080,7 @@ Morebits.wiki.page = function(pageName, status) {
 	/**
 	 * Set whether and how to watch the page, including setting an expiry.
 	 *
-	 * @param {boolean|string|Morebits.date|Date} [watchlistOption=false] -
+	 * @param {boolean|string|Morebits.Date|Date} [watchlistOption=false] -
 	 * Basically a mix of MW API and Twinkley options available pre-expiry:
 	 * - `true`|`'yes'`|`'watch'`: page will be added to the user's
 	 * watchlist when the action is called. Defaults to an indefinite
@@ -3091,10 +3091,10 @@ Morebits.wiki.page = function(pageName, status) {
 	 * called. Defaults to an indefinite watch unless `watchlistExpiry` is
 	 * provided.
 	 * - `'unwatch'`: explicitly unwatch the page.
-	 * - Any other `string` or `number`, or a `Morebits.date` or `Date`
+	 * - Any other `string` or `number`, or a `Morebits.Date` or `Date`
 	 * object: watch page until the specified time, deferring to
 	 * `watchlistExpiry` if provided.
-	 * @param {string|number|Morebits.date|Date} [watchlistExpiry=infinity] -
+	 * @param {string|number|Morebits.Date|Date} [watchlistExpiry=infinity] -
 	 * A date-like string or number, or a date object.  If a string or number,
 	 * can be relative (2 weeks) or other similarly date-like (i.e. NOT "potato"):
 	 * ISO 8601: 2038-01-09T03:14:07Z
@@ -3105,12 +3105,12 @@ Morebits.wiki.page = function(pageName, status) {
 	 * See {@link https://phabricator.wikimedia.org/source/mediawiki-libs-Timestamp/browse/master/src/ConvertibleTimestamp.php;4e53b859a9580c55958078f46dd4f3a44d0fcaa0$57-109?as=source&blame=off}
 	 */
 	this.setWatchlist = function(watchlistOption, watchlistExpiry) {
-		if (watchlistOption instanceof Morebits.date || watchlistOption instanceof Date) {
+		if (watchlistOption instanceof Morebits.Date || watchlistOption instanceof Date) {
 			watchlistOption = watchlistOption.toISOString();
 		}
 		if (typeof watchlistExpiry === 'undefined') {
 			watchlistExpiry = 'infinity';
-		} else if (watchlistExpiry instanceof Morebits.date || watchlistExpiry instanceof Date) {
+		} else if (watchlistExpiry instanceof Morebits.Date || watchlistExpiry instanceof Date) {
 			watchlistExpiry = watchlistExpiry.toISOString();
 		}
 
@@ -3153,7 +3153,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * itself, so this is here largely for completeness and compatibility
 	 * with the full suite of options.
 	 *
-	 * @param {string|number|Morebits.date|Date} [watchlistExpiry=infinity] -
+	 * @param {string|number|Morebits.Date|Date} [watchlistExpiry=infinity] -
 	 * A date-like string or number, or a date object.  If a string or number,
 	 * can be relative (2 weeks) or other similarly date-like (i.e. NOT "potato"):
 	 * ISO 8601: 2038-01-09T03:14:07Z
@@ -3166,7 +3166,7 @@ Morebits.wiki.page = function(pageName, status) {
 	this.setWatchlistExpiry = function(watchlistExpiry) {
 		if (typeof watchlistExpiry === 'undefined') {
 			watchlistExpiry = 'infinity';
-		} else if (watchlistExpiry instanceof Morebits.date || watchlistExpiry instanceof Date) {
+		} else if (watchlistExpiry instanceof Morebits.Date || watchlistExpiry instanceof Date) {
 			watchlistExpiry = watchlistExpiry.toISOString();
 		}
 		ctx.watchlistExpiry = watchlistExpiry;
@@ -3190,7 +3190,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * accept a string value of `default`.
 	 */
 	this.setWatchlistFromPreferences = function(watchlistOption) {
-		console.warn('NOTE: Morebits.wiki.page.setWatchlistFromPreferences was deprecated December 2020, please use setWatchlist'); // eslint-disable-line no-console
+		console.warn('NOTE: Morebits.wiki.Page.setWatchlistFromPreferences was deprecated December 2020, please use setWatchlist'); // eslint-disable-line no-console
 		if (watchlistOption) {
 			ctx.watchlistOption = 'preferences';
 		} else {
@@ -3341,14 +3341,14 @@ Morebits.wiki.page = function(pageName, status) {
 	};
 
 	/**
-	 * @param {Morebits.status} statusElement
+	 * @param {Morebits.Status} statusElement
 	 */
 	this.setStatusElement = function(statusElement) {
 		ctx.statusElement = statusElement;
 	};
 
 	/**
-	 * @return {Morebits.status} Status element created by the constructor.
+	 * @return {Morebits.Status} Status element created by the constructor.
 	 */
 	this.getStatusElement = function() {
 		return ctx.statusElement;
@@ -3468,7 +3468,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.redirects = ''; // follow all redirects
 		}
 
-		ctx.lookupCreationApi = new Morebits.wiki.api(msg('getting-creator', 'Retrieving page creation information'), query, fnLookupCreationSuccess, ctx.statusElement, ctx.onLookupCreationFailure);
+		ctx.lookupCreationApi = new Morebits.wiki.Api(msg('getting-creator', 'Retrieving page creation information'), query, fnLookupCreationSuccess, ctx.statusElement, ctx.onLookupCreationFailure);
 		ctx.lookupCreationApi.setParent(this);
 		ctx.lookupCreationApi.post();
 	};
@@ -3518,7 +3518,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			const query = fnNeedTokenInfoQuery('move');
 
-			ctx.moveApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
+			ctx.moveApi = new Morebits.wiki.Api(msg('getting-token', 'retrieving token...'), query, fnProcessMove, ctx.statusElement, ctx.onMoveFailure);
 			ctx.moveApi.setParent(this);
 			ctx.moveApi.post();
 		}
@@ -3529,7 +3529,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 *
 	 * Patrolling as such doesn't need to rely on loading the page in
 	 * question; simply passing a revid to the API is sufficient, so in
-	 * those cases just using {@link Morebits.wiki.api} is probably preferable.
+	 * those cases just using {@link Morebits.wiki.Api} is probably preferable.
 	 *
 	 * No error handling since we don't actually care about the errors.
 	 */
@@ -3557,7 +3557,7 @@ Morebits.wiki.page = function(pageName, status) {
 				format: 'json'
 			};
 
-			ctx.patrolApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), patrolQuery, fnProcessPatrol);
+			ctx.patrolApi = new Morebits.wiki.Api(msg('getting-token', 'retrieving token...'), patrolQuery, fnProcessPatrol);
 			ctx.patrolApi.setParent(this);
 			ctx.patrolApi.post();
 		}
@@ -3571,10 +3571,10 @@ Morebits.wiki.page = function(pageName, status) {
 	 *
 	 * Doesn't inherently rely on loading the page in question; simply
 	 * passing a `pageid` to the API is sufficient, so in those cases just
-	 * using {@link Morebits.wiki.api} is probably preferable.
+	 * using {@link Morebits.wiki.Api} is probably preferable.
 	 *
 	 * Will first check if the page is queued via
-	 * {@link Morebits.wiki.page~fnProcessTriageList|fnProcessTriageList}.
+	 * {@link Morebits.wiki.Page~fnProcessTriageList|fnProcessTriageList}.
 	 *
 	 * No error handling since we don't actually care about the errors.
 	 *
@@ -3596,7 +3596,7 @@ Morebits.wiki.page = function(pageName, status) {
 			} else {
 				const query = fnNeedTokenInfoQuery('triage');
 
-				ctx.triageApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessTriageList);
+				ctx.triageApi = new Morebits.wiki.Api(msg('getting-token', 'retrieving token...'), query, fnProcessTriageList);
 				ctx.triageApi.setParent(this);
 				ctx.triageApi.post();
 			}
@@ -3623,7 +3623,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			const query = fnNeedTokenInfoQuery('delete');
 
-			ctx.deleteApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
+			ctx.deleteApi = new Morebits.wiki.Api(msg('getting-token', 'retrieving token...'), query, fnProcessDelete, ctx.statusElement, ctx.onDeleteFailure);
 			ctx.deleteApi.setParent(this);
 			ctx.deleteApi.post();
 		}
@@ -3648,7 +3648,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			const query = fnNeedTokenInfoQuery('undelete');
 
-			ctx.undeleteApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
+			ctx.undeleteApi = new Morebits.wiki.Api(msg('getting-token', 'retrieving token...'), query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
 			ctx.undeleteApi.setParent(this);
 			ctx.undeleteApi.post();
 		}
@@ -3679,7 +3679,7 @@ Morebits.wiki.page = function(pageName, status) {
 		// protection levels from the server
 		const query = fnNeedTokenInfoQuery('protect');
 
-		ctx.protectApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectApi = new Morebits.wiki.Api(msg('getting-token', 'retrieving token...'), query, fnProcessProtect, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectApi.setParent(this);
 		ctx.protectApi.post();
 	};
@@ -3714,7 +3714,7 @@ Morebits.wiki.page = function(pageName, status) {
 		} else {
 			const query = fnNeedTokenInfoQuery('stabilize');
 
-			ctx.stabilizeApi = new Morebits.wiki.api(msg('getting-token', 'retrieving token...'), query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
+			ctx.stabilizeApi = new Morebits.wiki.Api(msg('getting-token', 'retrieving token...'), query, fnProcessStabilize, ctx.statusElement, ctx.onStabilizeFailure);
 			ctx.stabilizeApi.setParent(this);
 			ctx.stabilizeApi.post();
 		}
@@ -3776,14 +3776,14 @@ Morebits.wiki.page = function(pageName, status) {
 
 	/**
 	 * When functions can't use
-	 * {@link Morebits.wiki.page~fnCanUseMwUserToken|fnCanUseMwUserToken}
+	 * {@link Morebits.wiki.Page~fnCanUseMwUserToken|fnCanUseMwUserToken}
 	 * or require checking protection or watched status, maintain the query
-	 * in one place. Used for {@link Morebits.wiki.page#deletePage|delete},
-	 * {@link Morebits.wiki.page#undeletePage|undelete},
-	 * {@link Morebits.wiki.page#protect|protect},
-	 * {@link Morebits.wiki.page#stabilize|stabilize},
-	 * and {@link Morebits.wiki.page#move|move}
-	 * (basically, just not {@link Morebits.wiki.page#load|load}).
+	 * in one place. Used for {@link Morebits.wiki.Page#deletePage|delete},
+	 * {@link Morebits.wiki.Page#undeletePage|undelete},
+	 * {@link Morebits.wiki.Page#protect|protect},
+	 * {@link Morebits.wiki.Page#stabilize|stabilize},
+	 * and {@link Morebits.wiki.Page#move|move}
+	 * (basically, just not {@link Morebits.wiki.Page#load|load}).
 	 *
 	 * @param {string} action - The action being undertaken, e.g. "edit" or
 	 * "delete".
@@ -3927,7 +3927,7 @@ Morebits.wiki.page = function(pageName, status) {
 				}
 
 				// only notify user for redirects, not normalization
-				new Morebits.status('Note', msg('redirected', ctx.pageName, resolvedName, 'Redirected from ' + ctx.pageName + ' to ' + resolvedName));
+				new Morebits.Status('Note', msg('redirected', ctx.pageName, resolvedName, 'Redirected from ' + ctx.pageName + ' to ' + resolvedName));
 			}
 
 			ctx.pageName = resolvedName; // update to redirect target or normalized name
@@ -3948,7 +3948,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * Determine whether we should provide a watchlist expiry.  Will not
 	 * do so if the page is currently permanently watched, or the current
 	 * expiry is *after* the new, provided expiry.  Only handles strings
-	 * recognized by {@link Morebits.date} or relative timeframes with
+	 * recognized by {@link Morebits.Date} or relative timeframes with
 	 * unit it can process.  Relies on the fact that fnCanUseMwUserToken
 	 * requires page loading if a watchlistexpiry is provided, so we are
 	 * ensured of knowing the watch status by the use of this.
@@ -3965,19 +3965,19 @@ Morebits.wiki.page = function(pageName, status) {
 				// relative (e.g. `1 month`) or absolute datetime
 				const rel = ctx.watchlistExpiry.split(' ');
 				try {
-					newExpiry = new Morebits.date().add(rel[0], rel[1]);
+					newExpiry = new Morebits.Date().add(rel[0], rel[1]);
 				} catch (e) {
-					newExpiry = new Morebits.date(ctx.watchlistExpiry);
+					newExpiry = new Morebits.Date(ctx.watchlistExpiry);
 				}
 
 				// If the date is valid, only use it if it extends the current expiry
 				if (newExpiry.isValid()) {
-					if (newExpiry.isAfter(new Morebits.date(ctx.watched))) {
+					if (newExpiry.isAfter(new Morebits.Date(ctx.watched))) {
 						return true;
 					}
 				} else {
 					// If it's still not valid, hope it's a valid MW expiry format that
-					// Morebits.date doesn't recognize, so just default to using it.
+					// Morebits.Date doesn't recognize, so just default to using it.
 					// This will also include minor typos.
 					return true;
 				}
@@ -4033,7 +4033,7 @@ Morebits.wiki.page = function(pageName, status) {
 				titles: ctx.pageName // redirects are already resolved
 			};
 
-			const purgeApi = new Morebits.wiki.api(msg('editconflict-purging', 'Edit conflict detected, purging server cache'), purgeQuery, (() => {
+			const purgeApi = new Morebits.wiki.Api(msg('editconflict-purging', 'Edit conflict detected, purging server cache'), purgeQuery, (() => {
 				--Morebits.wiki.numberOfActionsLeft; // allow for normal completion if retry succeeds
 
 				ctx.statusElement.info(msg('editconflict-retrying', 'Edit conflict detected, reapplying edit'));
@@ -4077,7 +4077,7 @@ Morebits.wiki.page = function(pageName, status) {
 				case 'abusefilter-warning':
 					ctx.statusElement.error([ 'A warning was returned by the edit filter: "', errorData.abusefilter.description, '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
 					// We should provide the user with a way to automatically retry the action if they so choose -
-					// I can't see how to do this without creating a UI dependency on Morebits.wiki.page though -- TTO
+					// I can't see how to do this without creating a UI dependency on Morebits.wiki.Page though -- TTO
 					break;
 
 				case 'spamblacklist':
@@ -4140,7 +4140,7 @@ Morebits.wiki.page = function(pageName, status) {
 			ctx.lookupCreationApi.query.rvlimit = 50; // modify previous query to fetch more revisions
 			ctx.lookupCreationApi.query.titles = ctx.pageName; // update pageName if redirect resolution took place in earlier query
 
-			ctx.lookupCreationApi = new Morebits.wiki.api('Retrieving page creation information', ctx.lookupCreationApi.query, fnLookupNonRedirectCreator, ctx.statusElement, ctx.onLookupCreationFailure);
+			ctx.lookupCreationApi = new Morebits.wiki.Api('Retrieving page creation information', ctx.lookupCreationApi.query, fnLookupNonRedirectCreator, ctx.statusElement, ctx.onLookupCreationFailure);
 			ctx.lookupCreationApi.setParent(this);
 			ctx.lookupCreationApi.post();
 		}
@@ -4239,7 +4239,7 @@ Morebits.wiki.page = function(pageName, status) {
 		}
 		if (editprot && !ctx.suppressProtectWarning &&
 			!confirm('You are about to ' + action + ' the fully protected page "' + ctx.pageName +
-			(editprot.expiry === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.date(editprot.expiry).calendar('utc') + ' (UTC))') +
+			(editprot.expiry === 'infinity' ? '" (protected indefinitely)' : '" (protection expiring ' + new Morebits.Date(editprot.expiry).calendar('utc') + ' (UTC))') +
 			'.  \n\nClick OK to proceed with ' + action + ', or Cancel to skip.')) {
 			ctx.statusElement.error('Aborted ' + action + ' on fully protected page.');
 			onFailure(this);
@@ -4299,7 +4299,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.noredirect = 'true';
 		}
 
-		ctx.moveProcessApi = new Morebits.wiki.api(msg('moving-page', 'moving page...'), query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
+		ctx.moveProcessApi = new Morebits.wiki.Api(msg('moving-page', 'moving page...'), query, ctx.onMoveSuccess, ctx.statusElement, ctx.onMoveFailure);
 		ctx.moveProcessApi.setParent(this);
 		ctx.moveProcessApi.post();
 	};
@@ -4338,9 +4338,9 @@ Morebits.wiki.page = function(pageName, status) {
 			query.tags = ctx.changeTags;
 		}
 
-		const patrolStat = new Morebits.status('Marking page as patrolled');
+		const patrolStat = new Morebits.Status('Marking page as patrolled');
 
-		ctx.patrolProcessApi = new Morebits.wiki.api('patrolling page...', query, null, patrolStat);
+		ctx.patrolProcessApi = new Morebits.wiki.Api('patrolling page...', query, null, patrolStat);
 		ctx.patrolProcessApi.setParent(this);
 		ctx.patrolProcessApi.post();
 	};
@@ -4369,7 +4369,7 @@ Morebits.wiki.page = function(pageName, status) {
 			format: 'json'
 		};
 
-		ctx.triageProcessListApi = new Morebits.wiki.api('checking curation status...', query, fnProcessTriage);
+		ctx.triageProcessListApi = new Morebits.wiki.Api('checking curation status...', query, fnProcessTriage);
 		ctx.triageProcessListApi.setParent(this);
 		ctx.triageProcessListApi.post();
 	};
@@ -4394,8 +4394,8 @@ Morebits.wiki.page = function(pageName, status) {
 				token: ctx.csrfToken,
 				format: 'json'
 			};
-			const triageStat = new Morebits.status('Marking page as curated');
-			ctx.triageProcessApi = new Morebits.wiki.api('curating page...', query, null, triageStat);
+			const triageStat = new Morebits.Status('Marking page as curated');
+			ctx.triageProcessApi = new Morebits.wiki.Api('curating page...', query, null, triageStat);
 			ctx.triageProcessApi.setParent(this);
 			ctx.triageProcessApi.post();
 		}
@@ -4439,7 +4439,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
-		ctx.deleteProcessApi = new Morebits.wiki.api('deleting page...', query, ctx.onDeleteSuccess, ctx.statusElement, fnProcessDeleteError);
+		ctx.deleteProcessApi = new Morebits.wiki.Api('deleting page...', query, ctx.onDeleteSuccess, ctx.statusElement, fnProcessDeleteError);
 		ctx.deleteProcessApi.setParent(this);
 		ctx.deleteProcessApi.post();
 	};
@@ -4507,7 +4507,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.watchlistexpiry = ctx.watchlistExpiry;
 		}
 
-		ctx.undeleteProcessApi = new Morebits.wiki.api('undeleting page...', query, ctx.onUndeleteSuccess, ctx.statusElement, fnProcessUndeleteError);
+		ctx.undeleteProcessApi = new Morebits.wiki.Api('undeleting page...', query, ctx.onUndeleteSuccess, ctx.statusElement, fnProcessUndeleteError);
 		ctx.undeleteProcessApi.setParent(this);
 		ctx.undeleteProcessApi.post();
 	};
@@ -4642,7 +4642,7 @@ Morebits.wiki.page = function(pageName, status) {
 			query.cascade = 'true';
 		}
 
-		ctx.protectProcessApi = new Morebits.wiki.api('protecting page...', query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
+		ctx.protectProcessApi = new Morebits.wiki.Api('protecting page...', query, ctx.onProtectSuccess, ctx.statusElement, ctx.onProtectFailure);
 		ctx.protectProcessApi.setParent(this);
 		ctx.protectProcessApi.post();
 	};
@@ -4686,7 +4686,7 @@ Morebits.wiki.page = function(pageName, status) {
 		}
 		*/
 
-		ctx.stabilizeProcessApi = new Morebits.wiki.api('configuring stabilization settings...', query, ctx.onStabilizeSuccess, ctx.statusElement, ctx.onStabilizeFailure);
+		ctx.stabilizeProcessApi = new Morebits.wiki.Api('configuring stabilization settings...', query, ctx.onStabilizeSuccess, ctx.statusElement, ctx.onStabilizeFailure);
 		ctx.stabilizeProcessApi.setParent(this);
 		ctx.stabilizeProcessApi.post();
 	};
@@ -4697,22 +4697,22 @@ Morebits.wiki.page = function(pageName, status) {
 		return deferred;
 	};
 
-}; // end Morebits.wiki.page
+}; // end Morebits.wiki.Page
 
-/* Morebits.wiki.page TODO: (XXX)
+/* Morebits.wiki.Page TODO: (XXX)
 * - Should we retry loads also?
 * - Need to reset current action before the save?
 * - Deal with action.completed stuff
 * - Need to reset all parameters once done (e.g. edit summary, move destination, etc.)
 */
 
-/* **************** Morebits.wiki.preview **************** */
+/* **************** Morebits.wiki.Preview **************** */
 /**
  * Use the API to parse a fragment of wikitext and render it as HTML.
  *
- * The suggested implementation pattern (in {@link Morebits.simpleWindow} and
- * {@link Morebits.quickForm} situations) is to construct a
- * `Morebits.wiki.preview` object after rendering a `Morebits.quickForm`, and
+ * The suggested implementation pattern (in {@link Morebits.SimpleWindow} and
+ * {@link Morebits.QuickForm} situations) is to construct a
+ * `Morebits.wiki.Preview` object after rendering a `Morebits.QuickForm`, and
  * bind the object to an arbitrary property of the form (e.g. |previewer|).
  * For an example, see twinklewarn.js.
  *
@@ -4721,7 +4721,7 @@ Morebits.wiki.page = function(pageName, status) {
  * @param {HTMLElement} previewbox - The element that will contain the rendered HTML,
  * usually a <div> element.
  */
-Morebits.wiki.preview = function(previewbox) {
+Morebits.wiki.Preview = function(previewbox) {
 	this.previewbox = previewbox;
 	$(previewbox).addClass('morebits-previewbox').hide();
 
@@ -4739,7 +4739,7 @@ Morebits.wiki.preview = function(previewbox) {
 
 		const statusspan = document.createElement('span');
 		previewbox.appendChild(statusspan);
-		Morebits.status.init(statusspan);
+		Morebits.Status.init(statusspan);
 
 		const query = {
 			action: 'parse',
@@ -4756,7 +4756,7 @@ Morebits.wiki.preview = function(previewbox) {
 			query.section = 'new';
 			query.sectiontitle = sectionTitle;
 		}
-		const renderApi = new Morebits.wiki.api('loading...', query, fnRenderSuccess, new Morebits.status('Preview'));
+		const renderApi = new Morebits.wiki.Api('loading...', query, fnRenderSuccess, new Morebits.Status('Preview'));
 		return renderApi.post();
 	};
 
@@ -4906,18 +4906,18 @@ Morebits.wikitext.parseTemplate = function(text, start) {
  * @memberof Morebits.wikitext
  * @param {string} text - Wikitext to be manipulated.
  */
-Morebits.wikitext.page = function mediawikiPage(text) {
+Morebits.wikitext.Page = function mediawikiPage(text) {
 	this.text = text;
 };
 
-Morebits.wikitext.page.prototype = {
+Morebits.wikitext.Page.prototype = {
 	text: '',
 
 	/**
 	 * Removes links to `link_target` from the page text.
 	 *
 	 * @param {string} link_target
-	 * @return {Morebits.wikitext.page}
+	 * @return {Morebits.wikitext.Page}
 	 */
 	removeLink: function(link_target) {
 		const mwTitle = mw.Title.newFromText(link_target);
@@ -4947,10 +4947,10 @@ Morebits.wikitext.page.prototype = {
 	 *
 	 * @param {string} image - Image name without `File:` prefix.
 	 * @param {string} [reason] - Reason to be included in comment, alongside the commented-out image.
-	 * @return {Morebits.wikitext.page}
+	 * @return {Morebits.wikitext.Page}
 	 */
 	commentOutImage: function(image, reason) {
-		const unbinder = new Morebits.unbinder(this.text);
+		const unbinder = new Morebits.Unbinder(this.text);
 		unbinder.unbind('<!--', '-->');
 
 		reason = reason ? reason + ': ' : '';
@@ -4992,7 +4992,7 @@ Morebits.wikitext.page.prototype = {
 	 *
 	 * @param {string} image - Image name without File: prefix.
 	 * @param {string} data - The display options.
-	 * @return {Morebits.wikitext.page}
+	 * @return {Morebits.wikitext.Page}
 	 */
 	addToImageComment: function(image, data) {
 		const image_re_string = Morebits.pageNameRegex(image);
@@ -5017,7 +5017,7 @@ Morebits.wikitext.page.prototype = {
 	 *
 	 * @param {string} template - Page name whose transclusions are to be removed,
 	 * include namespace prefix only if not in template namespace.
-	 * @return {Morebits.wikitext.page}
+	 * @return {Morebits.wikitext.Page}
 	 */
 	removeTemplate: function(template) {
 		const template_re_string = Morebits.pageNameRegex(template);
@@ -5043,7 +5043,7 @@ Morebits.wikitext.page.prototype = {
 	 * other falsey values will default to `i`.
 	 * @param {string|string[]} [preRegex] - Optional regex string or array to match
 	 * before any template matches (i.e. before `{{`), such as html comments.
-	 * @return {Morebits.wikitext.page}
+	 * @return {Morebits.wikitext.Page}
 	 */
 	insertAfterTemplates: function(tag, regex, flags, preRegex) {
 		if (typeof tag === 'undefined') {
@@ -5108,7 +5108,7 @@ Morebits.wikitext.page.prototype = {
 	}
 };
 
-/* *********** Morebits.userspaceLogger ************ */
+/* *********** Morebits.UserspaceLogger ************ */
 /**
  * Handles logging actions to a userspace log.
  * Used in CSD, PROD, and XFD.
@@ -5117,7 +5117,7 @@ Morebits.wikitext.page.prototype = {
  * @class
  * @param {string} logPageName - Title of the subpage of the current user's log.
  */
-Morebits.userspaceLogger = function(logPageName) {
+Morebits.UserspaceLogger = function(logPageName) {
 	if (!logPageName) {
 		throw new Error('no log page name specified');
 	}
@@ -5147,14 +5147,14 @@ Morebits.userspaceLogger = function(logPageName) {
 		if (!logText) {
 			return def.reject();
 		}
-		const page = new Morebits.wiki.page('User:' + mw.config.get('wgUserName') + '/' + logPageName,
+		const page = new Morebits.wiki.Page('User:' + mw.config.get('wgUserName') + '/' + logPageName,
 			'Adding entry to userspace log'); // make this '... to ' + logPageName ?
 		page.load((pageobj) => {
 			// add blurb if log page doesn't exist or is blank
 			let text = pageobj.getPageText() || this.initialText;
 
 			// create monthly header if it doesn't exist already
-			const date = new Morebits.date(pageobj.getLoadTime());
+			const date = new Morebits.Date(pageobj.getLoadTime());
 			if (!date.monthHeaderRegex().exec(text)) {
 				text += '\n\n' + date.monthHeader(this.headerLevel);
 			}
@@ -5169,10 +5169,10 @@ Morebits.userspaceLogger = function(logPageName) {
 	};
 };
 
-/* **************** Morebits.status **************** */
+/* **************** Morebits.Status **************** */
 /**
  * Create and show status messages of varying urgency.
- * {@link Morebits.status.init|Morebits.status.init()} must be called before
+ * {@link Morebits.Status.init|Morebits.Status.init()} must be called before
  * any status object is created, otherwise those statuses won't be visible.
  *
  * @memberof Morebits
@@ -5184,7 +5184,7 @@ Morebits.userspaceLogger = function(logPageName) {
  * or `error` (bold red).
  */
 
-Morebits.status = function Status(text, stat, type) {
+Morebits.Status = function Status(text, stat, type) {
 	this.textRaw = text;
 	this.text = Morebits.createHtml(text);
 	this.type = type || 'status';
@@ -5197,37 +5197,37 @@ Morebits.status = function Status(text, stat, type) {
 /**
  * Specify an area for status message elements to be added to.
  *
- * @memberof Morebits.status
+ * @memberof Morebits.Status
  * @param {HTMLElement} root - Usually a div element.
  * @throws {Error} If `root` is not an `HTMLElement`.
  */
-Morebits.status.init = function(root) {
+Morebits.Status.init = function(root) {
 	if (!(root instanceof Element)) {
 		throw new Error('object not an instance of Element');
 	}
 	while (root.hasChildNodes()) {
 		root.removeChild(root.firstChild);
 	}
-	Morebits.status.root = root;
-	Morebits.status.errorEvent = null;
+	Morebits.Status.root = root;
+	Morebits.Status.errorEvent = null;
 };
 
-Morebits.status.root = null;
+Morebits.Status.root = null;
 
 /**
- * @memberof Morebits.status
+ * @memberof Morebits.Status
  * @param {Function} handler - Function to execute on error.
  * @throws {Error} When `handler` is not a function.
  */
-Morebits.status.onError = function(handler) {
+Morebits.Status.onError = function(handler) {
 	if (typeof handler === 'function') {
-		Morebits.status.errorEvent = handler;
+		Morebits.Status.errorEvent = handler;
 	} else {
-		throw new Error('Morebits.status.onError: handler is not a function');
+		throw new Error('Morebits.Status.onError: handler is not a function');
 	}
 };
 
-Morebits.status.prototype = {
+Morebits.Status.prototype = {
 	stat: null,
 	statRaw: null,
 	text: null,
@@ -5239,8 +5239,8 @@ Morebits.status.prototype = {
 
 	/** Add the status element node to the DOM. */
 	link: function() {
-		if (!this.linked && Morebits.status.root) {
-			Morebits.status.root.appendChild(this.node);
+		if (!this.linked && Morebits.Status.root) {
+			Morebits.Status.root.appendChild(this.node);
 			this.linked = true;
 		}
 	},
@@ -5248,7 +5248,7 @@ Morebits.status.prototype = {
 	/** Remove the status element node from the DOM. */
 	unlink: function() {
 		if (this.linked) {
-			Morebits.status.root.removeChild(this.node);
+			Morebits.Status.root.removeChild(this.node);
 			this.linked = false;
 		}
 	},
@@ -5266,12 +5266,12 @@ Morebits.status.prototype = {
 		if (type) {
 			this.type = type;
 			if (type === 'error') {
-				// hack to force the page not to reload when an error is output - see also Morebits.status() above
+				// hack to force the page not to reload when an error is output - see also Morebits.Status() above
 				Morebits.wiki.numberOfActionsLeft = 1000;
 
 				// call error callback
-				if (Morebits.status.errorEvent) {
-					Morebits.status.errorEvent();
+				if (Morebits.Status.errorEvent) {
+					Morebits.Status.errorEvent();
 				}
 
 				// also log error messages in the browser console
@@ -5313,55 +5313,55 @@ Morebits.status.prototype = {
 	}
 };
 /**
- * @memberof Morebits.status
+ * @memberof Morebits.Status
  * @param {string} text - Before colon
  * @param {string} status - After colon
- * @return {Morebits.status} - `status`-type (blue)
+ * @return {Morebits.Status} - `status`-type (blue)
  */
-Morebits.status.status = function(text, status) {
-	return new Morebits.status(text, status);
+Morebits.Status.status = function(text, status) {
+	return new Morebits.Status(text, status);
 };
 /**
- * @memberof Morebits.status
+ * @memberof Morebits.Status
  * @param {string} text - Before colon
  * @param {string} status - After colon
- * @return {Morebits.status} - `info`-type (green)
+ * @return {Morebits.Status} - `info`-type (green)
  */
-Morebits.status.info = function(text, status) {
-	return new Morebits.status(text, status, 'info');
+Morebits.Status.info = function(text, status) {
+	return new Morebits.Status(text, status, 'info');
 };
 /**
- * @memberof Morebits.status
+ * @memberof Morebits.Status
  * @param {string} text - Before colon
  * @param {string} status - After colon
- * @return {Morebits.status} - `warn`-type (red)
+ * @return {Morebits.Status} - `warn`-type (red)
  */
-Morebits.status.warn = function(text, status) {
-	return new Morebits.status(text, status, 'warn');
+Morebits.Status.warn = function(text, status) {
+	return new Morebits.Status(text, status, 'warn');
 };
 /**
- * @memberof Morebits.status
+ * @memberof Morebits.Status
  * @param {string} text - Before colon
  * @param {string} status - After colon
- * @return {Morebits.status} - `error`-type (bold red)
+ * @return {Morebits.Status} - `error`-type (bold red)
  */
-Morebits.status.error = function(text, status) {
-	return new Morebits.status(text, status, 'error');
+Morebits.Status.error = function(text, status) {
+	return new Morebits.Status(text, status, 'error');
 };
 
 /**
  * For the action complete message at the end, create a status line without
  * a colon separator.
  *
- * @memberof Morebits.status
+ * @memberof Morebits.Status
  * @param {string} text
  */
-Morebits.status.actionCompleted = function(text) {
+Morebits.Status.actionCompleted = function(text) {
 	const node = document.createElement('div');
 	node.appendChild(document.createElement('b')).appendChild(document.createTextNode(text));
 	node.className = 'morebits_status_info morebits_action_complete';
-	if (Morebits.status.root) {
-		Morebits.status.root.appendChild(node);
+	if (Morebits.Status.root) {
+		Morebits.Status.root.appendChild(node);
 	}
 };
 
@@ -5369,11 +5369,11 @@ Morebits.status.actionCompleted = function(text) {
  * Display the user's rationale, comments, etc. Back to them after a failure,
  * so that they may re-use it.
  *
- * @memberof Morebits.status
+ * @memberof Morebits.Status
  * @param {string} comments
  * @param {string} message
  */
-Morebits.status.printUserText = function(comments, message) {
+Morebits.Status.printUserText = function(comments, message) {
 	const p = document.createElement('p');
 	p.innerHTML = message;
 	const div = document.createElement('div');
@@ -5382,7 +5382,7 @@ Morebits.status.printUserText = function(comments, message) {
 	div.style.whiteSpace = 'pre-wrap';
 	div.textContent = comments;
 	p.appendChild(div);
-	Morebits.status.root.appendChild(p);
+	Morebits.Status.root.appendChild(p);
 };
 
 /**
@@ -5459,7 +5459,7 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 	$(jQuerySelector, jQueryContext).on('click', clickHandler);
 };
 
-/* **************** Morebits.batchOperation **************** */
+/* **************** Morebits.BatchOperation **************** */
 /**
  * Iterates over a group of pages (or arbitrary objects) and executes a worker function
  * for each.
@@ -5475,8 +5475,8 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
  *
  * `run(worker, postFinish)`: Runs the callback `worker` for each page in the
  * list.  The callback must call `workerSuccess` when succeeding, or
- * `workerFailure` when failing.  If using {@link Morebits.wiki.api} or
- * {@link Morebits.wiki.page}, this is easily done by passing these two
+ * `workerFailure` when failing.  If using {@link Morebits.wiki.Api} or
+ * {@link Morebits.wiki.Page}, this is easily done by passing these two
  * functions as parameters to the methods on those objects: for instance,
  * `page.save(batchOp.workerSuccess, batchOp.workerFailure)`.  Make sure the
  * methods are called directly if special success/failure cases arise.  If you
@@ -5487,17 +5487,17 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
  *
  * If using `preserveIndividualStatusLines`, you should try to ensure that the
  * `workerSuccess` callback has access to the page title.  This is no problem for
- * {@link Morebits.wiki.page} objects.  But when using the API, please set the
- * |pageName| property on the {@link Morebits.wiki.api} object.
+ * {@link Morebits.wiki.Page} objects.  But when using the API, please set the
+ * |pageName| property on the {@link Morebits.wiki.Api} object.
  *
- * There are sample batchOperation implementations using Morebits.wiki.page in
+ * There are sample batchOperation implementations using Morebits.wiki.Page in
  * twinklebatchdelete.js, twinklebatchundelete.js, and twinklebatchprotect.js.
  *
  * @memberof Morebits
  * @class
  * @param {string} [currentAction]
  */
-Morebits.batchOperation = function(currentAction) {
+Morebits.BatchOperation = function(currentAction) {
 	const ctx = {
 		// backing fields for public properties
 		pageList: null,
@@ -5507,7 +5507,7 @@ Morebits.batchOperation = function(currentAction) {
 		},
 
 		// internal counters, etc.
-		statusElement: new Morebits.status(currentAction || msg('batch-starting', 'Performing batch operation')),
+		statusElement: new Morebits.Status(currentAction || msg('batch-starting', 'Performing batch operation')),
 		worker: null, // function that executes for each item in pageList
 		postFinish: null, // function that executes when the whole batch has been processed
 		countStarted: 0,
@@ -5594,15 +5594,15 @@ Morebits.batchOperation = function(currentAction) {
 	/**
 	 * To be called by worker before it terminates successfully.
 	 *
-	 * @param {(Morebits.wiki.page|Morebits.wiki.api|string)} arg -
-	 * This should be the `Morebits.wiki.page` or `Morebits.wiki.api` object used by worker
+	 * @param {(Morebits.wiki.Page|Morebits.wiki.Api|string)} arg -
+	 * This should be the `Morebits.wiki.Page` or `Morebits.wiki.Api` object used by worker
 	 * (for the adjustment of status lines emitted by them).
 	 * If no Morebits.wiki.* object is used (e.g. you're using `mw.Api()` or something else), and
 	 * `preserveIndividualStatusLines` option is on, give the page name (string) as argument.
 	 */
 	this.workerSuccess = function(arg) {
 
-		if (arg instanceof Morebits.wiki.api || arg instanceof Morebits.wiki.page) {
+		if (arg instanceof Morebits.wiki.Api || arg instanceof Morebits.wiki.Page) {
 			// update or remove status line
 			const statelem = arg.getStatusElement();
 			if (ctx.options.preserveIndividualStatusLines) {
@@ -5620,7 +5620,7 @@ Morebits.batchOperation = function(currentAction) {
 			}
 
 		} else if (typeof arg === 'string' && ctx.options.preserveIndividualStatusLines) {
-			new Morebits.status(arg, msg('batch-done-page', arg, 'completed ([[' + arg + ']])'));
+			new Morebits.Status(arg, msg('batch-done-page', arg, 'completed ([[' + arg + ']])'));
 		}
 
 		ctx.countFinishedSuccess++;
@@ -5697,7 +5697,7 @@ Morebits.batchOperation = function(currentAction) {
  * @memberof Morebits
  * @class
  */
-Morebits.taskManager = function(context) {
+Morebits.TaskManager = function(context) {
 	this.taskDependencyMap = new Map();
 	this.failureCallbackMap = new Map();
 	this.deferreds = new Map();
@@ -5733,7 +5733,7 @@ Morebits.taskManager = function(context) {
 			$.when.apply(self.context, dependencyPromisesArray).then(function() {
 				const result = task.apply(self.context, arguments);
 				if (result === undefined) { // maybe the function threw, or it didn't return anything
-					mw.log.error('Morebits.taskManager: task returned undefined');
+					mw.log.error('Morebits.TaskManager: task returned undefined');
 					self.deferreds.get(task).reject.apply(self.context, arguments);
 					self.failureCallbackMap.get(task).apply(self.context, []);
 				}
@@ -5761,7 +5761,7 @@ Morebits.taskManager = function(context) {
  * @param {number} width
  * @param {number} height - The maximum allowable height for the content area.
  */
-Morebits.simpleWindow = function SimpleWindow(width, height) {
+Morebits.SimpleWindow = function SimpleWindow(width, height) {
 	const content = document.createElement('div');
 	this.content = content;
 	content.className = 'morebits-dialog-content';
@@ -5821,7 +5821,7 @@ Morebits.simpleWindow = function SimpleWindow(width, height) {
 	$('.morebits-dialog .ui-dialog-titlebar-close').addClass('skin-invert');
 };
 
-Morebits.simpleWindow.prototype = {
+Morebits.SimpleWindow.prototype = {
 	buttons: [],
 	height: 600,
 	hasFooterLinks: false,
@@ -5830,7 +5830,7 @@ Morebits.simpleWindow.prototype = {
 	/**
 	 * Focuses the dialog. This might work, or on the contrary, it might not.
 	 *
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	focus: function() {
 		$(this.content).dialog('moveToTop');
@@ -5842,7 +5842,7 @@ Morebits.simpleWindow.prototype = {
 	 * from doing anything more.
 	 *
 	 * @param {event} [event]
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	close: function(event) {
 		if (event) {
@@ -5856,7 +5856,7 @@ Morebits.simpleWindow.prototype = {
 	 * Shows the dialog. Calling display() on a dialog that has previously been closed
 	 * might work, but it is not guaranteed.
 	 *
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	display: function() {
 		if (this.scriptName) {
@@ -5881,7 +5881,7 @@ Morebits.simpleWindow.prototype = {
 	 * Sets the dialog title.
 	 *
 	 * @param {string} title
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	setTitle: function(title) {
 		$(this.content).dialog('option', 'title', title);
@@ -5893,7 +5893,7 @@ Morebits.simpleWindow.prototype = {
 	 * user script is producing which dialog. For instance, Twinkle modules set this to "Twinkle".
 	 *
 	 * @param {string} name
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	setScriptName: function(name) {
 		this.scriptName = name;
@@ -5904,7 +5904,7 @@ Morebits.simpleWindow.prototype = {
 	 * Sets the dialog width.
 	 *
 	 * @param {number} width
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	setWidth: function(width) {
 		$(this.content).dialog('option', 'width', width);
@@ -5916,7 +5916,7 @@ Morebits.simpleWindow.prototype = {
 	 * but the content area will grow no larger than the height given here.
 	 *
 	 * @param {number} height
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	setHeight: function(height) {
 		this.height = height;
@@ -5925,7 +5925,7 @@ Morebits.simpleWindow.prototype = {
 		// and instead limit the height at the given value
 		// note that the given height will exclude the approx. 20px that the jQuery UI
 		// chrome has in height in addition to the height of an equivalent "classic"
-		// Morebits.simpleWindow
+		// Morebits.SimpleWindow
 		if (parseInt(getComputedStyle($(this.content).dialog('widget')[0], null).height, 10) > window.innerHeight) {
 			$(this.content).dialog('option', 'height', window.innerHeight - 2).dialog('option', 'position', 'top');
 		} else {
@@ -5937,12 +5937,12 @@ Morebits.simpleWindow.prototype = {
 
 	/**
 	 * Sets the content of the dialog to the given element node, usually from rendering
-	 * a {@link Morebits.quickForm}.
+	 * a {@link Morebits.QuickForm}.
 	 * Re-enumerates the footer buttons, but leaves the footer links as they are.
 	 * Be sure to call this at least once before the dialog is displayed...
 	 *
 	 * @param {HTMLElement} content
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	setContent: function(content) {
 		this.purgeContent();
@@ -5954,7 +5954,7 @@ Morebits.simpleWindow.prototype = {
 	 * Adds the given element node to the dialog content.
 	 *
 	 * @param {HTMLElement} content
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	addContent: function(content) {
 		this.content.appendChild(content);
@@ -5992,7 +5992,7 @@ Morebits.simpleWindow.prototype = {
 	/**
 	 * Removes all contents from the dialog, barring any footer links.
 	 *
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	purgeContent: function() {
 		this.buttons = [];
@@ -6014,7 +6014,7 @@ Morebits.simpleWindow.prototype = {
 	 * @param {string} text - Display text.
 	 * @param {string} wikiPage - Link target.
 	 * @param {boolean} [prep=false] - Set true to prepend rather than append.
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	addFooterLink: function(text, wikiPage, prep) {
 		const $footerlinks = $(this.content).dialog('widget').find('.morebits-dialog-footerlinks');
@@ -6048,7 +6048,7 @@ Morebits.simpleWindow.prototype = {
 	 *
 	 * @param {boolean} [modal=false] - If set to true, other items on the
 	 * page will be disabled, i.e., cannot be interacted with.
-	 * @return {Morebits.simpleWindow}
+	 * @return {Morebits.SimpleWindow}
 	 */
 	setModality: function(modal) {
 		$(this.content).dialog('option', 'modal', modal);
@@ -6057,34 +6057,34 @@ Morebits.simpleWindow.prototype = {
 };
 
 /**
- * Enables or disables all footer buttons on all {@link Morebits.simpleWindow}s in the current page.
+ * Enables or disables all footer buttons on all {@link Morebits.SimpleWindow}s in the current page.
  * This should be called with `false` when the button(s) become irrelevant (e.g. just before
- * {@link Morebits.status.init} is called).
+ * {@link Morebits.Status.init} is called).
  * This is not an instance method so that consumers don't have to keep a reference to the
- * original `Morebits.simpleWindow` object sitting around somewhere. Anyway, most of the time
- * there will only be one `Morebits.simpleWindow` open, so this shouldn't matter.
+ * original `Morebits.SimpleWindow` object sitting around somewhere. Anyway, most of the time
+ * there will only be one `Morebits.SimpleWindow` open, so this shouldn't matter.
  *
- * @memberof Morebits.simpleWindow
+ * @memberof Morebits.SimpleWindow
  * @param {boolean} enabled
  */
-Morebits.simpleWindow.setButtonsEnabled = function(enabled) {
+Morebits.SimpleWindow.setButtonsEnabled = function(enabled) {
 	$('.morebits-dialog-buttons button').prop('disabled', !enabled);
 };
 
-// Create capital letter aliases for all Morebits @classes (functions that work with the `new` keyword), to follow the coding convention that classes should start with an uppercase letter. This will let us start fixing ESLint `new-cap` errors in other files.
-Morebits.BatchOperation = Morebits.batchOperation;
-Morebits.Date = Morebits.date;
-Morebits.QuickForm = Morebits.quickForm;
-Morebits.QuickForm.Element = Morebits.quickForm.element;
-Morebits.SimpleWindow = Morebits.simpleWindow;
-Morebits.Status = Morebits.status;
-Morebits.TaskManager = Morebits.taskManager;
-Morebits.Unbinder = Morebits.unbinder;
-Morebits.UserspaceLogger = Morebits.userspaceLogger;
-Morebits.wiki.Api = Morebits.wiki.api;
-Morebits.wiki.Page = Morebits.wiki.page;
-Morebits.wiki.Preview = Morebits.wiki.preview;
-Morebits.wikitext.Page = Morebits.wikitext.page;
+// Deprecated class name aliases in camelCase. Please use the PascalCase names instead.
+Morebits.batchOperation = Morebits.BatchOperation;
+Morebits.date = Morebits.Date;
+Morebits.quickForm = Morebits.QuickForm;
+Morebits.quickForm.element = Morebits.QuickForm.Element;
+Morebits.simpleWindow = Morebits.SimpleWindow;
+Morebits.status = Morebits.Status;
+Morebits.taskManager = Morebits.TaskManager;
+Morebits.unbinder = Morebits.Unbinder;
+Morebits.userspaceLogger = Morebits.UserspaceLogger;
+Morebits.wiki.api = Morebits.wiki.Api;
+Morebits.wiki.page = Morebits.wiki.Page;
+Morebits.wiki.preview = Morebits.wiki.Preview;
+Morebits.wikitext.page = Morebits.wikitext.Page;
 
 }());
 
@@ -6099,10 +6099,10 @@ Morebits.wikitext.Page = Morebits.wikitext.page;
 
 if (typeof arguments === 'undefined') { // typeof is here for a reason...
 	/* global Morebits */
-	window.SimpleWindow = Morebits.simpleWindow;
-	window.QuickForm = Morebits.quickForm;
+	window.SimpleWindow = Morebits.SimpleWindow;
+	window.QuickForm = Morebits.QuickForm;
 	window.Wikipedia = Morebits.wiki;
-	window.Status = Morebits.status;
+	window.Status = Morebits.Status;
 }
 
 // </nowiki>
