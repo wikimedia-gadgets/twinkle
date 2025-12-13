@@ -731,16 +731,6 @@ Twinkle.config.sections = [
 				type: 'boolean'
 			},
 
-			// TwinkleConfig.showSharedIPNotice may take arguments:
-			// true: to show shared ip notice if an IP address
-			// false: to not print the notice
-			{
-				name: 'showSharedIPNotice',
-				label: 'Add extra notice on shared IP talk pages',
-				helptip: 'Notice used is {{Shared IP advice}}',
-				type: 'boolean'
-			},
-
 			// TwinkleConfig.watchWarnings (string)
 			// Watchlist setting for the page which has been dispatched an warning or notice
 			{

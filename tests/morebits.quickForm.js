@@ -118,12 +118,12 @@ describe('quickform', () => {
 	});
 
 	test('getInputData', () => {
-		expect(Morebits.quickForm.getInputData(getRenderedForm())).toMatchSnapshot();
+		expect(Morebits.QuickForm.getInputData(getRenderedForm())).toMatchSnapshot();
 	});
 
 	test('getElements', () => {
 		const form = getRenderedForm();
-		expect(Morebits.quickForm.getElements(form, 'checkboxlist1')).toMatchSnapshot();
+		expect(Morebits.QuickForm.getElements(form, 'checkboxlist1')).toMatchSnapshot();
 	});
 
 });
