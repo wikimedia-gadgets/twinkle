@@ -69,7 +69,7 @@ const utils = {
 		if (!title_obj) {
 			return title; // user entered invalid input; do nothing
 		}
-		return title_obj.getNameText();
+		return title_obj.getMainText();
 	},
 
 	/**
@@ -2008,9 +2008,9 @@ Twinkle.xfd.callbacks = {
 				} else if (document.getElementById('softredirect')) {
 					statelem.warn('Soft redirect; skipping target page notification');
 				// Don't issue if target talk is the initial contributor's talk or your own
-				} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === initialContrib) {
+				} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getMainText() === initialContrib) {
 					statelem.warn('Target is initial contributor; skipping target page notification');
-				} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === mw.config.get('wgUserName')) {
+				} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getMainText() === mw.config.get('wgUserName')) {
 					statelem.warn('You (' + mw.config.get('wgUserName') + ') are the target; skipping target page notification');
 				} else {
 					// Don't log if notifying creator above, will log then
