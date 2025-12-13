@@ -273,7 +273,7 @@ Twinkle.addPortlet = function() {
 /**
  * Builds a portlet menu if it doesn't exist yet, and adds a portlet link. This function runs at the top of every Twinkle module, ensuring that the first module to be loaded adds the portlet, and that every module can add a link to itself to the portlet.
  *
- * @param task Either a URL for the portlet link or a function to execute.
+ * @param {string|Function} task Either a URL for the portlet link or a function to execute.
  */
 Twinkle.addPortletLink = function(task, text, id, tooltip) {
 	// Create a portlet to hold all the portlet links (if not created already). And get the portletId.

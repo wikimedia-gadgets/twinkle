@@ -228,8 +228,8 @@ Morebits.createHtml = function(input) {
 /**
  * Converts wikilinks to HTML anchor tags.
  *
- * @param text
- * @return {*}
+ * @param {string} text
+ * @return {string}
  */
 Morebits.createHtml.renderWikilinks = function (text) {
 	const ub = new Morebits.unbinder(text);
@@ -695,7 +695,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				}
 			});
 			if (data.event) {
-				subnode.addEventListener('keyup', data.event, false);
+				subnode.addEventListener('input', data.event, false);
 			}
 
 			childContainer = subnode;
@@ -815,7 +815,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 				subnode.setAttribute('required', 'disabled');
 			}
 			if (data.event) {
-				subnode.addEventListener('keyup', data.event, false);
+				subnode.addEventListener('input', data.event, false);
 			}
 			node.style.marginRight = '3px';
 			break;
@@ -1444,8 +1444,8 @@ Morebits.string = {
 	 * @param {string} end
 	 * @param {(string[]|string)} [skiplist]
 	 * @return {string[]}
-	 * @throws If the `start` and `end` strings aren't of the same length.
-	 * @throws If `skiplist` isn't an array or string
+	 * @throws {Error} If the `start` and `end` strings aren't of the same length.
+	 * @throws {Error} If `skiplist` isn't an array or string
 	 */
 	splitWeightedByKeys: function(str, start, end, skiplist) {
 		if (start.length !== end.length) {
@@ -1584,7 +1584,7 @@ Morebits.array = {
 	 *
 	 * @param {Array} arr
 	 * @return {Array} A copy of the array with duplicates removed.
-	 * @throws When provided a non-array.
+	 * @throws {Error} When provided a non-array.
 	 */
 	uniq: function(arr) {
 		if (!Array.isArray(arr)) {
@@ -1599,7 +1599,7 @@ Morebits.array = {
 	 * @param {Array} arr
 	 * @return {Array} A copy of the array with the first instance of each value
 	 * removed; subsequent instances of those values (duplicates) remain.
-	 * @throws When provided a non-array.
+	 * @throws {Error} When provided a non-array.
 	 */
 	dups: function(arr) {
 		if (!Array.isArray(arr)) {
@@ -1614,7 +1614,7 @@ Morebits.array = {
 	 * @param {Array} arr
 	 * @param {number} size - Size of each chunk (except the last, which could be different).
 	 * @return {Array[]} An array containing the smaller, chunked arrays.
-	 * @throws When provided a non-array.
+	 * @throws {Error} When provided a non-array.
 	 */
 	chunk: function(arr, size) {
 		if (!Array.isArray(arr)) {
@@ -1750,7 +1750,7 @@ Morebits.unbinder.prototype = {
 	 *
 	 * @param {string} prefix
 	 * @param {string} postfix
-	 * @throws If either `prefix` or `postfix` is missing.
+	 * @throws {Error} If either `prefix` or `postfix` is missing.
 	 */
 	unbind: function UnbinderUnbind(prefix, postfix) {
 		if (!prefix || !postfix) {
@@ -1959,7 +1959,7 @@ Morebits.date.prototype = {
 	 *
 	 * @param {number} number - Should be an integer.
 	 * @param {string} unit
-	 * @throws If invalid or unsupported unit is given.
+	 * @throws {Error} If invalid or unsupported unit is given.
 	 * @return {Morebits.date}
 	 */
 	add: function(number, unit) {
@@ -1989,7 +1989,7 @@ Morebits.date.prototype = {
 	 *
 	 * @param {number} number - Should be an integer.
 	 * @param {string} unit
-	 * @throws If invalid or unsupported unit is given.
+	 * @throws {Error} If invalid or unsupported unit is given.
 	 * @return {Morebits.date}
 	 */
 	subtract: function(number, unit) {
@@ -3792,7 +3792,7 @@ Morebits.wiki.page = function(pageName, status) {
 	 * or require checking protection or watched status, maintain the query
 	 * in one place. Used for {@link Morebits.wiki.page#deletePage|delete},
 	 * {@link Morebits.wiki.page#undeletePage|undelete},
-	 * {@link* Morebits.wiki.page#protect|protect},
+	 * {@link Morebits.wiki.page#protect|protect},
 	 * {@link Morebits.wiki.page#stabilize|stabilize},
 	 * and {@link Morebits.wiki.page#move|move}
 	 * (basically, just not {@link Morebits.wiki.page#load|load}).
@@ -5211,7 +5211,7 @@ Morebits.status = function Status(text, stat, type) {
  *
  * @memberof Morebits.status
  * @param {HTMLElement} root - Usually a div element.
- * @throws If `root` is not an `HTMLElement`.
+ * @throws {Error} If `root` is not an `HTMLElement`.
  */
 Morebits.status.init = function(root) {
 	if (!(root instanceof Element)) {
@@ -5229,7 +5229,7 @@ Morebits.status.root = null;
 /**
  * @memberof Morebits.status
  * @param {Function} handler - Function to execute on error.
- * @throws When `handler` is not a function.
+ * @throws {Error} When `handler` is not a function.
  */
 Morebits.status.onError = function(handler) {
 	if (typeof handler === 'function') {
@@ -5419,8 +5419,8 @@ Morebits.htmlNode = function (type, content, color) {
  * (`window.addCheckboxClickHandlers`) has some restrictions, and doesn't work
  * with checkboxes inside a sortable table, so let's build our own.
  *
- * @param jQuerySelector
- * @param jQueryContext
+ * @param {jQuery} jQuerySelector
+ * @param {jQuery} jQueryContext
  */
 Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 	let lastCheckbox = null;

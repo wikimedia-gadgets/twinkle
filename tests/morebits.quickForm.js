@@ -3,7 +3,8 @@
 /**
  * Simple helper to render a quickform element
  *
- * @param data
+ * @param {Object} data
+ * @return {HTMLElement}
  */
 function renderElement(data) {
 	return new Morebits.QuickForm.Element(data).render();

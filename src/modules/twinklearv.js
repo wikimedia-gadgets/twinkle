@@ -757,7 +757,9 @@ Twinkle.arv.callback.getSpiReportData = function(input) {
 	input.sockpuppets = isPuppetReport ? [input.uid] : Morebits.array.uniq(input.sockpuppets);
 
 	let text = '\n{{subst:SPI report|' +
-		input.sockpuppets.map((sock, index) => (index + 1) + '=' + sock).join('|') + '\n|evidence=' + input.evidence + ' \n';
+		input.sockpuppets.map((sock, index) => (index + 1) + '=' + sock).join('|') +
+		'\n|evidence=' + Morebits.string.formatReasonText(input.evidence) +
+		' \n';
 
 	text += '}}';
 
