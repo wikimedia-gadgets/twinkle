@@ -1151,7 +1151,7 @@ Twinkle.xfd.callbacks = {
 
 			// Mark the page as curated/patrolled, if wanted
 			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
-				new Morebits.wiki.Page(Morebits.pageNameNorm).triage();
+				pageobj.triage();
 			}
 
 			// Start discussion page, will also handle pagetriage and delsort listings
