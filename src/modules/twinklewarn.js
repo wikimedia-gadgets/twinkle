@@ -1138,6 +1138,11 @@ Twinkle.warn.messages = {
 			label: 'Not communicating in English',
 			summary: 'Notice: Not communicating in English'
 		},
+		'uw-gender': {
+			label: 'Misgendering BLPs',
+			summary: 'Notice: Please read the Manual of Style section on gender identity',
+			suppressArticleInSummary: true // non-standard summary wording, so postfixing article title doesn't make sense
+		},
 		'uw-hasty': {
 			label: 'Hasty addition of speedy deletion tags',
 			summary: 'Notice: Allow creators time to improve their articles before tagging them for deletion'
