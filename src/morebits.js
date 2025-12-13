@@ -2312,8 +2312,6 @@ Morebits.wiki.Api = function(currentAction, query, onSuccess, statusElement, onE
 	// Ignore tags for queries and most common unsupported actions, produces warnings
 	if (query.action && ['query', 'review', 'stabilize', 'pagetriageaction', 'watch'].includes(query.action)) {
 		delete query.tags;
-	} else if (!query.tags && morebitsWikiChangeTag) {
-		query.tags = morebitsWikiChangeTag;
 	}
 };
 
@@ -2511,16 +2509,6 @@ var morebitsWikiApiUserAgent = 'morebits.js ([[w:WT:TW]])';
 Morebits.wiki.Api.setApiUserAgent = function(ua) {
 	morebitsWikiApiUserAgent = (ua ? ua + ' ' : '') + 'morebits.js ([[w:WT:TW]])';
 };
-
-/**
- * Change/revision tag applied to Morebits actions when no other tags are specified.
- * Unused by default per {@link https://en.wikipedia.org/w/index.php?oldid=970618849#Adding_tags_to_Twinkle_edits_and_actions|EnWiki consensus}.
- *
- * @constant
- * @memberof Morebits.wiki.Api
- * @type {string}
- */
-var morebitsWikiChangeTag = '';
 
 /**
  * Get a new CSRF token on encountering token errors.
