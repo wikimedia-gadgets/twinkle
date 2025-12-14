@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-env node, jest */
 
 // Tweak some mw.configs as needed by tests
 mw.config.set({
@@ -17,7 +18,8 @@ require('./src/modules/twinklewarn.js');
 require('./src/modules/twinklexfd.js');
 global.Morebits = window.Morebits;
 
-global.assert = require('assert');
+const assert = require('assert');
+global.assert = assert;
 
 // Node.js assert doesn't support these functions unlike Qunit assert,
 // so temporarily monkey-patch them
