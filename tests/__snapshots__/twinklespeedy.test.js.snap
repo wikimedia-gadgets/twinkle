@@ -608,18 +608,13 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
             "value": "communication",
           },
           {
-            "label": "Implausible non-existent references",
-            "tooltip": "The page contains implausible non-existent references.",
+            "label": "Implausible or nonsensical references",
+            "tooltip": "The page contains implausible non-existent or otherwise nonsensical references.",
             "value": "implausible",
-          },
-          {
-            "label": "Nonsensical citations",
-            "tooltip": "The page contains nonsensical citations.",
-            "value": "nonsensical",
           },
         ],
         "name": "subcriteria",
-        "type": "radio",
+        "type": "checkbox",
       },
       {
         "label": "Extended reason (optional):",
