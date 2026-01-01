@@ -311,17 +311,17 @@ Twinkle.prod.callbacks = {
 				params.logEndorsing = true;
 			}
 
-			// curate/patrol the page
-			if (Twinkle.getPref('markProdPagesAsPatrolled')) {
-				pageobj.triage();
-			}
-
 			pageobj.setPageText(text);
 			pageobj.setEditSummary(summaryText);
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('watchProdPages'));
 			pageobj.setCreateOption('nocreate');
 			pageobj.save(def.resolve, def.reject);
+
+			// curate/patrol the page
+			if (Twinkle.getPref('markProdPagesAsPatrolled')) {
+				pageobj.triage();
+			}
 
 		}, def.reject);
 		return def;
