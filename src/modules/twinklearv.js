@@ -673,7 +673,7 @@ Twinkle.arv.callback.getAivReasonWikitext = function(input) {
 
 	if (input.page !== '') {
 		// Allow links to redirects, files, and categories
-		text = 'On {{No redirect|:' + input.page + '}}';
+		text = 'On {{No redirect|' + input.page + '}}';
 		if (input.badid !== '') {
 			text += ' ({{diff|' + input.page + '|' + input.badid + '|' + input.goodid + '|diff}})';
 		}
