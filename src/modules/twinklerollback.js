@@ -30,17 +30,22 @@ Twinkle.rollback = function twinklerollback() {
 		Twinkle.rollback.skipTalk = !Twinkle.getPref('openTalkPageOnAutoRevert');
 		Twinkle.rollback.rollbackInPlace = Twinkle.getPref('rollbackInPlace');
 
-		if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
-			Twinkle.rollback.addLinks.contributions();
-		} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Recentchanges' || mw.config.get('wgCanonicalSpecialPageName') === 'Recentchangeslinked') {
-			// Reload with recent changes updates
-			// structuredChangeFilters.ui.initialized is just on load
-			mw.hook('wikipage.content').add(($context) => {
-				if (!$context || !$context.is('div')) {
-					return;
-				}
-				Twinkle.rollback.addLinks.recentchanges($context);
-			});
+		switch (mw.config.get('wgCanonicalSpecialPageName')) {
+			case 'Contributions':
+			case 'IPContributions':
+				Twinkle.rollback.addLinks.contributions();
+				break;
+			case 'Recentchanges':
+			case 'Recentchangeslinked':
+				// Reload with recent changes updates
+				// structuredChangeFilters.ui.initialized is just on load
+				mw.hook('wikipage.content').add(($context) => {
+					if (!$context || !$context.is('div')) {
+						return;
+					}
+					Twinkle.rollback.addLinks.recentchanges($context);
+				});
+				break;
 		}
 	}
 	// Reload when revision slider or other scripts dynamically load diff content.
