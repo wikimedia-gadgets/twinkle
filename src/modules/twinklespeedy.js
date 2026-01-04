@@ -755,13 +755,6 @@ Twinkle.speedy.data = [
 		code: 'g8',
 		db: 'timedtext',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.'
-	},
-	{
-		list: 'redirectList',
-		label: 'X3: Redirects with no space before a parenthetical disambiguation',
-		code: 'x3',
-		db: 'x3',
-		tooltip: 'This excludes terms that can plausibly be searched for without spaces, or if the redirect contains substantive page history (e.g. from a merge).'
 	}
 ];
 
