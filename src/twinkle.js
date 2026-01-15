@@ -169,10 +169,7 @@ Twinkle.defaultConfig = {
 	markTalkbackAsMinor: false,
 	insertTalkbackSignature: true, // always sign talkback templates
 	talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
-	mailHeading: "You've got mail!",
-
-	// Shared
-	markSharedIPAsMinor: true
+	mailHeading: "You've got mail!"
 };
 
 Twinkle.getPref = function twinkleGetPref(name) {

@@ -66,7 +66,6 @@ The script will parse the latest on-wiki edit summary for last deployed commit h
 [MediaWiki:Gadget-twinkleprod.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleprod.js
 [MediaWiki:Gadget-twinkleprotect.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleprotect.js
 [MediaWiki:Gadget-twinklerollback.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklerollback.js
-[MediaWiki:Gadget-twinkleshared.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkleshared.js
 [MediaWiki:Gadget-twinklespeedy.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinklespeedy.js
 [MediaWiki:Gadget-twinkletag.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkletag.js
 [MediaWiki:Gadget-twinkletalkback.js]: https://en.wikipedia.org/wiki/MediaWiki:Gadget-twinkletalkback.js
@@ -102,7 +101,6 @@ Each Twinkle module and dependency lives on the wiki as a separate file. The lis
 - `modules/twinkleprod.js` &rarr; [MediaWiki:Gadget-twinkleprod.js][]
 - `modules/twinkleprotect.js` &rarr; [MediaWiki:Gadget-twinkleprotect.js][]
 - `modules/twinklerollback.js` &rarr; [MediaWiki:Gadget-twinklerollback.js][]
-- `modules/twinkleshared.js` &rarr; [MediaWiki:Gadget-twinkleshared.js][]
 - `modules/twinklespeedy.js` &rarr; [MediaWiki:Gadget-twinklespeedy.js][]
 - `modules/twinkletag.js` &rarr; [MediaWiki:Gadget-twinkletag.js][]
 - `modules/twinkletalkback.js` &rarr; [MediaWiki:Gadget-twinkletalkback.js][]
