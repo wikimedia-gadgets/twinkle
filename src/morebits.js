@@ -91,23 +91,6 @@ Morebits.userIsInGroup = function (group) {
 Morebits.userIsSysop = Morebits.userIsInGroup('sysop');
 
 /**
- * Deprecated as of February 2021, use {@link Morebits.ip.sanitizeIPv6}.
- *
- * @deprecated Use {@link Morebits.ip.sanitizeIPv6}.
- * Converts an IPv6 address to the canonical form stored and used by MediaWiki.
- * JavaScript translation of the {@link https://gerrit.wikimedia.org/r/plugins/gitiles/mediawiki/core/+/8eb6ac3e84ea3312d391ca96c12c49e3ad0753bb/includes/utils/IP.php#131|`IP::sanitizeIP()`}
- * function from the IPUtils library.  Addresses are verbose, uppercase,
- * normalized, and expanded to 8 words.
- *
- * @param {string} address - The IPv6 address, with or without CIDR.
- * @return {string}
- */
-Morebits.sanitizeIPv6 = function (address) {
-	console.warn('NOTE: Morebits.sanitizeIPv6 was renamed to Morebits.ip.sanitizeIPv6 in February 2021, please use that instead'); // eslint-disable-line no-console
-	return Morebits.ip.sanitizeIPv6(address);
-};
-
-/**
  * Determines whether the current page is a redirect or soft redirect. Fails
  * to detect soft redirects on edit, history, etc. pages.  Will attempt to
  * detect Module:RfD, with the same failure points.
