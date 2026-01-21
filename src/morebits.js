@@ -1790,69 +1790,6 @@ Morebits.Date = function() {
 	}
 };
 
-/**
- * Localized strings for date processing.
- *
- * @memberof Morebits.Date
- * @type {object.<string, string>}
- * @property {string[]} months
- * @property {string[]} monthsShort
- * @property {string[]} days
- * @property {string[]} daysShort
- * @property {object.<string, string>} relativeTimes
- * @private
- */
-Morebits.Date.localeData = {
-	// message names here correspond to MediaWiki message names
-	months: ['January', 'February', 'March',
-		'April', 'May', 'June',
-		'July', 'August', 'September',
-		'October', 'November', 'December'],
-	monthsShort: ['Jan', 'Feb', 'Mar',
-		'Apr', 'May', 'Jun',
-		'Jul', 'Aug', 'Sep',
-		'Oct', 'Nov', 'Dec'],
-	days: ['Sunday', 'Monday', 'Tuesday',
-		'Wednesday', 'Thursday', 'Friday',
-		'Saturday'],
-	daysShort: ['Sun', 'Mon', 'Tue',
-		'Wed', 'Thu', 'Fri',
-		'Sat'],
-
-	relativeTimes: {
-		thisDay: '[Today at] h:mm A',
-		prevDay: '[Yesterday at] h:mm A',
-		nextDay: '[Tomorrow at] h:mm A',
-		thisWeek: 'dddd [at] h:mm A',
-		pastWeek: '[Last] dddd [at] h:mm A',
-		other: 'YYYY-MM-DD'
-	}
-};
-
-/**
- * Map units with getter/setter function names, for `add` and `subtract`
- * methods.
- *
- * @memberof Morebits.Date
- * @type {object.<string, string>}
- * @property {string} seconds
- * @property {string} minutes
- * @property {string} hours
- * @property {string} days
- * @property {string} weeks
- * @property {string} months
- * @property {string} years
- */
-Morebits.Date.unitMap = {
-	seconds: 'Seconds',
-	minutes: 'Minutes',
-	hours: 'Hours',
-	days: 'Date',
-	weeks: 'Week', // Not a function but handled in `add` through cunning use of multiplication
-	months: 'Month',
-	years: 'FullYear'
-};
-
 Morebits.Date.prototype = {
 	/** @return {boolean} */
 	isValid: function() {
@@ -2105,6 +2042,70 @@ Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
 		return this.privateDate[func].apply(this.privateDate, Array.prototype.slice.call(arguments));
 	};
 });
+
+
+/**
+ * Localized strings for date processing.
+ *
+ * @memberof Morebits.Date
+ * @type {object.<string, string>}
+ * @property {string[]} months
+ * @property {string[]} monthsShort
+ * @property {string[]} days
+ * @property {string[]} daysShort
+ * @property {object.<string, string>} relativeTimes
+ * @private
+ */
+Morebits.Date.localeData = {
+	// message names here correspond to MediaWiki message names
+	months: ['January', 'February', 'March',
+		'April', 'May', 'June',
+		'July', 'August', 'September',
+		'October', 'November', 'December'],
+	monthsShort: ['Jan', 'Feb', 'Mar',
+		'Apr', 'May', 'Jun',
+		'Jul', 'Aug', 'Sep',
+		'Oct', 'Nov', 'Dec'],
+	days: ['Sunday', 'Monday', 'Tuesday',
+		'Wednesday', 'Thursday', 'Friday',
+		'Saturday'],
+	daysShort: ['Sun', 'Mon', 'Tue',
+		'Wed', 'Thu', 'Fri',
+		'Sat'],
+
+	relativeTimes: {
+		thisDay: '[Today at] h:mm A',
+		prevDay: '[Yesterday at] h:mm A',
+		nextDay: '[Tomorrow at] h:mm A',
+		thisWeek: 'dddd [at] h:mm A',
+		pastWeek: '[Last] dddd [at] h:mm A',
+		other: 'YYYY-MM-DD'
+	}
+};
+
+/**
+ * Map units with getter/setter function names, for `add` and `subtract`
+ * methods.
+ *
+ * @memberof Morebits.Date
+ * @type {object.<string, string>}
+ * @property {string} seconds
+ * @property {string} minutes
+ * @property {string} hours
+ * @property {string} days
+ * @property {string} weeks
+ * @property {string} months
+ * @property {string} years
+ */
+Morebits.Date.unitMap = {
+	seconds: 'Seconds',
+	minutes: 'Minutes',
+	hours: 'Hours',
+	days: 'Date',
+	weeks: 'Week', // Not a function but handled in `add` through cunning use of multiplication
+	months: 'Month',
+	years: 'FullYear'
+};
 
 /* **************** Morebits.wiki **************** */
 /**
