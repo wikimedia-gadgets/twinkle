@@ -1733,95 +1733,103 @@ Morebits.Unbinder.getCallback = function UnbinderGetCallback(self) {
  * @memberof Morebits
  * @class
  */
-Morebits.Date = function() {
-	const args = Array.prototype.slice.call(arguments);
+Morebits.Date = class extends Date {
+	constructor(...args) {
+		// Check MediaWiki formats
+		// Must be first since firefox erroneously accepts the timestamp
+		// format, sans timezone (See also: #921, #936, #1174, #1187), and the
+		// 14-digit string will be interpreted differently.
+		if (args.length === 1) {
+			const param = args[0];
+			if (/^\d{14}$/.test(param)) {
+				// YYYYMMDDHHmmss
+				const digitMatch = /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(param);
+				if (digitMatch) {
+					// ..... year ... month .. date ... hour .... minute ..... second
+					super(Date.UTC(digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]));
+				} else {
+					super(...args);
+				}
+			} else if (typeof param === 'string') {
+				// Wikitext signature timestamp
+				const dateParts = Morebits.l10n.signatureTimestampFormat(param);
+				if (dateParts) {
+					super(Date.UTC(...dateParts));
+				} else {
+					super(...args);
+				}
+			} else {
+				super(...args);
+			}
+		} else {
+			super(...args);
+		}
 
-	// Check MediaWiki formats
-	// Must be first since firefox erroneously accepts the timestamp
-	// format, sans timezone (See also: #921, #936, #1174, #1187), and the
-	// 14-digit string will be interpreted differently.
-	if (args.length === 1) {
-		const param = args[0];
-		if (/^\d{14}$/.test(param)) {
-			// YYYYMMDDHHmmss
-			const digitMatch = /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/.exec(param);
-			if (digitMatch) {
-				// ..... year ... month .. date ... hour .... minute ..... second
-				this.privateDate = new Date(Date.UTC.apply(null, [digitMatch[1], digitMatch[2] - 1, digitMatch[3], digitMatch[4], digitMatch[5], digitMatch[6]]));
-			}
-		} else if (typeof param === 'string') {
-			// Wikitext signature timestamp
-			const dateParts = Morebits.l10n.signatureTimestampFormat(param);
-			if (dateParts) {
-				this.privateDate = new Date(Date.UTC.apply(null, dateParts));
-			}
+		if (!this.isValid()) {
+			mw.log.warn('Invalid Morebits.Date initialisation:', args);
 		}
 	}
 
-	if (!this.privateDate) {
-		// Try standard date
-		this.privateDate = new (Function.prototype.bind.apply(Date, [Date].concat(args)))();
-	}
-
-	// Still no?
-	if (!this.isValid()) {
-		mw.log.warn('Invalid Morebits.Date initialisation:', args);
-	}
-};
-
-Morebits.Date.prototype = {
 	/** @return {boolean} */
-	isValid: function() {
+	isValid() {
 		return !isNaN(this.getTime());
-	},
+	}
 
 	/**
 	 * @param {(Date|Morebits.Date)} date
 	 * @return {boolean}
 	 */
-	isBefore: function(date) {
+	isBefore(date) {
 		return this.getTime() < date.getTime();
-	},
+	}
+
 	/**
 	 * @param {(Date|Morebits.Date)} date
 	 * @return {boolean}
 	 */
-	isAfter: function(date) {
+	isAfter(date) {
 		return this.getTime() > date.getTime();
-	},
+	}
 
 	/** @return {string} */
-	getUTCMonthName: function() {
+	getUTCMonthName() {
 		return Morebits.Date.localeData.months[this.getUTCMonth()];
-	},
+	}
+
 	/** @return {string} */
-	getUTCMonthNameAbbrev: function() {
+	getUTCMonthNameAbbrev() {
 		return Morebits.Date.localeData.monthsShort[this.getUTCMonth()];
-	},
+	}
+
 	/** @return {string} */
-	getMonthName: function() {
+	getMonthName() {
 		return Morebits.Date.localeData.months[this.getMonth()];
-	},
+	}
+
 	/** @return {string} */
-	getMonthNameAbbrev: function() {
+	getMonthNameAbbrev() {
 		return Morebits.Date.localeData.monthsShort[this.getMonth()];
-	},
+	}
+
 	/** @return {string} */
-	getUTCDayName: function() {
+	getUTCDayName() {
 		return Morebits.Date.localeData.days[this.getUTCDay()];
-	},
+	}
+
 	/** @return {string} */
-	getUTCDayNameAbbrev: function() {
+	getUTCDayNameAbbrev() {
 		return Morebits.Date.localeData.daysShort[this.getUTCDay()];
-	},
+	}
+
 	/** @return {string} */
-	getDayName: function() {
+	getDayName() {
 		return Morebits.Date.localeData.days[this.getDay()];
-	},
+	}
+
 	/** @return {string} */
-	getDayNameAbbrev: function() {
+	getDayNameAbbrev() {
 		return Morebits.Date.localeData.daysShort[this.getDay()];
-	},
+	}
 
 	/**
 	 * Add a given number of minutes, hours, days, weeks, months, or years to the date.
@@ -1832,7 +1840,7 @@ Morebits.Date.prototype = {
 	 * @throws {Error} If invalid or unsupported unit is given.
 	 * @return {Morebits.Date}
 	 */
-	add: function(number, unit) {
+	add(number, unit) {
 		let num = parseInt(number, 10); // normalize
 		if (isNaN(num)) {
 			throw new Error('Invalid number "' + number + '" provided.');
@@ -1851,7 +1859,7 @@ Morebits.Date.prototype = {
 			return this;
 		}
 		throw new Error('Invalid unit "' + unit + '": Only ' + Object.keys(unitMap).join(', ') + ' are allowed.');
-	},
+	}
 
 	/**
 	 * Subtracts a given number of minutes, hours, days, weeks, months, or years to the date.
@@ -1862,9 +1870,9 @@ Morebits.Date.prototype = {
 	 * @throws {Error} If invalid or unsupported unit is given.
 	 * @return {Morebits.Date}
 	 */
-	subtract: function(number, unit) {
+	subtract(number, unit) {
 		return this.add(-number, unit);
-	},
+	}
 
 	/**
 	 * Format the date into a string per the given format string.
@@ -1902,7 +1910,7 @@ Morebits.Date.prototype = {
 	 * `utc`, or specify a time zone as number of minutes relative to UTC.
 	 * @return {string}
 	 */
-	format: function(formatstr, zone) {
+	format(formatstr, zone) {
 		if (!this.isValid()) {
 			return 'Invalid date'; // Put the truth out, preferable to "NaNNaNNan NaN:NaN" or whatever
 		}
@@ -1949,7 +1957,7 @@ Morebits.Date.prototype = {
 			(match) => replacementMap[match]
 		);
 		return unbinder.rebind().replace(/\[(.*?)\]/g, '$1');
-	},
+	}
 
 	/**
 	 * Gives a readable relative time string such as "Yesterday at 6:43 PM" or "Last Thursday at 11:45 AM".
@@ -1959,7 +1967,7 @@ Morebits.Date.prototype = {
 	 * 'utc' (for UTC), or specify a time zone as number of minutes past UTC.
 	 * @return {string}
 	 */
-	calendar: function(zone) {
+	calendar(zone) {
 		// Zero out the hours, minutes, seconds and milliseconds - keeping only the date;
 		// find the difference. Note that setHours() returns the same thing as getTime().
 		const dateDiff = (new Date().setHours(0, 0, 0, 0) -
@@ -1978,7 +1986,7 @@ Morebits.Date.prototype = {
 			default:
 				return this.format(Morebits.Date.localeData.relativeTimes.other, zone);
 		}
-	},
+	}
 
 	/**
 	 * Get a regular expression that matches wikitext section titles, such
@@ -1986,10 +1994,10 @@ Morebits.Date.prototype = {
 	 *
 	 * @return {RegExp}
 	 */
-	monthHeaderRegex: function() {
+	monthHeaderRegex() {
 		return new RegExp('^(==+)\\s*(?:' + this.getUTCMonthName() + '|' + this.getUTCMonthNameAbbrev() +
 			')\\s+' + this.getUTCFullYear() + '\\s*\\1', 'mg');
-	},
+	}
 
 	/**
 	 * Creates a wikitext section header with the month and year.
@@ -1998,7 +2006,7 @@ Morebits.Date.prototype = {
 	 * with no wikitext markers (==).
 	 * @return {string}
 	 */
-	monthHeader: function(level) {
+	monthHeader(level) {
 		// Default to 2, but allow for 0 or stringy numbers
 		level = parseInt(level, 10);
 		level = isNaN(level) ? 2 : level;
@@ -2012,16 +2020,7 @@ Morebits.Date.prototype = {
 		return text; // Just the string
 
 	}
-
 };
-
-// Allow native Date.prototype methods to be used on Morebits.Date objects
-Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
-	Morebits.Date.prototype[func] = function() {
-		return this.privateDate[func].apply(this.privateDate, Array.prototype.slice.call(arguments));
-	};
-});
-
 
 /**
  * Localized strings for date processing.
@@ -2037,20 +2036,11 @@ Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
  */
 Morebits.Date.localeData = {
 	// message names here correspond to MediaWiki message names
-	months: ['January', 'February', 'March',
-		'April', 'May', 'June',
-		'July', 'August', 'September',
+	months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
 		'October', 'November', 'December'],
-	monthsShort: ['Jan', 'Feb', 'Mar',
-		'Apr', 'May', 'Jun',
-		'Jul', 'Aug', 'Sep',
-		'Oct', 'Nov', 'Dec'],
-	days: ['Sunday', 'Monday', 'Tuesday',
-		'Wednesday', 'Thursday', 'Friday',
-		'Saturday'],
-	daysShort: ['Sun', 'Mon', 'Tue',
-		'Wed', 'Thu', 'Fri',
-		'Sat'],
+	monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+	days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+	daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
 
 	relativeTimes: {
 		thisDay: '[Today at] h:mm A',
