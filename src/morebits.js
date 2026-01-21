@@ -2112,16 +2112,6 @@ Object.getOwnPropertyNames(Date.prototype).forEach((func) => {
  */
 Morebits.wiki = {};
 
-/**
- * @deprecated in favor of Morebits.isPageRedirect as of November 2020
- * @memberof Morebits.wiki
- * @return {boolean}
- */
-Morebits.wiki.isPageRedirect = function wikipediaIsPageRedirect() {
-	console.warn('NOTE: Morebits.wiki.isPageRedirect has been deprecated, use Morebits.isPageRedirect instead.'); // eslint-disable-line no-console
-	return Morebits.isPageRedirect();
-};
-
 /* **************** Morebits.wiki.actionCompleted **************** */
 /**
  * @memberof Morebits.wiki
