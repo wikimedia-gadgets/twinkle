@@ -3118,32 +3118,6 @@ Morebits.wiki.Page = function(pageName, status) {
 	};
 
 	/**
-	 * @deprecated As of December 2020, use setWatchlist.
-	 * @param {boolean} [watchlistOption=false] -
-	 * - `True`: page watchlist status will be set based on the user's
-	 * preference settings when `save()` is called.
-	 * - `False`: watchlist status of the page will not be changed.
-	 *
-	 * Watchlist notes:
-	 * 1. The MediaWiki API value of 'unwatch', which explicitly removes
-	 * the page from the user's watchlist, is not used.
-	 * 2. If both `setWatchlist()` and `setWatchlistFromPreferences()` are
-	 * called, the last call takes priority.
-	 * 3. Twinkle modules should use the appropriate preference to set the watchlist options.
-	 * 4. Most Twinkle modules use `setWatchlist()`. `setWatchlistFromPreferences()`
-	 * is only needed for the few Twinkle watchlist preferences that
-	 * accept a string value of `default`.
-	 */
-	this.setWatchlistFromPreferences = function(watchlistOption) {
-		console.warn('NOTE: Morebits.wiki.Page.setWatchlistFromPreferences was deprecated December 2020, please use setWatchlist'); // eslint-disable-line no-console
-		if (watchlistOption) {
-			ctx.watchlistOption = 'preferences';
-		} else {
-			ctx.watchlistOption = 'nochange';
-		}
-	};
-
-	/**
 	 * @param {boolean} [followRedirect=false] -
 	 * - `true`: a maximum of one redirect will be followed. In the event
 	 * of a redirect, a message is displayed to the user and the redirect
