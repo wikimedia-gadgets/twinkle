@@ -10,37 +10,38 @@
 
 /* Define CSS variables */
 html {
-	--morebits-color-status-status: #4682B4;
-	--morebits-color-legend: #31628F;
+	--morebits-color-status-status: #4682b4;
+	--morebits-color-legend: #31628f;
 	--morebits-color-tooltip: #0000cd;
-	--morebits-color-info: #228B22;
-	--morebits-color-warning: #FF4500;
-	--morebits-color-titlebar-links: #3062AD;
-	--morebits-bgcolor-dialog: #F0F8FF;
-	--morebits-bgcolor-titlebar: #BCCADF;
+	--morebits-color-info: #228b22;
+	--morebits-color-warning: #ff4500;
+	--morebits-color-titlebar-links: #3062ad;
+	--morebits-bgcolor-dialog: #f0f8ff;
+	--morebits-bgcolor-titlebar: #bccadf;
 }
 
 @media screen {
 	html.skin-theme-clientpref-night {
-		--morebits-color-status-status: #A6C4DE;
-		--morebits-color-legend: #6B9DCC;
-		--morebits-color-tooltip: #7A7AFF;
-		--morebits-color-info: #6BDB6B;
-		--morebits-color-warning: #FF6D38;
-		--morebits-color-titlebar-links: #8BADDF;
+		--morebits-color-status-status: #a6c4de;
+		--morebits-color-legend: #6b9dcc;
+		--morebits-color-tooltip: #7a7aff;
+		--morebits-color-info: #6bdb6b;
+		--morebits-color-warning: #ff6d38;
+		--morebits-color-titlebar-links: #8baddf;
 		--morebits-bgcolor-dialog: #141c26;
 		--morebits-bgcolor-titlebar: #1c2a52;
 	}
 }
 
+/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
 @media screen and (prefers-color-scheme: dark) {
 	html.skin-theme-clientpref-os {
-		--morebits-color-status-status: #A6C4DE;
-		--morebits-color-legend: #6B9DCC;
-		--morebits-color-tooltip: #7A7AFF;
-		--morebits-color-info: #6BDB6B;
-		--morebits-color-warning: #FF6D38;
-		--morebits-color-titlebar-links: #8BADDF;
+		--morebits-color-status-status: #a6c4de;
+		--morebits-color-legend: #6b9dcc;
+		--morebits-color-tooltip: #7a7aff;
+		--morebits-color-info: #6bdb6b;
+		--morebits-color-warning: #ff6d38;
+		--morebits-color-titlebar-links: #8baddf;
 		--morebits-bgcolor-dialog: #141c26;
 		--morebits-bgcolor-titlebar: #1c2a52;
 	}
@@ -49,58 +50,54 @@ html {
 /* Morebits.Status */
 
 .morebits_status_status {
-	color: var(--morebits-color-status-status, #4682B4);
+	color: var(--morebits-color-status-status, #4682b4);
 }
 
 .morebits_status_info {
-	color: var(--morebits-color-info, #228B22);
+	color: var(--morebits-color-info, #228b22);
 }
 
 .morebits_status_warn {
-	color: var(--morebits-color-warning, #FF4500);
+	color: var(--morebits-color-warning, #ff4500);
 }
 
 .morebits_status_error {
-	color: var(--morebits-color-warning, #FF4500);
+	color: var(--morebits-color-warning, #ff4500);
 	font-weight: bold;
 }
 
 /* Morebits.QuickForm */
 
-form.quickform
-{
+form.quickform {
 	width: 96%;
 	margin: auto;
-	padding: .5em;
+	padding: 0.5em;
 	color: var(--color-base, #202122);
 }
 
-form.quickform *
-{
+form.quickform * {
 	font-family: sans-serif;
 }
 
-form.quickform fieldset
-{
-	margin: .4em 0 1em;
+form.quickform fieldset {
+	margin: 0.4em 0 1em;
 }
 
-form.quickform legend
-{
-	color: var(--morebits-color-legend, #31628F);
+form.quickform legend {
+	color: var(--morebits-color-legend, #31628f);
 	font-weight: bold;
 }
 
-form.quickform input[type=text], form.quickform select
-{
+form.quickform input[type=text],
+form.quickform select {
 	min-width: 15em;
 	font-size: 110%;
 }
 
-form.quickform select
-{
+form.quickform select {
+	/* stylelint-disable-next-line color-named */ /* FIXME */
 	border: 1px solid gray;
-	margin-left: .2em;
+	margin-left: 0.2em;
 }
 
 form.quickform input[type=checkbox],
@@ -115,106 +112,101 @@ form.quickform input[type=radio] {
 }
 
 form.quickform div {
+	/* stylelint-disable-next-line declaration-property-unit-disallowed-list */ /* FIXME */
 	line-height: 18px;
 }
 
-form.quickform h5
-{
-	margin: .5em 0 0;
-	padding: .3em .2em .2em;
+form.quickform h5 {
+	margin: 0.5em 0 0;
+	padding: 0.3em 0.2em 0.2em;
 	font-size: 108%; /* 100% is 12px => 108% is 12.96px */
 }
 
 /* only give the top border to headers with something above them */
-form.quickform div + h5, form.quickform div + div > h5, form.quickform h5 + h5
-{
-	border-top: 1px solid #88A;
+form.quickform div + h5,
+form.quickform h5 + h5,
+form.quickform div + div > h5 {
+	border-top: 1px solid #88a;
 }
 
-form.quickform textarea
-{
+form.quickform textarea {
 	width: 100%;
 	height: 4em;
 	font-size: 150%;
 }
 
-form.quickform input:disabled + label
-{
+form.quickform input:disabled + label {
 	color: var(--color-disabled, #72777d);
 }
 
-form.quickform span.quickformDescription
-{
+form.quickform span.quickformDescription {
 	font-style: italic;
 }
 
-form.quickform span.quickformDescription code
-{
+form.quickform span.quickformDescription code {
 	font-style: normal;
 	font-family: monospace;
 }
 
-form.quickform .quickformSubgroup
-{
-	margin-bottom: .5em;
+form.quickform .quickformSubgroup {
+	margin-bottom: 0.5em;
 	margin-left: 3em;
 }
 
 /* The tooltip button and the content itself */
-form.quickform .morebits-tooltipButton
-{
+form.quickform .morebits-tooltipButton {
+	/* stylelint-disable-next-line color-named */ /* FIXME */
 	color: var(--morebits-color-tooltip, mediumblue);
 	font-weight: bold;
 	cursor: help;
-	padding: .3em;
-}
-.morebits-ui-tooltip
-{
-	padding: 4px 6px 4px 6px;
-	font-size: 13px;
+	padding: 0.3em;
 }
 
+.morebits-ui-tooltip {
+	padding: 4px 6px 4px 6px;
+	/* stylelint-disable-next-line declaration-property-unit-disallowed-list */ /* FIXME */
+	font-size: 13px;
+	background: var(--background-color-neutral-subtle, #f8f9fa);
+	color: inherit;
+	border-color: var(--border-color-base, #a2ab91);
+	box-shadow: 0 0 5px #a2ab91;
+}
 
 /* Scrollbox styles, for use within Morebits.SimpleWindow */
 
-div.morebits-scrollbox
-{
+div.morebits-scrollbox {
 	background: var(--background-color-base, #fff);
 	color: inherit;
+	/* stylelint-disable-next-line color-named */ /* FIXME */
 	border: 1px solid gray;
-	margin-bottom: .6em;
-	margin-top: .6em;
+	margin-bottom: 0.6em;
+	margin-top: 0.6em;
 	max-height: 20em;
 	overflow: auto;
 	padding: 6px 6px 0;
 }
 
-div.morebits-scrollbox > h5:first-child
-{
-	border: none;
+div.morebits-scrollbox > h5:first-child {
+	border: 0;
 	margin-top: 0;
 	padding-top: 0;
 }
 
-div.morebits-scrollbox > :last-child
-{
+div.morebits-scrollbox > :last-child {
 	margin-bottom: 6px;
 }
 
-
 /* Previewbox */
 
-div.morebits-previewbox
-{
+div.morebits-previewbox {
 	background: inherit;
 	color: inherit;
 	border: 2px inset;
-	margin: .4em auto .2em;
-	padding: .2em .4em;
+	margin: 0.4em auto 0.2em;
+	padding: 0.2em 0.4em;
 }
 
-div.morebits-previewbox .mw-editsection
-{
+div.morebits-previewbox .mw-editsection {
 	display: none;
 }
 
@@ -226,13 +218,12 @@ div.morebits-usertext {
 	font-size: 95%;
 }
 
-
 /* Morebits.SimpleWindow */
 
 .morebits-dialog {
 	border: 1px #666 solid;
 	font-family: sans-serif;
-	background-color: var(--morebits-bgcolor-dialog, #F0F8FF);
+	background-color: var(--morebits-bgcolor-dialog, #f0f8ff);
 	color: inherit;
 	background-image: none;
 }
@@ -242,9 +233,11 @@ div.morebits-usertext {
 .skin-vector .morebits-dialog {
 	font-size: 75%; /* 100% is 16px => 75% is 12px */
 }
+
 .skin-timeless .morebits-dialog {
 	font-size: 79%; /* 100% is 15.2px => 79% is 12.008px */
 }
+
 .skin-monobook .morebits-dialog,
 .skin-modern .morebits-dialog {
 	font-size: 120%; /* 100% is 10px => 120% is 12px */
@@ -252,12 +245,12 @@ div.morebits-usertext {
 
 body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	height: 1em;
-	background-color: var(--morebits-bgcolor-titlebar, #BCCADF) !important;
+	background-color: var(--morebits-bgcolor-titlebar, #bccadf) !important;
 	color: inherit;
 	background-image: none !important;
 	font: bold 108% sans-serif; /* 100% is 12px (from above) => 108% is 12.96px */
 	overflow: hidden;
-	padding: .4em .3em .5em !important;
+	padding: 0.4em 0.3em 0.5em !important;
 	white-space: nowrap;
 }
 
@@ -270,11 +263,11 @@ body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	right: 0;
 	top: auto;
 	width: 2em;
-	margin: -.5em -.15em 0;
+	margin: -0.5em -0.15em 0;
 }
 
 .ui-dialog.morebits-dialog .ui-dialog-titlebar-close span {
-	margin: .33em;
+	margin: 0.33em;
 }
 
 .ui-dialog.morebits-dialog .morebits-dialog-content {
@@ -282,16 +275,16 @@ body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 }
 
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
-	background-color: var(--morebits-bgcolor-titlebar, #BCCADF);
+	background-color: var(--morebits-bgcolor-titlebar, #bccadf);
 	color: inherit;
 	margin: 0;
-	min-height: .5em;
+	min-height: 0.5em;
 	padding-left: 1.2em !important;
 }
 
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 	float: none;
-	margin: .2em 0 -.1em;
+	margin: 0.2em 0 -0.1em;
 	cursor: auto;
 }
 
@@ -302,15 +295,15 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 .morebits-dialog-footerlinks {
 	font-size: 97%; /* 100% is 12px (from above) => 97% is 11.64px */
 	float: right;
-	margin: .7em .4em 0 0;
+	margin: 0.7em 0.4em 0 0;
 }
 
 body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
-	color: var(--morebits-color-titlebar-links, #3062AD);
+	color: var(--morebits-color-titlebar-links, #3062ad);
 }
 
 .morebits-dialog-buttons[data-empty] + .morebits-dialog-footerlinks {
-	margin: .1em .4em -.2em 0;
+	margin: 0.1em 0.4em -0.2em 0;
 }
 
 .ui-icon {
@@ -321,34 +314,31 @@ body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
 	display: inline-block;
 }
 
-.morebits-ui-tooltip {
-	background: var(--background-color-neutral-subtle, #f8f9fa);
-	color: inherit;
-	border-color: var(--border-color-base, #a2ab91);
-	box-shadow: 0 0 5px #a2ab91;
-}
-
 /* For styling message/warning boxes. Cannot use MediaWiki ombox class because it will be deprecated soon. */
 table.morebits-ombox {
-    margin: 4px 10%;
-    border-collapse: collapse;
-    border: 1px solid #a2a9b1;
-    background: var(--background-color-neutral-subtle, #f8f9fa);
-    color: inherit;
-    box-sizing: border-box;
+	margin: 4px 10%;
+	border-collapse: collapse;
+	border: 1px solid #a2a9b1;
+	background: var(--background-color-neutral-subtle, #f8f9fa);
+	color: inherit;
+	box-sizing: border-box;
 }
+
 table.morebits-ombox-content {
-    border: 1px solid #f28500;
+	border: 1px solid #f28500;
 }
+
 td.morebits-mbox-image {
-    border: none;
-    padding: 2px 0 2px 0.9em;
-    text-align: center;
+	border: 0;
+	padding: 2px 0 2px 0.9em;
+	text-align: center;
 }
-th.morebits-mbox-text, td.morebits-mbox-text {
-    border: none;
-    padding: 0.25em 0.9em;
-    width: 100%;
+
+th.morebits-mbox-text,
+td.morebits-mbox-text {
+	border: 0;
+	padding: 0.25em 0.9em;
+	width: 100%;
 }
 
 /* Override select2 silliness */
@@ -358,6 +348,6 @@ th.morebits-mbox-text, td.morebits-mbox-text {
 .select2-morebits .select2-selection__rendered,
 .select2-morebits .select2-selection--multiple,
 .select2-morebits .select2-selection__choice {
-    background: var(--background-color-base, #fff) !important;
-    color: inherit !important;
+	background: var(--background-color-base, #fff) !important;
+	color: inherit !important;
 }
