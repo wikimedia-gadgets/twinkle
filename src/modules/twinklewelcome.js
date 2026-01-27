@@ -221,7 +221,11 @@ Twinkle.welcome.populateWelcomeList = function(e) {
 
 // A list of welcome templates and their properties and syntax
 
-// The four fields that are available are "description", "linkedArticle", "syntax", and "tooltip".
+// The four fields that are available are:
+//   - "description"
+//   - "linkedArticle" - when set to true, adds a "Linked article (if supported by template):" label and text box. The value typed into this text box is used to populate the $ARTICLE$ magic word below.
+//   - "syntax"
+//   - "tooltip"
 // The three magic words that can be used in the "syntax" field are:
 //   - $USERNAME$  - replaced by the welcomer's username, depending on user's preferences
 //   - $ARTICLE$   - replaced by an article name, if "linkedArticle" is true
@@ -451,8 +455,7 @@ Twinkle.welcome.templates = {
 			},
 			'welcome-in': {
 				description: 'welcome for users with an apparent interest in India topics',
-				linkedArticle: true,
-				syntax: '{{subst:welcome-in|$USERNAME$|art=$ARTICLE$}} ~~~~'
+				syntax: '{{subst:welcome-in|$USERNAME$}} ~~~~'
 			},
 			'welcome-math': {
 				description: 'welcome for users with an apparent interest in mathematical topics',
@@ -462,7 +465,7 @@ Twinkle.welcome.templates = {
 			'welcome-med': {
 				description: 'welcome for users with an apparent interest in medicine topics',
 				linkedArticle: true,
-				syntax: '{{subst:welcome-med|$USERNAME$|art=$ARTICLE$}} ~~~~'
+				syntax: '{{subst:welcome-med|$ARTICLE$}} ~~~~'
 			},
 			'welcome-no': {
 				description: 'welcome for users with an apparent interest in Norway topics',
@@ -470,8 +473,7 @@ Twinkle.welcome.templates = {
 			},
 			'welcome-pk': {
 				description: 'welcome for users with an apparent interest in Pakistan topics',
-				linkedArticle: true,
-				syntax: '{{subst:welcome-pk|$USERNAME$|art=$ARTICLE$}} ~~~~'
+				syntax: '{{subst:welcome-pk|$USERNAME$}} ~~~~'
 			},
 			'welcome-phys': {
 				description: 'welcome for users with an apparent interest in physics topics',
