@@ -1256,6 +1256,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
+			pageobj.setDiscussionToolsAutoSubscribe(false);
 			pageobj.save();
 		},
 		delsortListing: function(pageobj) {
@@ -1265,6 +1266,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setEditSummary('Listing [[:' + discussionPage + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setCreateOption('nocreate');
+			pageobj.setDiscussionToolsAutoSubscribe(false);
 			pageobj.save();
 		}
 	},
@@ -1613,6 +1615,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
+			pageobj.setDiscussionToolsAutoSubscribe(false);
 			pageobj.save();
 		},
 		sendNotifications: function(pageobj) {
