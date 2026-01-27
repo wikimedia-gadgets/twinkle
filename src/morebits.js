@@ -2537,6 +2537,7 @@ Morebits.wiki.Page = function(pageName, status) {
 		followCrossNsRedirect: true,
 		watchlistOption: 'nochange',
 		watchlistExpiry: null,
+		discussionToolsAutoSubscribe: null,
 		creator: null,
 		timestamp: null,
 
@@ -2761,6 +2762,10 @@ Morebits.wiki.Page = function(pageName, status) {
 		// Set bot edit attribute. If this parameter is present with any value, it is interpreted as true
 		if (ctx.botEdit) {
 			query.bot = true;
+		}
+
+		if (ctx.discussionToolsAutoSubscribe !== null) {
+			query.discussiontoolsautosubscribe = ctx.discussionToolsAutoSubscribe ? 'yes' : 'no';
 		}
 
 		switch (ctx.editMode) {
@@ -3088,6 +3093,16 @@ Morebits.wiki.Page = function(pageName, status) {
 			watchlistExpiry = watchlistExpiry.toISOString();
 		}
 		ctx.watchlistExpiry = watchlistExpiry;
+	};
+
+	/**
+	 * If editing a talk page, set whether to subscribe to any talk
+	 * page thread created by the edit.
+	 *
+	 * @param {boolean} subscribe
+	 */
+	this.setDiscussionToolsAutoSubscribe = function(subscribe) {
+		ctx.discussionToolsAutoSubscribe = subscribe;
 	};
 
 	/**
