@@ -682,7 +682,7 @@ Twinkle.speedy.data = [
 		subgroup: [
 			{
 				name: 'subcriteria',
-				type: 'radio',
+				type: 'checkbox',
 				list: [
 					{
 						label: 'Communication intended for the user',
@@ -690,14 +690,9 @@ Twinkle.speedy.data = [
 						tooltip: 'The page contains communication intended for the user, such as "Here is your Wikipedia article on...".'
 					},
 					{
-						label: 'Implausible non-existent references',
+						label: 'Implausible or nonsensical references',
 						value: 'implausible',
-						tooltip: 'The page contains implausible non-existent references.'
-					},
-					{
-						label: 'Nonsensical citations',
-						value: 'nonsensical',
-						tooltip: 'The page contains nonsensical citations.'
+						tooltip: 'The page contains implausible non-existent or otherwise nonsensical references.'
 					}
 				]
 			},
@@ -1984,24 +1979,24 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				break;
 
 			case 'llm': // G15
-				if ( form['csd.subcriteria'] && form['csd.subcriteria'].value) {
-					if (form['csd.subcriteria'].value === 'communication') {
-						currentParams.communication = 'yes';
-					} else if (form['csd.subcriteria'].value === 'nonsensical' || form['csd.subcriteria'].value === 'implausible') {
-						currentParams.references = 'yes';
-						if ( form['csd.subcriteria'].value === 'nonsensical' ) {
-							currentParams.reason = 'Nonsensical references';
-						} else {
-							currentParams.reason = 'Implausible references';
-						}
+				if (form['csd.subcriteria']) {
 
-						if (form['csd.reason'] && form['csd.reason'].value) {
-							currentParams.reason += ': ' + form['csd.reason'].value;
-						}
+					if (form['csd.subcriteria'][0].checked) {
+						currentParams.communication = 'yes';
+					}
+
+					if (form['csd.subcriteria'][1].checked) {
+						currentParams.references = 'yes';
+					}
+
+					if (!form['csd.subcriteria'][0].checked && !form['csd.subcriteria'][1].checked) {
+						alert('CSD G15:  Please select at least one sub-criterion.');
+						parameters = null;
+						return false;
 					}
 				}
 
-				if (form['csd.reason'] && form['csd.reason'].value && !(form['csd.subcriteria'] && form['csd.subcriteria'].value)) {
+				if (form['csd.reason'] && form['csd.reason'].value) {
 					currentParams.reason = form['csd.reason'].value;
 				}
 				break;
