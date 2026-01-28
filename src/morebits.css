@@ -69,10 +69,20 @@ html {
 /* Morebits.QuickForm */
 
 form.quickform {
-	width: 96%;
-	margin: auto;
+	box-sizing: border-box;
+	width: 98%;
+	height: 100%;
+	min-height: 0;
+	margin: 0 auto;
 	padding: 0.5em;
 	color: var(--color-base, #202122);
+}
+
+/* use flex layout for quickform to make the scrollbox resize with
+   the dialog, and to keep it from obscuring elements below it */
+form.quickform.has-scrollbox {
+	display: flex;
+	flex-direction: column;
 }
 
 form.quickform * {
@@ -166,7 +176,6 @@ form.quickform .morebits-tooltipButton {
 	/* stylelint-disable-next-line declaration-property-unit-disallowed-list */ /* FIXME */
 	font-size: 13px;
 	background: var(--background-color-neutral-subtle, #f8f9fa);
-	color: inherit;
 	border-color: var(--border-color-base, #a2ab91);
 	box-shadow: 0 0 5px #a2ab91;
 }
@@ -175,12 +184,13 @@ form.quickform .morebits-tooltipButton {
 
 div.morebits-scrollbox {
 	background: var(--background-color-base, #fff);
-	color: inherit;
 	/* stylelint-disable-next-line color-named */ /* FIXME */
 	border: 1px solid gray;
 	margin-bottom: 0.6em;
 	margin-top: 0.6em;
-	max-height: 20em;
+	height: auto;
+	flex-grow: 1;
+	min-height: 0;
 	overflow: auto;
 	padding: 6px 6px 0;
 }
@@ -198,21 +208,14 @@ div.morebits-scrollbox > :last-child {
 /* Previewbox */
 
 div.morebits-previewbox {
-	background: inherit;
-	color: inherit;
 	border: 2px inset;
 	margin: 0.4em auto 0.2em;
 	padding: 0.2em 0.4em;
 }
 
-div.morebits-previewbox .mw-editsection {
-	display: none;
-}
-
 div.morebits-usertext {
 	border: 1px solid #a2a9b1;
 	background-color: var(--background-color-neutral-subtle, #f8f9fa);
-	color: inherit;
 	padding: 5px;
 	font-size: 95%;
 }
@@ -220,11 +223,27 @@ div.morebits-usertext {
 /* Morebits.SimpleWindow */
 
 .morebits-dialog {
+	padding: 0.2em;
 	border: 1px #666 solid;
 	font-family: sans-serif;
 	background-color: var(--morebits-bgcolor-dialog);
-	color: inherit;
-	background-image: none;
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	overflow: hidden;
+	min-width: 150px;
+	min-height: 150px;
+	/* top, left, width, height, max-height, and z-index are set via JS */
+}
+
+.morebits-dialog-resizer {
+	position: absolute;
+	right: -5px;
+	bottom: -5px;
+	height: 20px;
+	width: 20px;
+	cursor: se-resize;
+	background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgMTYgMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+Cgk8ZyBzdHJva2U9IiM3MmE3Y2UiPgoJCTxwYXRoIGQ9Im0wIDEwTDEwIDAiLz4KCQk8cGF0aCBkPSJtNCAxMEwxMCA0Ii8+CgkJPHBhdGggZD0ibTggMTBMMTAgOCIvPgoJPC9nPgo8L3N2Zz4K);
 }
 
 /* px translations in comments are w.r.t standard browser settings,
@@ -242,49 +261,65 @@ div.morebits-usertext {
 	font-size: 120%; /* 100% is 10px => 120% is 12px */
 }
 
-body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
+.morebits-dialog .morebits-dialog-titlebar {
 	height: 1em;
-	background-color: var(--morebits-bgcolor-titlebar) !important;
-	color: inherit;
-	background-image: none !important;
+	min-height: 1em;
+	background-color: var(--morebits-bgcolor-titlebar);
 	font: bold 108% sans-serif; /* 100% is 12px (from above) => 108% is 12.96px */
 	overflow: hidden;
-	padding: 0.4em 0.3em 0.5em !important;
+	padding: 0.4em 0.3em 0.5em;
 	white-space: nowrap;
+	display: flex; /* needed so that align-items can be used */
+	align-items: center; /* to vertically center the close button */
+	cursor: move;
+	position: relative; /* so that the close button can be positioned relative to titlebar */
 }
 
 .morebits-dialog-scriptname {
 	font-weight: normal;
 }
 
-.ui-dialog.morebits-dialog .ui-dialog-titlebar-close {
-	height: 100%;
+.morebits-dialog .morebits-dialog-close {
+	position: absolute;
 	right: 0;
-	top: auto;
-	width: 2em;
-	margin: -0.5em -0.15em 0;
+	background-color: transparent;
+	border: 0;
+	font-size: 1.2em;
+	font-weight: bold;
+	padding: 5px 10px;
+	cursor: pointer;
+	border-radius: 50%;
+	transition: background-color 0.2s, color 0.2s;
 }
 
-.ui-dialog.morebits-dialog .ui-dialog-titlebar-close span {
+.morebits-dialog .morebits-dialog-close:hover {
+	background-color: #eee;
+	color: #000;
+}
+
+.morebits-dialog .morebits-dialog-close span {
 	margin: 0.33em;
 }
 
-.ui-dialog.morebits-dialog .morebits-dialog-content {
+.morebits-dialog .morebits-dialog-content {
 	padding: 0;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	height: 100%;
+	flex-grow: 1;
+	overflow-y: auto;
+	min-height: 0;
 }
 
-body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
+.morebits-dialog .morebits-dialog-buttonpane {
 	background-color: var(--morebits-bgcolor-titlebar);
-	color: inherit;
-	margin: 0;
-	min-height: 0.5em;
-	padding-left: 1.2em !important;
+	margin: auto 0 0;
+	padding: 0.3em 1.4em 0.5em 1.2em;
 }
 
-body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
-	float: none;
-	margin: 0.2em 0 -0.1em;
-	cursor: auto;
+.morebits-dialog .morebits-dialog-buttonpane button {
+	margin-top: 0.2em;
 }
 
 .morebits-dialog-buttons {
@@ -297,7 +332,7 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 	margin: 0.7em 0.4em 0 0;
 }
 
-body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
+.morebits-dialog .morebits-dialog-footerlinks a {
 	color: var(--morebits-color-titlebar-links);
 }
 
@@ -305,12 +340,18 @@ body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
 	margin: 0.1em 0.4em -0.2em 0;
 }
 
-.ui-icon {
-	vertical-align: -3px;
+.morebits-dialog-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+	z-index: 700; /* Higher than morebits-dialog but lesser than morebits-dialog-modal */
 }
 
-.ui-icon-inline {
-	display: inline-block;
+.morebits-dialog.morebits-dialog-modal {
+	z-index: 701;
 }
 
 /* For styling message/warning boxes. Cannot use MediaWiki ombox class because it will be deprecated soon. */
