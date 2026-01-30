@@ -50,19 +50,19 @@ html {
 /* Morebits.Status */
 
 .morebits_status_status {
-	color: var(--morebits-color-status-status, #4682b4);
+	color: var(--morebits-color-status-status);
 }
 
 .morebits_status_info {
-	color: var(--morebits-color-info, #228b22);
+	color: var(--morebits-color-info);
 }
 
 .morebits_status_warn {
-	color: var(--morebits-color-warning, #ff4500);
+	color: var(--morebits-color-warning);
 }
 
 .morebits_status_error {
-	color: var(--morebits-color-warning, #ff4500);
+	color: var(--morebits-color-warning);
 	font-weight: bold;
 }
 
@@ -84,7 +84,7 @@ form.quickform fieldset {
 }
 
 form.quickform legend {
-	color: var(--morebits-color-legend, #31628f);
+	color: var(--morebits-color-legend);
 	font-weight: bold;
 }
 
@@ -155,8 +155,7 @@ form.quickform .quickformSubgroup {
 
 /* The tooltip button and the content itself */
 form.quickform .morebits-tooltipButton {
-	/* stylelint-disable-next-line color-named */ /* FIXME */
-	color: var(--morebits-color-tooltip, mediumblue);
+	color: var(--morebits-color-tooltip);
 	font-weight: bold;
 	cursor: help;
 	padding: 0.3em;
@@ -223,7 +222,7 @@ div.morebits-usertext {
 .morebits-dialog {
 	border: 1px #666 solid;
 	font-family: sans-serif;
-	background-color: var(--morebits-bgcolor-dialog, #f0f8ff);
+	background-color: var(--morebits-bgcolor-dialog);
 	color: inherit;
 	background-image: none;
 }
@@ -245,7 +244,7 @@ div.morebits-usertext {
 
 body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 	height: 1em;
-	background-color: var(--morebits-bgcolor-titlebar, #bccadf) !important;
+	background-color: var(--morebits-bgcolor-titlebar) !important;
 	color: inherit;
 	background-image: none !important;
 	font: bold 108% sans-serif; /* 100% is 12px (from above) => 108% is 12.96px */
@@ -275,7 +274,7 @@ body .ui-dialog.morebits-dialog .ui-dialog-titlebar {
 }
 
 body .ui-dialog.morebits-dialog .ui-dialog-buttonpane {
-	background-color: var(--morebits-bgcolor-titlebar, #bccadf);
+	background-color: var(--morebits-bgcolor-titlebar);
 	color: inherit;
 	margin: 0;
 	min-height: 0.5em;
@@ -299,7 +298,7 @@ body .ui-dialog.morebits-dialog .ui-dialog-buttonpane button {
 }
 
 body .ui-dialog.morebits-dialog .morebits-dialog-footerlinks a {
-	color: var(--morebits-color-titlebar-links, #3062ad);
+	color: var(--morebits-color-titlebar-links);
 }
 
 .morebits-dialog-buttons[data-empty] + .morebits-dialog-footerlinks {

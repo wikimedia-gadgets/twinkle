@@ -68,7 +68,7 @@ html {
 /* Twinkle config */
 #twinkle-config {
 	border: 1px solid #666;
-	background: var(--twinkle-bgcolor-dialog, #f0f8ff);
+	background: var(--twinkle-bgcolor-dialog);
 	color: inherit;
 }
 
@@ -77,12 +77,12 @@ html {
 }
 
 #twinkle-config-titlebar {
-	background: var(--twinkle-bgcolor-titlebar, #bccadf);
+	background: var(--twinkle-bgcolor-titlebar);
 	color: inherit;
 }
 
 #twinkle-config-buttonpane {
-	background: var(--twinkle-bgcolor-titlebar, #bccadf);
+	background: var(--twinkle-bgcolor-titlebar);
 	color: inherit;
 	padding: 0.5em;
 }
