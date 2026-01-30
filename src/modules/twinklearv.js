@@ -86,7 +86,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 			type: 'field',
 			label: 'Temporary account notice',
 			name: 'ta_notice',
-			style: 'color: var(--morebits-color-warning, #FF4500)'
+			style: 'color: var(--morebits-color-warning)'
 		});
 
 		temporaryAccountNotice.append({
