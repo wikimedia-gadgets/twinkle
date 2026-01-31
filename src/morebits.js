@@ -5734,16 +5734,6 @@ Morebits.SimpleWindow.prototype = {
 	scriptName: null,
 
 	/**
-	 * Focuses the dialog. This might work, or on the contrary, it might not.
-	 *
-	 * @return {Morebits.SimpleWindow}
-	 */
-	focus: function() {
-		$(this.content).dialog('moveToTop');
-		return this;
-	},
-
-	/**
 	 * Closes the dialog. If this is set as an event handler, it will stop the event
 	 * from doing anything more.
 	 *
