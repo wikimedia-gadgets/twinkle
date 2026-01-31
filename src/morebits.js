@@ -4680,6 +4680,9 @@ Morebits.wiki.Preview = function(previewbox) {
 
 		// this makes links open in new tab
 		$(previewbox).find('a').attr('target', '_blank');
+
+		// Integrate with scripts that do things on rendered content, like navpopups
+		mw.hook('wikipage.content').fire($(previewbox));
 	};
 
 	/** Hides the preview box and clears it. */
@@ -5685,6 +5688,8 @@ Morebits.SimpleWindow = function SimpleWindow(width, height) {
 		// the 20 pixels represents adjustment for the extra height of the jQuery dialog "chrome", compared
 		// to that of the old SimpleWindow
 		height: height + 20,
+		// Use smaller z-indexes compared to Navigation popups (which uses values starting from 1000)
+		zIndex: 500,
 		close: function(event) {
 			// dialogs and their content can be destroyed once closed
 			$(event.target).dialog('destroy').remove();
@@ -5774,11 +5779,7 @@ Morebits.SimpleWindow.prototype = {
 			$widget.find('.ui-dialog-title').prepend(scriptnamespan);
 		}
 
-		const dialog = $(this.content).dialog('open');
-		if (window.setupTooltips && window.pg && window.pg.re && window.pg.re.diff) { // tie in with NAVPOP
-			dialog.parent()[0].ranSetupTooltipsAlready = false;
-			window.setupTooltips(dialog.parent()[0]);
-		}
+		$(this.content).dialog('open');
 		this.setHeight(this.height); // init height algorithm
 		return this;
 	},
