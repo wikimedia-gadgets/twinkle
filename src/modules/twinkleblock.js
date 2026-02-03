@@ -38,14 +38,15 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	// need to be verbose about who we're blocking
 	blockWindow.setTitle('Block or issue block template to ' + relevantUserName);
 	blockWindow.setScriptName('Twinkle');
+
+	// Always added, hidden later if actual user not blocked
+	blockWindow.addFooterLink('Unblock this user', 'Special:Unblock/' + relevantUserName);
+
 	blockWindow.addFooterLink('Block templates', 'Template:Uw-block/doc/Block_templates');
 	blockWindow.addFooterLink('Block policy', 'WP:BLOCK');
 	blockWindow.addFooterLink('Block prefs', 'WP:TW/PREF#block');
 	blockWindow.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
 	blockWindow.addFooterLink('Give feedback', 'WT:TW');
-
-	// Always added, hidden later if actual user not blocked
-	blockWindow.addFooterLink('Unblock this user', 'Special:Unblock/' + relevantUserName, true);
 
 	const form = new Morebits.QuickForm(Twinkle.block.callback.evaluate);
 	const actionfield = form.append({

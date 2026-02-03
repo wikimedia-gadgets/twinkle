@@ -5935,30 +5935,21 @@ Morebits.SimpleWindow.prototype = {
 	 *
 	 * @param {string} text - Display text.
 	 * @param {string} wikiPage - Link target.
-	 * @param {boolean} [prep=false] - Set true to prepend rather than append.
 	 * @return {Morebits.SimpleWindow}
 	 */
-	addFooterLink: function(text, wikiPage, prep) {
+	addFooterLink: function(text, wikiPage) {
 		const $footerlinks = this.$dialog.find('.morebits-dialog-footerlinks');
 		if (this.hasFooterLinks) {
 			const bullet = document.createElement('span');
 			bullet.textContent = ' \u2022 '; // U+2022 BULLET
-			if (prep) {
-				$footerlinks.prepend(bullet);
-			} else {
-				$footerlinks.append(bullet);
-			}
+			$footerlinks.append(bullet);
 		}
 		const link = document.createElement('a');
 		link.setAttribute('href', mw.util.getUrl(wikiPage));
 		link.setAttribute('title', wikiPage);
 		link.setAttribute('target', '_blank');
 		link.textContent = text;
-		if (prep) {
-			$footerlinks.prepend(link);
-		} else {
-			$footerlinks.append(link);
-		}
+		$footerlinks.append(link);
 		this.hasFooterLinks = true;
 		return this;
 	},
