@@ -1180,7 +1180,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]'
 	},
 	'uw-sockblock': {
-		userTypes: ['ta', 'named'],
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		reason: 'Abusing [[WP:Sock puppetry|multiple accounts]]',
