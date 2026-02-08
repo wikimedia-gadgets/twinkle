@@ -74,7 +74,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 				value: 'template',
 				tooltip: 'If the blocking admin forgot to issue a block template, or you have just blocked the user without templating them, you can use this to issue the appropriate template. Check the partial block box for partial block templates.',
 				// Disallow when viewing the block dialog on an IP range
-				checked: !Morebits.ip.isRange(relevantUserName),
+				checked: false,
 				disabled: Morebits.ip.isRange(relevantUserName)
 			}
 		]
@@ -134,6 +134,11 @@ Twinkle.block.callback = function twinkleblockCallback() {
 		// will override the defaultToPartialBlocks pref
 		if (blockedUserName === relevantUserName) {
 			$(result).find('[name=actiontype][value=partial]').prop('checked', Twinkle.block.currentBlockInfo.partial === '');
+		}
+
+		// Toggle on templating only for named accounts and TAs by default
+		if (!Morebits.ip.isRange(relevantUserName)) {
+			$(result).find('[name=actiontype][value=template]').prop('checked', Twinkle.block.isRegistered);
 		}
 
 		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
