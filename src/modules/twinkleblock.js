@@ -428,25 +428,29 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				checked: Twinkle.block.field_block_options.create,
 				label: 'Creating pages',
 				name: 'create',
-				value: '1'
-			},
-			{
-				checked: Twinkle.block.field_block_options.upload,
-				label: 'Uploading files',
-				name: 'upload',
-				value: '1'
+				value: '1',
+				tooltip: 'Creating new pages and uploading new files'
 			},
 			{
 				checked: Twinkle.block.field_block_options.move,
 				label: 'Moving pages and files',
 				name: 'move',
-				value: '1'
+				value: '1',
+				tooltip: 'Moving pages and files'
 			},
 			{
 				checked: Twinkle.block.field_block_options.thanks,
 				label: 'Thanking other users',
 				name: 'thanks',
-				value: '1'
+				value: '1',
+				tooltip: 'Sending thanks'
+			},
+			{
+				checked: Twinkle.block.field_block_options.upload,
+				label: 'Uploading files',
+				name: 'upload',
+				value: '1',
+				tooltip: 'Uploading files (including overwriting files)'
 			}];
 			const pbo = fieldBlockOptions.append({
 				type: 'div',
