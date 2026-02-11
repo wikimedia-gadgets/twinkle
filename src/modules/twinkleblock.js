@@ -435,15 +435,13 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				checked: Twinkle.block.field_block_options.move,
 				label: 'Moving pages and files',
 				name: 'move',
-				value: '1',
-				tooltip: 'Moving pages and files'
+				value: '1'
 			},
 			{
 				checked: Twinkle.block.field_block_options.thanks,
-				label: 'Thanking other users',
+				label: 'Sending thanks',
 				name: 'thanks',
-				value: '1',
-				tooltip: 'Sending thanks'
+				value: '1'
 			},
 			{
 				checked: Twinkle.block.field_block_options.upload,
