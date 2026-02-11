@@ -1386,12 +1386,12 @@ Twinkle.block.blockGroups = [
 	{
 		label: 'Common block reasons',
 		list: [
-			{ label: 'anonblock', value: 'anonblock' },
-			{ label: 'anonblock - likely a school', value: 'anonblock - school' },
-			{ label: 'school block', value: 'school block' },
+			{ label: 'Anonblock', value: 'anonblock' },
+			{ label: 'Anonblock – likely a school', value: 'anonblock - school' },
+			{ label: 'School block', value: 'school block' },
 			{ label: 'Generic block (custom reason)', value: 'uw-block' }, // ends up being default for registered users
-			{ label: 'Generic block (custom reason) - IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
-			{ label: 'Generic block (custom reason) - indefinite', value: 'uw-blockindef' },
+			{ label: 'Generic block (custom reason) – IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
+			{ label: 'Generic block (custom reason) – indefinite', value: 'uw-blockindef' },
 			{ label: 'Disruptive editing', value: 'uw-disruptblock' },
 			{ label: 'Inappropriate use of user talk page while blocked', value: 'uw-talkrevoked' },
 			{ label: 'Not here to build an encyclopedia', value: 'uw-nothereblock' },
@@ -1405,8 +1405,8 @@ Twinkle.block.blockGroups = [
 		list: [
 			{ label: 'Advertising', value: 'uw-adblock' },
 			{ label: 'Arbitration enforcement', value: 'uw-aeblock' },
-			{ label: 'Block evasion - IP', value: 'uw-ipevadeblock' },
-			{ label: 'Block evasion - Temporary account', value: 'uw-tempevadeblock' },
+			{ label: 'Block evasion – IP', value: 'uw-ipevadeblock' },
+			{ label: 'Block evasion – temporary account', value: 'uw-tempevadeblock' },
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
 			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
@@ -1447,17 +1447,17 @@ Twinkle.block.blockGroups = [
 	{
 		label: 'Templated reasons',
 		list: [
-			{ label: 'blocked proxy', value: 'blocked proxy' },
+			{ label: 'Blocked proxy', value: 'blocked proxy' },
 			{ label: 'CheckUser block', value: 'CheckUser block' },
-			{ label: 'checkuserblock-account', value: 'checkuserblock-account' },
-			{ label: 'checkuserblock-wide', value: 'checkuserblock-wide' },
-			{ label: 'colocationwebhost', value: 'colocationwebhost' },
-			{ label: 'oversightblock', value: 'oversightblock' },
-			{ label: 'rangeblock', value: 'rangeblock' }, // Only for IP ranges, selected for non-/64 ranges in filtered_block_groups
-			{ label: 'spamblacklistblock', value: 'spamblacklistblock' },
-			{ label: 'tor', value: 'tor' },
-			{ label: 'webhostblock', value: 'webhostblock' },
-			{ label: 'zombie proxy', value: 'zombie proxy' }
+			{ label: 'CheckUser block – account', value: 'checkuserblock-account' },
+			{ label: 'CheckUser block – wide', value: 'checkuserblock-wide' },
+			{ label: 'Colocation webhost', value: 'colocationwebhost' },
+			{ label: 'Oversight block', value: 'oversightblock' },
+			{ label: 'Rangeblock', value: 'rangeblock' }, // Only for IP ranges, selected for non-/64 ranges in filtered_block_groups
+			{ label: 'Spam blacklist block', value: 'spamblacklistblock' },
+			{ label: 'Tor', value: 'tor' },
+			{ label: 'Webhost block', value: 'webhostblock' },
+			{ label: 'Zombie proxy', value: 'zombie proxy' }
 		]
 	}
 ];
@@ -1467,7 +1467,7 @@ Twinkle.block.blockGroupsPartial = [
 		label: 'Common partial block reasons',
 		list: [
 			{ label: 'Generic partial block (custom reason)', value: 'uw-pblock', selected: true },
-			{ label: 'Generic partial block (custom reason) - indefinite', value: 'uw-pblockindef' },
+			{ label: 'Generic partial block (custom reason) – indefinite', value: 'uw-pblockindef' },
 			{ label: 'Edit warring', value: 'uw-ewpblock' }
 		]
 	},
@@ -1477,7 +1477,7 @@ Twinkle.block.blockGroupsPartial = [
 			{ label: 'Arbitration enforcement', value: 'uw-aepblock' },
 			{ label: 'Email harassment', value: 'uw-epblock' },
 			{ label: 'Misusing multiple accounts', value: 'uw-acpblock' },
-			{ label: 'Misusing multiple accounts - indefinite', value: 'uw-acpblockindef' }
+			{ label: 'Misusing multiple accounts – indefinite', value: 'uw-acpblockindef' }
 		]
 	}
 ];
