@@ -6,8 +6,8 @@
 	"scripts": {
 		"deploy": "node scripts/deploy.js",
 		"deploy:cd": "node scripts/deploy.js -y",
-		"lint:fix": "eslint . --fix",
-		"lint": "eslint . --max-warnings=0",
+		"lint:fix": "eslint . --fix && stylelint src/*.css --fix",
+		"lint": "eslint . --max-warnings=0 && stylelint src/*.css",
 		"start": "node scripts/dev-server.js",
 		"test": "jest"
 	},
@@ -21,6 +21,8 @@
 		"jest-environment-jsdom": "^29.7.0",
 		"mock-mediawiki": "^1.4.0",
 		"mwn": "^3.0.1",
-		"simple-git": "^3.28.0"
+		"simple-git": "^3.28.0",
+		"stylelint": "^17.0.0",
+		"stylelint-config-wikimedia": "^0.18.0"
 	}
 }

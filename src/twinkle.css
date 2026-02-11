@@ -1,7 +1,7 @@
 /* Define CSS variables */
 html {
-	--twinkle-bgcolor-dialog: #F0F8FF;
-	--twinkle-bgcolor-titlebar: #BCCADF;
+	--twinkle-bgcolor-dialog: #f0f8ff;
+	--twinkle-bgcolor-titlebar: #bccadf;
 }
 
 @media screen {
@@ -11,6 +11,7 @@ html {
 	}
 }
 
+/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
 @media screen and (prefers-color-scheme: dark) {
 	html.skin-theme-clientpref-os {
 		--twinkle-bgcolor-dialog: #141c26;
@@ -67,7 +68,7 @@ html {
 /* Twinkle config */
 #twinkle-config {
 	border: 1px solid #666;
-	background: var(--twinkle-bgcolor-dialog, #F0F8FF);
+	background: var(--twinkle-bgcolor-dialog);
 	color: inherit;
 }
 
@@ -76,12 +77,12 @@ html {
 }
 
 #twinkle-config-titlebar {
-	background: var(--twinkle-bgcolor-titlebar, #BCCADF);
+	background: var(--twinkle-bgcolor-titlebar);
 	color: inherit;
 }
 
 #twinkle-config-buttonpane {
-	background: var(--twinkle-bgcolor-titlebar, #BCCADF);
+	background: var(--twinkle-bgcolor-titlebar);
 	color: inherit;
 	padding: 0.5em;
 }
@@ -93,12 +94,13 @@ html {
 
 @media screen {
 	html.skin-theme-clientpref-night #twinkle-config-headerbox {
-		background: #532B18;
+		background: #532b18;
 	}
 }
 
+/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
 @media screen and (prefers-color-scheme: dark) {
 	html.skin-theme-clientpref-os #twinkle-config-headerbox {
-		background: #532B18;
+		background: #532b18;
 	}
 }
