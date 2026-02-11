@@ -432,21 +432,25 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				label: 'Block account creation',
 				name: 'nocreate',
 				value: '1'
-			},
-			{
+			}
+		];
+
+		if (Twinkle.block.isRegistered && !mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'))) {
+			blockoptions.push({
 				checked: Twinkle.block.field_block_options.noemail,
 				label: 'Block user from sending email',
 				name: 'noemail',
 				value: '1'
-			},
-			{
-				checked: Twinkle.block.field_block_options.disabletalk,
-				label: 'Prevent this user from editing their own talk page while blocked',
-				name: 'disabletalk',
-				value: '1',
-				tooltip: partialBox ? 'If issuing a partial block, this MUST remain unchecked unless you are also preventing them from editing User talk space' : ''
-			}
-		];
+			});
+		}
+
+		blockoptions.push({
+			checked: Twinkle.block.field_block_options.disabletalk,
+			label: 'Prevent this user from editing their own talk page while blocked',
+			name: 'disabletalk',
+			value: '1',
+			tooltip: partialBox ? 'If issuing a partial block, this MUST remain unchecked unless you are also preventing them from editing User talk space' : ''
+		});
 
 		if (Twinkle.block.isRegistered) {
 			blockoptions.push({
