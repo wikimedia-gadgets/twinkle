@@ -845,6 +845,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   prependReason: <string - prepends the value of 'reason' to the end of the existing reason, namely for when revoking talk page access>
  *   nocreate: <block account creation from the user's IP (for unregistered users only)>
  *   nonstandard: <template does not conform to stewardship of WikiProject User Warnings and may not accept standard parameters>
+ *   notemplate: <do not display a template by default>
  *   reason: <string - block rationale, as would appear in the block log,
  *            and the edit summary for when adding block template, unless 'summary' is set>
  *   reasonParam: <set if the associated block template accepts a reason parameter>
@@ -1359,6 +1360,19 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: true,
 		summary: 'You have been indefinitely [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
+	},
+	// Not a template, but we still want to have it
+	lta: {
+		autoblock: true,
+		disabletalk: true,
+		expiry: 'infinity',
+		hardblock: true,
+		nocreate: true,
+		noemail: true,
+		notemplate: true,
+		pageParam: false,
+		reason: 'Long-term abuse',
+		templateName: 'uw-blocknotalk'
 	}
 };
 
@@ -1394,6 +1408,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Generic block (custom reason) - indefinite', value: 'uw-blockindef' },
 			{ label: 'Disruptive editing', value: 'uw-disruptblock' },
 			{ label: 'Inappropriate use of user talk page while blocked', value: 'uw-talkrevoked' },
+			{ label: 'Long-term abuse', value: 'lta' },
 			{ label: 'Not here to build an encyclopedia', value: 'uw-nothereblock' },
 			{ label: 'Unsourced content', value: 'uw-ucblock' },
 			{ label: 'Vandalism', value: 'uw-vblock' },
@@ -1558,7 +1573,15 @@ Twinkle.block.callback.change_preset = function twinkleblockCallbackChangePreset
 		return;
 	}
 
+	const $template = $(form).find('input[name="actiontype"][value="template"]');
+
 	Twinkle.block.callback.update_form(e, Twinkle.block.blockPresetsInfo[key]);
+
+	if ($template.is(':checked') !== !Twinkle.block.blockPresetsInfo[key].notemplate) {
+		$template.prop('checked', !Twinkle.block.blockPresetsInfo[key].notemplate);
+		Morebits.QuickForm.setElementVisibility(form.field_template_options, !Twinkle.block.blockPresetsInfo[key].notemplate);
+	}
+
 	if (form.template) {
 		form.template.value = Twinkle.block.blockPresetsInfo[key].templateName || key;
 		Twinkle.block.callback.change_template(e);
