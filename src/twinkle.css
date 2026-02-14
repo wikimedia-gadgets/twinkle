@@ -92,6 +92,18 @@ html {
 	color: var(--color-subtle, #54595d);
 }
 
+/* Flexbox gap not supported by old Safari versions. Rendering without gap is okay. */
+/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+.twinkle-ombox {
+	display: flex;
+	align-items: center;
+	gap: 0.9em;
+	padding-left: 0.9em;
+	margin: 4px 10%;
+	background: var(--background-color-neutral-subtle, #f8f9fa);
+	border: 1px solid #f28500;
+}
+
 @media screen {
 	html.skin-theme-clientpref-night #twinkle-config-headerbox {
 		background: #532b18;
