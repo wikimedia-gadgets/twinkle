@@ -161,7 +161,7 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 	// Soft redirect to Special:Block if the user is multi-blocked (#2178)
 	if (blockinfo && data.query.blocks.length > 1) {
 		// Remove submission buttons.
-		$(blockWindow.content).dialog('widget').find('.morebits-dialog-buttons').empty();
+		blockWindow.$dialog.find('.morebits-dialog-buttons').empty();
 		Morebits.Status.init(blockWindow.content.querySelector('form'));
 		Morebits.Status.warn(
 			`This target has ${data.query.blocks.length} active blocks`,
