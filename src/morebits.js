@@ -17,11 +17,10 @@
  * Dependencies:
  * - The whole thing relies on jQuery.  But most wikis should provide this by default.
  * - {@link Morebits.QuickForm}, {@link Morebits.SimpleWindow}, and {@link Morebits.Status} rely on the "morebits.css" file for their styling.
- * - {@link Morebits.QuickForm} tooltips rely on jQuery UI Dialog (from ResourceLoader module name 'jquery.ui').
  * - To create a gadget based on morebits.js, use this syntax in MediaWiki:Gadgets-definition:
- *     - `*GadgetName[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title,jquery.ui]|morebits.js|morebits.css|GadgetName.js`
+ *     - `*GadgetName[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title]|morebits.js|morebits.css|GadgetName.js`
  * - Alternatively, you can configure morebits.js as a hidden gadget in MediaWiki:Gadgets-definition:
- *     - `*morebits[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title,jquery.ui|hidden]|morebits.js|morebits.css`
+ *     - `*morebits[ResourceLoader|dependencies=mediawiki.user,mediawiki.util,mediawiki.Title|hidden]|morebits.js|morebits.css`
  *     and then load ext.gadget.morebits as one of the dependencies for the new gadget.
  *
  * All the stuff here works on all browsers for which MediaWiki provides JavaScript support.
@@ -864,23 +863,45 @@ Morebits.QuickForm.Element.prototype.compute = function QuickFormElementCompute(
 	return [ node, childContainer ];
 };
 
+Morebits.QuickForm.$tooltip = null;
+
 /**
- * Create a jQuery UI-based tooltip.
+ * Create a tooltip.
  *
  * @memberof Morebits.QuickForm.Element
- * @requires jQuery.ui
  * @param {HTMLElement} node - The HTML element beside which a tooltip is to be generated.
  * @param {Object} data - Tooltip-related configuration data.
  */
 Morebits.QuickForm.Element.generateTooltip = function QuickFormElementGenerateTooltip(node, data) {
-	const tooltipButton = node.appendChild(document.createElement('span'));
-	tooltipButton.className = 'morebits-tooltipButton';
-	tooltipButton.title = data.tooltip; // Provides the content for jQuery UI
-	tooltipButton.appendChild(document.createTextNode('?'));
-	$(tooltipButton).tooltip({
-		position: { my: 'left top', at: 'center bottom', collision: 'flipfit' },
-		// Deprecated in UI 1.12, but MW stuck on 1.9.2 indefinitely; see #398 and T71386
-		tooltipClass: 'morebits-ui-tooltip'
+	if (!Morebits.QuickForm.$tooltip) {
+		Morebits.QuickForm.$tooltip = $('<div>')
+			.attr('id', 'morebits-ui-tooltip')
+			.attr('role', 'tooltip')
+			.addClass('morebits-ui-tooltip')
+			.appendTo('body');
+	}
+	const $tooltip = Morebits.QuickForm.$tooltip;
+	const $button = $('<span>')
+		.addClass('morebits-tooltipButton')
+		.text('?')
+		.appendTo(node);
+
+	$button.on('mouseenter', () => {
+		$tooltip.html(data.tooltip).addClass('visible');
+
+		const buttonRect = $button[0].getBoundingClientRect();
+		const tooltipRect = $tooltip[0].getBoundingClientRect();
+
+		const topOffset = buttonRect.bottom + tooltipRect.height < window.innerHeight ?
+			buttonRect.bottom : // It fits at the top of the question mark - place it there
+			Math.max(0, buttonRect.top - tooltipRect.height); // Else, place to the bottom of the question mark
+		const leftOffset = buttonRect.right + tooltipRect.width < window.innerWidth ?
+			buttonRect.right : // It fits at the right of the question mark - place it there
+			Math.max(0, buttonRect.left - tooltipRect.width); // Else, place to the left of the question mark
+		$tooltip.css('top', window.scrollY + topOffset);
+		$tooltip.css('left', window.scrollX + leftOffset);
+	}).on('mouseleave', () => {
+		$tooltip.removeClass('visible');
 	});
 };
 

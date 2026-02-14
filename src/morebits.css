@@ -172,12 +172,24 @@ form.quickform .morebits-tooltipButton {
 }
 
 .morebits-ui-tooltip {
+	position: absolute;
+	z-index: 1005;
 	padding: 4px 6px 4px 6px;
+	max-width: 300px;
+	transition: opacity 600ms ease;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
 	/* stylelint-disable-next-line declaration-property-unit-disallowed-list */ /* FIXME */
 	font-size: 13px;
 	background: var(--background-color-neutral-subtle, #f8f9fa);
-	border-color: var(--border-color-base, #a2ab91);
+	border: 2px solid var(--border-color-base, #a2ab91);
 	box-shadow: 0 0 5px #a2ab91;
+}
+
+.morebits-ui-tooltip.visible {
+	opacity: 1;
+	visibility: visible;
 }
 
 /* Scrollbox styles, for use within Morebits.SimpleWindow */
