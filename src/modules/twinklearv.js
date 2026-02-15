@@ -40,38 +40,35 @@ Twinkle.arv.callback = function (uid, isIP) {
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	const form = new Morebits.QuickForm(Twinkle.arv.callback.evaluate);
-	const categories = form.append({
+	form.append({
 		type: 'select',
 		name: 'category',
 		label: 'Select report type:',
-		event: Twinkle.arv.callback.changeCategory
-	});
-	categories.append({
-		type: 'option',
-		label: 'Vandalism (WP:AIV)',
-		value: 'aiv'
-	});
-	categories.append({
-		type: 'option',
-		label: 'Username (WP:UAA)',
-		value: 'username',
-		disabled: isIP
-	});
-	categories.append({
-		type: 'option',
-		label: 'Sockpuppeteer (WP:SPI)',
-		value: 'sock'
-	});
-	categories.append({
-		type: 'option',
-		label: 'Sockpuppet (WP:SPI)',
-		value: 'puppet'
-	});
-	categories.append({
-		type: 'option',
-		label: 'Edit warring (WP:AN3)',
-		value: 'an3',
-		disabled: Morebits.ip.isRange(uid) // rvuser template doesn't support ranges
+		event: Twinkle.arv.callback.changeCategory,
+		list: [
+			{
+				label: 'Vandalism (WP:AIV)',
+				value: 'aiv'
+			},
+			{
+				label: 'Username (WP:UAA)',
+				value: 'username',
+				disabled: isIP
+			},
+			{
+				label: 'Sockpuppeteer (WP:SPI)',
+				value: 'sock'
+			},
+			{
+				label: 'Sockpuppet (WP:SPI)',
+				value: 'puppet'
+			},
+			{
+				label: 'Edit warring (WP:AN3)',
+				value: 'an3',
+				disabled: Morebits.ip.isRange(uid) // rvuser template doesn't support ranges
+			}
+		]
 	});
 	form.append({
 		type: 'div',
