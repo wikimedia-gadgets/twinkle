@@ -283,7 +283,7 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 		// `dialog('option', 'title')`, but in practice that swallows
 		// the scriptName and requires `.display`ing, which jumps the
 		// window.  It's just a line of text, so this is fine.
-		const titleBar = document.querySelector('.ui-dialog-title').firstChild.nextSibling;
+		const titleBar = document.querySelector('.morebits-dialog-title').firstChild.nextSibling;
 		titleBar.nodeValue = titleBar.nodeValue.replace(priorName, relevantUserName);
 		// Tweak unblock link
 		const unblockLink = document.querySelector('.morebits-dialog-footerlinks a');
