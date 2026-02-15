@@ -197,7 +197,7 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 	blockedUserName = Twinkle.block.currentBlockInfo && Twinkle.block.currentBlockInfo.user;
 
 	// Toggle unblock link if not the user in question; always first
-	const unblockLink = document.querySelector('.morebits-dialog-footerlinks a');
+	const unblockLink = blockWindow.$dialog.find('.morebits-dialog-footerlinks a')[0];
 	if (blockedUserName !== relevantUserName) {
 		unblockLink.hidden = true;
 		unblockLink.nextSibling.hidden = true; // link+trailing bullet
@@ -262,7 +262,9 @@ Twinkle.block.callback.saveFieldset = function twinkleblockCallbacksaveFieldset(
 };
 
 Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock64(e) {
-	const $form = $(e.target.form), $block64 = $form.find('[name=block64]');
+	const $form = $(e.target.form),
+		$block64 = $form.find('[name=block64]'),
+		dialog = $form.closest('.morebits-dialog')[0];
 
 	// Show/hide block64 button
 	// Single IPv6, or IPv6 range smaller than a /64
@@ -280,14 +282,13 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 	// Refetch/reprocess user info then regenerate the main content
 	const regenerateForm = function() {
 		// Tweak titlebar text.  In theory, we could save the dialog
-		// at initialization and then use `.setTitle` or
-		// `dialog('option', 'title')`, but in practice that swallows
+		// at initialization and then use `.setTitle`, but in practice that swallows
 		// the scriptName and requires `.display`ing, which jumps the
 		// window.  It's just a line of text, so this is fine.
-		const titleBar = document.querySelector('.morebits-dialog-title').firstChild.nextSibling;
+		const titleBar = dialog.querySelector('.morebits-dialog-title').firstChild.nextSibling;
 		titleBar.nodeValue = titleBar.nodeValue.replace(priorName, relevantUserName);
 		// Tweak unblock link
-		const unblockLink = document.querySelector('.morebits-dialog-footerlinks a');
+		const unblockLink = dialog.querySelector('.morebits-dialog-footerlinks a');
 		unblockLink.href = unblockLink.href.replace(priorName, relevantUserName);
 		unblockLink.title = unblockLink.title.replace(priorName, relevantUserName);
 
