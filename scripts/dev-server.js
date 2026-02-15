@@ -12,7 +12,15 @@ const fs = require('fs/promises');
 async function readFiles(filePaths) {
 	return Promise.all(filePaths.map(path => fs.readFile(__dirname + '/../' + path).then(blob => blob.toString())));
 }
+
+// Optional: specify site to load the debug version only for that site. Eg. en.wikipedia.org, test.wikipedia.org
+const site = process.env.MW_SITE;
+
 const server = http.createServer(async (request, response) => {
+	if (site && new URL(request.headers.referer).hostname !== site) {
+		return response.end('', 'utf-8');
+	}
+
 	const moduleFiles = (await fs.readdir('./src/modules')).filter(f => f.endsWith('.js'));
 	const jsFiles = ['src/morebits.js', 'src/twinkle.js'].concat(moduleFiles.map(f => 'src/modules/' + f));
 	const cssFiles = ['src/morebits.css', 'src/twinkle.css'];
@@ -44,7 +52,7 @@ const server = http.createServer(async (request, response) => {
 
 const hostname = '127.0.0.1';
 const port = process.env.PORT || '5500';
-const GADGET_NAME = 'Twinkle';
+const GADGET_NAME = process.env.GADGET_NAME || 'Twinkle';
 
 server.listen(port, hostname, async () => {
 	console.log(`Server running at http://${hostname}:${port}/`);
@@ -61,7 +69,7 @@ server.listen(port, hostname, async () => {
 	}
 	try {
 		user = await Mwn.init({
-			"apiUrl": "https://en.wikipedia.org/w/api.php",
+			"apiUrl": `https://${site || 'en.wikipedia.org'}/w/api.php`,
 			"username": process.env.MW_USERNAME,
 			"password": process.env.MW_PASSWORD,
 			"OAuth2AccessToken": process.env.MW_OAUTH2_TOKEN,
@@ -70,13 +78,13 @@ server.listen(port, hostname, async () => {
 		initTime = Date.now();
 	} catch (e) {
 		if (e instanceof Mwn.Error) {
-			console.log(`[mwn]: can't disable twinkle as gadget: login failure: ${e}`);
+			console.log(`[mwn]: can't disable twinkle as gadget on ${site}: login failure: ${e}`);
 			console.log(e.stack);
 		}
 		return;
 	}
 	await user.saveOption('gadget-' + GADGET_NAME, '0');
-	console.log('[i] Disabled twinkle as gadget.');
+	console.log(`[i] Disabled twinkle gadget on ${site}.`);
 
 	// Allow async operations in exit hook
 	process.stdin.resume();
