@@ -5821,8 +5821,10 @@ Morebits.SimpleWindow.prototype = {
 			this.$dialog.find('.quickform').addClass('has-scrollbox');
 		}
 		this.$dialog.appendTo(document.body);
-		// Put focus on the first form element or link in the dialog
-		this.$dialog.find('input, select, textarea, a').first().trigger('focus');
+		// Put focus on the first form element in the dialog, or on dialog itself.
+		const $firstField = this.$dialog.find('input, select, textarea').first();
+		const $firstFieldOrDialog = $firstField.length ? $firstField : this.$dialog;
+		$firstFieldOrDialog.trigger('focus');
 		return this;
 	},
 
