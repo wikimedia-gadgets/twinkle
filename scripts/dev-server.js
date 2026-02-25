@@ -13,11 +13,12 @@ async function readFiles(filePaths) {
 	return Promise.all(filePaths.map(path => fs.readFile(__dirname + '/../' + path).then(blob => blob.toString())));
 }
 
-// Optional: specify site to load the debug version only for that site. Eg. en.wikipedia.org, test.wikipedia.org
+// Optional: specify site to load the debug version only for that site. Does not work on Firefox.
+// Eg. en.wikipedia.org, test.wikipedia.org
 let site = process.env.MW_SITE;
 
 const server = http.createServer(async (request, response) => {
-	if (site && new URL(request.headers.referer).hostname !== site) {
+	if (site && request.headers.referer && new URL(request.headers.referer).hostname !== site) {
 		return response.end('', 'utf-8');
 	}
 
