@@ -14,7 +14,7 @@ async function readFiles(filePaths) {
 }
 
 // Optional: specify site to load the debug version only for that site. Eg. en.wikipedia.org, test.wikipedia.org
-const site = process.env.MW_SITE;
+let site = process.env.MW_SITE;
 
 const server = http.createServer(async (request, response) => {
 	if (site && new URL(request.headers.referer).hostname !== site) {
@@ -62,6 +62,7 @@ server.listen(port, hostname, async () => {
 		return console.log("Ensure the Twinkle gadget version is disabled. If you provide your credentials as environment variables (either the BotPassword credentials as MW_USERNAME and MW_PASSWORD, or an owner-only OAuth2 consumer token as MW_OAUTH2_TOKEN), we'll try to automatically disable the gadget for you and re-enable it when you're done testing.");
 	}
 	let Mwn, user, initTime;
+	site = site || 'en.wikipedia.org';
 	try {
 		Mwn = require('mwn').Mwn;
 	} catch (_) {
@@ -69,7 +70,7 @@ server.listen(port, hostname, async () => {
 	}
 	try {
 		user = await Mwn.init({
-			"apiUrl": `https://${site || 'en.wikipedia.org'}/w/api.php`,
+			"apiUrl": `https://${site}/w/api.php`,
 			"username": process.env.MW_USERNAME,
 			"password": process.env.MW_PASSWORD,
 			"OAuth2AccessToken": process.env.MW_OAUTH2_TOKEN,
