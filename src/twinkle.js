@@ -303,21 +303,11 @@ Twinkle.addPortletLink = function(task, text, id, tooltip) {
  * **************** General initialization code ****************
  */
 
-const scriptpathbefore = mw.util.wikiScript('index') + '?title=',
-	scriptpathafter = '&action=raw&ctype=text/javascript&happy=yes';
-
 // Retrieve the user's Twinkle preferences
-$.ajax({
-	url: scriptpathbefore + 'User:' + encodeURIComponent(mw.config.get('wgUserName')) + '/twinkleoptions.js' + scriptpathafter,
-	dataType: 'text'
-})
-	.fail(() => {
-		console.log('Could not load your Twinkle preferences, resorting to default preferences'); // eslint-disable-line no-console
-	})
-	.done((optionsText) => {
-
-		// Quick pass if user has no options
-		if (optionsText === '') {
+Morebits.wiki.getCachedPage(`User:${mw.config.get('wgUserName')}/twinkleoptions.js`)
+	.then((optionsText) => {
+		if (!optionsText) {
+			// User has no options
 			return;
 		}
 
@@ -343,6 +333,9 @@ $.ajax({
 		} catch (e) {
 			mw.notify('Could not parse your Twinkle preferences', {type: 'error'});
 		}
+	})
+	.catch(() => {
+		console.log('Could not load your Twinkle preferences, resorting to default preferences'); // eslint-disable-line no-console
 	})
 	.always(() => {
 		$(Twinkle.load);
