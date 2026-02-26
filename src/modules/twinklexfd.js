@@ -896,7 +896,7 @@ Twinkle.xfd.callbacks = {
 	 * @param {string} [actionName] Alternative description of the action
 	 * being undertaken. Required if not notifying a user talk page.
 	 */
-	notifyUser: function(params, notifyTarget, noLog, actionName) {
+	notifyUser: async function(params, notifyTarget, noLog, actionName) {
 		// Ensure items with User talk or no namespace prefix both end
 		// up at user talkspace as expected, but retain the
 		// prefix-less username for addToLog
@@ -911,6 +911,10 @@ Twinkle.xfd.callbacks = {
 
 				// if we thought we would notify someone but didn't,
 				// then jump to logging.
+				Twinkle.xfd.callbacks.addToLog(params, null);
+				return;
+			}
+			if (await Twinkle.hasUserOptedOutOfNotice(usernameOrTarget, ['xfd', params.venue])) {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 				return;
 			}
