@@ -842,9 +842,6 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   autoblock: <autoblock any IP addresses used (for registered users only)>
  *   disabletalk: <disable user from editing their own talk page while blocked>
  *   expiry: <string - expiry timestamp, can include relative times like "5 months", "2 weeks" etc>
- *   forIPsOnly: <show block option in the interface only if the relevant user is an IP>
- *   forTempAccountsOnly: <show block option in the interface only if the relevant user is a temporary account>
- *   forRegisteredOnly: <show block option in the interface only if the relevant user is a temporary account or regular account>
  *   label: <string - label for the option of the dropdown in the interface (keep brief)>
  *   noemail: prevent the user from sending email through Special:Emailuser
  *   pageParam: <set if the associated block template accepts a page parameter>
@@ -860,22 +857,23 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   templateName: <string - name of template to use (instead of key name), entry will be omitted from the Templates list.
  *                  (e.g. use another template but with different block options)>
  *   useInitialOptions: <when preset is chosen, only change given block options, leave others as they were>
+ *   userTypes: <show block option in the interface if the relevant user is an IP, a temporary account, or a regular account>
  *
  * WARNING: 'anononly' and 'allowusertalk' are enabled by default.
  *   To disable, set 'hardblock' and 'disabletalk', respectively
  */
 Twinkle.block.blockPresetsInfo = {
 	anonblock: {
+		userTypes: ['ip'],
 		expiry: '31 hours',
-		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{anonblock}}',
 		sig: '~~~~'
 	},
 	'anonblock - school': {
+		userTypes: ['ip'],
 		expiry: '36 hours',
-		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{anonblock}} <!-- Likely a school based on behavioral evidence -->',
@@ -883,8 +881,8 @@ Twinkle.block.blockPresetsInfo = {
 		sig: '~~~~'
 	},
 	'blocked proxy': {
+		userTypes: ['ip'],
 		expiry: '1 year',
-		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		hardblock: true,
@@ -892,37 +890,38 @@ Twinkle.block.blockPresetsInfo = {
 		sig: null
 	},
 	'CheckUser block': {
+		userTypes: ['ip'],
 		expiry: '1 week',
-		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{CheckUser block}}',
 		sig: '~~~~'
 	},
 	'checkuserblock-account': {
+		userTypes: ['ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{checkuserblock-account}}',
 		sig: '~~~~'
 	},
 	'checkuserblock-wide': {
-		forIPsOnly: true,
+		userTypes: ['ip'],
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{checkuserblock-wide}}',
 		sig: '~~~~'
 	},
 	colocationwebhost: {
+		userTypes: ['ip'],
 		expiry: '1 year',
-		forIPsOnly: true,
 		nonstandard: true,
 		reason: '{{colocationwebhost}}',
 		sig: null
 	},
 	oversightblock: {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
 		nocreate: true,
@@ -931,42 +930,43 @@ Twinkle.block.blockPresetsInfo = {
 		sig: '~~~~'
 	},
 	'school block': {
-		forIPsOnly: true,
+		userTypes: ['ip'],
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{school block}}',
 		sig: '~~~~'
 	},
 	spamblacklistblock: {
-		forIPsOnly: true,
+		userTypes: ['ip'],
 		expiry: '1 month',
 		disabletalk: true,
 		nocreate: true,
 		reason: '{{spamblacklistblock}} <!-- editor only attempts to add blacklisted links, see [[Special:Log/spamblacklist]] -->'
 	},
 	rangeblock: {
+		userTypes: ['ip'],
 		reason: '{{rangeblock}}',
 		nocreate: true,
 		nonstandard: true,
-		forIPsOnly: true,
 		sig: '~~~~'
 	},
 	tor: {
+		userTypes: ['ip'],
 		expiry: '1 year',
-		forIPsOnly: true,
 		nonstandard: true,
 		reason: '{{Tor}}',
 		sig: null
 	},
 	webhostblock: {
+		userTypes: ['ip'],
 		expiry: '1 year',
-		forIPsOnly: true,
 		nonstandard: true,
 		reason: '{{webhostblock}}',
 		sig: null
 	},
 	// uw-prefixed
 	'uw-3block': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: '24 hours',
 		nocreate: true,
@@ -975,9 +975,9 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for violation of the [[WP:3RR|three-revert rule]]'
 	},
 	'uw-ablock': {
+		userTypes: ['ip'],
 		autoblock: true,
 		expiry: '31 hours',
-		forIPsOnly: true,
 		nocreate: true,
 		pageParam: true,
 		reasonParam: true,
@@ -985,6 +985,7 @@ Twinkle.block.blockPresetsInfo = {
 		suppressArticleInSummary: true
 	},
 	'uw-adblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		pageParam: true,
@@ -992,6 +993,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for [[WP:SOAP|advertising or self-promotion]]'
 	},
 	'uw-aeblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		pageParam: true,
@@ -1000,6 +1002,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for violating an [[WP:Arbitration|arbitration decision]]'
 	},
 	'uw-bioblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		pageParam: true,
@@ -1007,9 +1010,9 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for violations of Wikipedia\'s [[WP:BLP|biographies of living persons policy]]'
 	},
 	'uw-block': {
+		userTypes: ['ta', 'named'],
 		autoblock: true,
 		expiry: '24 hours',
-		forRegisteredOnly: true,
 		nocreate: true,
 		pageParam: true,
 		reasonParam: true,
@@ -1017,9 +1020,9 @@ Twinkle.block.blockPresetsInfo = {
 		suppressArticleInSummary: true
 	},
 	'uw-blockindef': {
+		userTypes: ['ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		pageParam: true,
 		reasonParam: true,
@@ -1027,6 +1030,7 @@ Twinkle.block.blockPresetsInfo = {
 		suppressArticleInSummary: true
 	},
 	'uw-blocknotalk': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		disabletalk: true,
 		nocreate: true,
@@ -1036,32 +1040,33 @@ Twinkle.block.blockPresetsInfo = {
 		suppressArticleInSummary: true
 	},
 	'uw-botblock': {
-		forRegisteredOnly: true,
+		userTypes: ['ta', 'named'],
 		pageParam: true,
 		reason: 'Running a [[WP:BOT|bot script]] without [[WP:BRFA|approval]]',
 		summary: 'You have been blocked from editing because it appears you are running a [[WP:BOT|bot script]] without [[WP:BRFA|approval]]'
 	},
 	'uw-botublock': {
+		userTypes: ['named'],
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		reason: '{{uw-botublock}} <!-- Username implies a bot, soft block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] indicates this is a [[WP:BOT|bot]] account, which is currently not approved'
 	},
 	'uw-botuhblock': {
+		userTypes: ['named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		reason: '{{uw-botuhblock}} <!-- Username implies a bot, hard block -->',
 		summary: 'You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]'
 	},
 	'uw-causeblock': {
+		userTypes: ['named'],
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		reason: '{{uw-causeblock}} <!-- Username represents a non-profit, soft block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website'
 	},
 	'uw-compblock': {
+		userTypes: ['named'],
 		autoblock: true,
 		expiry: 'infinity',
 		forRegisteredOnly: true,
@@ -1070,6 +1075,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been indefinitely blocked from editing because it is believed that your [[WP:SECURE|account has been compromised]]'
 	},
 	'uw-copyrightblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
 		nocreate: true,
@@ -1078,6 +1084,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for continued [[WP:COPYVIO|copyright infringement]]'
 	},
 	'uw-dblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		reason: 'Persistent removal of content',
@@ -1085,18 +1092,21 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for continued [[WP:VAND|removal of material]]'
 	},
 	'uw-disruptblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		reason: '[[WP:Disruptive editing|Disruptive editing]]',
 		summary: 'You have been blocked from editing for [[WP:DE|disruptive editing]]'
 	},
 	'uw-efblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		reason: 'Repeatedly triggering the [[WP:Edit filter|Edit filter]]',
 		summary: 'You have been blocked from editing for disruptive edits that repeatedly triggered the [[WP:EF|edit filter]]'
 	},
 	'uw-ewblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: '24 hours',
 		nocreate: true,
@@ -1105,6 +1115,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing to prevent further [[WP:DE|disruption]] caused by your engagement in an [[WP:EW|edit war]]'
 	},
 	'uw-hblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		pageParam: true,
@@ -1112,13 +1123,14 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for attempting to [[WP:HARASS|harass]] other users'
 	},
 	'uw-ipevadeblock': {
-		forIPsOnly: true,
+		userTypes: ['ip'],
 		expiry: '1 week',
 		nocreate: true,
 		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
 		summary: 'Your IP address has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]'
 	},
 	'uw-lblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
 		nocreate: true,
@@ -1126,14 +1138,15 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for making [[WP:NLT|legal threats or taking legal action]]'
 	},
 	'uw-nothereblock': {
+		userTypes: ['ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
 		nocreate: true,
 		reason: 'Clearly [[WP:NOTHERE|not here to build an encyclopedia]]',
-		forRegisteredOnly: true,
 		summary: 'You have been indefinitely blocked from editing because it appears that you are not here to [[WP:NOTHERE|build an encyclopedia]]'
 	},
 	'uw-npblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		pageParam: true,
@@ -1141,6 +1154,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for creating [[WP:PN|nonsense pages]]'
 	},
 	'uw-pablock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: '31 hours',
 		nocreate: true,
@@ -1148,21 +1162,23 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for making [[WP:NPA|personal attacks]] toward other users'
 	},
 	'uw-sblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		reason: 'Using Wikipedia for [[WP:SPAM|spam]] purposes',
 		summary: 'You have been blocked from editing for using Wikipedia for [[WP:SPAM|spam]] purposes'
 	},
 	'uw-soablock': {
+		userTypes: ['ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		pageParam: true,
 		reason: '[[WP:Spam|Spam]] / [[WP:NOTADVERTISING|advertising]]-only account',
 		summary: 'You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam, advertising, or promotion]]'
 	},
 	'uw-socialmediablock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: true,
 		pageParam: true,
@@ -1170,35 +1186,37 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for using user and/or article pages as a [[WP:NOTMYSPACE|blog, web host, social networking site or forum]]'
 	},
 	'uw-sockblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
-		forRegisteredOnly: true,
 		nocreate: true,
 		reason: 'Abusing [[WP:Sock puppetry|multiple accounts]]',
 		summary: 'You have been blocked from editing for abusing [[WP:SOCK|multiple accounts]]'
 	},
 	'uw-softerblock': {
+		userTypes: ['named'],
 		expiry: 'infinity',
 		forRegisteredOnly: true,
 		reason: '{{uw-softerblock}} <!-- Promotional username, soft block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] gives the impression that the account represents a group, organization or website'
 	},
 	'uw-spamublock': {
+		userTypes: ['named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		reason: '{{uw-spamublock}} <!-- Promotional username, promotional edits -->',
 		summary: 'You have been indefinitely blocked from editing because your account is being used only for [[WP:SPAM|spam or advertising]] and your username is a violation of the [[WP:U|username policy]]'
 	},
 	'uw-spoablock': {
+		userTypes: ['named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		reason: '[[WP:SOCK|Sock puppetry]]',
 		summary: 'This account has been blocked as a [[WP:SOCK|sock puppet]] created to violate Wikipedia policy'
 	},
 	'uw-talkrevoked': {
+		userTypes: ['ip', 'ta', 'named'],
 		disabletalk: true,
 		reason: 'Revoking talk page access: inappropriate use of user talk page while blocked',
 		prependReason: true,
@@ -1206,27 +1224,28 @@ Twinkle.block.blockPresetsInfo = {
 		useInitialOptions: true
 	},
 	'uw-tempevadeblock': {
+		userTypes: ['ta'],
 		autoblock: true,
 		expiry: 'infinity',
-		forTempAccountsOnly: true,
 		nocreate: true,
 		reason: '[[WP:Blocking policy#Evasion of blocks|Block evasion]]',
 		summary: 'Your temporary account has been blocked from editing because it has been used to [[WP:EVADE|evade a previous block]]'
 	},
 	'uw-ublock': {
+		userTypes: ['named'],
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		reason: '{{uw-ublock}} <!-- Username violation, soft block -->',
 		reasonParam: true,
 		summary: 'You have been indefinitely blocked from editing because your username is a violation of the [[WP:U|username policy]]'
 	},
 	'uw-ublock-double': {
+		userTypes: ['named'],
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		reason: '{{uw-ublock-double}} <!-- Username closely resembles another user, soft block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] is too similar to the username of another Wikipedia user'
 	},
 	'uw-ucblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: '31 hours',
 		nocreate: true,
@@ -1235,47 +1254,48 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing for persistent addition of [[WP:INTREF|unsourced content]]'
 	},
 	'uw-uhblock': {
+		userTypes: ['named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		reason: '{{uw-uhblock}} <!-- Username violation, hard block -->',
 		reasonParam: true,
 		summary: 'You have been indefinitely blocked from editing because your username is a blatant violation of the [[WP:U|username policy]]'
 	},
 	'uw-ublock-wellknown': {
+		userTypes: ['named'],
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		reason: '{{uw-ublock-wellknown}} <!-- Username represents a well-known person, soft block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] matches the name of a well-known living individual'
 	},
 	'uw-uhblock-double': {
+		userTypes: ['named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		reason: '{{uw-uhblock-double}} <!-- Attempted impersonation of another user, hard block -->',
 		summary: 'You have been indefinitely blocked from editing because your [[WP:U|username]] appears to impersonate another established Wikipedia user'
 	},
 	'uw-upeblock': {
+		userTypes: ['ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		pageParam: true,
 		reason: '[[WP:PAID|Undisclosed paid editing]] in violation of the WMF [[WP:TOU|Terms of Use]]',
 		summary: 'You have been indefinitely blocked from editing because your account is being used in violation of [[WP:PAID|Wikipedia policy on undisclosed paid advocacy]]'
 	},
 	'uw-vaublock': {
+		userTypes: ['named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		pageParam: true,
 		reason: '{{uw-vaublock}} <!-- Username violation, vandalism-only account -->',
 		summary: 'You have been indefinitely blocked from editing because your account is being [[WP:DISRUPTONLY|used only for vandalism]] and your username is a blatant violation of the [[WP:U|username policy]]'
 	},
 	'uw-vblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: '31 hours',
 		nocreate: true,
@@ -1284,17 +1304,17 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been blocked from editing to prevent further [[WP:VAND|vandalism]]'
 	},
 	'uw-voablock': {
+		userTypes: ['ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		pageParam: true,
 		reason: '[[WP:DISRUPTONLY|Vandalism-only account]]',
 		summary: 'You have been indefinitely blocked from editing because your account is being [[WP:DISRUPTONLY|used only for vandalism]]'
 	},
 	'zombie proxy': {
+		userTypes: ['ip'],
 		expiry: '1 month',
-		forIPsOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{zombie proxy}}',
@@ -1303,6 +1323,7 @@ Twinkle.block.blockPresetsInfo = {
 
 	// Begin partial block templates, accessed in Twinkle.block.blockGroupsPartial
 	'uw-acpblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: '48 hours',
 		nocreate: true,
@@ -1312,9 +1333,9 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been [[WP:PB|blocked from creating accounts]] for misusing [[WP:SOCK|multiple accounts]]'
 	},
 	'uw-acpblockindef': {
+		userTypes: ['ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: true,
 		pageParam: false,
 		reasonParam: true,
@@ -1322,6 +1343,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been indefinitely [[WP:PB|blocked from creating accounts]] for misusing [[WP:SOCK|multiple accounts]]'
 	},
 	'uw-aepblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		nocreate: false,
 		pageParam: false,
@@ -1330,9 +1352,9 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been [[WP:PB|partially blocked]] from editing for violating an [[WP:Arbitration|arbitration decision]]'
 	},
 	'uw-epblock': {
+		userTypes: ['named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: false,
 		noemail: true,
 		pageParam: false,
@@ -1341,6 +1363,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been [[WP:PB|blocked from emailing]] other editors for [[WP:Harassment|harassment]]'
 	},
 	'uw-ewpblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: '24 hours',
 		nocreate: false,
@@ -1350,6 +1373,7 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been [[WP:PB|partially blocked]] from editing certain areas of the encyclopedia to prevent further [[WP:DE|disruption]] due to [[WP:EW|edit warring]]'
 	},
 	'uw-pblock': {
+		userTypes: ['ip', 'ta', 'named'],
 		autoblock: true,
 		expiry: '24 hours',
 		nocreate: false,
@@ -1358,9 +1382,9 @@ Twinkle.block.blockPresetsInfo = {
 		summary: 'You have been [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
 	},
 	'uw-pblockindef': {
+		userTypes: ['ta', 'named'],
 		autoblock: true,
 		expiry: 'infinity',
-		forRegisteredOnly: true,
 		nocreate: false,
 		pageParam: false,
 		reasonParam: true,
@@ -1522,17 +1546,16 @@ Twinkle.block.callback.filtered_block_groups = function twinkleblockCallbackFilt
 			const blockSettings = Twinkle.block.blockPresetsInfo[blockPreset.value];
 
 			let allowedUserType;
-			// for regular users and temporary accounts
-			if (blockSettings.forRegisteredOnly) {
-				allowedUserType = Twinkle.block.isRegistered;
+
+			// for regular users
+			if (Twinkle.block.isRegistered && !mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'))) {
+				allowedUserType = blockSettings.userTypes.includes('named');
 			// for temporary accounts
-			} else if (blockSettings.forTempAccountsOnly) {
-				allowedUserType = mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'));
+			} else if (Twinkle.block.isRegistered) {
+				allowedUserType = blockSettings.userTypes.includes('ta');
 			// for IPs
-			} else if (blockSettings.forIPsOnly) {
-				allowedUserType = !Twinkle.block.isRegistered;
 			} else {
-				allowedUserType = true;
+				allowedUserType = blockSettings.userTypes.includes('ip');
 			}
 
 			if (!(blockSettings.templateName && showTemplate) && allowedUserType) {
