@@ -1021,7 +1021,27 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from more specific name', description: 'redirect from a more specific title to a less specific, more general one' },
 			{ tag: 'R from non-neutral name', description: 'redirect from a title that contains a non-neutral, pejorative, controversial, or offensive word, phrase, or name' },
 			{ tag: 'R from short name', description: 'redirect from a title that is a shortened form of a person\'s full name, a book title, or other more complete title' },
-			{ tag: 'R from sort name', description: 'redirect from the target\'s sort name, such as beginning with their surname rather than given name', restriction: 'insideMainspaceOnly' },
+			{ tag: 'R from sort name', description: 'redirect from the target\'s sort name, such as beginning with their surname rather than given name', restriction: 'insideMainspaceOnly' ,
+				subgroup: [
+					{
+						name: 'sortnamefrom',
+						type: 'input',
+						label: 'Sort Name Initial',
+						tooltip: 'Enter the letter that is being sorted by. This should usually be the first letter of the redirect title'
+					},
+					{
+						name: 'sortnameto',
+						type: 'input',
+						label: 'Page Title Initial',
+						tooltip: 'Enter the first letter of the target page.'
+					},
+					{
+						name: 'SortName Info',
+						type: 'div',
+						label: $.parseHTML('<p>Please provide the required parameters for sort name redirects. See <a href="/wiki/Template:R_from_sort_name#Parameters">the template page for more info</a></p>')
+					}
+				]
+			},
 			{ tag: 'R from synonym', description: 'redirect from a semantic synonym of the target page title' }
 		],
 		People: [
