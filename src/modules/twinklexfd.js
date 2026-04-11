@@ -302,6 +302,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 	form.previewer.closePreview();
 
+	let outcome;
 	switch (value) {
 		case 'afd':
 			work_area = new Morebits.QuickForm.Element({
@@ -315,6 +316,33 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: '', // Added later by Twinkle.makeFindSourcesDiv()
 				id: 'twinkle-xfd-findsources',
 				style: 'margin-bottom: 5px; margin-top: -5px;'
+			});
+
+			outcome = work_area.append({
+				type: 'select',
+				name: 'outcome',
+				label: 'Desired outcome:'
+			});
+
+			outcome.append({
+				type: 'option',
+				label: 'Delete',
+				value: 'deletion'
+			});
+			outcome.append({
+				type: 'option',
+				label: 'Merge',
+				value: 'merging'
+			});
+			outcome.append({
+				type: 'option',
+				label: 'Redirect',
+				value: 'redirecting'
+			});
+			outcome.append({
+				type: 'option',
+				label: 'Draftify',
+				value: 'draftification'
 			});
 
 			work_area.append({
@@ -1179,8 +1207,27 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
 
-			params.tagText = (params.noinclude ? '<noinclude>{{' : '{{') + (params.number === '' ? 'subst:afd|help=off' : 'subst:afdx|' +
-					params.number + '|help=off') + (params.noinclude ? '}}</noinclude>\n' : '}}\n');
+			let noIncludeStart = '';
+			let noIncludeEnd = '';
+			if ( params.noinclude ) {
+				noIncludeStart = '<noinclude>';
+				noIncludeEnd = '</noinclude>';
+			}
+
+			let outcome = '';
+			if ( params.outcome !== 'deletion' ) {
+				outcome = '|outcome=' + params.outcome;
+			}
+
+			let templateAndParams = '';
+			const isFirstNomination = params.number === '';
+			if ( isFirstNomination ) {
+				templateAndParams = 'subst:afd|help=off' + outcome;
+			} else {
+				templateAndParams = 'subst:afdx|' + params.number + '|help=off' + outcome;
+			}
+
+			params.tagText = noIncludeStart + '{{' + templateAndParams + '}}' + noIncludeEnd + '\n';
 
 			if (pageobj.canEdit()) {
 			// Remove some tags that should always be removed on AfD.
