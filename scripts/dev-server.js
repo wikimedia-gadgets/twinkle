@@ -42,7 +42,7 @@ const server = http.createServer(async (request, response) => {
 	response.end(jsCode, 'utf-8');
 });
 
-const hostname = '127.0.0.1';
+const hostname = 'localhost';
 const port = process.env.PORT || '5500';
 const GADGET_NAME = 'Twinkle';
 
