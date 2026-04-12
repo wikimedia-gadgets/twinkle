@@ -162,7 +162,7 @@ Twinkle.welcome.callback = function twinklewelcomeCallback(uid) {
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
-	form.append({ type: 'div', name: 'welcomepreview', label: [ previewlink ] });
+	form.append({ type: 'div', name: 'welcomepreview', label: [previewlink] });
 
 	form.append({ type: 'submit' });
 

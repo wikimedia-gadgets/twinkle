@@ -66,7 +66,7 @@ Twinkle.talkback.callback = function() {
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
-	form.append({ type: 'div', id: 'talkbackpreview', label: [ previewlink ] });
+	form.append({ type: 'div', id: 'talkbackpreview', label: [previewlink] });
 	form.append({ type: 'div', id: 'twinkletalkback-previewbox', style: 'display: none' });
 
 	form.append({ type: 'submit' });

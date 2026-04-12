@@ -407,7 +407,7 @@ Twinkle.rollback.revert = function revertPage(type, vandal, rev, page) {
 		inprop: 'watched',
 		intestactions: 'edit',
 		rvlimit: Twinkle.getPref('revertMaxRevisions'),
-		rvprop: [ 'ids', 'timestamp', 'user' ],
+		rvprop: ['ids', 'timestamp', 'user'],
 		curtimestamp: '',
 		meta: 'tokens',
 		type: 'csrf',
@@ -429,7 +429,7 @@ Twinkle.rollback.revertToRevision = function revertToRevision(oldrev) {
 		inprop: 'watched',
 		rvlimit: 1,
 		rvstartid: oldrev,
-		rvprop: [ 'ids', 'user' ],
+		rvprop: ['ids', 'user'],
 		curtimestamp: '',
 		meta: 'tokens',
 		type: 'csrf',
@@ -535,7 +535,7 @@ Twinkle.rollback.callbacks = {
 		const lastuser = top.user;
 
 		if (lastrevid < params.revid) {
-			Morebits.Status.error('Error', [ 'The most recent revision ID received from the server, ', Morebits.htmlNode('strong', lastrevid), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Stopping revert.' ]);
+			Morebits.Status.error('Error', ['The most recent revision ID received from the server, ', Morebits.htmlNode('strong', lastrevid), ', is less than the ID of the displayed revision. This could indicate that the current revision has been deleted, the server is lagging, or that bad data has been received. Stopping revert.']);
 			return;
 		}
 
@@ -543,20 +543,20 @@ Twinkle.rollback.callbacks = {
 		let userNorm = params.user || Twinkle.rollback.hiddenName;
 		let index = 1;
 		if (params.revid !== lastrevid) {
-			Morebits.Status.warn('Warning', [ 'Latest revision ', Morebits.htmlNode('strong', lastrevid), ' doesn\'t equal our revision ', Morebits.htmlNode('strong', params.revid) ]);
+			Morebits.Status.warn('Warning', ['Latest revision ', Morebits.htmlNode('strong', lastrevid), ' doesn\'t equal our revision ', Morebits.htmlNode('strong', params.revid)]);
 			// Treat ipv6 users on same 64 block as the same
 			if (lastuser === params.user || (mw.util.isIPv6Address(params.user) && Morebits.ip.get64(lastuser) === Morebits.ip.get64(params.user))) {
 				switch (params.type) {
 					case 'vand':
 						var diffUser = lastuser !== params.user;
-						Morebits.Status.info('Info', [ 'Latest revision was ' + (diffUser ? '' : 'also ') + 'made by ', Morebits.htmlNode('strong', userNorm),
-							diffUser ? ', which is on the same /64 subnet' : '', '. As we assume vandalism, we will proceed to revert.' ]);
+						Morebits.Status.info('Info', ['Latest revision was ' + (diffUser ? '' : 'also ') + 'made by ', Morebits.htmlNode('strong', userNorm),
+							diffUser ? ', which is on the same /64 subnet' : '', '. As we assume vandalism, we will proceed to revert.']);
 						break;
 					case 'agf':
-						Morebits.Status.warn('Warning', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), '. As we assume good faith, we will stop the revert, as the problem might have been fixed.' ]);
+						Morebits.Status.warn('Warning', ['Latest revision was made by ', Morebits.htmlNode('strong', userNorm), '. As we assume good faith, we will stop the revert, as the problem might have been fixed.']);
 						return;
 					default:
-						Morebits.Status.warn('Notice', [ 'Latest revision was made by ', Morebits.htmlNode('strong', userNorm), ', but we will stop the revert.' ]);
+						Morebits.Status.warn('Notice', ['Latest revision was made by ', Morebits.htmlNode('strong', userNorm), ', but we will stop the revert.']);
 						return;
 				}
 			} else if (params.type === 'vand' &&
@@ -564,10 +564,10 @@ Twinkle.rollback.callbacks = {
 					// Besides, none of the trusted bots are going to be revdel'd
 					Twinkle.rollback.trustedBots.includes(top.user) && revs.length > 1 &&
 					revs[1].revid === params.revid) {
-				Morebits.Status.info('Info', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.' ]);
+				Morebits.Status.info('Info', ['Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', a trusted bot, and the revision before was made by our vandal, so we will proceed with the revert.']);
 				index = 2;
 			} else {
-				Morebits.Status.error('Error', [ 'Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', so it might have already been reverted, we will stop the revert.']);
+				Morebits.Status.error('Error', ['Latest revision was made by ', Morebits.htmlNode('strong', lastuser), ', so it might have already been reverted, we will stop the revert.']);
 				return;
 			}
 
@@ -581,26 +581,26 @@ Twinkle.rollback.callbacks = {
 		if (Twinkle.rollback.trustedBots.includes(params.user)) {
 			switch (params.type) {
 				case 'vand':
-					Morebits.Status.info('Info', [ 'Vandalism revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. As this is a trusted bot, we assume you wanted to revert vandalism made by the previous user instead.' ]);
+					Morebits.Status.info('Info', ['Vandalism revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. As this is a trusted bot, we assume you wanted to revert vandalism made by the previous user instead.']);
 					index = 2;
 					params.user = revs[1].user;
 					params.userHidden = !!revs[1].userhidden;
 					break;
 				case 'agf':
-					Morebits.Status.warn('Notice', [ 'Good faith revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot and thus AGF rollback will not proceed.' ]);
+					Morebits.Status.warn('Notice', ['Good faith revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot and thus AGF rollback will not proceed.']);
 					return;
 				case 'norm':
 				/* falls through */
 				default:
 					var cont = confirm('Normal revert was chosen, but the most recent edit was made by a trusted bot (' + userNorm + '). Do you want to revert the revision before instead?');
 					if (cont) {
-						Morebits.Status.info('Info', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot, and per confirmation, we\'ll revert the previous revision instead.' ]);
+						Morebits.Status.info('Info', ['Normal revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot, and per confirmation, we\'ll revert the previous revision instead.']);
 						index = 2;
 						params.user = revs[1].user;
 						params.userHidden = !!revs[1].userhidden;
 						userNorm = params.user || Twinkle.rollback.hiddenName;
 					} else {
-						Morebits.Status.warn('Notice', [ 'Normal revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot, but per confirmation, revert on selected revision will proceed.' ]);
+						Morebits.Status.warn('Notice', ['Normal revert was chosen on ', Morebits.htmlNode('strong', userNorm), '. This is a trusted bot, but per confirmation, revert on selected revision will proceed.']);
 					}
 					break;
 			}
@@ -626,7 +626,7 @@ Twinkle.rollback.callbacks = {
 		}
 
 		if (!found) {
-			statelem.error([ 'No previous revision found. Perhaps ', Morebits.htmlNode('strong', userNorm), ' is the only contributor, or they have made more than ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' edits in a row.' ]);
+			statelem.error(['No previous revision found. Perhaps ', Morebits.htmlNode('strong', userNorm), ' is the only contributor, or they have made more than ' + mw.language.convertNumber(Twinkle.getPref('revertMaxRevisions')) + ' edits in a row.']);
 			return;
 		}
 
@@ -651,7 +651,7 @@ Twinkle.rollback.callbacks = {
 		params.gooduser = good_revision.user;
 		params.gooduserHidden = !!good_revision.userhidden;
 
-		statelem.status([ ' revision ', Morebits.htmlNode('strong', params.goodid), ' that was made ', Morebits.htmlNode('strong', mw.language.convertNumber(count)), ' revisions ago by ', Morebits.htmlNode('strong', params.gooduserHidden ? Twinkle.rollback.hiddenName : params.gooduser) ]);
+		statelem.status([' revision ', Morebits.htmlNode('strong', params.goodid), ' that was made ', Morebits.htmlNode('strong', mw.language.convertNumber(count)), ' revisions ago by ', Morebits.htmlNode('strong', params.gooduserHidden ? Twinkle.rollback.hiddenName : params.gooduser)]);
 
 		let summary, extra_summary;
 		switch (params.type) {
@@ -763,7 +763,7 @@ Twinkle.rollback.callbacks = {
 		wikipedia_api.post();
 
 	},
-	complete: function (apiobj) {
+	complete: function(apiobj) {
 		// TODO Most of this is copy-pasted from Morebits.wiki.Page#fnSaveSuccess. Unify it
 		const response = apiobj.getResponse();
 		const edit = response.edit;
@@ -777,7 +777,7 @@ Twinkle.rollback.callbacks = {
 			const params = apiobj.params;
 
 			if (params.notifyUser && !params.userHidden) { // notifyUser only from main, not from toRevision
-				Morebits.Status.info('Info', [ 'Opening user talk page edit form for user ', Morebits.htmlNode('strong', params.user) ]);
+				Morebits.Status.info('Info', ['Opening user talk page edit form for user ', Morebits.htmlNode('strong', params.user)]);
 
 				const url = mw.util.getUrl('User talk:' + params.user, {
 					action: 'edit',

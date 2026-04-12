@@ -23,12 +23,12 @@ global.assert = assert;
 
 // Node.js assert doesn't support these functions unlike Qunit assert,
 // so temporarily monkey-patch them
-assert.true = function (arg, message) {
+assert.true = function(arg, message) {
 	if (arg !== true) {
 		throw new Error(message);
 	}
 };
-assert.false = function (arg, message) {
+assert.false = function(arg, message) {
 	if (arg !== false) {
 		throw new Error(message);
 	}

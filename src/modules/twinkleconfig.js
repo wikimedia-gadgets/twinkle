@@ -82,9 +82,9 @@ Twinkle.config.commonSets = {
 	}
 };
 
-Twinkle.config.commonSets.csdCriteriaDisplayOrder = Object.keys( Twinkle.config.commonSets.csdCriteria );
-Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder = Object.keys( Twinkle.config.commonSets.csdCriteriaNotification );
-Twinkle.config.commonSets.csdAndImageDeletionCriteriaDisplayOrder = Object.keys( Twinkle.config.commonSets.csdAndImageDeletionCriteria );
+Twinkle.config.commonSets.csdCriteriaDisplayOrder = Object.keys(Twinkle.config.commonSets.csdCriteria);
+Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder = Object.keys(Twinkle.config.commonSets.csdCriteriaNotification);
+Twinkle.config.commonSets.csdAndImageDeletionCriteriaDisplayOrder = Object.keys(Twinkle.config.commonSets.csdAndImageDeletionCriteria);
 
 /**
  * Section entry format:

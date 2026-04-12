@@ -12,8 +12,6 @@
 	},
 	"rules": {
 		// default rules we don't like
-		"array-bracket-spacing": "off",
-		"computed-property-spacing": "off",
 		"es-x/no-array-prototype-includes": "off",
 		"es-x/no-promise-prototype-finally": "off",
 		"indent": "off",
@@ -25,9 +23,13 @@
 		"no-jquery/no-global-selector": "off",
 		"no-shadow": "off",
 		"object-curly-spacing": "off",
-		"space-before-function-paren": "off",
-		"space-in-parens": "off",
-		"template-curly-spacing": "off",
+
+		// enforce no spaces in parens
+		"array-bracket-spacing": ["error", "never"],
+		"computed-property-spacing": ["error", "never"],
+		"space-before-function-paren": ["error", "never"],
+		"space-in-parens": ["error", "never"],
+		"template-curly-spacing": ["error", "never"],
 
 		// non-default rules we do like
 		"no-nested-ternary": "error",

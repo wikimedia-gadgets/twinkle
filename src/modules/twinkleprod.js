@@ -450,18 +450,18 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	tm.add(cbs.checkPriors, []);
 	tm.add(cbs.fetchCreationInfo, []);
 	// tag the page once we're clear of the pre-requisites
-	tm.add(cbs.taggingPage, [ cbs.checkPriors, cbs.fetchCreationInfo ]);
+	tm.add(cbs.taggingPage, [cbs.checkPriors, cbs.fetchCreationInfo]);
 	// notify the author once we know who's the author, and also wait for the
 	// taggingPage() as we don't need to notify if tagging was not done, such as
 	// there was already a tag and the user chose not to endorse.
-	tm.add(cbs.notifyAuthor, [ cbs.fetchCreationInfo, cbs.taggingPage ]);
+	tm.add(cbs.notifyAuthor, [cbs.fetchCreationInfo, cbs.taggingPage]);
 	// oldProd needs to be added only if there wasn't one before, so need to wait
 	// for checkPriors() to finish. Also don't add oldProd if tagging itself was
 	// aborted or unsuccessful
-	tm.add(cbs.addOldProd, [ cbs.taggingPage, cbs.checkPriors ]);
+	tm.add(cbs.addOldProd, [cbs.taggingPage, cbs.checkPriors]);
 	// add to log only after notifying author so that the logging can be adjusted if
 	// notification wasn't successful. Also, don't run if tagging was not done.
-	tm.add(cbs.addToLog, [ cbs.notifyAuthor, cbs.taggingPage ]);
+	tm.add(cbs.addToLog, [cbs.notifyAuthor, cbs.taggingPage]);
 	// All set, go!
 	tm.execute().then(() => {
 		Morebits.Status.actionCompleted('Tagging complete');
