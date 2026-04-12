@@ -323,22 +323,18 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Desired outcome:',
 				list: [
 					{
-						type: 'option',
 						label: 'Delete',
 						value: 'deletion'
 					},
 					{
-						type: 'option',
 						label: 'Merge',
 						value: 'merging'
 					},
 					{
-						type: 'option',
 						label: 'Redirect',
 						value: 'redirecting'
 					},
 					{
-						type: 'option',
 						label: 'Draftify',
 						value: 'draftification'
 					}
