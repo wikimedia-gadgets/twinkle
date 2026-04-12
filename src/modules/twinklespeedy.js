@@ -2140,7 +2140,8 @@ Twinkle.speedy.getUserTalkParameters = function twinklespeedyGetUserTalkParamete
  * @return {Array}
  */
 Twinkle.speedy.resolveCsdValues = function twinklespeedyResolveCsdValues(e) {
-	const values = (e.target.form ? e.target.form : e.target).getChecked('csd');
+	const form = e.target.form ? e.target.form : e.target;
+	const values = Morebits.QuickForm.getChecked(form, 'csd');
 	if (values.length === 0) {
 		alert('Please select a criterion!');
 		return null;
