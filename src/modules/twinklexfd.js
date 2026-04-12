@@ -321,6 +321,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'select',
 				name: 'outcome',
 				label: 'Desired outcome:',
+				event: Twinkle.xfd.callbacks.changeOutcome,
 				list: [
 					{
 						label: 'Delete',
@@ -774,6 +775,15 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 };
 
 Twinkle.xfd.callbacks = {
+	changeOutcome: function(outcome) {
+		const form = outcome.target.form;
+		const reasonBox = form.querySelector('textarea[name="reason"]');
+		if (outcome.target.value === 'draftification') {
+			reasonBox.value = "I propose '''draftifying''' because ";
+		} else {
+			reasonBox.value = '';
+		}
+	},
 	// Requires having the tag text (params.tagText) set ahead of time
 	autoEditRequest: function(pageobj, params) {
 		const talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
@@ -924,11 +934,12 @@ Twinkle.xfd.callbacks = {
 		// Ensure items with User talk or no namespace prefix both end
 		// up at user talkspace as expected, but retain the
 		// prefix-less username for addToLog
-		notifyTarget = mw.Title.newFromText(notifyTarget, 3);
+		const userTalkNamespace = 3;
+		notifyTarget = mw.Title.newFromText(notifyTarget, userTalkNamespace);
 		const targetNS = notifyTarget.getNamespaceId();
-		const usernameOrTarget = notifyTarget.getRelativeText(3);
+		const usernameOrTarget = notifyTarget.getRelativeText(userTalkNamespace);
 		notifyTarget = notifyTarget.toText();
-		if (targetNS === 3) {
+		if (targetNS === userTalkNamespace) {
 			// Disallow warning yourself
 			if (usernameOrTarget === mw.config.get('wgUserName')) {
 				Morebits.Status.warn('You (' + usernameOrTarget + ') created this page; skipping user notification');
@@ -943,11 +954,19 @@ Twinkle.xfd.callbacks = {
 			actionName = actionName || 'Notifying initial contributor (' + usernameOrTarget + ')';
 		}
 
+		// For grep: Afd notice, Mfd notice, Tfd notice, Cfd notice, Ffd notice, Rfd notice
 		let notifytext = '\n{{subst:' + params.venue + ' notice';
 		// Venue-specific parameters
 		switch (params.venue) {
 			case 'afd':
+				if (params.outcome !== 'deletion') {
+					notifytext += '|outcome=' + params.outcome;
+				}
+				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
+				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
+				break;
 			case 'mfd':
+				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
 				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
 				break;
 			case 'tfd':
