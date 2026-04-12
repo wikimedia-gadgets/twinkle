@@ -302,7 +302,6 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 	form.previewer.closePreview();
 
-	let outcome;
 	switch (value) {
 		case 'afd':
 			work_area = new Morebits.QuickForm.Element({
@@ -318,31 +317,32 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				style: 'margin-bottom: 5px; margin-top: -5px;'
 			});
 
-			outcome = work_area.append({
+			work_area.append({
 				type: 'select',
 				name: 'outcome',
-				label: 'Desired outcome:'
-			});
-
-			outcome.append({
-				type: 'option',
-				label: 'Delete',
-				value: 'deletion'
-			});
-			outcome.append({
-				type: 'option',
-				label: 'Merge',
-				value: 'merging'
-			});
-			outcome.append({
-				type: 'option',
-				label: 'Redirect',
-				value: 'redirecting'
-			});
-			outcome.append({
-				type: 'option',
-				label: 'Draftify',
-				value: 'draftification'
+				label: 'Desired outcome:',
+				list: [
+					{
+						type: 'option',
+						label: 'Delete',
+						value: 'deletion'
+					},
+					{
+						type: 'option',
+						label: 'Merge',
+						value: 'merging'
+					},
+					{
+						type: 'option',
+						label: 'Redirect',
+						value: 'redirecting'
+					},
+					{
+						type: 'option',
+						label: 'Draftify',
+						value: 'draftification'
+					}
+				]
 			});
 
 			work_area.append({
@@ -1209,19 +1209,19 @@ Twinkle.xfd.callbacks = {
 
 			let noIncludeStart = '';
 			let noIncludeEnd = '';
-			if ( params.noinclude ) {
+			if (params.noinclude) {
 				noIncludeStart = '<noinclude>';
 				noIncludeEnd = '</noinclude>';
 			}
 
 			let outcome = '';
-			if ( params.outcome !== 'deletion' ) {
+			if (params.outcome !== 'deletion') {
 				outcome = '|outcome=' + params.outcome;
 			}
 
 			let templateAndParams = '';
 			const isFirstNomination = params.number === '';
-			if ( isFirstNomination ) {
+			if (isFirstNomination) {
 				templateAndParams = 'subst:afd|help=off' + outcome;
 			} else {
 				templateAndParams = 'subst:afdx|' + params.number + '|help=off' + outcome;
