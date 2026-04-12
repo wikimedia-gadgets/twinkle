@@ -24,7 +24,7 @@
 		"no-shadow": "off",
 		"object-curly-spacing": "off",
 
-		// enforce no spaces in parens
+		// enforce no spaces in parens (https://github.com/wikimedia-gadgets/twinkle/issues/1827)
 		"array-bracket-spacing": ["error", "never"],
 		"computed-property-spacing": ["error", "never"],
 		"space-before-function-paren": ["error", "never"],
