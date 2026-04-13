@@ -766,10 +766,31 @@ Twinkle.xfd.callbacks = {
 	changeOutcome: function(outcome) {
 		const form = outcome.target.form;
 		const reasonBox = form.querySelector('textarea[name="reason"]');
-		if (outcome.target.value === 'draftification') {
+		const targetInput = form.target;
+		if (outcome.target.value === 'redirecting') {
+			reasonBox.value = "I propose '''redirecting''' because ";
+			// add target text box
+			if (!targetInput) {
+				const targetElem = new Morebits.QuickForm.Element({
+					name: 'target',
+					type: 'input',
+					label: 'Target page:',
+					tooltip: 'Target page for the redirect.'
+				});
+				outcome.target.parentNode.appendChild(targetElem.render());
+			}
+		} else if (outcome.target.value === 'draftification') {
 			reasonBox.value = "I propose '''draftifying''' because ";
+			// remove target text box
+			if (targetInput) {
+				$(Morebits.QuickForm.getElementContainer(targetInput)).remove();
+			}
 		} else {
 			reasonBox.value = '';
+			// remove target text box
+			if (targetInput) {
+				$(Morebits.QuickForm.getElementContainer(targetInput)).remove();
+			}
 		}
 	},
 	// Requires having the tag text (params.tagText) set ahead of time
@@ -947,9 +968,8 @@ Twinkle.xfd.callbacks = {
 		// Venue-specific parameters
 		switch (params.venue) {
 			case 'afd':
-				if (params.outcome !== 'deletion') {
-					notifytext += '|outcome=' + params.outcome;
-				}
+				notifytext += params.outcome !== 'deletion' ? '|outcome=' + params.outcome : '';
+				notifytext += params.target ? '|target=' + params.target : '';
 				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
 				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
 				break;
@@ -1217,17 +1237,14 @@ Twinkle.xfd.callbacks = {
 				noIncludeEnd = '</noinclude>';
 			}
 
-			let outcome = '';
-			if (params.outcome !== 'deletion') {
-				outcome = '|outcome=' + params.outcome;
-			}
-
 			let templateAndParams = '';
+			const outcome = params.outcome !== 'deletion' ? '|outcome=' + params.outcome : '';
+			const targetPage = params.target ? '|target=' + params.target : '';
 			const isFirstNomination = params.number === '';
 			if (isFirstNomination) {
-				templateAndParams = 'subst:afd|help=off' + outcome;
+				templateAndParams = 'subst:afd|help=off' + outcome + targetPage;
 			} else {
-				templateAndParams = 'subst:afdx|' + params.number + '|help=off' + outcome;
+				templateAndParams = 'subst:afdx|' + params.number + '|help=off' + outcome + targetPage;
 			}
 
 			params.tagText = noIncludeStart + '{{' + templateAndParams + '}}' + noIncludeEnd + '\n';
