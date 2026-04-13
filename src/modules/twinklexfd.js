@@ -345,18 +345,18 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				name: 'xfdcat',
 				label: 'Choose what category this nomination belongs in:',
 				list: [
-					{ label: 'Unknown', value: '?', selected: true },
-					{ label: 'Media and music', value: 'M' },
-					{ label: 'Organisation, corporation, or product', value: 'O' },
-					{ label: 'Biographical', value: 'B' },
-					{ label: 'Society topics', value: 'S' },
-					{ label: 'Web or internet', value: 'W' },
-					{ label: 'Games or sports', value: 'G' },
-					{ label: 'Science and technology', value: 'T' },
-					{ label: 'Fiction and the arts', value: 'F' },
-					{ label: 'Places and transportation', value: 'P' },
-					{ label: 'Indiscernible or unclassifiable topic', value: 'I' },
-					{ label: 'Debate not yet sorted', value: 'U' }
+					{ type: 'option', label: 'Unknown', value: '?', selected: true },
+					{ type: 'option', label: 'Media and music', value: 'M' },
+					{ type: 'option', label: 'Organisation, corporation, or product', value: 'O' },
+					{ type: 'option', label: 'Biographical', value: 'B' },
+					{ type: 'option', label: 'Society topics', value: 'S' },
+					{ type: 'option', label: 'Web or internet', value: 'W' },
+					{ type: 'option', label: 'Games or sports', value: 'G' },
+					{ type: 'option', label: 'Science and technology', value: 'T' },
+					{ type: 'option', label: 'Fiction and the arts', value: 'F' },
+					{ type: 'option', label: 'Places and transportation', value: 'P' },
+					{ type: 'option', label: 'Indiscernible or unclassifiable topic', value: 'I' },
+					{ type: 'option', label: 'Debate not yet sorted', value: 'U' }
 				]
 			});
 
