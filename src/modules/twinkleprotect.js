@@ -1521,13 +1521,13 @@ Twinkle.protect.callbacks = {
 			rppLink.appendChild(document.createTextNode('Wikipedia:Requests for page protection'));
 
 			if (tag) {
-				statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
+				statusElement.error(['There is already a protection request for this page at ', rppLink, ', aborting.']);
 				return;
 			}
 
 			let newtag = '=== [[:' + Morebits.pageNameNorm + ']] ===\n';
 			if (new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text) || new RegExp('^' + mw.util.escapeRegExp(newtag).replace(/\s+/g, '\\s*'), 'm').test(text2)) {
-				statusElement.error([ 'There is already a protection request for this page at ', rppLink, ', aborting.' ]);
+				statusElement.error(['There is already a protection request for this page at ', rppLink, ', aborting.']);
 				return;
 			}
 			newtag += '* {{pagelinks|1=' + Morebits.pageNameNorm + '}}\n\n';
@@ -1590,7 +1590,7 @@ Twinkle.protect.callbacks = {
 					const linknode = document.createElement('a');
 					linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
 					linknode.appendChild(document.createTextNode('How to fix RPP'));
-					statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.' ]);
+					statusElement.error(['Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode, '.']);
 					return;
 				}
 				statusElement.status('Adding new request...');
@@ -1626,7 +1626,7 @@ Twinkle.protect.callbacks = {
 					const linknode2 = document.createElement('a');
 					linknode2.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing RPP'));
 					linknode2.appendChild(document.createTextNode('How to fix RPP'));
-					statusElement.error([ 'Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode2, '.' ]);
+					statusElement.error(['Could not find relevant heading on WP:RPP. To fix this problem, please see ', linknode2, '.']);
 					return;
 				}
 				statusElement.status('Adding new request...');

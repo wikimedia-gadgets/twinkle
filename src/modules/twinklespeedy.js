@@ -411,7 +411,7 @@ Twinkle.speedy.data = [
 		code: 'g1',
 		db: 'nonsense',
 		tooltip: 'This does not include poor writing, partisan screeds, obscene remarks, vandalism, fictional material, material not in English, poorly translated material, implausible theories, or hoaxes. In short, if you can understand it, G1 does not apply.',
-		hideInNamespaces: [ 2 ] // Not applicable in userspace
+		hideInNamespaces: [2] // Not applicable in userspace
 	},
 	{
 		list: 'generalList',
@@ -419,7 +419,7 @@ Twinkle.speedy.data = [
 		code: 'g2',
 		db: 'test',
 		tooltip: 'A page created to test editing or other Wikipedia functions. Pages in the User namespace are not included, nor are valid but unused or duplicate templates.',
-		hideInNamespaces: [ 2 ] // Not applicable in userspace
+		hideInNamespaces: [2] // Not applicable in userspace
 	},
 	{
 		list: 'generalList',
@@ -603,7 +603,7 @@ Twinkle.speedy.data = [
 		db: 'subpage',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.',
 		hideWhenMultiple: true,
-		hideInNamespaces: [ 0, 6, 8 ] // hide in main, file, and mediawiki-spaces
+		hideInNamespaces: [0, 6, 8] // hide in main, file, and mediawiki-spaces
 	},
 	{
 		list: 'generalList',
@@ -711,7 +711,7 @@ Twinkle.speedy.data = [
 		code: 'r2',
 		db: 'rediruser',
 		tooltip: 'This does not include the pseudo-namespace shortcuts. If this was the result of a page move, consider waiting a day or two before deleting the redirect',
-		showInNamespaces: [ 0 ]
+		showInNamespaces: [0]
 	},
 	{
 		list: 'redirectList',
@@ -726,7 +726,7 @@ Twinkle.speedy.data = [
 		code: 'r4',
 		db: 'redircom',
 		tooltip: 'The redirect should have no incoming links (unless the links are cleary intended for the file or redirect at Commons).',
-		showInNamespaces: [ 6 ]
+		showInNamespaces: [6]
 	},
 	{
 		list: 'redirectList',
@@ -756,7 +756,7 @@ Twinkle.speedy.data = [
 /**
  * Given a list name such as talkList, fileList, redirectList, etc, return the CSDs that should be in that list.
  */
-Twinkle.speedy.getCsdList = ( csdList ) => {
+Twinkle.speedy.getCsdList = (csdList) => {
 	const list = [];
 	for (const item of Twinkle.speedy.data) {
 		if (item.list === csdList) {
@@ -772,16 +772,16 @@ Twinkle.speedy.getCsdList = ( csdList ) => {
 	return list;
 };
 
-Twinkle.speedy.customRationale = Twinkle.speedy.getCsdList( 'customRationale' );
-Twinkle.speedy.talkList = Twinkle.speedy.getCsdList( 'talkList' );
-Twinkle.speedy.fileList = Twinkle.speedy.getCsdList( 'fileList' );
-Twinkle.speedy.articleList = Twinkle.speedy.getCsdList( 'articleList' );
-Twinkle.speedy.categoryList = Twinkle.speedy.getCsdList( 'categoryList' );
-Twinkle.speedy.templateList = Twinkle.speedy.getCsdList( 'templateList' );
-Twinkle.speedy.userList = Twinkle.speedy.getCsdList( 'userList' );
-Twinkle.speedy.generalList = Twinkle.speedy.getCsdList( 'generalList' );
-Twinkle.speedy.redirectList = Twinkle.speedy.getCsdList( 'redirectList' );
-Twinkle.speedy.timedTextList = Twinkle.speedy.getCsdList( 'timedTextList' );
+Twinkle.speedy.customRationale = Twinkle.speedy.getCsdList('customRationale');
+Twinkle.speedy.talkList = Twinkle.speedy.getCsdList('talkList');
+Twinkle.speedy.fileList = Twinkle.speedy.getCsdList('fileList');
+Twinkle.speedy.articleList = Twinkle.speedy.getCsdList('articleList');
+Twinkle.speedy.categoryList = Twinkle.speedy.getCsdList('categoryList');
+Twinkle.speedy.templateList = Twinkle.speedy.getCsdList('templateList');
+Twinkle.speedy.userList = Twinkle.speedy.getCsdList('userList');
+Twinkle.speedy.generalList = Twinkle.speedy.getCsdList('generalList');
+Twinkle.speedy.redirectList = Twinkle.speedy.getCsdList('redirectList');
+Twinkle.speedy.timedTextList = Twinkle.speedy.getCsdList('timedTextList');
 
 /**
  * Iterate over Twinkle.speedy.data. Turn `code: 'g8', db: 'redirnone',` into `redirnone: 'g8',`
@@ -895,7 +895,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					name: 'redirects',
 					tooltip: 'This option deletes all incoming redirects in addition. Avoid this option for procedural (e.g. move/merge) deletions.',
 					checked: Twinkle.getPref('deleteRedirectsOnDelete'),
-					event: function (event) {
+					event: function(event) {
 						event.stopPropagation();
 					}
 				},
@@ -1127,7 +1127,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	}
 };
 
-Twinkle.speedy.callback.priorDeletionCount = function () {
+Twinkle.speedy.callback.priorDeletionCount = function() {
 	const query = {
 		action: 'query',
 		format: 'json',
@@ -1519,7 +1519,7 @@ Twinkle.speedy.callbacks = {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback('Removing links to deleted page ' + Morebits.pageNameNorm);
-					} );
+					});
 				$bigtext = $('<span>')
 					.text('To orphan backlinks')
 					.css({
@@ -1619,7 +1619,7 @@ Twinkle.speedy.callbacks = {
 				// Remove tags that become superfluous with this action
 				text = text.replace(/\{\{\s*([Uu]serspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/g, '');
 				if (mw.config.get('wgNamespaceNumber') === 6) {
-					text = Twinkle.removeMoveToCommonsTagsFromWikicode( text );
+					text = Twinkle.removeMoveToCommonsTagsFromWikicode(text);
 				}
 
 				if (params.requestsalt) {

@@ -99,7 +99,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 				const searchString = this.value;
 				const searchRegex = new RegExp(mw.util.escapeRegExp(searchString), 'i');
 
-				$allCheckboxDivs.find('label').each(function () {
+				$allCheckboxDivs.find('label').each(function() {
 					const labelText = this.textContent;
 					const searchHit = searchRegex.exec(labelText);
 					if (searchHit) {
@@ -247,7 +247,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 				form.append({ type: 'header', id: 'tagHeader' + i, label: groupName });
 				const subdiv = form.append({ type: 'div', id: 'tagSubdiv' + i++ });
 				$.each(group, (subgroupName, subgroup) => {
-					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
+					subdiv.append({ type: 'div', label: [Morebits.htmlNode('b', subgroupName)] });
 					subdiv.append({
 						type: 'checkbox',
 						name: 'tags',
@@ -368,7 +368,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 	const container = new Morebits.QuickForm.Element({ type: 'fragment' });
 
 	// function to generate a checkbox, with appropriate subgroup if needed
-	const makeCheckbox = function (item) {
+	const makeCheckbox = function(item) {
 		const tag = item.tag, description = item.description;
 		const checkbox = { value: tag, label: '{{' + tag + '}}: ' + description };
 		if (Twinkle.tag.checkedTags.includes(tag)) {
@@ -429,7 +429,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 				doCategoryCheckboxes(subdiv, group);
 			} else {
 				$.each(group, (subgroupName, subgroup) => {
-					subdiv.append({ type: 'div', label: [ Morebits.htmlNode('b', subgroupName) ] });
+					subdiv.append({ type: 'div', label: [Morebits.htmlNode('b', subgroupName)] });
 					doCategoryCheckboxes(subdiv, subgroup);
 				});
 			}
@@ -533,11 +533,11 @@ const translationSubgroups = [
 ].concat(mw.config.get('wgNamespaceNumber') === 0 ? [
 	{
 		type: 'checkbox',
-		list: [ {
+		list: [{
 			name: 'translationPostAtPNT',
 			label: 'List this article at Wikipedia:Pages needing translation into English (PNT)',
 			checked: true
-		} ]
+		}]
 	},
 	{
 		name: 'translationComments',
@@ -1604,7 +1604,7 @@ Twinkle.tag.callbacks = {
 				const subgroupObj = Twinkle.tag.article.flatObject[tagName] &&
 					Twinkle.tag.article.flatObject[tagName].subgroup;
 				if (subgroupObj) {
-					const subgroups = Array.isArray(subgroupObj) ? subgroupObj : [ subgroupObj ];
+					const subgroups = Array.isArray(subgroupObj) ? subgroupObj : [subgroupObj];
 					subgroups.forEach((gr) => {
 						if (gr.parameter && (params[gr.name] || gr.required)) {
 							currentTag += '|' + gr.parameter + '=' + (params[gr.name] || '');
@@ -1904,7 +1904,7 @@ Twinkle.tag.callbacks = {
 			$.each(params.tags, (k, tag) => {
 				// when other commons-related tags are placed, remove "move to Commons" tag
 				if (['Keep local', 'Do not move to Commons'].includes(tag)) {
-					text = Twinkle.removeMoveToCommonsTagsFromWikicode( text );
+					text = Twinkle.removeMoveToCommonsTagsFromWikicode(text);
 				}
 
 				currentTag = tag;

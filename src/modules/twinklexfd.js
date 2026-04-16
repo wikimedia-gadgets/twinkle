@@ -143,7 +143,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append({
 		type: 'option',
 		label: 'TfD (Templates for discussion)',
-		selected: [ 10, 828 ].includes(namespace), // Template and module namespaces
+		selected: [10, 828].includes(namespace), // Template and module namespaces
 		value: 'tfd'
 	});
 	categories.append({
@@ -166,7 +166,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append({
 		type: 'option',
 		label: 'MfD (Miscellany for deletion)',
-		selected: ![ 0, 6, 10, 14, 828 ].includes(namespace) || Morebits.pageNameNorm.indexOf('Template:User ', 0) === 0,
+		selected: ![0, 6, 10, 14, 828].includes(namespace) || Morebits.pageNameNorm.indexOf('Template:User ', 0) === 0,
 		// Other namespaces, and userboxes in template namespace
 		value: 'mfd'
 	});
@@ -213,7 +213,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
-	form.append({ type: 'div', id: 'xfdpreview', label: [ previewlink ] });
+	form.append({ type: 'div', id: 'xfdpreview', label: [previewlink] });
 	form.append({ type: 'div', id: 'twinklexfd-previewbox', style: 'display: none' });
 
 	form.append({ type: 'submit' });
@@ -249,7 +249,7 @@ Twinkle.xfd.callback.wrongVenueWarning = function twinklexfdWrongVenueWarning(ve
 			}
 			break;
 		case 'cfd':
-			if (![ 10, 14 ].includes(namespace)) {
+			if (![10, 14].includes(namespace)) {
 				text = 'CfD is only for categories and stub templates.';
 			}
 			break;
@@ -1246,7 +1246,7 @@ Twinkle.xfd.callbacks = {
 					const linknode = document.createElement('a');
 					linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing AFD') + '?action=purge');
 					linknode.appendChild(document.createTextNode('How to fix AFD'));
-					statelem.error([ 'Could not find the target spot for the discussion. To fix this problem, please see ', linknode, '.' ]);
+					statelem.error(['Could not find the target spot for the discussion. To fix this problem, please see ', linknode, '.']);
 					return;
 				}
 			}
@@ -1293,7 +1293,7 @@ Twinkle.xfd.callbacks = {
 				if (watchModule) {
 					watch_query = {
 						action: 'watch',
-						titles: [ mw.config.get('wgPageName') ],
+						titles: [mw.config.get('wgPageName')],
 						token: mw.user.tokens.get('watchToken')
 					};
 					// Only add the expiry if page is unwatched or already temporarily watched
@@ -1654,7 +1654,7 @@ Twinkle.xfd.callbacks = {
 
 			params.tagText = '{{ffd|log=' + date + '|help=off}}\n';
 			if (pageobj.canEdit()) {
-				text = Twinkle.removeMoveToCommonsTagsFromWikicode( text );
+				text = Twinkle.removeMoveToCommonsTagsFromWikicode(text);
 
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
