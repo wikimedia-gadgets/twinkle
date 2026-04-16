@@ -765,7 +765,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 Twinkle.xfd.callbacks = {
 	changeOutcome: function(outcome) {
 		const form = outcome.target.form;
-		const reasonBox = form.querySelector('textarea[name="reason"]');
+		const reasonBox = form.reason;
 		const targetInput = form.target;
 		if (outcome.target.value === 'redirecting') {
 			reasonBox.value = "I propose '''redirecting''' because ";
