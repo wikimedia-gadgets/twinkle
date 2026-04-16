@@ -321,7 +321,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				type: 'select',
 				name: 'outcome',
 				label: 'Desired outcome:',
-				event: Twinkle.xfd.callbacks.changeOutcome,
+				event: Twinkle.xfd.callbacks.changeAfdOutcome,
 				list: [
 					{ label: 'Delete', value: 'deletion' },
 					{ label: 'Merge', value: 'merging' },
@@ -331,10 +331,10 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			});
 
 			work_area.append({
-				name: 'target',
+				name: 'afdtarget',
 				type: 'input',
 				label: 'Target page:',
-				tooltip: 'Target page for the redirect.'
+				tooltip: 'Target page for the redirect or merge.'
 			});
 
 			work_area.append({
@@ -394,7 +394,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			old_area.parentNode.replaceChild(work_area, old_area);
 
 			// Now that we've rendered the form, hide the target text box. Unhide it later for certain outcomes, using a callback.
-			$('[name="target"]').parent().hide();
+			$('[name="afdtarget"]').parent().hide();
 
 			Twinkle.makeFindSourcesDiv('#twinkle-xfd-findsources');
 
@@ -773,9 +773,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 };
 
 Twinkle.xfd.callbacks = {
-	changeOutcome: function(outcome) {
+	changeAfdOutcome: function(outcome) {
 		const $reason = $('[name="reason"]');
-		const $target = $('[name="target"]');
+		const $target = $('[name="afdtarget"]');
 		if (outcome.target.value === 'redirecting') {
 			$reason.val("I propose '''redirecting''' because ");
 			$target.parent().show();
