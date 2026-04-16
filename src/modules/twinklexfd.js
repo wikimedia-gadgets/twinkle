@@ -331,6 +331,13 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			});
 
 			work_area.append({
+				name: 'target',
+				type: 'input',
+				label: 'Target page:',
+				tooltip: 'Target page for the redirect.'
+			});
+
+			work_area.append({
 				type: 'checkbox',
 				list: [
 					{
@@ -385,6 +392,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			appendReasonBox();
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
+
+			// Now that we've rendered the form, hide the target text box. Unhide it later for certain outcomes, using a callback.
+			$('[name="target"]').parent().hide();
 
 			Twinkle.makeFindSourcesDiv('#twinkle-xfd-findsources');
 
@@ -764,33 +774,19 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 Twinkle.xfd.callbacks = {
 	changeOutcome: function(outcome) {
-		const form = outcome.target.form;
-		const reasonBox = form.reason;
-		const targetInput = form.target;
+		const $reason = $('[name="reason"]');
+		const $target = $('[name="target"]');
 		if (outcome.target.value === 'redirecting') {
-			reasonBox.value = "I propose '''redirecting''' because ";
-			// add target text box
-			if (!targetInput) {
-				const targetElem = new Morebits.QuickForm.Element({
-					name: 'target',
-					type: 'input',
-					label: 'Target page:',
-					tooltip: 'Target page for the redirect.'
-				});
-				outcome.target.parentNode.appendChild(targetElem.render());
-			}
+			$reason.val("I propose '''redirecting''' because ");
+			$target.parent().show();
 		} else if (outcome.target.value === 'draftification') {
-			reasonBox.value = "I propose '''draftifying''' because ";
-			// remove target text box
-			if (targetInput) {
-				$(Morebits.QuickForm.getElementContainer(targetInput)).remove();
-			}
+			$reason.val("I propose '''draftifying''' because ");
+			$target.parent().hide();
+			$target.val('');
 		} else {
-			reasonBox.value = '';
-			// remove target text box
-			if (targetInput) {
-				$(Morebits.QuickForm.getElementContainer(targetInput)).remove();
-			}
+			$reason.val('');
+			$target.parent().hide();
+			$target.val('');
 		}
 	},
 	// Requires having the tag text (params.tagText) set ahead of time
