@@ -353,18 +353,18 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				name: 'xfdcat',
 				label: 'Choose what category this nomination belongs in:',
 				list: [
-					{ type: 'option', label: 'Unknown', value: '?', selected: true },
-					{ type: 'option', label: 'Media and music', value: 'M' },
-					{ type: 'option', label: 'Organisation, corporation, or product', value: 'O' },
-					{ type: 'option', label: 'Biographical', value: 'B' },
-					{ type: 'option', label: 'Society topics', value: 'S' },
-					{ type: 'option', label: 'Web or internet', value: 'W' },
-					{ type: 'option', label: 'Games or sports', value: 'G' },
-					{ type: 'option', label: 'Science and technology', value: 'T' },
-					{ type: 'option', label: 'Fiction and the arts', value: 'F' },
-					{ type: 'option', label: 'Places and transportation', value: 'P' },
-					{ type: 'option', label: 'Indiscernible or unclassifiable topic', value: 'I' },
-					{ type: 'option', label: 'Debate not yet sorted', value: 'U' }
+					{ label: 'Unknown', value: '?', selected: true },
+					{ label: 'Media and music', value: 'M' },
+					{ label: 'Organisation, corporation, or product', value: 'O' },
+					{ label: 'Biographical', value: 'B' },
+					{ label: 'Society topics', value: 'S' },
+					{ label: 'Web or internet', value: 'W' },
+					{ label: 'Games or sports', value: 'G' },
+					{ label: 'Science and technology', value: 'T' },
+					{ label: 'Fiction and the arts', value: 'F' },
+					{ label: 'Places and transportation', value: 'P' },
+					{ label: 'Indiscernible or unclassifiable topic', value: 'I' },
+					{ label: 'Debate not yet sorted', value: 'U' }
 				]
 			});
 
@@ -465,8 +465,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					}
 				},
 				list: [
-					{ type: 'option', label: 'Deletion', value: 'tfd', selected: true },
-					{ type: 'option', label: 'Merge', value: 'tfm' }
+					{ label: 'Deletion', value: 'tfd', selected: true },
+					{ label: 'Merge', value: 'tfm' }
 				]
 			});
 			work_area.append({
@@ -475,13 +475,13 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Deletion tag display style:',
 				tooltip: 'Which <code>type=</code> parameter to pass to the TfD tag template.',
 				list: templateOrModule === 'module' ? [
-					{ type: 'option', value: 'module', label: 'Module', selected: true }
+					{ value: 'module', label: 'Module', selected: true }
 				] : [
-					{ type: 'option', value: 'standard', label: 'Standard', selected: true },
-					{ type: 'option', value: 'sidebar', label: 'Sidebar/infobox', selected: $('.infobox').length },
-					{ type: 'option', value: 'inline', label: 'Inline template', selected: $('.mw-parser-output > p .Inline-Template').length },
-					{ type: 'option', value: 'tiny', label: 'Tiny inline' },
-					{ type: 'option', value: 'disabled', label: 'Disabled' }
+					{ value: 'standard', label: 'Standard', selected: true },
+					{ value: 'sidebar', label: 'Sidebar/infobox', selected: $('.infobox').length },
+					{ value: 'inline', label: 'Inline template', selected: $('.mw-parser-output > p .Inline-Template').length },
+					{ value: 'tiny', label: 'Tiny inline' },
+					{ value: 'disabled', label: 'Disabled' }
 				]
 			});
 
@@ -614,14 +614,14 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					}
 				},
 				list: isCategory ? [
-					{ type: 'option', label: 'Deletion', value: 'cfd', selected: true },
-					{ type: 'option', label: 'Merge', value: 'cfm' },
-					{ type: 'option', label: 'Renaming', value: 'cfr' },
-					{ type: 'option', label: 'Split', value: 'cfs' },
-					{ type: 'option', label: 'Convert into article', value: 'cfc' }
+					{ label: 'Deletion', value: 'cfd', selected: true },
+					{ label: 'Merge', value: 'cfm' },
+					{ label: 'Renaming', value: 'cfr' },
+					{ label: 'Split', value: 'cfs' },
+					{ label: 'Convert into article', value: 'cfc' }
 				] : [
-					{ type: 'option', label: 'Stub Deletion', value: 'sfd-t', selected: true },
-					{ type: 'option', label: 'Stub Renaming', value: 'sfr-t' }
+					{ label: 'Stub Deletion', value: 'sfd-t', selected: true },
+					{ label: 'Stub Renaming', value: 'sfr-t' }
 				]
 			});
 
@@ -650,12 +650,12 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				name: 'xfdcat',
 				tooltip: 'See WP:CFDS for full explanations.',
 				list: [
-					{ type: 'option', label: 'C2A: Typographic and spelling fixes', value: 'C2A', selected: true },
-					{ type: 'option', label: 'C2B: Naming conventions and disambiguation', value: 'C2B' },
-					{ type: 'option', label: 'C2C: Consistency with names of similar categories', value: 'C2C' },
-					{ type: 'option', label: 'C2D: Rename to match article name', value: 'C2D' },
-					{ type: 'option', label: 'C2E: Author request', value: 'C2E' },
-					{ type: 'option', label: 'C2F: One eponymous article', value: 'C2F' }
+					{ label: 'C2A: Typographic and spelling fixes', value: 'C2A', selected: true },
+					{ label: 'C2B: Naming conventions and disambiguation', value: 'C2B' },
+					{ label: 'C2C: Consistency with names of similar categories', value: 'C2C' },
+					{ label: 'C2D: Rename to match article name', value: 'C2D' },
+					{ label: 'C2E: Author request', value: 'C2E' },
+					{ label: 'C2F: One eponymous article', value: 'C2F' }
 				]
 			});
 
