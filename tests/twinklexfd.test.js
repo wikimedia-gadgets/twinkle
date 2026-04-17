@@ -184,4 +184,99 @@ describe('modules/twinklexfd', () => {
 			expect(Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(noinclude, outcome, afdtarget, number)).toBe(expected);
 		});
 	});
+
+	describe('generateUserTalkNoticeWikitext', () => {
+		test('afd, deletion, 1st nomination', () => {
+			const venue = 'afd';
+			const outcome = 'deletion';
+			const afdtarget = '';
+			const numbering = '';
+			const xfdcat = '?';
+			const tfdtarget = undefined;
+			const action = undefined;
+			const namespaceNumber = 0;
+			const pageTitle = 'NovemTest110';
+			// TODO: Is this &#32; and the space after it necessary? Seems like the template code is trimming the "order" parameter and then adding a space, so may not be need to be added by Twinkle.
+			const expected = '\n{{subst:afd notice|1=NovemTest110}} ~~~~';
+			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle)).toBe(expected);
+		});
+		test('afd, deletion, nth nomination', () => {
+			const venue = 'afd';
+			const outcome = 'deletion';
+			const afdtarget = '';
+			const numbering = ' (4th nomination)';
+			const xfdcat = '?';
+			const tfdtarget = undefined;
+			const action = undefined;
+			const namespaceNumber = 0;
+			const pageTitle = 'NovemTest110';
+			const expected = '\n{{subst:afd notice|order=&#32; (4th nomination)|1=NovemTest110}} ~~~~';
+			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle)).toBe(expected);
+		});
+		test('afd, merging, 1st nomination, blank target', () => {
+			const venue = 'afd';
+			const outcome = 'merging';
+			const afdtarget = '';
+			const numbering = '';
+			const xfdcat = '?';
+			const tfdtarget = undefined;
+			const action = undefined;
+			const namespaceNumber = 0;
+			const pageTitle = 'NovemTest110';
+			const expected = '\n{{subst:afd notice|outcome=merging|1=NovemTest110}} ~~~~';
+			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle)).toBe(expected);
+		});
+		test('afd, merging, 1st nomination, with target', () => {
+			const venue = 'afd';
+			const outcome = 'merging';
+			const afdtarget = 'Testing 123';
+			const numbering = '';
+			const xfdcat = '?';
+			const tfdtarget = undefined;
+			const action = undefined;
+			const namespaceNumber = 0;
+			const pageTitle = 'NovemTest110';
+			const expected = '\n{{subst:afd notice|outcome=merging|target=Testing 123|1=NovemTest110}} ~~~~';
+			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle)).toBe(expected);
+		});
+		test('afd, redirecting, 1st nomination, blank target', () => {
+			const venue = 'afd';
+			const outcome = 'redirecting';
+			const afdtarget = '';
+			const numbering = '';
+			const xfdcat = '?';
+			const tfdtarget = undefined;
+			const action = undefined;
+			const namespaceNumber = 0;
+			const pageTitle = 'NovemTest110';
+			const expected = '\n{{subst:afd notice|outcome=redirecting|1=NovemTest110}} ~~~~';
+			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle)).toBe(expected);
+		});
+		test('afd, redirecting, 1st nomination, with target', () => {
+			const venue = 'afd';
+			const outcome = 'redirecting';
+			const afdtarget = 'Testing 123';
+			const numbering = '';
+			const xfdcat = '?';
+			const tfdtarget = undefined;
+			const action = undefined;
+			const namespaceNumber = 0;
+			const pageTitle = 'NovemTest110';
+			const expected = '\n{{subst:afd notice|outcome=redirecting|target=Testing 123|1=NovemTest110}} ~~~~';
+			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle)).toBe(expected);
+		});
+		test('afd, draftification, 1st nomination', () => {
+			const venue = 'afd';
+			const outcome = 'draftification';
+			const afdtarget = '';
+			const numbering = '';
+			const xfdcat = '?';
+			const tfdtarget = undefined;
+			const action = undefined;
+			const namespaceNumber = 0;
+			const pageTitle = 'NovemTest110';
+			const expected = '\n{{subst:afd notice|outcome=draftification|1=NovemTest110}} ~~~~';
+			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle)).toBe(expected);
+		});
+	});
 });

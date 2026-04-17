@@ -962,32 +962,7 @@ Twinkle.xfd.callbacks = {
 			actionName = actionName || 'Notifying initial contributor (' + usernameOrTarget + ')';
 		}
 
-		// For grep: Afd notice, Mfd notice, Tfd notice, Cfd notice, Ffd notice, Rfd notice
-		let notifytext = '\n{{subst:' + params.venue + ' notice';
-		// Venue-specific parameters
-		switch (params.venue) {
-			case 'afd':
-				notifytext += params.outcome !== 'deletion' ? '|outcome=' + params.outcome : '';
-				notifytext += params.afdtarget ? '|target=' + params.afdtarget : '';
-				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
-				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
-				break;
-			case 'mfd':
-				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
-				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
-				break;
-			case 'tfd':
-				if (params.xfdcat === 'tfm') {
-					notifytext = '\n{{subst:Tfm notice|2=' + params.tfdtarget;
-				}
-				break;
-			case 'cfd':
-				notifytext += '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === 10 ? '|stub=yes' : '');
-				break;
-			default: // ffd, rfd
-				break;
-		}
-		notifytext += '|1=' + Morebits.pageNameNorm + '}} ~~~~';
+		const notifyText = Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params.venue, params.outcome, params.afdtarget, params.numbering, params.xfdcat, params.tfdtarget, params.action, mw.config.get('wgNamespaceNumber'), Morebits.pageNameNorm);
 
 		// Link to the venue; object used here rather than repetitive items in switch
 		const venueNames = {
@@ -1002,7 +977,7 @@ Twinkle.xfd.callbacks = {
 			Morebits.pageNameNorm + ']] at [[WP:' + venueNames[params.venue] + ']].';
 
 		const usertalkpage = new Morebits.wiki.Page(notifyTarget, actionName);
-		usertalkpage.setAppendText(notifytext);
+		usertalkpage.setAppendText(notifyText);
 		usertalkpage.setEditSummary(editSummary);
 		usertalkpage.setChangeTags(Twinkle.changeTags);
 		usertalkpage.setCreateOption('recreate');
@@ -1029,6 +1004,36 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
 		}
+	},
+	generateUserTalkNoticeWikitext: function(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle) {
+		// For grep: Afd notice, Mfd notice, Tfd notice, Cfd notice, Ffd notice, Rfd notice
+		let notifytext = '\n{{subst:' + venue + ' notice';
+		const templateNamespace = 10;
+		// Venue-specific parameters
+		switch (venue) {
+			case 'afd':
+				notifytext += outcome !== 'deletion' ? '|outcome=' + outcome : '';
+				notifytext += afdtarget ? '|target=' + afdtarget : '';
+				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
+				notifytext += numbering !== '' ? '|order=&#32;' + numbering : '';
+				break;
+			case 'mfd':
+				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
+				notifytext += numbering !== '' ? '|order=&#32;' + numbering : '';
+				break;
+			case 'tfd':
+				if (xfdcat === 'tfm') {
+					notifytext = '\n{{subst:Tfm notice|2=' + tfdtarget;
+				}
+				break;
+			case 'cfd':
+				notifytext += '|action=' + action + (namespaceNumber === templateNamespace ? '|stub=yes' : '');
+				break;
+			default: // ffd, rfd
+				break;
+		}
+		notifytext += '|1=' + pageTitle + '}} ~~~~';
+		return notifytext;
 	},
 	addToLog: function(params, initialContrib) {
 		if (!Twinkle.getPref('logXfdNominations') || Twinkle.getPref('noLogOnXfdNomination').includes(params.venue)) {
