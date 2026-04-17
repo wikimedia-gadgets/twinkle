@@ -775,18 +775,21 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 Twinkle.xfd.callbacks = {
 	changeAfdOutcome: function(outcome) {
 		const $reason = $('[name="reason"]');
-		const $target = $('[name="afdtarget"]');
+		const $afdTarget = $('[name="afdtarget"]');
 		if (outcome.target.value === 'redirecting') {
 			$reason.val("I propose '''redirecting''' because ");
-			$target.parent().show();
+			$afdTarget.parent().show();
+		} else if (outcome.target.value === 'merging') {
+			$reason.val("I propose '''merging''' because ");
+			$afdTarget.parent().show();
 		} else if (outcome.target.value === 'draftification') {
 			$reason.val("I propose '''draftifying''' because ");
-			$target.parent().hide();
-			$target.val('');
-		} else {
+			$afdTarget.parent().hide();
+			$afdTarget.val('');
+		} else if (outcome.target.value === 'deletion') {
 			$reason.val('');
-			$target.parent().hide();
-			$target.val('');
+			$afdTarget.parent().hide();
+			$afdTarget.val('');
 		}
 	},
 	// Requires having the tag text (params.tagText) set ahead of time
@@ -965,7 +968,7 @@ Twinkle.xfd.callbacks = {
 		switch (params.venue) {
 			case 'afd':
 				notifytext += params.outcome !== 'deletion' ? '|outcome=' + params.outcome : '';
-				notifytext += params.target ? '|target=' + params.target : '';
+				notifytext += params.afdtarget ? '|target=' + params.afdtarget : '';
 				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
 				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
 				break;
@@ -1235,7 +1238,7 @@ Twinkle.xfd.callbacks = {
 
 			let templateAndParams = '';
 			const outcome = params.outcome !== 'deletion' ? '|outcome=' + params.outcome : '';
-			const targetPage = params.target ? '|target=' + params.target : '';
+			const targetPage = params.afdtarget ? '|target=' + params.afdtarget : '';
 			const isFirstNomination = params.number === '';
 			if (isFirstNomination) {
 				templateAndParams = 'subst:afd|help=off' + outcome + targetPage;
