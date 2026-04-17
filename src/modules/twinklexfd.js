@@ -1014,7 +1014,8 @@ Twinkle.xfd.callbacks = {
 			case 'afd':
 				notifytext += outcome !== 'deletion' ? '|outcome=' + outcome : '';
 				notifytext += afdtarget ? '|target=' + afdtarget : '';
-				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
+				// Tell the template to add " (Xnd nomination)" to the XFD title, if needed.
+				// The &#32; (HTML space character) is needed to overcome MediaWiki's parameter auto-trim.
 				notifytext += numbering !== '' ? '|order=&#32;' + numbering : '';
 				break;
 			case 'mfd':

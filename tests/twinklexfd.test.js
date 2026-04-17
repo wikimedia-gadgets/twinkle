@@ -196,7 +196,6 @@ describe('modules/twinklexfd', () => {
 			const action = undefined;
 			const namespaceNumber = 0;
 			const pageTitle = 'NovemTest110';
-			// TODO: Is this &#32; and the space after it necessary? Seems like the template code is trimming the "order" parameter and then adding a space, so may not be need to be added by Twinkle.
 			const expected = '\n{{subst:afd notice|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle)).toBe(expected);
 		});
