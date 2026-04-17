@@ -278,5 +278,6 @@ describe('modules/twinklexfd', () => {
 			const expected = '\n{{subst:afd notice|outcome=draftification|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle)).toBe(expected);
 		});
+		// TODO: add tests for tfd, cfd, mfd, ffd, rfd
 	});
 });
