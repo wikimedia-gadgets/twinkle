@@ -792,7 +792,7 @@ Twinkle.xfd.callbacks = {
 			$afdTarget.val('');
 		}
 	},
-	// Requires having the tag text (params.tagText) set ahead of time
+	/** Requires having the tag text (params.tagText) set ahead of time */
 	autoEditRequest: function(pageobj, params) {
 		const talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
 		if (talkName === pageobj.getPageName()) {
@@ -1221,6 +1221,7 @@ Twinkle.xfd.callbacks = {
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.todaysList);
+
 			// Notification to first contributor
 			if (params.notifycreator) {
 				const thispage = new Morebits.wiki.Page(mw.config.get('wgPageName'));
@@ -1234,12 +1235,20 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
 
+			// Add AFD tag to article
 			params.tagText = Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(
 				params.noinclude, params.outcome, params.afdtarget, params.number
 			);
 
+			// If the selected outcome is merge, add {{Merge from}} to the target page
+			if ( params.outcome === 'merging' && params.afdtarget ) {
+				wikipedia_page = new Morebits.wiki.Page(params.afdtarget, 'Tagging the target page with {{Merge from}}');
+				wikipedia_page.setCallbackParameters(params);
+				wikipedia_page.load(Twinkle.xfd.callbacks.afd.tagTargetPageWithMergeFromTag);
+			}
+
 			if (pageobj.canEdit()) {
-			// Remove some tags that should always be removed on AfD.
+				// Remove some tags that should always be removed on AfD.
 				text = text.replace(/\{\{\s*(dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated|prod2|Proposed deletion endorsed|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
 				// Then, test if there are speedy deletion-related templates on the article.
 				const textNoSd = text.replace(/\{\{\s*(db(-\w*)?|delete|(?:hang|hold)[- ]?on)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
@@ -1259,6 +1268,27 @@ Twinkle.xfd.callbacks = {
 			} else {
 				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
 			}
+		},
+		tagTargetPageWithMergeFromTag: function(pageobj) {
+			const statelem = pageobj.getStatusElement();
+			if (!pageobj.exists()) {
+				statelem.error('Failed to add a {{Merge from}} tag to the target page. Target page not found.');
+				return;
+			} else if (!pageobj.canEdit()) {
+				statelem.error('Failed to add a {{Merge from}} tag to the target page. It is protected from editing.');
+				return;
+			}
+
+			const params = pageobj.getCallbackParameters();
+			const tag = `{{Merge from |1=${Morebits.pageNameNorm} |target=${params.afdtarget} |afd=${Morebits.pageNameNorm + params.numbering} |date ={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}} }}`;
+
+			const wikipage = new Morebits.wikitext.Page(pageobj.getPageText());
+			const text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
+			pageobj.setPageText(text);
+
+			pageobj.setEditSummary('Nominated for merging; see [[:' + params.discussionpage + ']].');
+			pageobj.setCreateOption('nocreate');
+			pageobj.save();
 		},
 		generateArticleTagWikitext: function(noinclude, outcome, afdtarget, number) {
 			let noIncludeStart = '';
