@@ -109,4 +109,79 @@ describe('modules/twinklexfd', () => {
 			expect(Twinkle.xfd.insertRMTR(pageWikitext, wikitextToInsert)).toBe(expected);
 		});
 	});
+
+	describe('generateArticleTagWikitext', () => {
+		test('deletion, 1st nomination', () => {
+			const noinclude = false;
+			const outcome = 'deletion';
+			const afdtarget = '';
+			const number = '';
+			const expected = '{{subst:afd|help=off}}\n';
+			expect(Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(noinclude, outcome, afdtarget, number)).toBe(expected);
+		});
+		test('deletion, 1st nomination, noinclude', () => {
+			const noinclude = true;
+			const outcome = 'deletion';
+			const afdtarget = '';
+			const number = '';
+			const expected = '<noinclude>{{subst:afd|help=off}}</noinclude>\n';
+			expect(Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(noinclude, outcome, afdtarget, number)).toBe(expected);
+		});
+		test('deletion, nth nomination', () => {
+			const noinclude = false;
+			const outcome = 'deletion';
+			const afdtarget = '';
+			const number = '24th';
+			const expected = '{{subst:afdx|24th|help=off}}\n';
+			expect(Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(noinclude, outcome, afdtarget, number)).toBe(expected);
+		});
+		test('merging, 1st nomination, blank target', () => {
+			const noinclude = false;
+			const outcome = 'merging';
+			const afdtarget = '';
+			const number = '';
+			const expected = '{{subst:afd|help=off|outcome=merging}}\n';
+			expect(Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(noinclude, outcome, afdtarget, number)).toBe(expected);
+		});
+		test('merging, 1st nomination, target specified', () => {
+			const noinclude = false;
+			const outcome = 'merging';
+			const afdtarget = 'TargetPage';
+			const number = '';
+			const expected = '{{subst:afd|help=off|outcome=merging|target=TargetPage}}\n';
+			expect(Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(noinclude, outcome, afdtarget, number)).toBe(expected);
+		});
+		test('merging, nth nomination, target specified', () => {
+			const noinclude = false;
+			const outcome = 'merging';
+			const afdtarget = 'TargetPage';
+			const number = '4th';
+			const expected = '{{subst:afdx|4th|help=off|outcome=merging|target=TargetPage}}\n';
+			expect(Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(noinclude, outcome, afdtarget, number)).toBe(expected);
+		});
+		test('redirect, 1st nomination, blank target', () => {
+			const noinclude = false;
+			const outcome = 'redirecting';
+			const afdtarget = '';
+			const number = '';
+			const expected = '{{subst:afd|help=off|outcome=redirecting}}\n';
+			expect(Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(noinclude, outcome, afdtarget, number)).toBe(expected);
+		});
+		test('redirect, 1st nomination, target specified', () => {
+			const noinclude = false;
+			const outcome = 'redirecting';
+			const afdtarget = 'TargetPage';
+			const number = '';
+			const expected = '{{subst:afd|help=off|outcome=redirecting|target=TargetPage}}\n';
+			expect(Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(noinclude, outcome, afdtarget, number)).toBe(expected);
+		});
+		test('draftify, 1st nomination', () => {
+			const noinclude = false;
+			const outcome = 'draftification';
+			const afdtarget = '';
+			const number = '';
+			const expected = '{{subst:afd|help=off|outcome=draftification}}\n';
+			expect(Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(noinclude, outcome, afdtarget, number)).toBe(expected);
+		});
+	});
 });

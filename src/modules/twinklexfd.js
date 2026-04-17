@@ -1229,24 +1229,9 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
 
-			let noIncludeStart = '';
-			let noIncludeEnd = '';
-			if (params.noinclude) {
-				noIncludeStart = '<noinclude>';
-				noIncludeEnd = '</noinclude>';
-			}
-
-			let templateAndParams = '';
-			const outcome = params.outcome !== 'deletion' ? '|outcome=' + params.outcome : '';
-			const targetPage = params.afdtarget ? '|target=' + params.afdtarget : '';
-			const isFirstNomination = params.number === '';
-			if (isFirstNomination) {
-				templateAndParams = 'subst:afd|help=off' + outcome + targetPage;
-			} else {
-				templateAndParams = 'subst:afdx|' + params.number + '|help=off' + outcome + targetPage;
-			}
-
-			params.tagText = noIncludeStart + '{{' + templateAndParams + '}}' + noIncludeEnd + '\n';
+			params.tagText = Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(
+				params.noinclude, params.outcome, params.afdtarget, params.number
+			);
 
 			if (pageobj.canEdit()) {
 			// Remove some tags that should always be removed on AfD.
@@ -1269,6 +1254,26 @@ Twinkle.xfd.callbacks = {
 			} else {
 				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
 			}
+		},
+		generateArticleTagWikitext: function(noinclude, outcome, afdtarget, number) {
+			let noIncludeStart = '';
+			let noIncludeEnd = '';
+			if (noinclude) {
+				noIncludeStart = '<noinclude>';
+				noIncludeEnd = '</noinclude>';
+			}
+
+			let templateAndParams = '';
+			const outcomeParam = outcome !== 'deletion' ? '|outcome=' + outcome : '';
+			const targetParam = afdtarget ? '|target=' + afdtarget : '';
+			const isFirstNomination = number === '';
+			if (isFirstNomination) {
+				templateAndParams = 'subst:afd|help=off' + outcomeParam + targetParam;
+			} else {
+				templateAndParams = 'subst:afdx|' + number + '|help=off' + outcomeParam + targetParam;
+			}
+
+			return noIncludeStart + '{{' + templateAndParams + '}}' + noIncludeEnd + '\n';
 		},
 		discussionPage: function(pageobj) {
 			const params = pageobj.getCallbackParameters();
