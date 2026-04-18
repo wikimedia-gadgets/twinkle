@@ -547,46 +547,6 @@ const translationSubgroups = [
 	}
 ] : []);
 
-// Subgroups for {{merge}}, {{merge-to}} and {{merge-from}}
-const getMergeSubgroups = function(tag) {
-	let otherTagName = 'Merge';
-	switch (tag) {
-		case 'Merge from':
-			otherTagName = 'Merge to';
-			break;
-		case 'Merge to':
-			otherTagName = 'Merge from';
-			break;
-		// no default
-	}
-	return [
-		{
-			name: 'mergeTarget',
-			type: 'input',
-			label: 'Other article(s):',
-			tooltip: 'If specifying multiple articles, separate them with pipe characters: Article one|Article two',
-			required: true
-		},
-		{
-			type: 'checkbox',
-			list: [
-				{
-					name: 'mergeTagOther',
-					label: 'Tag the other article with a {{' + otherTagName + '}} tag',
-					checked: true,
-					tooltip: 'Only available if a single article name is entered.'
-				}
-			]
-		}
-	].concat(mw.config.get('wgNamespaceNumber') === 0 ? {
-		name: 'mergeReason',
-		type: 'textarea',
-		label: 'Rationale for merge (will be posted on ' +
-			(tag === 'Merge to' ? 'the other article\'s' : 'this article\'s') + ' talk page):',
-		tooltip: 'Optional, but strongly recommended. Leave blank if not wanted. Only available if a single article name is entered.'
-	} : []);
-};
-
 // Tags arranged by category; will be used to generate the alphabetical list,
 // but tags should be in alphabetical order within the categories
 // excludeMI: true indicate a tag that *does not* work inside {{multiple issues}}
@@ -930,13 +890,7 @@ Twinkle.tag.article.tagList = {
 					tooltip: 'For complex cases, provide extra instructions for the reviewing administrator.'
 				}
 			]
-		},
-		{ tag: 'Merge', description: 'should be merged with another given article', excludeMI: true,
-			subgroup: getMergeSubgroups('Merge') },
-		{ tag: 'Merge from', description: 'another given article should be merged into this one', excludeMI: true,
-			subgroup: getMergeSubgroups('Merge from') },
-		{ tag: 'Merge to', description: 'should be merged into another given article', excludeMI: true,
-			subgroup: getMergeSubgroups('Merge to') }
+		}
 	],
 	Splitting: [
 		{ tag: 'Split', description: 'should be split into multiple pages' },
@@ -1402,41 +1356,6 @@ Twinkle.tag.callbacks = {
 					coiTalkPage.newSection();
 				}
 
-				// Special functions for merge tags
-				// Post a rationale on the talk page (mainspace only)
-				if (params.mergeReason) {
-					const mergeTalkPage = new Morebits.wiki.Page('Talk:' + params.discussArticle, 'Posting rationale on talk page');
-					mergeTalkPage.setNewSectionText(params.mergeReason.trim() + ' ~~~~');
-					mergeTalkPage.setNewSectionTitle(params.talkDiscussionTitleLinked);
-					mergeTalkPage.setChangeTags(Twinkle.changeTags);
-					mergeTalkPage.setWatchlist(Twinkle.getPref('watchMergeDiscussions'));
-					mergeTalkPage.setCreateOption('recreate');
-					mergeTalkPage.newSection();
-				}
-				// Tag the target page (if requested)
-				if (params.mergeTagOther) {
-					let otherTagName = 'Merge';
-					if (params.mergeTag === 'Merge from') {
-						otherTagName = 'Merge to';
-					} else if (params.mergeTag === 'Merge to') {
-						otherTagName = 'Merge from';
-					}
-					const newParams = {
-						tags: [otherTagName],
-						tagsToRemove: [],
-						tagsToRemain: [],
-						mergeTarget: Morebits.pageNameNorm,
-						discussArticle: params.discussArticle,
-						talkDiscussionTitle: params.talkDiscussionTitle,
-						talkDiscussionTitleLinked: params.talkDiscussionTitleLinked
-					};
-					const otherpage = new Morebits.wiki.Page(params.mergeTarget, 'Tagging other page (' +
-						params.mergeTarget + ')');
-					otherpage.setChangeTags(Twinkle.changeTags);
-					otherpage.setCallbackParameters(newParams);
-					otherpage.load(Twinkle.tag.callbacks.article);
-				}
-
 				// Special functions for {{not English}} and {{rough translation}}
 				// Post at WP:PNT (mainspace only)
 				if (params.translationPostAtPNT) {
@@ -1619,30 +1538,6 @@ Twinkle.tag.callbacks = {
 							currentTag += '|listed=yes';
 						}
 						break;
-					case 'Merge':
-					case 'Merge to':
-					case 'Merge from':
-						params.mergeTag = tagName;
-						// normalize the merge target for now and later
-						params.mergeTarget = Morebits.string.toUpperCaseFirstChar(params.mergeTarget.replace(/_/g, ' '));
-
-						currentTag += '|' + params.mergeTarget;
-
-						// link to the correct section on the talk page, for article space only
-						if (mw.config.get('wgNamespaceNumber') === 0 && (params.mergeReason || params.discussArticle)) {
-							if (!params.discussArticle) {
-								// discussArticle is the article whose talk page will contain the discussion
-								params.discussArticle = tagName === 'Merge to' ? params.mergeTarget : mw.config.get('wgTitle');
-								// nonDiscussArticle is the article which won't have the discussion
-								params.nonDiscussArticle = tagName === 'Merge to' ? mw.config.get('wgTitle') : params.mergeTarget;
-								const direction = '[[' + params.nonDiscussArticle + ']]' + (params.mergeTag === 'Merge' ? ' with ' : ' into ') + '[[' + params.discussArticle + ']]';
-								params.talkDiscussionTitleLinked = 'Proposed merge of ' + direction;
-								params.talkDiscussionTitle = params.talkDiscussionTitleLinked.replace(/\[\[(.*?)\]\]/g, '$1');
-							}
-							const titleWithSectionRemoved = params.discussArticle.replace(/^([^#]*)#.*$/, '$1'); // If article name is Test#Section, delete #Section
-							currentTag += '|discuss=Talk:' + titleWithSectionRemoved + '#' + params.talkDiscussionTitle;
-						}
-						break;
 					default:
 						break;
 				}
@@ -1693,15 +1588,12 @@ Twinkle.tag.callbacks = {
 					tags.push(tag);
 				}
 			} else {
-				if (tag === 'Merge from' || tag === 'History merge') {
+				if (tag === 'History merge') {
 					tags.push(tag);
 				} else {
 					Morebits.Status.warn('Info', 'Found {{' + tag +
 						'}} on the article already...excluding');
 					// don't do anything else with merge tags
-					if (['Merge', 'Merge to'].includes(tag)) {
-						params.mergeTarget = params.mergeReason = params.mergeTagOther = null;
-					}
 				}
 			}
 		});
@@ -2037,17 +1929,6 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 		case 'article':
 			params.tagsToRemove = form.getUnchecked('existingTags'); // not in `input`
 			params.tagsToRemain = params.existingTags || []; // container not created if none present
-
-			if ((params.tags.includes('Merge')) || (params.tags.includes('Merge from')) ||
-				(params.tags.includes('Merge to'))) {
-				if (Twinkle.tag.checkIncompatible(['Merge', 'Merge from', 'Merge to'], params.tags, 'If several merges are required, use {{Merge}} and separate the article names with pipes (although in this case Twinkle cannot tag the other articles automatically).')) {
-					return;
-				}
-				if ((params.mergeTagOther || params.mergeReason) && params.mergeTarget.includes('|')) {
-					alert('Tagging multiple articles in a merge, and starting a discussion for multiple articles, is not supported at the moment. Please turn off "tag other article", and/or clear out the "reason" box, and try again.');
-					return;
-				}
-			}
 
 			if (Twinkle.tag.checkIncompatible(['Not English', 'Rough translation'], params.tags)) {
 				return;
