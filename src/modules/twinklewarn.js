@@ -678,6 +678,24 @@ Twinkle.warn.messages = {
 					summary: 'Warning: Not assuming good faith'
 				}
 			},
+			'uw-aitalk': {
+				level1: {
+					label: 'Posting LLM-generated comments',
+					summary: 'General note: Posting LLM-generated comments'
+				},
+				level2: {
+					label: 'Posting LLM-generated comments',
+					summary: 'Caution: Posting LLM-generated comments'
+				},
+				level3: {
+					label: 'Posting LLM-generated comments',
+					summary: 'Warning: Posting LLM-generated comments'
+				},
+				level4: {
+					label: 'Posting LLM-generated comments',
+					summary: 'Final warning: Posting LLM-generated comments'
+				}
+			},
 			'uw-harass': {
 				level1: {
 					label: 'Harassment of other users',
