@@ -664,6 +664,20 @@ Twinkle.warn.messages = {
 			}
 		},
 		'Behavior towards other editors': {
+			'uw-agf': {
+				level1: {
+					label: 'Not assuming good faith',
+					summary: 'General note: Not assuming good faith'
+				},
+				level2: {
+					label: 'Not assuming good faith',
+					summary: 'Caution: Not assuming good faith'
+				},
+				level3: {
+					label: 'Not assuming good faith',
+					summary: 'Warning: Not assuming good faith'
+				}
+			},
 			'uw-aitalk': {
 				level1: {
 					label: 'Posting LLM-generated comments',
@@ -680,20 +694,6 @@ Twinkle.warn.messages = {
 				level4: {
 					label: 'Posting LLM-generated comments',
 					summary: 'Final warning: Posting LLM-generated comments'
-				}
-			},
-			'uw-agf': {
-				level1: {
-					label: 'Not assuming good faith',
-					summary: 'General note: Not assuming good faith'
-				},
-				level2: {
-					label: 'Not assuming good faith',
-					summary: 'Caution: Not assuming good faith'
-				},
-				level3: {
-					label: 'Not assuming good faith',
-					summary: 'Warning: Not assuming good faith'
 				}
 			},
 			'uw-harass': {
