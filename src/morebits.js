@@ -1133,56 +1133,25 @@ Morebits.QuickForm.setElementTooltipVisibility = function QuickFormSetElementToo
 };
 
 /**
- * @external HTMLFormElement
- */
-/**
- * Get checked items in the form.
+ * Get checked items in a form.
  *
- * @method external:HTMLFormElement.getChecked
+ * @memberof Morebits.QuickForm
+ * @param {HTMLFormElement} form
  * @param {string} name - Find checked property of elements (i.e. a checkbox
  * or a radiobutton) with the given name, or select options that have selected
  * set to true (don't try to mix selects with radio/checkboxes).
- * @param {string} [type] - Optionally specify either radio or checkbox (for
- * the event that both checkboxes and radiobuttons have the same name).
  * @return {string[]} - Contains the values of elements with the given name
  * checked property set to true.
  */
-HTMLFormElement.prototype.getChecked = function(name, type) {
-	const elements = this.elements[name];
-	if (!elements) {
-		return [];
-	}
+Morebits.QuickForm.getChecked = function QuickFormGetChecked(form, name) {
+	const elements = form.elements[name] || [];
 	const return_array = [];
-	let i;
-	if (elements instanceof HTMLSelectElement) {
-		const options = elements.options;
-		for (i = 0; i < options.length; ++i) {
-			if (options[i].selected) {
-				if (options[i].values) {
-					return_array.push(options[i].values);
-				} else {
-					return_array.push(options[i].value);
-				}
-
-			}
-		}
-	} else if (elements instanceof HTMLInputElement) {
-		if (type && elements.type !== type) {
-			return [];
-		} else if (elements.checked) {
-			return [ elements.value ];
-		}
-	} else {
-		for (i = 0; i < elements.length; ++i) {
-			if (elements[i].checked) {
-				if (type && elements[i].type !== type) {
-					continue;
-				}
-				if (elements[i].values) {
-					return_array.push(elements[i].values);
-				} else {
-					return_array.push(elements[i].value);
-				}
+	for (let i = 0; i < elements.length; ++i) {
+		if (elements[i].checked) {
+			if (elements[i].values) {
+				return_array.push(elements[i].values);
+			} else {
+				return_array.push(elements[i].value);
 			}
 		}
 	}
@@ -1190,57 +1159,56 @@ HTMLFormElement.prototype.getChecked = function(name, type) {
 };
 
 /**
- * Does the same as {@link HTMLFormElement.getChecked|getChecked}, but with unchecked elements.
+ * Does the same as {@link Morebits.QuickForm.getChecked|getChecked}, but with unchecked elements.
  *
- * @method external:HTMLFormElement.getUnchecked
+ * @memberof Morebits.QuickForm
+ * @param {HTMLFormElement} form
  * @param {string} name - Find checked property of elements (i.e. a checkbox
  * or a radiobutton) with the given name, or select options that have selected
  * set to true (don't try to mix selects with radio/checkboxes).
- * @param {string} [type] - Optionally specify either radio or checkbox (for
- * the event that both checkboxes and radiobuttons have the same name).
  * @return {string[]} - Contains the values of elements with the given name
  * checked property set to true.
  */
-HTMLFormElement.prototype.getUnchecked = function(name, type) {
-	const elements = this.elements[name];
-	if (!elements) {
-		return [];
-	}
+Morebits.QuickForm.getUnchecked = function QuickFormGetUnchecked(form, name) {
+	const elements = form.elements[name] || [];
 	const return_array = [];
-	let i;
-	if (elements instanceof HTMLSelectElement) {
-		const options = elements.options;
-		for (i = 0; i < options.length; ++i) {
-			if (!options[i].selected) {
-				if (options[i].values) {
-					return_array.push(options[i].values);
-				} else {
-					return_array.push(options[i].value);
-				}
-
-			}
-		}
-	} else if (elements instanceof HTMLInputElement) {
-		if (type && elements.type !== type) {
-			return [];
-		} else if (!elements.checked) {
-			return [ elements.value ];
-		}
-	} else {
-		for (i = 0; i < elements.length; ++i) {
-			if (!elements[i].checked) {
-				if (type && elements[i].type !== type) {
-					continue;
-				}
-				if (elements[i].values) {
-					return_array.push(elements[i].values);
-				} else {
-					return_array.push(elements[i].value);
-				}
+	for (let i = 0; i < elements.length; ++i) {
+		if (!elements[i].checked) {
+			if (elements[i].values) {
+				return_array.push(elements[i].values);
+			} else {
+				return_array.push(elements[i].value);
 			}
 		}
 	}
 	return return_array;
+};
+
+/**
+ * @external HTMLFormElement
+ */
+/**
+ * Get checked items in the form.
+ *
+ * @deprecated since April 2026. Use {@link Morebits.QuickForm.getChecked} instead.
+ * @method external:HTMLFormElement.getChecked
+ * @param {string} name
+ * @return {string[]}
+ */
+HTMLFormElement.prototype.getChecked = function(name) {
+	return Morebits.QuickForm.getChecked(this, name);
+};
+
+/**
+ * Get unchecked items in the form.
+ *
+ * @deprecated since April 2026. Use {@link Morebits.QuickForm.getUnchecked} instead.
+ * @method external:HTMLFormElement.getUnchecked
+ * @param {string} name
+ * @return {string[]}
+ */
+HTMLFormElement.prototype.getUnchecked = function(name) {
+	return Morebits.QuickForm.getUnchecked(this, name);
 };
 
 /**

@@ -363,7 +363,7 @@ let $allCheckboxDivs, $allHeaders;
 Twinkle.tag.updateSortOrder = function(e) {
 	const form = e.target.form;
 	const sortorder = e.target.value;
-	Twinkle.tag.checkedTags = form.getChecked('tags');
+	Twinkle.tag.checkedTags = Morebits.QuickForm.getChecked(form, 'tags');
 
 	const container = new Morebits.QuickForm.Element({ type: 'fragment' });
 
@@ -382,7 +382,7 @@ Twinkle.tag.updateSortOrder = function(e) {
 		container.append({ type: 'header', id: 'tagHeader0', label: 'Tags already present' });
 		const subdiv = container.append({ type: 'div', id: 'tagSubdiv0' });
 		const checkboxes = [];
-		const unCheckedTags = e.target.form.getUnchecked('existingTags');
+		const unCheckedTags = Morebits.QuickForm.getUnchecked(e.target.form, 'existingTags');
 		Twinkle.tag.alreadyPresentTags.forEach((tag) => {
 			const checkbox =
 				{
@@ -2035,7 +2035,7 @@ Twinkle.tag.callback.evaluate = function twinkletagCallbackEvaluate(e) {
 	// [array two]] devoid of context.
 	switch (Twinkle.tag.mode) {
 		case 'article':
-			params.tagsToRemove = form.getUnchecked('existingTags'); // not in `input`
+			params.tagsToRemove = Morebits.QuickForm.getUnchecked(form, 'existingTags'); // not in `input`
 			params.tagsToRemain = params.existingTags || []; // container not created if none present
 
 			if ((params.tags.includes('Merge')) || (params.tags.includes('Merge from')) ||
