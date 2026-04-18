@@ -777,10 +777,10 @@ Twinkle.xfd.callbacks = {
 		const $reason = $('[name="reason"]');
 		const $afdTarget = $('[name="afdtarget"]');
 		if (outcome.target.value === 'redirecting') {
-			$reason.val("I propose '''redirecting''' because ");
+			$reason.val("I propose '''redirecting''' to [[YOUR TARGET ARTICLE HERE]] because ");
 			$afdTarget.parent().show();
 		} else if (outcome.target.value === 'merging') {
-			$reason.val("I propose '''merging''' because ");
+			$reason.val("I propose '''merging''' to [[YOUR TARGET ARTICLE HERE]] because ");
 			$afdTarget.parent().show();
 		} else if (outcome.target.value === 'draftification') {
 			$reason.val("I propose '''draftifying''' because ");
