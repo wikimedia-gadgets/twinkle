@@ -40,38 +40,35 @@ Twinkle.arv.callback = function (uid, isIP) {
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	const form = new Morebits.QuickForm(Twinkle.arv.callback.evaluate);
-	const categories = form.append({
+	form.append({
 		type: 'select',
 		name: 'category',
 		label: 'Select report type:',
-		event: Twinkle.arv.callback.changeCategory
-	});
-	categories.append({
-		type: 'option',
-		label: 'Vandalism (WP:AIV)',
-		value: 'aiv'
-	});
-	categories.append({
-		type: 'option',
-		label: 'Username (WP:UAA)',
-		value: 'username',
-		disabled: isIP
-	});
-	categories.append({
-		type: 'option',
-		label: 'Sockpuppeteer (WP:SPI)',
-		value: 'sock'
-	});
-	categories.append({
-		type: 'option',
-		label: 'Sockpuppet (WP:SPI)',
-		value: 'puppet'
-	});
-	categories.append({
-		type: 'option',
-		label: 'Edit warring (WP:AN3)',
-		value: 'an3',
-		disabled: Morebits.ip.isRange(uid) // rvuser template doesn't support ranges
+		event: Twinkle.arv.callback.changeCategory,
+		list: [
+			{
+				label: 'Vandalism (WP:AIV)',
+				value: 'aiv'
+			},
+			{
+				label: 'Username (WP:UAA)',
+				value: 'username',
+				disabled: isIP
+			},
+			{
+				label: 'Sockpuppeteer (WP:SPI)',
+				value: 'sock'
+			},
+			{
+				label: 'Sockpuppet (WP:SPI)',
+				value: 'puppet'
+			},
+			{
+				label: 'Edit warring (WP:AN3)',
+				value: 'an3',
+				disabled: Morebits.ip.isRange(uid) // rvuser template doesn't support ranges
+			}
+		]
 	});
 	form.append({
 		type: 'div',
@@ -86,7 +83,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 			type: 'field',
 			label: 'Temporary account notice',
 			name: 'ta_notice',
-			style: 'color: var(--morebits-color-warning, #FF4500)'
+			style: 'color: var(--morebits-color-warning)'
 		});
 
 		temporaryAccountNotice.append({
@@ -528,6 +525,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					aivPage.setEditSummary('Reporting [[Special:Contributions/' + input.uid + '|' + input.uid + ']].');
 					aivPage.setChangeTags(Twinkle.changeTags);
 					aivPage.setAppendText(Twinkle.arv.callback.buildAivReport(input));
+					aivPage.setDiscussionToolsAutoSubscribe(false);
 					aivPage.append();
 				});
 			});
@@ -564,6 +562,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 				// Blank newline per [[Special:Permalink/996949310#Spacing]]; see also [[WP:LISTGAP]] and [[WP:INDENTGAP]]
 				uaaPage.setPageText(text + '\n' + reason + '\n*');
+				uaaPage.setDiscussionToolsAutoSubscribe(false);
 				uaaPage.save();
 			});
 			break;
@@ -595,6 +594,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			spiPage.setChangeTags(Twinkle.changeTags);
 			spiPage.setAppendText(reportData.wikitext);
 			spiPage.setWatchlist(Twinkle.getPref('spiWatchReport'));
+			spiPage.setDiscussionToolsAutoSubscribe(false);
 			spiPage.append();
 
 			Morebits.wiki.removeCheckpoint(); // all page updates have been started
@@ -625,6 +625,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				an3Page.setEditSummary('Adding new report for [[Special:Contributions/' + data.uid + '|' + data.uid + ']].');
 				an3Page.setChangeTags(Twinkle.changeTags);
 				an3Page.setAppendText(data.reportWikitext);
+				an3Page.setDiscussionToolsAutoSubscribe(false);
 				an3Page.append();
 
 				// notify user

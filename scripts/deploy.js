@@ -43,7 +43,6 @@ const GADGET_FILES = [
     'src/modules/twinkleprod.js',
     'src/modules/twinkleprotect.js',
     'src/modules/twinklerollback.js',
-    'src/modules/twinkleshared.js',
     'src/modules/twinklespeedy.js',
     'src/modules/twinkletag.js',
     'src/modules/twinkletalkback.js',

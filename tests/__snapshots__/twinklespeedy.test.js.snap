@@ -608,18 +608,13 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
             "value": "communication",
           },
           {
-            "label": "Implausible non-existent references",
-            "tooltip": "The page contains implausible non-existent references.",
+            "label": "Implausible or nonsensical references",
+            "tooltip": "The page contains implausible non-existent or otherwise nonsensical references.",
             "value": "implausible",
-          },
-          {
-            "label": "Nonsensical citations",
-            "tooltip": "The page contains nonsensical citations.",
-            "value": "nonsensical",
           },
         ],
         "name": "subcriteria",
-        "type": "radio",
+        "type": "checkbox",
       },
       {
         "label": "Extended reason (optional):",
@@ -669,11 +664,6 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
     "label": "G8: Redirects to non-existent targets",
     "tooltip": "This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.",
     "value": "redirnone",
-  },
-  {
-    "label": "X3: Redirects with no space before a parenthetical disambiguation",
-    "tooltip": "This excludes terms that can plausibly be searched for without spaces, or if the redirect contains substantive page history (e.g. from a merge).",
-    "value": "x3",
   },
 ]
 `;
@@ -754,7 +744,6 @@ exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snap
   "userreq": "u1",
   "vandalism": "g3",
   "web": "a7",
-  "x3": "x3",
   "xfd": "g6",
 }
 `;

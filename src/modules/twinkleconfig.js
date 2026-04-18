@@ -33,8 +33,7 @@ Twinkle.config.commonSets = {
 		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
 		r2: 'R2', r3: 'R3', r4: 'R4',
 		t5: 'T5',
-		u1: 'U1', u2: 'U2', u6: 'U6', u7: 'U7',
-		x3: 'X3'
+		u1: 'U1', u2: 'U2', u6: 'U6', u7: 'U7'
 	},
 	csdCriteriaNotification: {
 		db: 'Custom rationale ({{db}})',
@@ -43,8 +42,7 @@ Twinkle.config.commonSets = {
 		f1: 'F1', f2: 'F2', f3: 'F3', f7: 'F7', f9: 'F9',
 		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5 ("general sanction violation" only)', g6: 'G6 ("copy-paste move" only)', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
 		r2: 'R2', r3: 'R3', r4: 'R4',
-		u6: 'U6', u7: 'U7',
-		x3: 'X3'
+		u6: 'U6', u7: 'U7'
 	},
 	csdAndImageDeletionCriteria: {
 		db: 'Custom rationale ({{db}})',
@@ -54,8 +52,7 @@ Twinkle.config.commonSets = {
 		g1: 'G1', g2: 'G2', g3: 'G3', g4: 'G4', g5: 'G5', g6: 'G6', g7: 'G7', g8: 'G8', g10: 'G10', g11: 'G11', g12: 'G12', g13: 'G13', g14: 'G14', g15: 'G15',
 		r2: 'R2', r3: 'R3', r4: 'R4',
 		t5: 'T5',
-		u1: 'U1', u2: 'U2', u6: 'U6', u7: 'U7',
-		x3: 'X3'
+		u1: 'U1', u2: 'U2', u6: 'U6', u7: 'U7'
 	},
 	namespacesNoSpecial: {
 		0: 'Article',
@@ -146,7 +143,7 @@ Twinkle.config.sections = [
 				label: 'Turn off the selected Twinkle modules',
 				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
 				type: 'set',
-				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', shared: 'Shared IP', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', rollback: 'Revert and rollback' }
+				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', rollback: 'Revert and rollback' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
@@ -409,18 +406,6 @@ Twinkle.config.sections = [
 				label: 'Show rollback links on these pages',
 				type: 'set',
 				setValues: { diff: 'Diff pages', others: 'Contributions pages of other users', mine: 'My contributions page', recent: 'Recent changes and related changes special pages', history: 'History pages' }
-			}
-		]
-	},
-
-	{
-		title: 'Shared IP tagging',
-		module: 'shared',
-		preferences: [
-			{
-				name: 'markSharedIPAsMinor',
-				label: 'Mark shared IP tagging as a minor edit',
-				type: 'boolean'
 			}
 		]
 	},
@@ -944,14 +929,18 @@ Twinkle.config.init = function twinkleconfigInit() {
 		// let user know about possible conflict with skin js/common.js file
 		// (settings in that file will still work, but they will be overwritten by twinkleoptions.js settings)
 		if (window.TwinkleConfig || window.FriendlyConfig) {
-			const contentnotice = document.createElement('p');
-			contentnotice.innerHTML = '<table class="plainlinks morebits-ombox morebits-ombox-content"><tr><td class="morebits-mbox-image">' +
-				'<img alt="" src="https://upload.wikimedia.org/wikipedia/commons/3/38/Imbox_content.png" /></td>' +
-				'<td class="morebits-mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
-				'<p>To do this, you can <a href="' + mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/' + mw.config.get('skin') +
-				'.js', { action: 'edit' }) + '" target="_blank"><b>edit your personal skin javascript file</b></a> or <a href="' +
-				mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/common.js', { action: 'edit'}) + '" target="_blank"><b>your common.js file</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
-				'</td></tr></table>';
+			const contentnotice = document.createElement('div');
+			contentnotice.className = 'plainlinks twinkle-ombox';
+			contentnotice.innerHTML =
+				'<div>' +
+					'<img alt="" src="https://upload.wikimedia.org/wikipedia/commons/3/38/Imbox_content.png" />' +
+				'</div>' +
+				'<div>' +
+					'<p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
+					'<p>To do this, you can <a href="' + mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/' + mw.config.get('skin') +
+					'.js', { action: 'edit' }) + '" target="_blank"><b>edit your personal skin javascript file</b></a> or <a href="' +
+					mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/common.js', { action: 'edit'}) + '" target="_blank"><b>your common.js file</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
+				'</div>';
 			contentdiv.appendChild(contentnotice);
 		}
 

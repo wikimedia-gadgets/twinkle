@@ -38,14 +38,15 @@ Twinkle.block.callback = function twinkleblockCallback() {
 	// need to be verbose about who we're blocking
 	blockWindow.setTitle('Block or issue block template to ' + relevantUserName);
 	blockWindow.setScriptName('Twinkle');
+
+	// Always added, hidden later if actual user not blocked
+	blockWindow.addFooterLink('Unblock this user', 'Special:Unblock/' + relevantUserName);
+
 	blockWindow.addFooterLink('Block templates', 'Template:Uw-block/doc/Block_templates');
 	blockWindow.addFooterLink('Block policy', 'WP:BLOCK');
 	blockWindow.addFooterLink('Block prefs', 'WP:TW/PREF#block');
 	blockWindow.addFooterLink('Twinkle help', 'WP:TW/DOC#block');
 	blockWindow.addFooterLink('Give feedback', 'WT:TW');
-
-	// Always added, hidden later if actual user not blocked
-	blockWindow.addFooterLink('Unblock this user', 'Special:Unblock/' + relevantUserName, true);
 
 	const form = new Morebits.QuickForm(Twinkle.block.callback.evaluate);
 	const actionfield = form.append({
@@ -161,7 +162,7 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 	// Soft redirect to Special:Block if the user is multi-blocked (#2178)
 	if (blockinfo && data.query.blocks.length > 1) {
 		// Remove submission buttons.
-		$(blockWindow.content).dialog('widget').find('.morebits-dialog-buttons').empty();
+		blockWindow.$dialog.find('.morebits-dialog-buttons').empty();
 		Morebits.Status.init(blockWindow.content.querySelector('form'));
 		Morebits.Status.warn(
 			`This target has ${data.query.blocks.length} active blocks`,
@@ -196,7 +197,7 @@ Twinkle.block.processUserInfo = function twinkleblockProcessUserInfo(data, fn) {
 	blockedUserName = Twinkle.block.currentBlockInfo && Twinkle.block.currentBlockInfo.user;
 
 	// Toggle unblock link if not the user in question; always first
-	const unblockLink = document.querySelector('.morebits-dialog-footerlinks a');
+	const unblockLink = blockWindow.$dialog.find('.morebits-dialog-footerlinks a')[0];
 	if (blockedUserName !== relevantUserName) {
 		unblockLink.hidden = true;
 		unblockLink.nextSibling.hidden = true; // link+trailing bullet
@@ -261,7 +262,9 @@ Twinkle.block.callback.saveFieldset = function twinkleblockCallbacksaveFieldset(
 };
 
 Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock64(e) {
-	const $form = $(e.target.form), $block64 = $form.find('[name=block64]');
+	const $form = $(e.target.form),
+		$block64 = $form.find('[name=block64]'),
+		dialog = $form.closest('.morebits-dialog')[0];
 
 	// Show/hide block64 button
 	// Single IPv6, or IPv6 range smaller than a /64
@@ -279,14 +282,13 @@ Twinkle.block.callback.change_block64 = function twinkleblockCallbackChangeBlock
 	// Refetch/reprocess user info then regenerate the main content
 	const regenerateForm = function() {
 		// Tweak titlebar text.  In theory, we could save the dialog
-		// at initialization and then use `.setTitle` or
-		// `dialog('option', 'title')`, but in practice that swallows
+		// at initialization and then use `.setTitle`, but in practice that swallows
 		// the scriptName and requires `.display`ing, which jumps the
 		// window.  It's just a line of text, so this is fine.
-		const titleBar = document.querySelector('.ui-dialog-title').firstChild.nextSibling;
+		const titleBar = dialog.querySelector('.morebits-dialog-title').firstChild.nextSibling;
 		titleBar.nodeValue = titleBar.nodeValue.replace(priorName, relevantUserName);
 		// Tweak unblock link
-		const unblockLink = document.querySelector('.morebits-dialog-footerlinks a');
+		const unblockLink = dialog.querySelector('.morebits-dialog-footerlinks a');
 		unblockLink.href = unblockLink.href.replace(priorName, relevantUserName);
 		unblockLink.title = unblockLink.title.replace(priorName, relevantUserName);
 
@@ -432,21 +434,25 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 				label: 'Block account creation',
 				name: 'nocreate',
 				value: '1'
-			},
-			{
+			}
+		];
+
+		if (Twinkle.block.isRegistered && !mw.util.isTemporaryUser(mw.config.get('wgRelevantUserName'))) {
+			blockoptions.push({
 				checked: Twinkle.block.field_block_options.noemail,
 				label: 'Block user from sending email',
 				name: 'noemail',
 				value: '1'
-			},
-			{
-				checked: Twinkle.block.field_block_options.disabletalk,
-				label: 'Prevent this user from editing their own talk page while blocked',
-				name: 'disabletalk',
-				value: '1',
-				tooltip: partialBox ? 'If issuing a partial block, this MUST remain unchecked unless you are also preventing them from editing User talk space' : ''
-			}
-		];
+			});
+		}
+
+		blockoptions.push({
+			checked: Twinkle.block.field_block_options.disabletalk,
+			label: 'Prevent this user from editing their own talk page while blocked',
+			name: 'disabletalk',
+			value: '1',
+			tooltip: partialBox ? 'If issuing a partial block, this MUST remain unchecked unless you are also preventing them from editing User talk space' : ''
+		});
 
 		if (Twinkle.block.isRegistered) {
 			blockoptions.push({
@@ -1386,12 +1392,12 @@ Twinkle.block.blockGroups = [
 	{
 		label: 'Common block reasons',
 		list: [
-			{ label: 'anonblock', value: 'anonblock' },
-			{ label: 'anonblock - likely a school', value: 'anonblock - school' },
-			{ label: 'school block', value: 'school block' },
+			{ label: 'Anonblock', value: 'anonblock' },
+			{ label: 'Anonblock – likely a school', value: 'anonblock - school' },
+			{ label: 'School block', value: 'school block' },
 			{ label: 'Generic block (custom reason)', value: 'uw-block' }, // ends up being default for registered users
-			{ label: 'Generic block (custom reason) - IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
-			{ label: 'Generic block (custom reason) - indefinite', value: 'uw-blockindef' },
+			{ label: 'Generic block (custom reason) – IP', value: 'uw-ablock', selected: true }, // set only when blocking IP
+			{ label: 'Generic block (custom reason) – indefinite', value: 'uw-blockindef' },
 			{ label: 'Disruptive editing', value: 'uw-disruptblock' },
 			{ label: 'Inappropriate use of user talk page while blocked', value: 'uw-talkrevoked' },
 			{ label: 'Not here to build an encyclopedia', value: 'uw-nothereblock' },
@@ -1405,8 +1411,8 @@ Twinkle.block.blockGroups = [
 		list: [
 			{ label: 'Advertising', value: 'uw-adblock' },
 			{ label: 'Arbitration enforcement', value: 'uw-aeblock' },
-			{ label: 'Block evasion - IP', value: 'uw-ipevadeblock' },
-			{ label: 'Block evasion - Temporary account', value: 'uw-tempevadeblock' },
+			{ label: 'Block evasion – IP', value: 'uw-ipevadeblock' },
+			{ label: 'Block evasion – temporary account', value: 'uw-tempevadeblock' },
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
 			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
@@ -1447,17 +1453,17 @@ Twinkle.block.blockGroups = [
 	{
 		label: 'Templated reasons',
 		list: [
-			{ label: 'blocked proxy', value: 'blocked proxy' },
+			{ label: 'Blocked proxy', value: 'blocked proxy' },
 			{ label: 'CheckUser block', value: 'CheckUser block' },
-			{ label: 'checkuserblock-account', value: 'checkuserblock-account' },
-			{ label: 'checkuserblock-wide', value: 'checkuserblock-wide' },
-			{ label: 'colocationwebhost', value: 'colocationwebhost' },
-			{ label: 'oversightblock', value: 'oversightblock' },
-			{ label: 'rangeblock', value: 'rangeblock' }, // Only for IP ranges, selected for non-/64 ranges in filtered_block_groups
-			{ label: 'spamblacklistblock', value: 'spamblacklistblock' },
-			{ label: 'tor', value: 'tor' },
-			{ label: 'webhostblock', value: 'webhostblock' },
-			{ label: 'zombie proxy', value: 'zombie proxy' }
+			{ label: 'CheckUser block – account', value: 'checkuserblock-account' },
+			{ label: 'CheckUser block – wide', value: 'checkuserblock-wide' },
+			{ label: 'Colocation webhost', value: 'colocationwebhost' },
+			{ label: 'Oversight block', value: 'oversightblock' },
+			{ label: 'Rangeblock', value: 'rangeblock' }, // Only for IP ranges, selected for non-/64 ranges in filtered_block_groups
+			{ label: 'Spam blacklist block', value: 'spamblacklistblock' },
+			{ label: 'Tor', value: 'tor' },
+			{ label: 'Webhost block', value: 'webhostblock' },
+			{ label: 'Zombie proxy', value: 'zombie proxy' }
 		]
 	}
 ];
@@ -1467,7 +1473,7 @@ Twinkle.block.blockGroupsPartial = [
 		label: 'Common partial block reasons',
 		list: [
 			{ label: 'Generic partial block (custom reason)', value: 'uw-pblock', selected: true },
-			{ label: 'Generic partial block (custom reason) - indefinite', value: 'uw-pblockindef' },
+			{ label: 'Generic partial block (custom reason) – indefinite', value: 'uw-pblockindef' },
 			{ label: 'Edit warring', value: 'uw-ewpblock' }
 		]
 	},
@@ -1477,7 +1483,7 @@ Twinkle.block.blockGroupsPartial = [
 			{ label: 'Arbitration enforcement', value: 'uw-aepblock' },
 			{ label: 'Email harassment', value: 'uw-epblock' },
 			{ label: 'Misusing multiple accounts', value: 'uw-acpblock' },
-			{ label: 'Misusing multiple accounts - indefinite', value: 'uw-acpblockindef' }
+			{ label: 'Misusing multiple accounts – indefinite', value: 'uw-acpblockindef' }
 		]
 	}
 ];

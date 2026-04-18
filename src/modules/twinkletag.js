@@ -164,8 +164,7 @@ Twinkle.tag.callback = function twinkletagCallback() {
 			form.append({
 				type: 'div',
 				id: 'tagWorkArea',
-				className: 'morebits-scrollbox',
-				style: 'max-height: 28em'
+				className: 'morebits-scrollbox'
 			});
 
 			form.append({

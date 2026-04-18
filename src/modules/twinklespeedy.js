@@ -682,7 +682,7 @@ Twinkle.speedy.data = [
 		subgroup: [
 			{
 				name: 'subcriteria',
-				type: 'radio',
+				type: 'checkbox',
 				list: [
 					{
 						label: 'Communication intended for the user',
@@ -690,14 +690,9 @@ Twinkle.speedy.data = [
 						tooltip: 'The page contains communication intended for the user, such as "Here is your Wikipedia article on...".'
 					},
 					{
-						label: 'Implausible non-existent references',
+						label: 'Implausible or nonsensical references',
 						value: 'implausible',
-						tooltip: 'The page contains implausible non-existent references.'
-					},
-					{
-						label: 'Nonsensical citations',
-						value: 'nonsensical',
-						tooltip: 'The page contains nonsensical citations.'
+						tooltip: 'The page contains implausible non-existent or otherwise nonsensical references.'
 					}
 				]
 			},
@@ -755,13 +750,6 @@ Twinkle.speedy.data = [
 		code: 'g8',
 		db: 'timedtext',
 		tooltip: 'This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.'
-	},
-	{
-		list: 'redirectList',
-		label: 'X3: Redirects with no space before a parenthetical disambiguation',
-		code: 'x3',
-		db: 'x3',
-		tooltip: 'This excludes terms that can plausibly be searched for without spaces, or if the redirect contains substantive page history (e.g. from a merge).'
 	}
 ];
 
@@ -1991,24 +1979,24 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				break;
 
 			case 'llm': // G15
-				if ( form['csd.subcriteria'] && form['csd.subcriteria'].value) {
-					if (form['csd.subcriteria'].value === 'communication') {
-						currentParams.communication = 'yes';
-					} else if (form['csd.subcriteria'].value === 'nonsensical' || form['csd.subcriteria'].value === 'implausible') {
-						currentParams.references = 'yes';
-						if ( form['csd.subcriteria'].value === 'nonsensical' ) {
-							currentParams.reason = 'Nonsensical references';
-						} else {
-							currentParams.reason = 'Implausible references';
-						}
+				if (form['csd.subcriteria']) {
 
-						if (form['csd.reason'] && form['csd.reason'].value) {
-							currentParams.reason += ': ' + form['csd.reason'].value;
-						}
+					if (form['csd.subcriteria'][0].checked) {
+						currentParams.communication = 'yes';
+					}
+
+					if (form['csd.subcriteria'][1].checked) {
+						currentParams.references = 'yes';
+					}
+
+					if (!form['csd.subcriteria'][0].checked && !form['csd.subcriteria'][1].checked) {
+						alert('CSD G15:  Please select at least one sub-criterion.');
+						parameters = null;
+						return false;
 					}
 				}
 
-				if (form['csd.reason'] && form['csd.reason'].value && !(form['csd.subcriteria'] && form['csd.subcriteria'].value)) {
+				if (form['csd.reason'] && form['csd.reason'].value) {
 					currentParams.reason = form['csd.reason'].value;
 				}
 				break;
