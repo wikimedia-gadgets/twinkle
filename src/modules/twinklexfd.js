@@ -1273,10 +1273,10 @@ Twinkle.xfd.callbacks = {
 		tagTargetPageWithMergeFromTag: function(pageobj) {
 			const statelem = pageobj.getStatusElement();
 			if (!pageobj.exists()) {
-				statelem.error('Failed to add a {{Merge from}} tag to the target page. Target page not found.');
+				statelem.warn('Failed. Target page not found.');
 				return;
 			} else if (!pageobj.canEdit()) {
-				statelem.error('Failed to add a {{Merge from}} tag to the target page. It is protected from editing.');
+				statelem.warn('Failed. Target page is protected from editing.');
 				return;
 			}
 
