@@ -1593,7 +1593,6 @@ Twinkle.tag.callbacks = {
 				} else {
 					Morebits.Status.warn('Info', 'Found {{' + tag +
 						'}} on the article already...excluding');
-					// don't do anything else with merge tags
 				}
 			}
 		});

@@ -962,7 +962,7 @@ Twinkle.xfd.callbacks = {
 			actionName = actionName || 'Notifying initial contributor (' + usernameOrTarget + ')';
 		}
 
-		const notifyText = Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params.venue, params.outcome, params.afdtarget, params.numbering, params.xfdcat, params.tfdtarget, params.action, mw.config.get('wgNamespaceNumber'), Morebits.pageNameNorm);
+		const notifyText = Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params);
 
 		// Link to the venue; object used here rather than repetitive items in switch
 		const venueNames = {
@@ -1005,35 +1005,35 @@ Twinkle.xfd.callbacks = {
 			});
 		}
 	},
-	generateUserTalkNoticeWikitext: function(venue, outcome, afdtarget, numbering, xfdcat, tfdtarget, action, namespaceNumber, pageTitle) {
+	generateUserTalkNoticeWikitext: function(params) {
 		// For grep: Afd notice, Mfd notice, Tfd notice, Cfd notice, Ffd notice, Rfd notice
-		let notifytext = '\n{{subst:' + venue + ' notice';
+		let notifytext = '\n{{subst:' + params.venue + ' notice';
 		const templateNamespace = 10;
 		// Venue-specific parameters
-		switch (venue) {
+		switch (params.venue) {
 			case 'afd':
-				notifytext += outcome !== 'deletion' ? '|outcome=' + outcome : '';
-				notifytext += afdtarget ? '|target=' + afdtarget : '';
+				notifytext += params.outcome !== 'deletion' ? '|outcome=' + params.outcome : '';
+				notifytext += params.afdtarget ? '|target=' + params.afdtarget : '';
 				// Tell the template to add " (Xnd nomination)" to the XFD title, if needed.
 				// The &#32; (HTML space character) is needed to overcome MediaWiki's parameter auto-trim.
-				notifytext += numbering !== '' ? '|order=&#32;' + numbering : '';
+				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
 				break;
 			case 'mfd':
 				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
-				notifytext += numbering !== '' ? '|order=&#32;' + numbering : '';
+				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
 				break;
 			case 'tfd':
-				if (xfdcat === 'tfm') {
-					notifytext = '\n{{subst:Tfm notice|2=' + tfdtarget;
+				if (params.xfdcat === 'tfm') {
+					notifytext = '\n{{subst:Tfm notice|2=' + params.tfdtarget;
 				}
 				break;
 			case 'cfd':
-				notifytext += '|action=' + action + (namespaceNumber === templateNamespace ? '|stub=yes' : '');
+				notifytext += '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === templateNamespace ? '|stub=yes' : '');
 				break;
 			default: // ffd, rfd
 				break;
 		}
-		notifytext += '|1=' + pageTitle + '}} ~~~~';
+		notifytext += '|1=' + Morebits.pageNameNorm + '}} ~~~~';
 		return notifytext;
 	},
 	addToLog: function(params, initialContrib) {
@@ -1242,7 +1242,7 @@ Twinkle.xfd.callbacks = {
 			);
 
 			// If the selected outcome is merge, add {{Merge from}} to the target page
-			if ( params.outcome === 'merging' && params.afdtarget ) {
+			if (params.outcome === 'merging' && params.afdtarget) {
 				wikipedia_page = new Morebits.wiki.Page(params.afdtarget, 'Tagging the target page with {{Merge from}}');
 				wikipedia_page.setCallbackParameters(params);
 				wikipedia_page.load(Twinkle.xfd.callbacks.afd.tagTargetPageWithMergeFromTag);
