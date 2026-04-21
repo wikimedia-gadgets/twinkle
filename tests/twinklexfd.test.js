@@ -195,7 +195,7 @@ describe('modules/twinklexfd', () => {
 			params.xfdcat = '?';
 			params.tfdtarget = undefined;
 			params.action = undefined;
-			mw.config.get = (key) => key === 'wgNamespaceNumber' ? 0 : undefined;
+			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
@@ -209,7 +209,7 @@ describe('modules/twinklexfd', () => {
 			params.xfdcat = '?';
 			params.tfdtarget = undefined;
 			params.action = undefined;
-			mw.config.get = (key) => key === 'wgNamespaceNumber' ? 0 : undefined;
+			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|order=&#32; (4th nomination)|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
@@ -223,7 +223,7 @@ describe('modules/twinklexfd', () => {
 			params.xfdcat = '?';
 			params.tfdtarget = undefined;
 			params.action = undefined;
-			mw.config.get = (key) => key === 'wgNamespaceNumber' ? 0 : undefined;
+			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|outcome=merging|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
@@ -237,7 +237,7 @@ describe('modules/twinklexfd', () => {
 			params.xfdcat = '?';
 			params.tfdtarget = undefined;
 			params.action = undefined;
-			mw.config.get = (key) => key === 'wgNamespaceNumber' ? 0 : undefined;
+			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|outcome=merging|target=Testing 123|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
@@ -251,7 +251,7 @@ describe('modules/twinklexfd', () => {
 			params.xfdcat = '?';
 			params.tfdtarget = undefined;
 			params.action = undefined;
-			mw.config.get = (key) => key === 'wgNamespaceNumber' ? 0 : undefined;
+			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|outcome=redirecting|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
@@ -265,7 +265,7 @@ describe('modules/twinklexfd', () => {
 			params.xfdcat = '?';
 			params.tfdtarget = undefined;
 			params.action = undefined;
-			mw.config.get = (key) => key === 'wgNamespaceNumber' ? 0 : undefined;
+			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|outcome=redirecting|target=Testing 123|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
@@ -279,7 +279,7 @@ describe('modules/twinklexfd', () => {
 			params.xfdcat = '?';
 			params.tfdtarget = undefined;
 			params.action = undefined;
-			mw.config.get = (key) => key === 'wgNamespaceNumber' ? 0 : undefined;
+			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|outcome=draftification|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);

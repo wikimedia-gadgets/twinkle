@@ -334,7 +334,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				name: 'afdtarget',
 				type: 'input',
 				label: 'Target page:',
-				tooltip: 'Target page for the redirect or merge.'
+				tooltip: 'Target page for the redirect or merge.',
+				event: Twinkle.xfd.callbacks.changeAfdTarget
 			});
 
 			work_area.append({
@@ -773,23 +774,47 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 };
 
 Twinkle.xfd.callbacks = {
-	changeAfdOutcome: function(outcome) {
+	/** If the user hasn't modified the reason much, modify the reason to include the target article. If the user has modified the reason box with a custom reason, do nothing, since we don't want to blank their work. */
+	changeAfdTarget: function() {
+		const $afdTarget = $('[name="afdtarget"]');
+		const $reason = $('[name="reason"]');
+		const $outcome = $('[name="outcome"]');
+		if ($reason.val().endsWith('because ')) {
+			// Target has something typed in
+			if ($afdTarget.val()) {
+				if ($outcome.val() === 'redirecting') {
+					$reason.val(`I propose '''redirecting''' to [[${$afdTarget.val()}]] because `);
+				} else if ($outcome.val() === 'merging') {
+					$reason.val(`I propose '''merging''' to [[${$afdTarget.val()}]] because `);
+				}
+			// Target is blank
+			} else {
+				if ($outcome.val() === 'redirecting') {
+					$reason.val("I propose '''redirecting''' because ");
+				} else if ($outcome.val() === 'merging') {
+					$reason.val("I propose '''merging''' because ");
+				}
+			}
+		}
+	},
+	/** Print a default reason in the reason textarea, depending on which outcome is selected from the outcome dropdown list. */
+	changeAfdOutcome: function() {
+		const $outcome = $('[name="outcome"]');
 		const $reason = $('[name="reason"]');
 		const $afdTarget = $('[name="afdtarget"]');
-		if (outcome.target.value === 'redirecting') {
-			$reason.val("I propose '''redirecting''' to [[YOUR TARGET ARTICLE HERE]] because ");
+		$afdTarget.val('');
+		if ($outcome.val() === 'redirecting') {
+			$reason.val("I propose '''redirecting''' because ");
 			$afdTarget.parent().show();
-		} else if (outcome.target.value === 'merging') {
-			$reason.val("I propose '''merging''' to [[YOUR TARGET ARTICLE HERE]] because ");
+		} else if ($outcome.val() === 'merging') {
+			$reason.val("I propose '''merging''' because ");
 			$afdTarget.parent().show();
-		} else if (outcome.target.value === 'draftification') {
+		} else if ($outcome.val() === 'draftification') {
 			$reason.val("I propose '''draftifying''' because ");
 			$afdTarget.parent().hide();
-			$afdTarget.val('');
-		} else if (outcome.target.value === 'deletion') {
+		} else if ($outcome.val() === 'deletion') {
 			$reason.val('');
 			$afdTarget.parent().hide();
-			$afdTarget.val('');
 		}
 	},
 	/** Requires having the tag text (params.tagText) set ahead of time */
