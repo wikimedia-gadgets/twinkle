@@ -245,7 +245,9 @@ div.morebits-usertext {
 	overflow: hidden;
 	min-width: 150px;
 	min-height: 150px;
-	/* top, left, width, height, max-height, and z-index are set via JS */
+	/* z-index will be adjusted upwards by JS if there are multiple Twinkle dialogs open and a Twinkle dialog gets clicked on. */
+	z-index: 500;
+	/* top, left, width, height, and max-height are set via JS. */
 }
 
 .morebits-dialog-resizer {
