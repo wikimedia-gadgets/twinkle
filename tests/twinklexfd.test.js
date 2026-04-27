@@ -187,98 +187,84 @@ describe('modules/twinklexfd', () => {
 
 	describe('generateUserTalkNoticeWikitext', () => {
 		test('afd, deletion, 1st nomination', () => {
-			const params = {};
-			params.venue = 'afd';
-			params.outcome = 'deletion';
-			params.afdtarget = '';
-			params.numbering = '';
-			params.xfdcat = '?';
-			params.tfdtarget = undefined;
-			params.action = undefined;
+			const params = {
+				venue: 'afd',
+				outcome: 'deletion',
+				afdtarget: '',
+				numbering: ''
+			};
 			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
 		});
 		test('afd, deletion, nth nomination', () => {
-			const params = {};
-			params.venue = 'afd';
-			params.outcome = 'deletion';
-			params.afdtarget = '';
-			params.numbering = ' (4th nomination)';
-			params.xfdcat = '?';
-			params.tfdtarget = undefined;
-			params.action = undefined;
+			const params = {
+				venue: 'afd',
+				outcome: 'deletion',
+				afdtarget: '',
+				numbering: ' (4th nomination)'
+			};
 			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|order=&#32; (4th nomination)|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
 		});
 		test('afd, merging, 1st nomination, blank target', () => {
-			const params = {};
-			params.venue = 'afd';
-			params.outcome = 'merging';
-			params.afdtarget = '';
-			params.numbering = '';
-			params.xfdcat = '?';
-			params.tfdtarget = undefined;
-			params.action = undefined;
+			const params = {
+				venue: 'afd',
+				outcome: 'merging',
+				afdtarget: '',
+				numbering: ''
+			};
 			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|outcome=merging|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
 		});
 		test('afd, merging, 1st nomination, with target', () => {
-			const params = {};
-			params.venue = 'afd';
-			params.outcome = 'merging';
-			params.afdtarget = 'Testing 123';
-			params.numbering = '';
-			params.xfdcat = '?';
-			params.tfdtarget = undefined;
-			params.action = undefined;
+			const params = {
+				venue: 'afd',
+				outcome: 'merging',
+				afdtarget: 'Testing 123',
+				numbering: ''
+			};
 			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|outcome=merging|target=Testing 123|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
 		});
 		test('afd, redirecting, 1st nomination, blank target', () => {
-			const params = {};
-			params.venue = 'afd';
-			params.outcome = 'redirecting';
-			params.afdtarget = '';
-			params.numbering = '';
-			params.xfdcat = '?';
-			params.tfdtarget = undefined;
-			params.action = undefined;
+			const params = {
+				venue: 'afd',
+				outcome: 'redirecting',
+				afdtarget: '',
+				numbering: ''
+			};
 			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|outcome=redirecting|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
 		});
 		test('afd, redirecting, 1st nomination, with target', () => {
-			const params = {};
-			params.venue = 'afd';
-			params.outcome = 'redirecting';
-			params.afdtarget = 'Testing 123';
-			params.numbering = '';
-			params.xfdcat = '?';
-			params.tfdtarget = undefined;
-			params.action = undefined;
+			const params = {
+				venue: 'afd',
+				outcome: 'redirecting',
+				afdtarget: 'Testing 123',
+				numbering: ''
+			};
 			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|outcome=redirecting|target=Testing 123|1=NovemTest110}} ~~~~';
 			expect(Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params)).toBe(expected);
 		});
 		test('afd, draftification, 1st nomination', () => {
-			const params = {};
-			params.venue = 'afd';
-			params.outcome = 'draftification';
-			params.afdtarget = '';
-			params.numbering = '';
-			params.xfdcat = '?';
-			params.tfdtarget = undefined;
-			params.action = undefined;
+			const params = {
+				venue: 'afd',
+				outcome: 'draftification',
+				afdtarget: '',
+				numbering: ''
+			};
 			mw.config.set('wgNamespaceNumber', 0);
 			Morebits.pageNameNorm = 'NovemTest110';
 			const expected = '\n{{subst:afd notice|outcome=draftification|1=NovemTest110}} ~~~~';
