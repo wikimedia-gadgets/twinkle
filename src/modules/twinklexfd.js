@@ -1270,6 +1270,7 @@ Twinkle.xfd.callbacks = {
 			if (params.outcome === 'merging' && params.afdtarget) {
 				wikipedia_page = new Morebits.wiki.Page(params.afdtarget, 'Tagging the target page with {{Merge from}}');
 				wikipedia_page.setCallbackParameters(params);
+				wikipedia_page.setFollowRedirect(true);
 				wikipedia_page.load(Twinkle.xfd.callbacks.afd.tagTargetPageWithMergeFromTag);
 			}
 
@@ -1287,7 +1288,7 @@ Twinkle.xfd.callbacks = {
 				text = wikipage.insertAfterTemplates(params.tagText, Twinkle.hatnoteRegex).getText();
 
 				pageobj.setPageText(text);
-				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
+				pageobj.setEditSummary(`Nominated for ${params.outcome}; see [[:${params.discussionpage}]].`);
 				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 				pageobj.setCreateOption('nocreate');
 				pageobj.save();
@@ -1340,7 +1341,7 @@ Twinkle.xfd.callbacks = {
 			const params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext('afd', params));
-			pageobj.setEditSummary('Creating deletion discussion page for [[:' + Morebits.pageNameNorm + ']].');
+			pageobj.setEditSummary('Creating AfD discussion page for [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
