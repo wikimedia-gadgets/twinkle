@@ -780,6 +780,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'BLP one source', description: 'BLP that relies largely or entirely on a single source' },
 			{ tag: 'BLP sources', description: 'BLP that needs additional references or sources for verification' },
 			{ tag: 'BLP unreferenced', description: 'BLP does not cite any sources at all (use BLP PROD instead for new articles)' },
+			{ tag: 'Full citations needed', description: 'needs more complete citations for verification' },
 			{ tag: 'More citations needed', description: 'needs additional references or sources for verification' },
 			{ tag: 'No footnotes', description: 'has references, but lacks inline citations' },
 			{ tag: 'No significant coverage', description: 'does not cite any sources containing significant coverage' },
