@@ -2214,7 +2214,8 @@ Twinkle.xfd.callbacks = {
  * @return {string} pageWikitext
  */
 Twinkle.xfd.insertRMTR = function(pageWikitext, wikitextToInsert) {
-	const placementRE = /\n{1,}(==== ?Requests to revert undiscussed moves ?====)/i;
+	// [^\n]* is for matching anchors, e.g. <span class="anchor" id="*"></span>
+	const placementRE = /\n{1,}(====[^\n]*Requests to revert undiscussed moves ?====)/i;
 	return pageWikitext.replace(placementRE, '\n' + wikitextToInsert + '\n\n$1');
 };
 
