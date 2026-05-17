@@ -402,8 +402,8 @@ Twinkle.warn.messages = {
 			},
 			'uw-image': {
 				level1: {
-					label: 'Image-related vandalism in articles',
-					summary: 'General note: Image-related vandalism in articles'
+					label: 'Inappropriate images in articles',
+					summary: 'General note: Inappropriate images in articles'
 				},
 				level2: {
 					label: 'Image-related vandalism in articles',
