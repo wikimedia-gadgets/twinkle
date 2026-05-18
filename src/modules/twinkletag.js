@@ -617,14 +617,14 @@ Twinkle.tag.article.tagList = {
 						parameter: 'reason',
 						type: 'input',
 						label: 'Reason:',
-						tooltip: 'A short explanation to be added to the tag. Optional but recommended to fill either Reason or Talk discussion.'
+						tooltip: 'A short explanation to be added to the tag. Optional but recommended to fill in either Reason or Talk discussion.'
 					},
 					{
 						name: 'llmTalk',
 						parameter: 'talk',
 						type: 'input',
 						label: 'Talk discussion:',
-						tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Optional but recommended to fill either Reason or Talk discussion.'
+						tooltip: 'Name of the section of this article\'s talk page where the issue is being discussed. Do not give a link, just the name of the section. Optional but recommended to fill in either Reason or Talk discussion.'
 					}
 				]
 			},
