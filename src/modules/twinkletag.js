@@ -807,6 +807,7 @@ Twinkle.tag.article.tagList = {
 			{ tag: 'One source', description: 'relies largely or entirely on a single source' },
 			{ tag: 'Only primary sources', description: 'relies only on references to primary sources, and needs secondary sources' },
 			{ tag: 'Original research', description: 'contains original research' },
+			{ tag: 'Page numbers needed', description: 'needs page numbers for existing citations' },
 			{ tag: 'Primary sources', description: 'relies too much on references to primary sources, and needs secondary sources' },
 			{ tag: 'Self-published', description: 'contains excessive or inappropriate references to self-published sources' },
 			{ tag: 'Sources exist', description: 'notable topic, sources are available that could be added to article' },
