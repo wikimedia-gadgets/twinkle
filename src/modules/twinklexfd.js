@@ -775,46 +775,52 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 
 Twinkle.xfd.callbacks = {
 	/** If the user hasn't modified the reason much, modify the reason to include the target article. If the user has modified the reason box with a custom reason, do nothing, since we don't want to blank their work. */
-	changeAfdTarget: function() {
-		const $afdTarget = $('[name="afdtarget"]');
-		const $reason = $('[name="reason"]');
-		const $outcome = $('[name="outcome"]');
-		if ($reason.val().endsWith('because ')) {
+	changeAfdTarget: function(e) {
+		const form = e.target.form;
+		const afdTarget = form.afdtarget;
+		const reason = form.reason;
+		const outcome = form.outcome;
+		if (reason.value.endsWith('because ')) {
 			// Target has something typed in
-			if ($afdTarget.val()) {
-				if ($outcome.val() === 'redirecting') {
-					$reason.val(`I propose '''redirecting''' to [[${$afdTarget.val()}]] because `);
-				} else if ($outcome.val() === 'merging') {
-					$reason.val(`I propose '''merging''' to [[${$afdTarget.val()}]] because `);
+			if (afdTarget.value) {
+				if (outcome.value === 'redirecting') {
+					reason.value = `I propose '''redirecting''' to [[${afdTarget.value}]] because `;
+				} else if (outcome.value === 'merging') {
+					reason.value = `I propose '''merging''' to [[${afdTarget.value}]] because `;
 				}
 			// Target is blank
 			} else {
-				if ($outcome.val() === 'redirecting') {
-					$reason.val("I propose '''redirecting''' because ");
-				} else if ($outcome.val() === 'merging') {
-					$reason.val("I propose '''merging''' because ");
+				if (outcome.value === 'redirecting') {
+					reason.value = "I propose '''redirecting''' because ";
+				} else if (outcome.value === 'merging') {
+					reason.value = "I propose '''merging''' because ";
 				}
 			}
 		}
 	},
 	/** Print a default reason in the reason textarea, depending on which outcome is selected from the outcome dropdown list. */
-	changeAfdOutcome: function() {
-		const $outcome = $('[name="outcome"]');
-		const $reason = $('[name="reason"]');
-		const $afdTarget = $('[name="afdtarget"]');
-		$afdTarget.val('');
-		if ($outcome.val() === 'redirecting') {
-			$reason.val("I propose '''redirecting''' because ");
-			$afdTarget.parent().show();
-		} else if ($outcome.val() === 'merging') {
-			$reason.val("I propose '''merging''' because ");
-			$afdTarget.parent().show();
-		} else if ($outcome.val() === 'draftification') {
-			$reason.val("I propose '''draftifying''' because ");
-			$afdTarget.parent().hide();
-		} else if ($outcome.val() === 'deletion') {
-			$reason.val('');
-			$afdTarget.parent().hide();
+	changeAfdOutcome: function(e) {
+		const form = e.target.form;
+		const outcome = form.outcome;
+		const reason = form.reason;
+		const afdTarget = form.afdtarget;
+		afdTarget.value = '';
+		if (outcome.value === 'redirecting' || outcome.value === 'merging') {
+			$(afdTarget).parent().show();
+		} else {
+			$(afdTarget).parent().hide();
+		}
+		// Reset reason if the user hasn't modified it much
+		if (!reason.value || reason.value.endsWith('because ')) {
+			if (outcome.value === 'redirecting') {
+				reason.value = "I propose '''redirecting''' because ";
+			} else if (outcome.value === 'merging') {
+				reason.value = "I propose '''merging''' because ";
+			} else if (outcome.value === 'draftification') {
+				reason.value = "I propose '''draftifying''' because ";
+			} else if (outcome.value === 'deletion') {
+				reason.value = '';
+			}
 		}
 	},
 	/** Requires having the tag text (params.tagText) set ahead of time */
