@@ -81,7 +81,7 @@ describe('Morebits.wikitext', () => {
 		assert.deepEqual(Morebits.wikitext.parseTemplate(makeTemplate(internal)), internal, 'Internal templates');
 	});
 
-	test('Morebits.wikitext.page', () => {
+	test('Morebits.wikitext.Page', () => {
 		const text = '{{short description}}{{about}}[[File:Fee.svg]]O, [[Juliet|she]] doth {{plural|teach}} the torches to burn bright!';
 		const page = new Morebits.wikitext.Page(text);
 		assert.true(page instanceof Morebits.wikitext.Page, 'Correct instance');

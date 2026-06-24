@@ -28,7 +28,7 @@ Twinkle.arv = function twinklearv() {
 	}, 'ARV', 'tw-arv', 'Report ' + userType + ' to administrators');
 };
 
-Twinkle.arv.callback = function (uid, isIP) {
+Twinkle.arv.callback = function(uid, isIP) {
 	const Window = new Morebits.SimpleWindow(600, 500);
 	Window.setTitle('Advance Reporting and Vetting'); // Backronym
 	Window.setScriptName('Twinkle');
@@ -40,38 +40,35 @@ Twinkle.arv.callback = function (uid, isIP) {
 	Window.addFooterLink('Give feedback', 'WT:TW');
 
 	const form = new Morebits.QuickForm(Twinkle.arv.callback.evaluate);
-	const categories = form.append({
+	form.append({
 		type: 'select',
 		name: 'category',
 		label: 'Select report type:',
-		event: Twinkle.arv.callback.changeCategory
-	});
-	categories.append({
-		type: 'option',
-		label: 'Vandalism (WP:AIV)',
-		value: 'aiv'
-	});
-	categories.append({
-		type: 'option',
-		label: 'Username (WP:UAA)',
-		value: 'username',
-		disabled: isIP
-	});
-	categories.append({
-		type: 'option',
-		label: 'Sockpuppeteer (WP:SPI)',
-		value: 'sock'
-	});
-	categories.append({
-		type: 'option',
-		label: 'Sockpuppet (WP:SPI)',
-		value: 'puppet'
-	});
-	categories.append({
-		type: 'option',
-		label: 'Edit warring (WP:AN3)',
-		value: 'an3',
-		disabled: Morebits.ip.isRange(uid) // rvuser template doesn't support ranges
+		event: Twinkle.arv.callback.changeCategory,
+		list: [
+			{
+				label: 'Vandalism (WP:AIV)',
+				value: 'aiv'
+			},
+			{
+				label: 'Username (WP:UAA)',
+				value: 'username',
+				disabled: isIP
+			},
+			{
+				label: 'Sockpuppeteer (WP:SPI)',
+				value: 'sock'
+			},
+			{
+				label: 'Sockpuppet (WP:SPI)',
+				value: 'puppet'
+			},
+			{
+				label: 'Edit warring (WP:AN3)',
+				value: 'an3',
+				disabled: Morebits.ip.isRange(uid) // rvuser template doesn't support ranges
+			}
+		]
 	});
 	form.append({
 		type: 'div',
@@ -86,7 +83,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 			type: 'field',
 			label: 'Temporary account notice',
 			name: 'ta_notice',
-			style: 'color: var(--morebits-color-warning, #FF4500)'
+			style: 'color: var(--morebits-color-warning)'
 		});
 
 		temporaryAccountNotice.append({
@@ -144,7 +141,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 	result.category.dispatchEvent(evt);
 };
 
-Twinkle.arv.callback.changeCategory = function (e) {
+Twinkle.arv.callback.changeCategory = function(e) {
 	const value = e.target.value;
 	const root = e.target.form;
 	const old_area = Morebits.QuickForm.getElements(root, 'work_area')[0];
@@ -528,6 +525,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 					aivPage.setEditSummary('Reporting [[Special:Contributions/' + input.uid + '|' + input.uid + ']].');
 					aivPage.setChangeTags(Twinkle.changeTags);
 					aivPage.setAppendText(Twinkle.arv.callback.buildAivReport(input));
+					aivPage.setDiscussionToolsAutoSubscribe(false);
 					aivPage.append();
 				});
 			});
@@ -564,6 +562,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 
 				// Blank newline per [[Special:Permalink/996949310#Spacing]]; see also [[WP:LISTGAP]] and [[WP:INDENTGAP]]
 				uaaPage.setPageText(text + '\n' + reason + '\n*');
+				uaaPage.setDiscussionToolsAutoSubscribe(false);
 				uaaPage.save();
 			});
 			break;
@@ -595,6 +594,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 			spiPage.setChangeTags(Twinkle.changeTags);
 			spiPage.setAppendText(reportData.wikitext);
 			spiPage.setWatchlist(Twinkle.getPref('spiWatchReport'));
+			spiPage.setDiscussionToolsAutoSubscribe(false);
 			spiPage.append();
 
 			Morebits.wiki.removeCheckpoint(); // all page updates have been started
@@ -625,6 +625,7 @@ Twinkle.arv.callback.evaluate = function(e) {
 				an3Page.setEditSummary('Adding new report for [[Special:Contributions/' + data.uid + '|' + data.uid + ']].');
 				an3Page.setChangeTags(Twinkle.changeTags);
 				an3Page.setAppendText(data.reportWikitext);
+				an3Page.setDiscussionToolsAutoSubscribe(false);
 				an3Page.append();
 
 				// notify user
@@ -673,7 +674,7 @@ Twinkle.arv.callback.getAivReasonWikitext = function(input) {
 
 	if (input.page !== '') {
 		// Allow links to redirects, files, and categories
-		text = 'On {{No redirect|:' + input.page + '}}';
+		text = 'On {{No redirect|' + input.page + '}}';
 		if (input.badid !== '') {
 			text += ' ({{diff|' + input.page + '|' + input.badid + '|' + input.goodid + '|diff}})';
 		}
@@ -713,7 +714,7 @@ Twinkle.arv.callback.getUsernameReportWikitext = function(input) {
 	if (input.arvtype.length <= 2) {
 		input.arvtype = input.arvtype.join(' and ');
 	} else {
-		input.arvtype = [ input.arvtype.slice(0, -1).join(', '), input.arvtype.slice(-1) ].join(' and ');
+		input.arvtype = [input.arvtype.slice(0, -1).join(', '), input.arvtype.slice(-1)].join(' and ');
 	}
 
 	// a or an?
@@ -757,7 +758,9 @@ Twinkle.arv.callback.getSpiReportData = function(input) {
 	input.sockpuppets = isPuppetReport ? [input.uid] : Morebits.array.uniq(input.sockpuppets);
 
 	let text = '\n{{subst:SPI report|' +
-		input.sockpuppets.map((sock, index) => (index + 1) + '=' + sock).join('|') + '\n|evidence=' + input.evidence + ' \n';
+		input.sockpuppets.map((sock, index) => (index + 1) + '=' + sock).join('|') +
+		'\n|evidence=' + Morebits.string.formatReasonText(input.evidence) +
+		' \n';
 
 	text += '}}';
 

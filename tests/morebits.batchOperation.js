@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Morebits.batchOperation', () => {
+describe('Morebits.BatchOperation', () => {
 	test('Contruction', () => {
 		assert.true(new Morebits.BatchOperation() instanceof Morebits.BatchOperation, 'Correct instance');
 	});
