@@ -63,16 +63,16 @@ Twinkle.defaultConfig = {
 
 	// Rollback
 	autoMenuAfterRollback: false,
-	openTalkPage: [ 'agf', 'norm', 'vand' ],
+	openTalkPage: ['agf', 'norm', 'vand'],
 	openTalkPageOnAutoRevert: false,
 	rollbackInPlace: false,
-	markRevertedPagesAsMinor: [ 'vand' ],
-	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
+	markRevertedPagesAsMinor: ['vand'],
+	watchRevertedPages: ['agf', 'norm', 'vand', 'torev'],
 	watchRevertedExpiry: '1 month',
 	offerReasonOnNormalRevert: true,
 	confirmOnRollback: false,
 	confirmOnMobileRollback: true,
-	showRollbackLinks: [ 'diff', 'others' ],
+	showRollbackLinks: ['diff', 'others'],
 
 	// DI (twinkleimage)
 	notifyUserOnDeli: true,
@@ -93,15 +93,15 @@ Twinkle.defaultConfig = {
 
 	// CSD
 	speedySelectionStyle: 'buttonClick',
-	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
+	watchSpeedyPages: ['g3', 'g5', 'g10', 'g11', 'g12'],
 	watchSpeedyExpiry: '1 month',
 	markSpeedyPagesAsPatrolled: false,
 	watchSpeedyUser: '1 month',
 
 	// these next two should probably be identical by default
-	welcomeUserOnSpeedyDeletionNotification: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u6', 'u7' ],
-	notifyUserOnSpeedyDeletionNomination: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u6', 'u7' ],
-	warnUserOnSpeedyDelete: [ 'db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u6', 'u7' ],
+	welcomeUserOnSpeedyDeletionNotification: ['db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u6', 'u7'],
+	notifyUserOnSpeedyDeletionNomination: ['db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u6', 'u7'],
+	warnUserOnSpeedyDelete: ['db', 'g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g10', 'g11', 'g12', 'g13', 'g14', 'g15', 'a1', 'a2', 'a3', 'a7', 'a9', 'a10', 'a11', 'c1', 'f1', 'f2', 'f3', 'f7', 'f9', 'r3', 'u6', 'u7'],
 	promptForSpeedyDeletionSummary: [],
 	deleteTalkPageOnDelete: true,
 	deleteRedirectsOnDelete: true,
@@ -110,10 +110,10 @@ Twinkle.defaultConfig = {
 	speedyWindowWidth: 800,
 	logSpeedyNominations: false,
 	speedyLogPageName: 'CSD log',
-	noLogOnSpeedyNomination: [ 'u1' ],
+	noLogOnSpeedyNomination: ['u1'],
 
 	// Unlink
-	unlinkNamespaces: [ '0', '10', '100', '118' ],
+	unlinkNamespaces: ['0', '10', '100', '118'],
 
 	// Warn
 	defaultWarningGroup: '10',
@@ -344,12 +344,12 @@ Morebits.wiki.getCachedPage(`User:${mw.config.get('wgUserName')}/twinkleoptions.
 // Developers: you can import custom Twinkle modules here
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
-Twinkle.load = function () {
+Twinkle.load = function() {
 	// Don't activate on special pages other than those listed here, so
 	// that others load faster, especially the watchlist.
-	let activeSpecialPageList = [ 'Block', 'Contributions', 'IPContributions', 'Recentchanges', 'Recentchangeslinked' ]; // wgRelevantUserName defined for non-sysops on Special:Block
+	let activeSpecialPageList = ['Block', 'Contributions', 'IPContributions', 'Recentchanges', 'Recentchangeslinked']; // wgRelevantUserName defined for non-sysops on Special:Block
 	if (Morebits.userIsSysop) {
-		activeSpecialPageList = activeSpecialPageList.concat([ 'DeletedContributions', 'Prefixindex' ]);
+		activeSpecialPageList = activeSpecialPageList.concat(['DeletedContributions', 'Prefixindex']);
 	}
 	if (mw.config.get('wgNamespaceNumber') === -1 &&
 		!activeSpecialPageList.includes(mw.config.get('wgCanonicalSpecialPageName'))) {
@@ -417,7 +417,7 @@ Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|dis
 /**
  * When performing rollbacks with [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method gets a prefill, either from URL parameters (e.g. &vanarticle=Test) or from data previously stored using Twinkle.setPrefill()
  */
-Twinkle.getPrefill = function (key) {
+Twinkle.getPrefill = function(key) {
 	Twinkle.prefill = Twinkle.prefill || {};
 	if (!Object.prototype.hasOwnProperty.call(Twinkle.prefill, key)) {
 		Twinkle.prefill[key] = mw.util.getParamValue(key);
@@ -428,7 +428,7 @@ Twinkle.getPrefill = function (key) {
 /**
  * When performing rollbacks with [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method sets a prefill. This data will be lost if the page is refreshed, unless it is added to the URL as a parameter.
  */
-Twinkle.setPrefill = function (key, value) {
+Twinkle.setPrefill = function(key, value) {
 	Twinkle.prefill = Twinkle.prefill || {};
 	Twinkle.prefill[key] = value;
 };
@@ -463,7 +463,7 @@ Twinkle.sortByNamespace = function(first, second) {
 /**
  * Used in batch listings to link to the page in question with >
  */
-Twinkle.generateArrowLinks = function (checkbox) {
+Twinkle.generateArrowLinks = function(checkbox) {
 	const link = Morebits.htmlNode('a', ' >');
 	link.setAttribute('class', 'tw-arrowpage-link');
 	link.setAttribute('href', mw.util.getUrl(checkbox.value));
@@ -474,7 +474,7 @@ Twinkle.generateArrowLinks = function (checkbox) {
 /**
  * Used in deprod and unlink listings to link the page title
  */
-Twinkle.generateBatchPageLinks = function (checkbox) {
+Twinkle.generateBatchPageLinks = function(checkbox) {
 	const $checkbox = $(checkbox);
 	const link = Morebits.htmlNode('a', $checkbox.val());
 	link.setAttribute('class', 'tw-batchpage-link');
@@ -486,7 +486,7 @@ Twinkle.generateBatchPageLinks = function (checkbox) {
 /**
  * remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
  */
-Twinkle.removeMoveToCommonsTagsFromWikicode = ( wikicode ) => wikicode.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)(?!( in))[^}]*\}\}/gi, '');
+Twinkle.removeMoveToCommonsTagsFromWikicode = (wikicode) => wikicode.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)(?!( in))[^}]*\}\}/gi, '');
 
 }());
 

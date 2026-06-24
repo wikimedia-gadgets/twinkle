@@ -121,7 +121,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
-	more.append({ type: 'div', id: 'warningpreview', label: [ previewlink ] });
+	more.append({ type: 'div', id: 'warningpreview', label: [previewlink] });
 	more.append({ type: 'div', id: 'twinklewarn-previewbox', style: 'display: none' });
 
 	more.append({ type: 'submit', label: 'Submit' });

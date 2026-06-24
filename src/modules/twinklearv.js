@@ -28,7 +28,7 @@ Twinkle.arv = function twinklearv() {
 	}, 'ARV', 'tw-arv', 'Report ' + userType + ' to administrators');
 };
 
-Twinkle.arv.callback = function (uid, isIP) {
+Twinkle.arv.callback = function(uid, isIP) {
 	const Window = new Morebits.SimpleWindow(600, 500);
 	Window.setTitle('Advance Reporting and Vetting'); // Backronym
 	Window.setScriptName('Twinkle');
@@ -141,7 +141,7 @@ Twinkle.arv.callback = function (uid, isIP) {
 	result.category.dispatchEvent(evt);
 };
 
-Twinkle.arv.callback.changeCategory = function (e) {
+Twinkle.arv.callback.changeCategory = function(e) {
 	const value = e.target.value;
 	const root = e.target.form;
 	const old_area = Morebits.QuickForm.getElements(root, 'work_area')[0];
@@ -714,7 +714,7 @@ Twinkle.arv.callback.getUsernameReportWikitext = function(input) {
 	if (input.arvtype.length <= 2) {
 		input.arvtype = input.arvtype.join(' and ');
 	} else {
-		input.arvtype = [ input.arvtype.slice(0, -1).join(', '), input.arvtype.slice(-1) ].join(' and ');
+		input.arvtype = [input.arvtype.slice(0, -1).join(', '), input.arvtype.slice(-1)].join(' and ');
 	}
 
 	// a or an?

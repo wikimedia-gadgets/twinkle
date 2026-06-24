@@ -57,7 +57,7 @@ Morebits.l10n = {
 	 * @param {string} str
 	 * @return {number[] | null}
 	 */
-	signatureTimestampFormat: function (str) {
+	signatureTimestampFormat: function(str) {
 		// HH:mm, DD Month YYYY (UTC)
 		const rgx = /(\d{2}):(\d{2}), (\d{1,2}) (\w+) (\d{4}) \(UTC\)/;
 		const match = rgx.exec(str);
@@ -79,7 +79,7 @@ Morebits.l10n = {
  * @param {string} group - e.g. `sysop`, `extendedconfirmed`, etc.
  * @return {boolean}
  */
-Morebits.userIsInGroup = function (group) {
+Morebits.userIsInGroup = function(group) {
 	return mw.config.get('wgUserGroups').includes(group);
 };
 /**
@@ -143,7 +143,7 @@ Morebits.createHtml = function(input) {
 		return fragment;
 	}
 	if (!Array.isArray(input)) {
-		input = [ input ];
+		input = [input];
 	}
 	for (let i = 0; i < input.length; ++i) {
 		if (input[i] instanceof Node) {
@@ -163,7 +163,7 @@ Morebits.createHtml = function(input) {
  * @param {string} text
  * @return {string}
  */
-Morebits.createHtml.renderWikilinks = function (text) {
+Morebits.createHtml.renderWikilinks = function(text) {
 	const ub = new Morebits.Unbinder(text);
 	// Don't convert wikilinks within code tags as they're used for displaying wiki-code
 	ub.unbind('<code>', '</code>');
@@ -388,7 +388,7 @@ Morebits.QuickForm.Element.prototype.compute = function QuickFormElementCompute(
 		case 'fragment':
 			node = document.createDocumentFragment();
 			// fragments can't have any attributes, so just return it straight away
-			return [ node, node ];
+			return [node, node];
 		// Sometimes Twinkle uses fancy searchable "select" elements. This is powered by the third party library "select2". Activate it by creating a Morebits "select" element, then call `$('select[name=sub_group]').select2({});` or similar towards the end of your main code.
 		case 'select':
 			node = document.createElement('div');
@@ -526,7 +526,7 @@ Morebits.QuickForm.Element.prototype.compute = function QuickFormElementCompute(
 						let tmpgroup = current.subgroup;
 
 						if (!Array.isArray(tmpgroup)) {
-							tmpgroup = [ tmpgroup ];
+							tmpgroup = [tmpgroup];
 						}
 
 						var subgroupRaw = new Morebits.QuickForm.Element({
@@ -860,7 +860,7 @@ Morebits.QuickForm.Element.prototype.compute = function QuickFormElementCompute(
 	}
 	childContainer.setAttribute('id', data.id || id);
 
-	return [ node, childContainer ];
+	return [node, childContainer];
 };
 
 Morebits.QuickForm.$tooltip = null;
@@ -1170,7 +1170,7 @@ HTMLFormElement.prototype.getChecked = function(name, type) {
 		if (type && elements.type !== type) {
 			return [];
 		} else if (elements.checked) {
-			return [ elements.value ];
+			return [elements.value];
 		}
 	} else {
 		for (i = 0; i < elements.length; ++i) {
@@ -1224,7 +1224,7 @@ HTMLFormElement.prototype.getUnchecked = function(name, type) {
 		if (type && elements.type !== type) {
 			return [];
 		} else if (!elements.checked) {
-			return [ elements.value ];
+			return [elements.value];
 		}
 	} else {
 		for (i = 0; i < elements.length; ++i) {
@@ -1259,7 +1259,7 @@ Morebits.ip = {
 	 * @param {string} address - The IPv6 address, with or without CIDR.
 	 * @return {string}
 	 */
-	sanitizeIPv6: function (address) {
+	sanitizeIPv6: function(address) {
 		address = address.trim();
 		if (address === '') {
 			return null;
@@ -1312,7 +1312,7 @@ Morebits.ip = {
 	 * @param {string} ip
 	 * @return {boolean} - True if given a valid IP address range, false otherwise.
 	 */
-	isRange: function (ip) {
+	isRange: function(ip) {
 		return mw.util.isIPAddress(ip, true) && !mw.util.isIPAddress(ip);
 	},
 
@@ -1324,7 +1324,7 @@ Morebits.ip = {
 	 * @return {boolean} - True for valid ranges within the CIDR limits,
 	 * otherwise false (ranges outside the limit, single IPs, non-IPs).
 	 */
-	validCIDR: function (ip) {
+	validCIDR: function(ip) {
 		if (Morebits.ip.isRange(ip)) {
 			const subnet = parseInt(ip.match(/\/(\d{1,3})$/)[1], 10);
 			if (subnet) { // Should be redundant
@@ -1349,7 +1349,7 @@ Morebits.ip = {
 	 * @return {boolean|string} - False if not IPv6 or bigger than a 64,
 	 * otherwise the (sanitized) /64 address.
 	 */
-	get64: function (ipv6) {
+	get64: function(ipv6) {
 		if (!ipv6 || !mw.util.isIPv6Address(ipv6, true)) {
 			return false;
 		}
@@ -1412,7 +1412,7 @@ Morebits.string = {
 			if (skiplist === undefined) {
 				skiplist = [];
 			} else if (typeof skiplist === 'string') {
-				skiplist = [ skiplist ];
+				skiplist = [skiplist];
 			} else {
 				throw new Error('non-applicable skiplist parameter');
 			}
@@ -1575,7 +1575,7 @@ Morebits.array = {
 			throw new Error('A non-array object passed to Morebits.array.chunk');
 		}
 		if (typeof size !== 'number' || size <= 0) { // pretty impossible to do anything :)
-			return [ arr ]; // we return an array consisting of this array.
+			return [arr]; // we return an array consisting of this array.
 		}
 		const numChunks = Math.ceil(arr.length / size);
 		const result = new Array(numChunks);
@@ -3226,13 +3226,13 @@ Morebits.wiki.Page = function(pageName, status) {
 
 	// Delete-related setter
 	/** @param {boolean} flag */
-	this.setDeleteTalkPage = function (flag) {
+	this.setDeleteTalkPage = function(flag) {
 		ctx.deleteTalkPage = !!flag;
 	};
 
 	// Undelete-related setter
 	/** @param {boolean} flag */
-	this.setUndeleteTalkPage = function (flag) {
+	this.setUndeleteTalkPage = function(flag) {
 		ctx.undeleteTalkPage = !!flag;
 	};
 
@@ -3334,7 +3334,7 @@ Morebits.wiki.Page = function(pageName, status) {
 	 * unless it's being watched temporarily, in which case returns the
 	 * expiry string.
 	 */
-	this.getWatched = function () {
+	this.getWatched = function() {
 		return ctx.watched;
 	};
 
@@ -4016,7 +4016,7 @@ Morebits.wiki.Page = function(pageName, status) {
 					break;
 
 				case 'abusefilter-warning':
-					ctx.statusElement.error([ 'A warning was returned by the edit filter: "', errorData.abusefilter.description, '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.' ]);
+					ctx.statusElement.error(['A warning was returned by the edit filter: "', errorData.abusefilter.description, '". If you wish to proceed with the edit, please carry it out again. This warning will not appear a second time.']);
 					// We should provide the user with a way to automatically retry the action if they so choose -
 					// I can't see how to do this without creating a UI dependency on Morebits.wiki.Page though -- TTO
 					break;
@@ -4966,7 +4966,7 @@ Morebits.wikitext.Page.prototype = {
 	removeTemplate: function(template) {
 		const template_re_string = Morebits.pageNameRegex(template);
 		const links_re = new RegExp('\\{\\{(?:' + Morebits.namespaceRegex(10) + ':)?\\s*' + template_re_string + '\\s*[\\|(?:\\}\\})]');
-		const allTemplates = Morebits.string.splitWeightedByKeys(this.text, '{{', '}}', [ '{{{', '}}}' ]);
+		const allTemplates = Morebits.string.splitWeightedByKeys(this.text, '{{', '}}', ['{{{', '}}}']);
 		for (let i = 0; i < allTemplates.length; ++i) {
 			if (links_re.test(allTemplates[i])) {
 				this.text = this.text.replace(allTemplates[i], '');
@@ -5337,7 +5337,7 @@ Morebits.Status.printUserText = function(comments, message) {
  * @param {string} [color] - Font color.
  * @return {HTMLElement}
  */
-Morebits.htmlNode = function (type, content, color) {
+Morebits.htmlNode = function(type, content, color) {
 	const node = document.createElement(type);
 	if (color) {
 		node.style.color = color;
@@ -5354,7 +5354,7 @@ Morebits.htmlNode = function (type, content, color) {
  * @param {jQuery} jQuerySelector
  * @param {jQuery} jQueryContext
  */
-Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
+Morebits.checkboxShiftClickSupport = function(jQuerySelector, jQueryContext) {
 	let lastCheckbox = null;
 
 	function clickHandler(event) {
