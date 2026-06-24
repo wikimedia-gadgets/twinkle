@@ -121,7 +121,7 @@ Twinkle.warn.callback = function twinklewarnCallback() {
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
-	more.append({ type: 'div', id: 'warningpreview', label: [ previewlink ] });
+	more.append({ type: 'div', id: 'warningpreview', label: [previewlink] });
 	more.append({ type: 'div', id: 'twinklewarn-previewbox', style: 'display: none' });
 
 	more.append({ type: 'submit', label: 'Submit' });
@@ -407,8 +407,8 @@ Twinkle.warn.messages = {
 			},
 			'uw-image': {
 				level1: {
-					label: 'Image-related vandalism in articles',
-					summary: 'General note: Image-related vandalism in articles'
+					label: 'Inappropriate images in articles',
+					summary: 'General note: Inappropriate images in articles'
 				},
 				level2: {
 					label: 'Image-related vandalism in articles',
@@ -681,6 +681,24 @@ Twinkle.warn.messages = {
 				level3: {
 					label: 'Not assuming good faith',
 					summary: 'Warning: Not assuming good faith'
+				}
+			},
+			'uw-aitalk': {
+				level1: {
+					label: 'Posting LLM-generated comments',
+					summary: 'General note: Posting LLM-generated comments'
+				},
+				level2: {
+					label: 'Posting LLM-generated comments',
+					summary: 'Caution: Posting LLM-generated comments'
+				},
+				level3: {
+					label: 'Posting LLM-generated comments',
+					summary: 'Warning: Posting LLM-generated comments'
+				},
+				level4: {
+					label: 'Posting LLM-generated comments',
+					summary: 'Final warning: Posting LLM-generated comments'
 				}
 			},
 			'uw-harass': {
@@ -1780,9 +1798,9 @@ Twinkle.warn.callbacks = {
 		if (reason && !isCustom) {
 			// add extra message
 			if (templateName === 'uw-userpage') {
-				text += "|3=''" + reason + "''";
+				text += "|3=''" + Morebits.string.formatReasonText(reason) + "''";
 			} else {
-				text += "|2=''" + reason + "''";
+				text += "|2=''" + Morebits.string.formatReasonText(reason) + "''";
 			}
 		}
 		text += '}}';
@@ -1864,6 +1882,9 @@ Twinkle.warn.callbacks = {
 		}
 		return [latest, history];
 	},
+
+	// False positive
+	// eslint-disable-next-line jsdoc/require-returns-check
 	/**
 	 * Main loop for deciding what the level should increment to. Most of
 	 * this is really just error catching and updating the subsequent data.
@@ -2071,12 +2092,8 @@ Twinkle.warn.callbacks = {
 		pageobj.setWatchlist(Twinkle.getPref('watchWarnings'));
 
 		// Get actual warning text
-		let warningText = Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
+		const warningText = Twinkle.warn.callbacks.getWarningWikitext(params.sub_group, params.article,
 			params.reason, params.main_group === 'custom');
-		if (Twinkle.getPref('showSharedIPNotice') && mw.util.isIPAddress(mw.config.get('wgTitle'))) {
-			Morebits.Status.info('Info', 'Adding a shared IP notice');
-			warningText += '\n{{subst:Shared IP advice}}';
-		}
 
 		let sectionExists = false, sectionNumber = 0;
 		// Only check sections if there are sections or there's a chance we won't create our own

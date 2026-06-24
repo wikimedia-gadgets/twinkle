@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Morebits.date', () => {
+describe('Morebits.Date', () => {
 	const now = Date.now();
 	const timestampMediaWiki = '16:26, 7 November 2020 (UTC)', timestampIso = '2020-11-07T16:26:00.000Z', naive = 20201107162600;
 	test('Construction', () => {

@@ -69,7 +69,7 @@ const utils = {
 		if (!title_obj) {
 			return title; // user entered invalid input; do nothing
 		}
-		return title_obj.getNameText();
+		return title_obj.getMainText();
 	},
 
 	/**
@@ -143,7 +143,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append({
 		type: 'option',
 		label: 'TfD (Templates for discussion)',
-		selected: [ 10, 828 ].includes(namespace), // Template and module namespaces
+		selected: [10, 828].includes(namespace), // Template and module namespaces
 		value: 'tfd'
 	});
 	categories.append({
@@ -166,7 +166,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	categories.append({
 		type: 'option',
 		label: 'MfD (Miscellany for deletion)',
-		selected: ![ 0, 6, 10, 14, 828 ].includes(namespace) || Morebits.pageNameNorm.indexOf('Template:User ', 0) === 0,
+		selected: ![0, 6, 10, 14, 828].includes(namespace) || Morebits.pageNameNorm.indexOf('Template:User ', 0) === 0,
 		// Other namespaces, and userboxes in template namespace
 		value: 'mfd'
 	});
@@ -213,7 +213,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	});
 	previewlink.style.cursor = 'pointer';
 	previewlink.textContent = 'Preview';
-	form.append({ type: 'div', id: 'xfdpreview', label: [ previewlink ] });
+	form.append({ type: 'div', id: 'xfdpreview', label: [previewlink] });
 	form.append({ type: 'div', id: 'twinklexfd-previewbox', style: 'display: none' });
 
 	form.append({ type: 'submit' });
@@ -249,7 +249,7 @@ Twinkle.xfd.callback.wrongVenueWarning = function twinklexfdWrongVenueWarning(ve
 			}
 			break;
 		case 'cfd':
-			if (![ 10, 14 ].includes(namespace)) {
+			if (![10, 14].includes(namespace)) {
 				text = 'CfD is only for categories and stub templates.';
 			}
 			break;
@@ -318,6 +318,27 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			});
 
 			work_area.append({
+				type: 'select',
+				name: 'outcome',
+				label: 'Desired outcome:',
+				event: Twinkle.xfd.callbacks.changeAfdOutcome,
+				list: [
+					{ label: 'Delete', value: 'deletion' },
+					{ label: 'Merge', value: 'merging' },
+					{ label: 'Redirect', value: 'redirecting' },
+					{ label: 'Draftify', value: 'draftification' }
+				]
+			});
+
+			work_area.append({
+				name: 'afdtarget',
+				type: 'input',
+				label: 'Target page:',
+				tooltip: 'Target page for the redirect or merge.',
+				event: Twinkle.xfd.callbacks.changeAfdTarget
+			});
+
+			work_area.append({
 				type: 'checkbox',
 				list: [
 					{
@@ -333,18 +354,18 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				name: 'xfdcat',
 				label: 'Choose what category this nomination belongs in:',
 				list: [
-					{ type: 'option', label: 'Unknown', value: '?', selected: true },
-					{ type: 'option', label: 'Media and music', value: 'M' },
-					{ type: 'option', label: 'Organisation, corporation, or product', value: 'O' },
-					{ type: 'option', label: 'Biographical', value: 'B' },
-					{ type: 'option', label: 'Society topics', value: 'S' },
-					{ type: 'option', label: 'Web or internet', value: 'W' },
-					{ type: 'option', label: 'Games or sports', value: 'G' },
-					{ type: 'option', label: 'Science and technology', value: 'T' },
-					{ type: 'option', label: 'Fiction and the arts', value: 'F' },
-					{ type: 'option', label: 'Places and transportation', value: 'P' },
-					{ type: 'option', label: 'Indiscernible or unclassifiable topic', value: 'I' },
-					{ type: 'option', label: 'Debate not yet sorted', value: 'U' }
+					{ label: 'Unknown', value: '?', selected: true },
+					{ label: 'Media and music', value: 'M' },
+					{ label: 'Organisation, corporation, or product', value: 'O' },
+					{ label: 'Biographical', value: 'B' },
+					{ label: 'Society topics', value: 'S' },
+					{ label: 'Web or internet', value: 'W' },
+					{ label: 'Games or sports', value: 'G' },
+					{ label: 'Science and technology', value: 'T' },
+					{ label: 'Fiction and the arts', value: 'F' },
+					{ label: 'Places and transportation', value: 'P' },
+					{ label: 'Indiscernible or unclassifiable topic', value: 'I' },
+					{ label: 'Debate not yet sorted', value: 'U' }
 				]
 			});
 
@@ -372,6 +393,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 			appendReasonBox();
 			work_area = work_area.render();
 			old_area.parentNode.replaceChild(work_area, old_area);
+
+			// Now that we've rendered the form, hide the target text box. Unhide it later for certain outcomes, using a callback.
+			$('[name="afdtarget"]').parent().hide();
 
 			Twinkle.makeFindSourcesDiv('#twinkle-xfd-findsources');
 
@@ -442,8 +466,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					}
 				},
 				list: [
-					{ type: 'option', label: 'Deletion', value: 'tfd', selected: true },
-					{ type: 'option', label: 'Merge', value: 'tfm' }
+					{ label: 'Deletion', value: 'tfd', selected: true },
+					{ label: 'Merge', value: 'tfm' }
 				]
 			});
 			work_area.append({
@@ -452,13 +476,13 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				label: 'Deletion tag display style:',
 				tooltip: 'Which <code>type=</code> parameter to pass to the TfD tag template.',
 				list: templateOrModule === 'module' ? [
-					{ type: 'option', value: 'module', label: 'Module', selected: true }
+					{ value: 'module', label: 'Module', selected: true }
 				] : [
-					{ type: 'option', value: 'standard', label: 'Standard', selected: true },
-					{ type: 'option', value: 'sidebar', label: 'Sidebar/infobox', selected: $('.infobox').length },
-					{ type: 'option', value: 'inline', label: 'Inline template', selected: $('.mw-parser-output > p .Inline-Template').length },
-					{ type: 'option', value: 'tiny', label: 'Tiny inline' },
-					{ type: 'option', value: 'disabled', label: 'Disabled' }
+					{ value: 'standard', label: 'Standard', selected: true },
+					{ value: 'sidebar', label: 'Sidebar/infobox', selected: $('.infobox').length },
+					{ value: 'inline', label: 'Inline template', selected: $('.mw-parser-output > p .Inline-Template').length },
+					{ value: 'tiny', label: 'Tiny inline' },
+					{ value: 'disabled', label: 'Disabled' }
 				]
 			});
 
@@ -591,14 +615,14 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 					}
 				},
 				list: isCategory ? [
-					{ type: 'option', label: 'Deletion', value: 'cfd', selected: true },
-					{ type: 'option', label: 'Merge', value: 'cfm' },
-					{ type: 'option', label: 'Renaming', value: 'cfr' },
-					{ type: 'option', label: 'Split', value: 'cfs' },
-					{ type: 'option', label: 'Convert into article', value: 'cfc' }
+					{ label: 'Deletion', value: 'cfd', selected: true },
+					{ label: 'Merge', value: 'cfm' },
+					{ label: 'Renaming', value: 'cfr' },
+					{ label: 'Split', value: 'cfs' },
+					{ label: 'Convert into article', value: 'cfc' }
 				] : [
-					{ type: 'option', label: 'Stub Deletion', value: 'sfd-t', selected: true },
-					{ type: 'option', label: 'Stub Renaming', value: 'sfr-t' }
+					{ label: 'Stub Deletion', value: 'sfd-t', selected: true },
+					{ label: 'Stub Renaming', value: 'sfr-t' }
 				]
 			});
 
@@ -627,12 +651,12 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 				name: 'xfdcat',
 				tooltip: 'See WP:CFDS for full explanations.',
 				list: [
-					{ type: 'option', label: 'C2A: Typographic and spelling fixes', value: 'C2A', selected: true },
-					{ type: 'option', label: 'C2B: Naming conventions and disambiguation', value: 'C2B' },
-					{ type: 'option', label: 'C2C: Consistency with names of similar categories', value: 'C2C' },
-					{ type: 'option', label: 'C2D: Rename to match article name', value: 'C2D' },
-					{ type: 'option', label: 'C2E: Author request', value: 'C2E' },
-					{ type: 'option', label: 'C2F: One eponymous article', value: 'C2F' }
+					{ label: 'C2A: Typographic and spelling fixes', value: 'C2A', selected: true },
+					{ label: 'C2B: Naming conventions and disambiguation', value: 'C2B' },
+					{ label: 'C2C: Consistency with names of similar categories', value: 'C2C' },
+					{ label: 'C2D: Rename to match article name', value: 'C2D' },
+					{ label: 'C2E: Author request', value: 'C2E' },
+					{ label: 'C2F: One eponymous article', value: 'C2F' }
 				]
 			});
 
@@ -750,7 +774,50 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 };
 
 Twinkle.xfd.callbacks = {
-	// Requires having the tag text (params.tagText) set ahead of time
+	/** If the user hasn't modified the reason much, modify the reason to include the target article. If the user has modified the reason box with a custom reason, do nothing, since we don't want to blank their work. */
+	changeAfdTarget: function() {
+		const $afdTarget = $('[name="afdtarget"]');
+		const $reason = $('[name="reason"]');
+		const $outcome = $('[name="outcome"]');
+		if ($reason.val().endsWith('because ')) {
+			// Target has something typed in
+			if ($afdTarget.val()) {
+				if ($outcome.val() === 'redirecting') {
+					$reason.val(`I propose '''redirecting''' to [[${$afdTarget.val()}]] because `);
+				} else if ($outcome.val() === 'merging') {
+					$reason.val(`I propose '''merging''' to [[${$afdTarget.val()}]] because `);
+				}
+			// Target is blank
+			} else {
+				if ($outcome.val() === 'redirecting') {
+					$reason.val("I propose '''redirecting''' because ");
+				} else if ($outcome.val() === 'merging') {
+					$reason.val("I propose '''merging''' because ");
+				}
+			}
+		}
+	},
+	/** Print a default reason in the reason textarea, depending on which outcome is selected from the outcome dropdown list. */
+	changeAfdOutcome: function() {
+		const $outcome = $('[name="outcome"]');
+		const $reason = $('[name="reason"]');
+		const $afdTarget = $('[name="afdtarget"]');
+		$afdTarget.val('');
+		if ($outcome.val() === 'redirecting') {
+			$reason.val("I propose '''redirecting''' because ");
+			$afdTarget.parent().show();
+		} else if ($outcome.val() === 'merging') {
+			$reason.val("I propose '''merging''' because ");
+			$afdTarget.parent().show();
+		} else if ($outcome.val() === 'draftification') {
+			$reason.val("I propose '''draftifying''' because ");
+			$afdTarget.parent().hide();
+		} else if ($outcome.val() === 'deletion') {
+			$reason.val('');
+			$afdTarget.parent().hide();
+		}
+	},
+	/** Requires having the tag text (params.tagText) set ahead of time */
 	autoEditRequest: function(pageobj, params) {
 		const talkName = new mw.Title(pageobj.getPageName()).getTalkPage().toText();
 		if (talkName === pageobj.getPageName()) {
@@ -900,11 +967,12 @@ Twinkle.xfd.callbacks = {
 		// Ensure items with User talk or no namespace prefix both end
 		// up at user talkspace as expected, but retain the
 		// prefix-less username for addToLog
-		notifyTarget = mw.Title.newFromText(notifyTarget, 3);
+		const userTalkNamespace = 3;
+		notifyTarget = mw.Title.newFromText(notifyTarget, userTalkNamespace);
 		const targetNS = notifyTarget.getNamespaceId();
-		const usernameOrTarget = notifyTarget.getRelativeText(3);
+		const usernameOrTarget = notifyTarget.getRelativeText(userTalkNamespace);
 		notifyTarget = notifyTarget.toText();
-		if (targetNS === 3) {
+		if (targetNS === userTalkNamespace) {
 			// Disallow warning yourself
 			if (usernameOrTarget === mw.config.get('wgUserName')) {
 				Morebits.Status.warn('You (' + usernameOrTarget + ') created this page; skipping user notification');
@@ -919,25 +987,7 @@ Twinkle.xfd.callbacks = {
 			actionName = actionName || 'Notifying initial contributor (' + usernameOrTarget + ')';
 		}
 
-		let notifytext = '\n{{subst:' + params.venue + ' notice';
-		// Venue-specific parameters
-		switch (params.venue) {
-			case 'afd':
-			case 'mfd':
-				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
-				break;
-			case 'tfd':
-				if (params.xfdcat === 'tfm') {
-					notifytext = '\n{{subst:Tfm notice|2=' + params.tfdtarget;
-				}
-				break;
-			case 'cfd':
-				notifytext += '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === 10 ? '|stub=yes' : '');
-				break;
-			default: // ffd, rfd
-				break;
-		}
-		notifytext += '|1=' + Morebits.pageNameNorm + '}} ~~~~';
+		const notifyText = Twinkle.xfd.callbacks.generateUserTalkNoticeWikitext(params);
 
 		// Link to the venue; object used here rather than repetitive items in switch
 		const venueNames = {
@@ -952,7 +1002,7 @@ Twinkle.xfd.callbacks = {
 			Morebits.pageNameNorm + ']] at [[WP:' + venueNames[params.venue] + ']].';
 
 		const usertalkpage = new Morebits.wiki.Page(notifyTarget, actionName);
-		usertalkpage.setAppendText(notifytext);
+		usertalkpage.setAppendText(notifyText);
 		usertalkpage.setEditSummary(editSummary);
 		usertalkpage.setChangeTags(Twinkle.changeTags);
 		usertalkpage.setCreateOption('recreate');
@@ -979,6 +1029,37 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			});
 		}
+	},
+	generateUserTalkNoticeWikitext: function(params) {
+		// For grep: Afd notice, Mfd notice, Tfd notice, Cfd notice, Ffd notice, Rfd notice
+		let notifytext = '\n{{subst:' + params.venue + ' notice';
+		const templateNamespace = 10;
+		// Venue-specific parameters
+		switch (params.venue) {
+			case 'afd':
+				notifytext += params.outcome !== 'deletion' ? '|outcome=' + params.outcome : '';
+				notifytext += params.afdtarget ? '|target=' + params.afdtarget : '';
+				// Tell the template to add " (Xnd nomination)" to the XFD title, if needed.
+				// The &#32; (HTML space character) is needed to overcome MediaWiki's parameter auto-trim.
+				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
+				break;
+			case 'mfd':
+				// tell the template to add " (Xnd nomination)" to the XFD title, if needed
+				notifytext += params.numbering !== '' ? '|order=&#32;' + params.numbering : '';
+				break;
+			case 'tfd':
+				if (params.xfdcat === 'tfm') {
+					notifytext = '\n{{subst:Tfm notice|2=' + params.tfdtarget;
+				}
+				break;
+			case 'cfd':
+				notifytext += '|action=' + params.action + (mw.config.get('wgNamespaceNumber') === templateNamespace ? '|stub=yes' : '');
+				break;
+			default: // ffd, rfd
+				break;
+		}
+		notifytext += '|1=' + Morebits.pageNameNorm + '}} ~~~~';
+		return notifytext;
 	},
 	addToLog: function(params, initialContrib) {
 		if (!Twinkle.getPref('logXfdNominations') || Twinkle.getPref('noLogOnXfdNomination').includes(params.venue)) {
@@ -1151,7 +1232,7 @@ Twinkle.xfd.callbacks = {
 
 			// Mark the page as curated/patrolled, if wanted
 			if (Twinkle.getPref('markXfdPagesAsPatrolled')) {
-				new Morebits.wiki.Page(Morebits.pageNameNorm).triage();
+				pageobj.triage();
 			}
 
 			// Start discussion page, will also handle pagetriage and delsort listings
@@ -1166,6 +1247,7 @@ Twinkle.xfd.callbacks = {
 			wikipedia_page.setFollowRedirect(true);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.todaysList);
+
 			// Notification to first contributor
 			if (params.notifycreator) {
 				const thispage = new Morebits.wiki.Page(mw.config.get('wgPageName'));
@@ -1179,11 +1261,21 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.callbacks.addToLog(params, null);
 			}
 
-			params.tagText = (params.noinclude ? '<noinclude>{{' : '{{') + (params.number === '' ? 'subst:afd|help=off' : 'subst:afdx|' +
-					params.number + '|help=off') + (params.noinclude ? '}}</noinclude>\n' : '}}\n');
+			// Add AFD tag to article
+			params.tagText = Twinkle.xfd.callbacks.afd.generateArticleTagWikitext(
+				params.noinclude, params.outcome, params.afdtarget, params.number
+			);
+
+			// If the selected outcome is merge, add {{Merge from}} to the target page
+			if (params.outcome === 'merging' && params.afdtarget) {
+				wikipedia_page = new Morebits.wiki.Page(params.afdtarget, 'Tagging the target page with {{Merge from}}');
+				wikipedia_page.setCallbackParameters(params);
+				wikipedia_page.setFollowRedirect(true);
+				wikipedia_page.load(Twinkle.xfd.callbacks.afd.tagTargetPageWithMergeFromTag);
+			}
 
 			if (pageobj.canEdit()) {
-			// Remove some tags that should always be removed on AfD.
+				// Remove some tags that should always be removed on AfD.
 				text = text.replace(/\{\{\s*(dated prod|dated prod blp|Prod blp\/dated|Proposed deletion\/dated|prod2|Proposed deletion endorsed|Userspace draft)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
 				// Then, test if there are speedy deletion-related templates on the article.
 				const textNoSd = text.replace(/\{\{\s*(db(-\w*)?|delete|(?:hang|hold)[- ]?on)\s*(\|(?:\{\{[^{}]*\}\}|[^{}])*)?\}\}\s*/ig, '');
@@ -1196,7 +1288,7 @@ Twinkle.xfd.callbacks = {
 				text = wikipage.insertAfterTemplates(params.tagText, Twinkle.hatnoteRegex).getText();
 
 				pageobj.setPageText(text);
-				pageobj.setEditSummary('Nominated for deletion; see [[:' + params.discussionpage + ']].');
+				pageobj.setEditSummary(`Nominated for ${params.outcome}; see [[:${params.discussionpage}]].`);
 				pageobj.setWatchlist(Twinkle.getPref('xfdWatchPage'));
 				pageobj.setCreateOption('nocreate');
 				pageobj.save();
@@ -1204,11 +1296,52 @@ Twinkle.xfd.callbacks = {
 				Twinkle.xfd.callbacks.autoEditRequest(pageobj, params);
 			}
 		},
+		tagTargetPageWithMergeFromTag: function(pageobj) {
+			const statelem = pageobj.getStatusElement();
+			if (!pageobj.exists()) {
+				statelem.warn('Failed. Target page not found.');
+				return;
+			} else if (!pageobj.canEdit()) {
+				statelem.warn('Failed. Target page is protected from editing.');
+				return;
+			}
+
+			const params = pageobj.getCallbackParameters();
+			const tag = `{{Merge from |1=${Morebits.pageNameNorm} |target=${params.afdtarget} |afd=${Morebits.pageNameNorm + params.numbering} |date ={{subst:CURRENTMONTHNAME}} {{subst:CURRENTYEAR}} }}`;
+
+			const wikipage = new Morebits.wikitext.Page(pageobj.getPageText());
+			const text = wikipage.insertAfterTemplates(tag, Twinkle.hatnoteRegex).getText();
+			pageobj.setPageText(text);
+
+			pageobj.setEditSummary('Nominated for merging; see [[:' + params.discussionpage + ']].');
+			pageobj.setCreateOption('nocreate');
+			pageobj.save();
+		},
+		generateArticleTagWikitext: function(noinclude, outcome, afdtarget, number) {
+			let noIncludeStart = '';
+			let noIncludeEnd = '';
+			if (noinclude) {
+				noIncludeStart = '<noinclude>';
+				noIncludeEnd = '</noinclude>';
+			}
+
+			let templateAndParams = '';
+			const outcomeParam = outcome !== 'deletion' ? '|outcome=' + outcome : '';
+			const targetParam = afdtarget ? '|target=' + afdtarget : '';
+			const isFirstNomination = number === '';
+			if (isFirstNomination) {
+				templateAndParams = 'subst:afd|help=off' + outcomeParam + targetParam;
+			} else {
+				templateAndParams = 'subst:afdx|' + number + '|help=off' + outcomeParam + targetParam;
+			}
+
+			return noIncludeStart + '{{' + templateAndParams + '}}' + noIncludeEnd + '\n';
+		},
 		discussionPage: function(pageobj) {
 			const params = pageobj.getCallbackParameters();
 
 			pageobj.setPageText(Twinkle.xfd.callbacks.getDiscussionWikitext('afd', params));
-			pageobj.setEditSummary('Creating deletion discussion page for [[:' + Morebits.pageNameNorm + ']].');
+			pageobj.setEditSummary('Creating AfD discussion page for [[:' + Morebits.pageNameNorm + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('createonly');
@@ -1246,7 +1379,7 @@ Twinkle.xfd.callbacks = {
 					const linknode = document.createElement('a');
 					linknode.setAttribute('href', mw.util.getUrl('Wikipedia:Twinkle/Fixing AFD') + '?action=purge');
 					linknode.appendChild(document.createTextNode('How to fix AFD'));
-					statelem.error([ 'Could not find the target spot for the discussion. To fix this problem, please see ', linknode, '.' ]);
+					statelem.error(['Could not find the target spot for the discussion. To fix this problem, please see ', linknode, '.']);
 					return;
 				}
 			}
@@ -1256,6 +1389,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
+			pageobj.setDiscussionToolsAutoSubscribe(false);
 			pageobj.save();
 		},
 		delsortListing: function(pageobj) {
@@ -1265,6 +1399,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setEditSummary('Listing [[:' + discussionPage + ']].');
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setCreateOption('nocreate');
+			pageobj.setDiscussionToolsAutoSubscribe(false);
 			pageobj.save();
 		}
 	},
@@ -1291,7 +1426,7 @@ Twinkle.xfd.callbacks = {
 				if (watchModule) {
 					watch_query = {
 						action: 'watch',
-						titles: [ mw.config.get('wgPageName') ],
+						titles: [mw.config.get('wgPageName')],
 						token: mw.user.tokens.get('watchToken')
 					};
 					// Only add the expiry if page is unwatched or already temporarily watched
@@ -1613,6 +1748,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchList'));
 			pageobj.setCreateOption('recreate');
+			pageobj.setDiscussionToolsAutoSubscribe(false);
 			pageobj.save();
 		},
 		sendNotifications: function(pageobj) {
@@ -1651,7 +1787,7 @@ Twinkle.xfd.callbacks = {
 
 			params.tagText = '{{ffd|log=' + date + '|help=off}}\n';
 			if (pageobj.canEdit()) {
-				text = Twinkle.removeMoveToCommonsTagsFromWikicode( text );
+				text = Twinkle.removeMoveToCommonsTagsFromWikicode(text);
 
 				pageobj.setPageText(params.tagText + text);
 				pageobj.setEditSummary('Listed for discussion at [[:' + params.discussionpage + ']].');
@@ -2008,9 +2144,9 @@ Twinkle.xfd.callbacks = {
 				} else if (document.getElementById('softredirect')) {
 					statelem.warn('Soft redirect; skipping target page notification');
 				// Don't issue if target talk is the initial contributor's talk or your own
-				} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === initialContrib) {
+				} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getMainText() === initialContrib) {
 					statelem.warn('Target is initial contributor; skipping target page notification');
-				} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getNameText() === mw.config.get('wgUserName')) {
+				} else if (targetTalk.getNamespaceId() === 3 && targetTalk.getMainText() === mw.config.get('wgUserName')) {
 					statelem.warn('You (' + mw.config.get('wgUserName') + ') are the target; skipping target page notification');
 				} else {
 					// Don't log if notifying creator above, will log then
@@ -2078,7 +2214,8 @@ Twinkle.xfd.callbacks = {
  * @return {string} pageWikitext
  */
 Twinkle.xfd.insertRMTR = function(pageWikitext, wikitextToInsert) {
-	const placementRE = /\n{1,}(==== ?Requests to revert undiscussed moves ?====)/i;
+	// [^\n]* is for matching anchors, e.g. <span class="anchor" id="*"></span>
+	const placementRE = /\n{1,}(====[^\n]*Requests to revert undiscussed moves ?====)/i;
 	return pageWikitext.replace(placementRE, '\n' + wikitextToInsert + '\n\n$1');
 };
 
