@@ -655,7 +655,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 			Twinkle.block.callback.preview($form[0]);
 		});
 		$previewlink.css({cursor: 'pointer'});
-		fieldTemplateOptions.append({ type: 'div', id: 'blockpreview', label: [ $previewlink[0] ] });
+		fieldTemplateOptions.append({ type: 'div', id: 'blockpreview', label: [$previewlink[0]] });
 		fieldTemplateOptions.append({ type: 'div', id: 'twinkleblock-previewbox', style: 'display: none' });
 	} else if (fieldPreset) {
 		// Only visible for arbitration enforcement, toggled in change_preset
@@ -2022,7 +2022,7 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 		// Building the template, however, takes a fair bit of logic
 		if (params.partial) {
 			if (params.pagerestrictions.length || params.namespacerestrictions.length) {
-				const makeSentence = function (array) {
+				const makeSentence = function(array) {
 					if (array.length < 3) {
 						return array.join(' and ');
 					}
