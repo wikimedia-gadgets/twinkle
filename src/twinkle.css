@@ -104,6 +104,11 @@ html {
 	border: 1px solid #f28500;
 }
 
+#p-twinkle-dropdown {
+	display: flex;
+    min-width: 40px;
+}
+
 @media screen {
 	html.skin-theme-clientpref-night #twinkle-config-headerbox {
 		background: #532b18;
