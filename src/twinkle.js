@@ -256,7 +256,7 @@ Twinkle.addPortlet = function() {
 		$('#p-twinkle').insertAfter('#p-cactions');
 	} else if (mw.config.get('skin') === 'vector-2022') {
 		const $landmark = $('#right-navigation > .vector-page-tools-landmark');
-		$('#p-twinkle-dropdown').insertAfter($landmark);
+		$('#p-twinkle-dropdown').insertBefore($landmark);
 
 		// .vector-page-tools-landmark is unstable and could change. If so, log it to console, to hopefully get someone's attention.
 		if (!$landmark) {
