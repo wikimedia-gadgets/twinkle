@@ -106,7 +106,7 @@ html {
 
 #p-twinkle-dropdown {
 	display: flex;
-    min-width: 40px;
+	min-width: 40px;
 }
 
 @media screen {
