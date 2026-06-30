@@ -45,6 +45,7 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 	if (namespace === 'article') {
 		Window.addFooterLink('Proposed deletion policy', 'WP:PROD');
 		Window.addFooterLink('BLP PROD policy', 'WP:BLPPROD');
+		Window.addFooterLink('LLM PROD policy', 'WP:LLMPROD');
 	} else { // if file
 		Window.addFooterLink('Proposed deletion policy', 'WP:PROD');
 	}
@@ -77,6 +78,11 @@ Twinkle.prod.callback = function twinkleprodCallback() {
 				label: 'BLP PROD (proposed deletion of unsourced BLPs)',
 				value: 'prodblp',
 				tooltip: 'Proposed deletion of new, completely unsourced biographies of living persons, per [[WP:BLPPROD]]'
+			},
+			{
+				label: 'LLM PROD (proposed deletion of LLM-generated articles)',
+				value: 'llmprod',
+				tooltip: 'Proposed deletion of articles that coincides in timing and pattern with contributions by the same user which have been determined to be AI-generated, and has no significant contributions by other editors, per [[WP:LLMPROD]]'
 			}
 		]
 	});
@@ -164,6 +170,95 @@ Twinkle.prod.callback.prodtypechanged = function(event) {
 			field.append({
 				type: 'div',
 				label: boldtext
+			});
+			break;
+
+		case 'llmprod':
+			if (event.target.form.reason) {
+				Twinkle.prod.defaultReason = event.target.form.reason.value;
+			}
+			field.append({
+				type: 'checkbox',
+				list: [
+					{
+						label: 'Notify page creator if possible',
+						value: 'notify',
+						name: 'notify',
+						tooltip: "A notification template will be placed on the creator's talk page if this is selected.",
+						checked: true
+					}
+				]
+			});
+			var reminder = document.createElement('b');
+			reminder.appendChild(document.createTextNode('Please note that the following requirements from [[WP:LLMPROD#Requirements]] must apply:'));
+			field.append({
+				type: 'div',
+				label: reminder
+			});
+			var req1 = document.createElement('p');
+			req1.appendChild(document.createTextNode('1. The editor who added the content is either:'));
+			field.append({
+				type: 'div',
+				label: req1
+			});
+			field.append({
+				type: 'radio',
+				name: 'llm_req1',
+				list: [
+					{
+						label: 'blocked for AI use',
+						value: 'blocked',
+						checked: true,
+						tooltip: 'Including partial blocks.'
+					},
+					{
+						label: 'inactive',
+						value: 'inactive',
+						tooltip: 'Defined as having not made more than 5 mainspace edits in the last 30 days.'
+					},
+					{
+						label: 'disclosed using AI and consents to clean-up of their past edits',
+						value: 'disclosed',
+						subgroup: [
+							{
+								name: 'llm_link',
+								type: 'input',
+								label: 'at',
+								tooltip: 'Where the editor disclosed using AI and consents to clean-up.'
+							}
+						]
+					},
+					{
+						label: 'or there is consensus at a noticeboard such as [[WP:AINB]] or [[WP:ANI]] that presumptive removal is appropriate.',
+						value: 'consensus',
+						subgroup: [
+							{
+								name: 'llm_link',
+								type: 'input',
+								label: 'at',
+								tooltip: 'Where the consenus is reached.'
+							}
+						]
+					}
+				]
+			});
+			var req2 = document.createElement('p');
+			req2.appendChild(document.createTextNode('2. If a block remains active, it is not being appealed or discussed, and it is old enough such that the blocked editor has had sufficient time to appeal.'));
+			field.append({
+				type: 'div',
+				label: req2
+			});
+			var req3 = document.createElement('p');
+			req3.appendChild(document.createTextNode('3. The contributions to be removed coincide in timing and pattern with edits determined to very likely be AI-generated.'));
+			field.append({
+				type: 'div',
+				label: req3
+			});
+			field.append({
+				type: 'textarea',
+				name: 'reason',
+				label: 'Additonal reasons for proposed deletion:',
+				value: Twinkle.prod.defaultReason
 			});
 			break;
 
@@ -256,15 +351,32 @@ Twinkle.prod.callbacks = {
 
 			// Remove tags that become superfluous with this action
 			text = text.replace(/{{\s*(userspace draft|mtc|(copy|move) to wikimedia commons|(copy |move )?to ?commons)\s*(\|(?:{{[^{}]*}}|[^{}])*)?}}\s*/gi, '');
-			const prod_re = /{{\s*(?:Prod blp|Proposed deletion)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
+			const prod_re = /{{\s*(?:Prod blp|Prod llm|Proposed deletion)\/dated(?: files)?\s*\|(?:{{[^{}]*}}|[^{}])*}}/i;
 			let summaryText;
+
+			if (params.llm) {
+				switch (params.llm_req1) {
+					case 'blocked':
+						params.req1String = 'Author is blocked for AI use.';
+						break;
+					case 'inactive':
+						params.req1String = 'Author is inactive.';
+						break;
+					case 'disclosed':
+						params.req1String = 'Author disclosed using AI and consents to clean-up of their past edits' + (params.llm_link ? ' at ' + params.llm_link : '') + '.';
+						break;
+					case 'consensus':
+						params.req1String = 'There is consensus' + (params.llm_link ? ' at ' + params.llm_link : '') + ' that presumptive removal is appropriate.';
+						break;
+				}
+			}
 
 			if (!prod_re.test(text)) {
 
 				// Page previously PROD-ed
 				if (params.oldProdPresent) {
-					if (params.blp) {
-						if (!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying BLPPROD? ')) {
+					if (params.blp || params.llm) {
+						if (!confirm('Previous PROD nomination found on talk page. Do you still want to continue applying ' + (params.blp ? 'BLP' : 'LLM') + 'PROD? ')) {
 							statelem.warn('Previous PROD found on talk page, aborted by user');
 							return def.reject();
 						}
@@ -279,6 +391,9 @@ Twinkle.prod.callbacks = {
 				if (params.blp) {
 					summaryText = 'Proposing article for deletion per [[WP:BLPPROD]].';
 					tag = '{{subst:prod blp' + (params.usertalk ? '|help=off' : '') + '}}';
+				} else if (params.llm) {
+					summaryText = 'Proposing article for deletion per [[WP:LLMPROD]]. ' + params.req1String + ' Feel free to reinstate by following [[WP:LLMPRVOBJ|the procedures for disputing presumptive removal of LLM-generated content]].';
+					tag = '{{subst:prod llm|concern=' + Morebits.string.formatReasonText(params.req1String + ' ' + params.reason) + '|user=' + params.initialContrib + (params.usertalk ? '|help=off' : '') + '}}';
 				} else {
 					summaryText = 'Proposing ' + namespace + ' for deletion per [[WP:PROD]].';
 					tag = '{{subst:prod|1=' + Morebits.string.formatReasonText(params.reason) + (params.usertalk ? '|help=off' : '') + '}}';
@@ -297,16 +412,18 @@ Twinkle.prod.callbacks = {
 				let confirmtext = 'A {{proposed deletion}} tag was already found on this page. \nWould you like to add a {{proposed deletion endorsed}} tag with your explanation?';
 				if (params.blp && !/{{\s*Prod blp\/dated/.test(text)) {
 					confirmtext = 'A non-BLP {{proposed deletion}} tag was found on this article.\nWould you like to add a {{proposed deletion endorsed}} tag with explanation "article is a biography of a living person with no sources"?';
+				} else if (params.llm && !/{{\s*Prod llm\/dated/.test(text)) {
+					confirmtext = 'A non-LLM {{proposed deletion}} tag was found on this article. \nWould you like to add a {{proposed deletion endorsed}} tag with your explanation?';
 				}
 				if (!confirm(confirmtext)) {
 					statelem.warn('Aborted per user request');
 					return def.reject();
 				}
 
-				summaryText = 'Endorsing proposed deletion per [[WP:' + (params.blp ? 'BLP' : '') + 'PROD]].';
-				text = text.replace(prod_re, text.match(prod_re) + '\n{{Proposed deletion endorsed|1=' + (params.blp ?
-					'article is a [[WP:BLPPROD|biography of a living person with no sources]]' :
-					Morebits.string.formatReasonText(params.reason)) + '}}\n');
+				summaryText = 'Endorsing proposed deletion per [[WP:' + (params.blp ? 'BLP' : '') + (params.llm ? 'LLM' : '') + 'PROD]].';
+				text = text.replace(prod_re, text.match(prod_re) + '\n{{Proposed deletion endorsed|1=' +
+					(params.blp ? 'article is a [[WP:BLPPROD|biography of a living person with no sources]]' : '') +
+					(params.llm ? Morebits.string.formatReasonText('article is [[WP:LLMPROD|presumed to have been AI-generated]]. ' + params.req1String + ' ') : '') + Morebits.string.formatReasonText(params.reason) + '}}\n');
 
 				params.logEndorsing = true;
 			}
@@ -363,6 +480,8 @@ Twinkle.prod.callbacks = {
 		let notifyTemplate;
 		if (params.blp) {
 			notifyTemplate = 'prodwarningBLP';
+		} else if (params.llm) {
+			notifyTemplate = 'prodwarningLLM';
 		} else {
 			notifyTemplate = 'proposed deletion notify';
 		}
@@ -398,19 +517,19 @@ Twinkle.prod.callbacks = {
 		// If a logged file is deleted but exists on commons, the wikilink will be blue, so provide a link to the log
 		logText += namespace === 'file' ? ' ([{{fullurl:Special:Log|page=' + mw.util.wikiUrlencode(mw.config.get('wgPageName')) + '}} log]): ' : ': ';
 		if (params.logEndorsing) {
-			logText += 'endorsed ' + (params.blp ? 'BLP ' : '') + 'PROD. ~~~~~';
-			if (params.reason) {
-				logText += "\n#* '''Reason''': " + params.reason + '\n';
+			logText += 'endorsed ' + (params.blp ? 'BLP ' : '') + (params.llm ? 'LLM ' : '') + 'PROD. ~~~~~';
+			if (params.reason || params.llm) {
+				logText += "\n#* '''Reason''': " + (params.llm ? 'article is [[WP:LLMPROD|presumed to have been AI - generated]]. ' + params.req1String + ' ' : '') + params.reason + '\n';
 			}
 			summaryText = 'Logging endorsement of PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
 		} else {
-			logText += (params.blp ? 'BLP ' : '') + 'PROD';
+			logText += (params.blp ? 'BLP ' : '') + (params.llm ? 'LLM ' : '') + 'PROD';
 			if (params.logInitialContrib) {
 				logText += '; notified {{user|' + params.logInitialContrib + '}}';
 			}
 			logText += ' ~~~~~\n';
 			if (!params.blp && params.reason) {
-				logText += "#* '''Reason''': " + Morebits.string.formatReasonForLog(params.reason) + '\n';
+				logText += "#* '''Reason''': " + Morebits.string.formatReasonForLog((params.llm ? params.req1String + ' ' : '') + params.reason) + '\n';
 			}
 			summaryText = 'Logging PROD nomination of [[:' + Morebits.pageNameNorm + ']].';
 		}
@@ -428,6 +547,9 @@ Twinkle.prod.callback.evaluate = function twinkleprodCallbackEvaluate(e) {
 	params = {
 		usertalk: input.notify || input.prodtype === 'prodblp',
 		blp: input.prodtype === 'prodblp',
+		llm: input.prodtype === 'llmprod',
+		llm_req1: input.llm_req1,
+		llm_link: input.llm_link,
 		reason: input.reason || '' // using an empty string here as fallback will help with prod-2.
 	};
 
