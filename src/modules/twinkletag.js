@@ -168,19 +168,6 @@ Twinkle.tag.callback = function twinkletagCallback() {
 			});
 
 			form.append({
-				type: 'checkbox',
-				list: [
-					{
-						label: 'Group inside {{multiple issues}} if possible',
-						value: 'group',
-						name: 'group',
-						tooltip: 'If applying two or more templates supported by {{multiple issues}} and this box is checked, all supported templates will be grouped inside a {{multiple issues}} template.',
-						checked: Twinkle.getPref('groupByDefault')
-					}
-				]
-			});
-
-			form.append({
 				type: 'input',
 				label: 'Reason',
 				name: 'reason',
@@ -1644,7 +1631,7 @@ Twinkle.tag.callbacks = {
 
 			addUngroupedTags();
 
-		} else if (params.group && !miTest && (groupableExistingTags.length + groupableTags.length) >= 2) {
+		} else if (!miTest && (groupableExistingTags.length + groupableTags.length) >= 2) {
 			Morebits.Status.info('Info', 'Grouping supported tags inside {{multiple issues}}');
 
 			tagText += '{{Multiple issues|\n';
