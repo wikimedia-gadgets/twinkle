@@ -712,6 +712,10 @@ Twinkle.warn.messages = {
 				level4: {
 					label: 'Gaming the system',
 					summary: 'Final warning: Gaming the system'
+				},
+				level4im: {
+					label: 'Gaming the system',
+					summary: 'Only warning: Gaming the system'
 				}
 			},
 			'uw-harass': {
