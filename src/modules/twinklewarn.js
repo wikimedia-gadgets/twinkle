@@ -696,6 +696,24 @@ Twinkle.warn.messages = {
 					summary: 'Final warning: Posting LLM-generated comments'
 				}
 			},
+			'uw-gaming': {
+				level1: {
+					label: 'Gaming the system',
+					summary: 'General note: Gaming the system'
+				},
+				level2: {
+					label: 'Gaming the system',
+					summary: 'Caution: Gaming the system'
+				},
+				level3: {
+					label: 'Gaming the system',
+					summary: 'Warning: Gaming the system'
+				},
+				level4: {
+					label: 'Gaming the system',
+					summary: 'Final warning: Gaming the system'
+				}
+			},
 			'uw-harass': {
 				level1: {
 					label: 'Harassment of other users',
