@@ -1321,6 +1321,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setEditSummary('Nominated for merging; see [[:' + params.discussionpage + ']].');
 			pageobj.setCreateOption('nocreate');
+			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.save();
 		},
 		generateArticleTagWikitext: function(noinclude, outcome, afdtarget, number) {
