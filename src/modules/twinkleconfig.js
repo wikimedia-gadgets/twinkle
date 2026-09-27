@@ -123,6 +123,10 @@ Twinkle.config.commonSets = {
 	}
 };
 
+Twinkle.config.commonSets.csdCriteriaDisplayOrder = Object.keys(Twinkle.config.commonSets.csdCriteria);
+Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder = Object.keys(Twinkle.config.commonSets.csdCriteriaNotification);
+Twinkle.config.commonSets.csdAndImageDeletionCriteriaDisplayOrder = Object.keys(Twinkle.config.commonSets.csdAndImageDeletionCriteria);
+
 /**
  * Section entry format:
  *
@@ -180,7 +184,7 @@ Twinkle.config.sections = [
 				label: 'Turn off the selected Twinkle modules',
 				helptip: 'Anything you select here will NOT be available for use, so act with care. Uncheck to reactivate.',
 				type: 'set',
-				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', shared: 'Shared IP', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', rollback: 'Revert and rollback' }
+				setValues: { arv: 'ARV', warn: 'Warn', welcome: 'Welcome', talkback: 'Talkback', speedy: 'CSD', prod: 'PROD', xfd: 'XfD', image: 'Image (DI)', protect: 'Protect (RPP)', tag: 'Tag', diff: 'Diff', unlink: 'Unlink', rollback: 'Revert and rollback' }
 			},
 
 			// Twinkle.config.disabledSysopModules (array)
@@ -555,14 +559,18 @@ Twinkle.config.init = function twinkleconfigInit() {
 		// let user know about possible conflict with skin js/common.js file
 		// (settings in that file will still work, but they will be overwritten by twinkleoptions.js settings)
 		if (window.TwinkleConfig || window.FriendlyConfig) {
-			const contentnotice = document.createElement('p');
-			contentnotice.innerHTML = '<table class="plainlinks morebits-ombox morebits-ombox-content"><tr><td class="morebits-mbox-image">' +
-				'<img alt="" src="https://upload.wikimedia.org/wikipedia/commons/3/38/Imbox_content.png" /></td>' +
-				'<td class="morebits-mbox-text"><p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
-				'<p>To do this, you can <a href="' + mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/' + mw.config.get('skin') +
-				'.js', { action: 'edit' }) + '" target="_blank"><b>edit your personal skin javascript file</b></a> or <a href="' +
-				mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/common.js', { action: 'edit'}) + '" target="_blank"><b>your common.js file</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
-				'</td></tr></table>';
+			const contentnotice = document.createElement('div');
+			contentnotice.className = 'plainlinks twinkle-ombox';
+			contentnotice.innerHTML =
+				'<div>' +
+					'<img alt="" src="https://upload.wikimedia.org/wikipedia/commons/3/38/Imbox_content.png" />' +
+				'</div>' +
+				'<div>' +
+					'<p><big><b>Before modifying your settings here,</b> you must remove your old Twinkle and Friendly settings from your personal skin JavaScript.</big></p>' +
+					'<p>To do this, you can <a href="' + mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/' + mw.config.get('skin') +
+					'.js', { action: 'edit' }) + '" target="_blank"><b>edit your personal skin javascript file</b></a> or <a href="' +
+					mw.util.getUrl('User:' + mw.config.get('wgUserName') + '/common.js', { action: 'edit'}) + '" target="_blank"><b>your common.js file</b></a>, removing all lines of code that refer to <code>TwinkleConfig</code> and <code>FriendlyConfig</code>.</p>' +
+				'</div>';
 			contentdiv.appendChild(contentnotice);
 		}
 
@@ -1154,9 +1162,9 @@ Twinkle.config.save = function twinkleconfigSave(e) {
 	Morebits.Status.init(document.getElementById('twinkle-config-content'));
 
 	const userjs = mw.config.get('wgFormattedNamespaces')[mw.config.get('wgNamespaceIds').user] + ':' + mw.config.get('wgUserName') + '/twinkleoptions.js';
-	const wikipedia_page = new Morebits.wiki.Page(userjs, 'Saving preferences to ' + userjs);
-	wikipedia_page.setCallbackParameters(e.target);
-	wikipedia_page.load(Twinkle.config.writePrefs);
+	const wikipediaPage = new Morebits.wiki.Page(userjs, 'Saving preferences to ' + userjs);
+	wikipediaPage.setCallbackParameters(e.target);
+	wikipediaPage.load(Twinkle.config.writePrefs);
 
 	return false;
 };

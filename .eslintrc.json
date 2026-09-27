@@ -1,6 +1,6 @@
 {
 	"extends": [
-		"wikimedia/client/es6",
+		"wikimedia/client",
 		"wikimedia/jquery",
 		"wikimedia/mediawiki"
 	],
@@ -11,8 +11,9 @@
 		"Map": "readonly"
 	},
 	"rules": {
-		"array-bracket-spacing": "off",
-		"computed-property-spacing": "off",
+		// default rules we don't like
+		"es-x/no-array-prototype-includes": "off",
+		"es-x/no-promise-prototype-finally": "off",
 		"indent": "off",
 		"jsdoc/require-param": "off",
 		"jsdoc/require-returns": "off",
@@ -22,43 +23,34 @@
 		"no-jquery/no-global-selector": "off",
 		"no-shadow": "off",
 		"object-curly-spacing": "off",
-		"space-before-function-paren": "off",
-		"space-in-parens": "off",
-		"template-curly-spacing": "off",
 
+		// enforce no spaces in parens (https://github.com/wikimedia-gadgets/twinkle/issues/1827)
+		"array-bracket-spacing": ["error", "never"],
+		"computed-property-spacing": ["error", "never"],
+		"space-before-function-paren": ["error", "never"],
+		"space-in-parens": ["error", "never"],
+		"template-curly-spacing": ["error", "never"],
+
+		// non-default rules we do like
 		"no-nested-ternary": "error",
-		"no-restricted-syntax": [
-			"warn",
-			{
-				"message": "Using .done() is discouraged. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
-				"selector": "MemberExpression > Identifier[name=\"done\"]"
-			},
-			{
-				"message": "Using .fail() is discouraged. See https://www.mediawiki.org/wiki/Manual:Coding_conventions/JavaScript#Asynchronous_code",
-				"selector": "MemberExpression > Identifier[name=\"fail\"]"
-			}
-		],
-		"unicorn/prefer-includes": "error",
 
-		"camelcase": ["warn", {"properties": "never"}],
-		"es-x/no-array-prototype-includes": "warn",
-		"es-x/no-object-values": "warn",
-		"mediawiki/class-doc": "warn",
-		"new-cap": "warn",
-		"no-jquery/no-constructor-attributes": "warn",
-		"no-jquery/no-each-util": "warn",
-		"no-jquery/no-extend": "warn",
-		"no-jquery/no-grep": "warn",
-		"no-jquery/no-in-array": "warn",
-		"no-jquery/no-map-util": "warn",
-		"no-jquery/no-parse-html-literal": "warn",
-		"no-jquery/no-sizzle": "warn",
-		"no-loop-func": "warn",
-		"no-new": "warn",
-		"no-script-url": "warn",
-		"no-unused-expressions": "warn",
-		"no-use-before-define": "warn",
-		"no-var": "warn",
-		"unicorn/prefer-string-slice": "warn"
+		// rules we should probably fix someday
+		"camelcase": ["off", {"properties": "never"}],
+		"mediawiki/class-doc": "off",
+		"no-jquery/no-done-fail": "off",
+		"no-jquery/no-each-util": "off",
+		"no-jquery/no-extend": "off",
+		"no-jquery/no-grep": "off",
+		"no-jquery/no-in-array": "off",
+		"no-jquery/no-map-util": "off",
+		"no-jquery/no-parse-html-literal": "off",
+		"no-jquery/no-sizzle": "off",
+		"no-loop-func": "off",
+		"no-new": "off",
+		"no-script-url": "off",
+		"no-unused-expressions": "off",
+		"no-use-before-define": "off",
+		"no-var": "off",
+		"unicorn/prefer-string-slice": "off"
 	}
 }

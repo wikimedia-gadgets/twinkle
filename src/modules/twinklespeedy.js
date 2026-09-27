@@ -58,7 +58,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					value: 'tag_only',
 					name: 'tag_only',
 					tooltip: 'If you just want to tag the page, instead of deleting it now',
-					checked: !(Twinkle.speedy.hasCSD || Twinkle.getPref('deleteSysopDefaultToDelete')),
+					checked: !(Twinkle.speedy.hasCSD || (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName')) || Twinkle.getPref('deleteSysopDefaultToDelete')),
 					event: function(event) {
 						const cForm = event.target.form;
 						const cChecked = event.target.checked;
@@ -121,7 +121,7 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 					name: 'redirects',
 					tooltip: 'This option deletes all incoming redirects in addition. Avoid this option for procedural (e.g. move/merge) deletions.',
 					checked: Twinkle.getPref('deleteRedirectsOnDelete'),
-					event: function (event) {
+					event: function(event) {
 						event.stopPropagation();
 					}
 				},
@@ -297,14 +297,19 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 				}
 				break;
 
-			case 10: // file
-			case 11: // file talk
+			case 10: // template
+			case 11: // template talk
 				appendList('Template', Twinkle.speedy.templateList);
 				break;
 
 			case 14: // category
 			case 15: // category talk
 				appendList('Categories', Twinkle.speedy.categoryList);
+				break;
+
+			case 710: // timed text
+			case 711: // timed text talk
+				appendList('Timed Text pages', Twinkle.speedy.timedTextList);
 				break;
 
 			default:
@@ -345,7 +350,7 @@ Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(
 	}
 };
 
-Twinkle.speedy.callback.priorDeletionCount = function () {
+Twinkle.speedy.callback.priorDeletionCount = function() {
 	const query = {
 		action: 'query',
 		format: 'json',
@@ -1190,36 +1195,43 @@ Twinkle.speedy.callbacks = {
 			// promote Unlink tool
 			let $link, $bigtext;
 			if (mw.config.get('wgNamespaceNumber') === 6 && params.normalized !== 'f8') {
-				$link = $('<a>', {
-					href: '#',
-					text: 'click here to go to the Unlink tool',
-					css: { fontSize: '130%', fontWeight: 'bold' },
-					click: function() {
+				$link = $('<a>')
+					.attr('href', '#')
+					.text('click here to go to the Unlink tool')
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					})
+					.on('click', () => {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback('Removing usages of and/or links to deleted file ' + Morebits.pageNameNorm);
-					}
-				});
-				$bigtext = $('<span>', {
-					text: 'To orphan backlinks and remove instances of file usage',
-					css: { fontSize: '130%', fontWeight: 'bold' }
-				});
-				Morebits.Status.info($bigtext[0], $link[0]);
+					});
+				$bigtext = $('<span>')
+					.text('To orphan backlinks and remove instances of file usage')
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					});
 			} else if (params.normalized !== 'f8') {
-				$link = $('<a>', {
-					href: '#',
-					text: 'click here to go to the Unlink tool',
-					css: { fontSize: '130%', fontWeight: 'bold' },
-					click: function() {
+				$link = $('<a>')
+					.attr('href', '#')
+					.text('click here to go to the Unlink tool')
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					})
+					.on('click', () => {
 						Morebits.wiki.actionCompleted.redirect = null;
 						Twinkle.speedy.dialog.close();
 						Twinkle.unlink.callback('Removing links to deleted page ' + Morebits.pageNameNorm);
-					}
-				});
-				$bigtext = $('<span>', {
-					text: 'To orphan backlinks',
-					css: { fontSize: '130%', fontWeight: 'bold' }
-				});
+					});
+				$bigtext = $('<span>')
+					.text('To orphan backlinks')
+					.css({
+						fontSize: '130%',
+						fontWeight: 'bold'
+					});
 				Morebits.Status.info($bigtext[0], $link[0]);
 			}
 		},
@@ -1395,7 +1407,6 @@ Twinkle.speedy.callbacks = {
 				(Morebits.userIsSysop ? '\n\nThis log does not track outright speedy deletions made using Twinkle.' : '');
 
 			const formatParamLog = function(normalize, csdparam, input) {
-				console.log(normalize + '; ' + csdparam + '; ' + input);
 				if ((normalize === 'F8' && csdparam === '1')) {
 					input = '[[:File:' + input + ']]';
 				} else if ((normalize === 'F1' && csdparam === 'source')) {
@@ -1405,7 +1416,6 @@ Twinkle.speedy.callbacks = {
 				} else if ((normalize === 'G4' && csdparam === '2')) {
 					input = '[[' + input + ']]';
 				}
-				
 				return ' { ' + normalize + ' ' + csdparam + ': ' + input + ' }';
 			};
 

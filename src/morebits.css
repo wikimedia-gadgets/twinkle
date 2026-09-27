@@ -1,0 +1,380 @@
+/**
+ * morebits.css
+ * ===========
+ * Styles to support morebits.js.
+ *
+ * The morebits library is maintained by the maintainers of Twinkle.
+ * For queries, suggestions, help, etc., head to [[WT:TW]].
+ * The latest development source is available at [https://github.com/wikimedia-gadgets/twinkle/blob/master/morebits.css].
+ */
+
+/* Define CSS variables */
+html {
+	--morebits-color-status-status: #4682b4;
+	--morebits-color-legend: #31628f;
+	--morebits-color-tooltip: #0000cd;
+	--morebits-color-info: #228b22;
+	--morebits-color-warning: #ff4500;
+	--morebits-color-titlebar-links: #3062ad;
+	--morebits-bgcolor-dialog: #f0f8ff;
+	--morebits-bgcolor-titlebar: #bccadf;
+}
+
+@media screen {
+	html.skin-theme-clientpref-night {
+		--morebits-color-status-status: #a6c4de;
+		--morebits-color-legend: #6b9dcc;
+		--morebits-color-tooltip: #7a7aff;
+		--morebits-color-info: #6bdb6b;
+		--morebits-color-warning: #ff6d38;
+		--morebits-color-titlebar-links: #8baddf;
+		--morebits-bgcolor-dialog: #141c26;
+		--morebits-bgcolor-titlebar: #1c2a52;
+	}
+}
+
+/* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+@media screen and (prefers-color-scheme: dark) {
+	html.skin-theme-clientpref-os {
+		--morebits-color-status-status: #a6c4de;
+		--morebits-color-legend: #6b9dcc;
+		--morebits-color-tooltip: #7a7aff;
+		--morebits-color-info: #6bdb6b;
+		--morebits-color-warning: #ff6d38;
+		--morebits-color-titlebar-links: #8baddf;
+		--morebits-bgcolor-dialog: #141c26;
+		--morebits-bgcolor-titlebar: #1c2a52;
+	}
+}
+
+/* Morebits.Status */
+
+.morebits_status_status {
+	color: var(--morebits-color-status-status);
+}
+
+.morebits_status_info {
+	color: var(--morebits-color-info);
+}
+
+.morebits_status_warn {
+	color: var(--morebits-color-warning);
+}
+
+.morebits_status_error {
+	color: var(--morebits-color-warning);
+	font-weight: bold;
+}
+
+/* Morebits.QuickForm */
+
+form.quickform {
+	box-sizing: border-box;
+	width: 98%;
+	height: 100%;
+	min-height: 0;
+	margin: 0 auto;
+	padding: 0.5em;
+	color: var(--color-base, #202122);
+}
+
+/* use flex layout for quickform to make the scrollbox resize with
+   the dialog, and to keep it from obscuring elements below it */
+form.quickform.has-scrollbox {
+	display: flex;
+	flex-direction: column;
+}
+
+form.quickform * {
+	font-family: sans-serif;
+}
+
+form.quickform fieldset {
+	margin: 0.4em 0 1em;
+}
+
+form.quickform legend {
+	color: var(--morebits-color-legend);
+	font-weight: bold;
+}
+
+form.quickform input[type=text],
+form.quickform select {
+	min-width: 15em;
+	font-size: 110%;
+}
+
+form.quickform select {
+	/* stylelint-disable-next-line color-named */ /* FIXME */
+	border: 1px solid gray;
+	margin-left: 0.2em;
+}
+
+form.quickform input[type=checkbox],
+form.quickform input[type=radio] {
+	height: 13px;
+	margin-top: 2px;
+	margin-right: 2px;
+	margin-bottom: 2px;
+	padding: 0;
+	width: 13px;
+	vertical-align: top;
+}
+
+form.quickform div {
+	/* stylelint-disable-next-line declaration-property-unit-disallowed-list */ /* FIXME */
+	line-height: 18px;
+}
+
+form.quickform h5 {
+	margin: 0.5em 0 0;
+	padding: 0.3em 0.2em 0.2em;
+	font-size: 108%; /* 100% is 12px => 108% is 12.96px */
+}
+
+/* only give the top border to headers with something above them */
+form.quickform div + h5,
+form.quickform h5 + h5,
+form.quickform div + div > h5 {
+	border-top: 1px solid #88a;
+}
+
+form.quickform textarea {
+	width: 100%;
+	height: 4em;
+	font-size: 150%;
+}
+
+form.quickform input:disabled + label {
+	color: var(--color-disabled, #72777d);
+}
+
+form.quickform span.quickformDescription {
+	font-style: italic;
+}
+
+form.quickform span.quickformDescription code {
+	font-style: normal;
+	font-family: monospace;
+}
+
+form.quickform .quickformSubgroup {
+	margin-bottom: 0.5em;
+	margin-left: 3em;
+}
+
+/* The tooltip button and the content itself */
+form.quickform .morebits-tooltipButton {
+	color: var(--morebits-color-tooltip);
+	font-weight: bold;
+	cursor: help;
+	padding: 0.3em;
+}
+
+.morebits-ui-tooltip {
+	position: absolute;
+	z-index: 1005;
+	padding: 4px 6px 4px 6px;
+	max-width: 300px;
+	transition: opacity 600ms ease;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	/* stylelint-disable-next-line declaration-property-unit-disallowed-list */ /* FIXME */
+	font-size: 13px;
+	background: var(--background-color-neutral-subtle, #f8f9fa);
+	border: 2px solid var(--border-color-base, #a2ab91);
+	box-shadow: 0 0 5px #a2ab91;
+}
+
+.morebits-ui-tooltip.visible {
+	opacity: 1;
+	visibility: visible;
+}
+
+/* Scrollbox styles, for use within Morebits.SimpleWindow */
+
+div.morebits-scrollbox {
+	background: var(--background-color-base, #fff);
+	/* stylelint-disable-next-line color-named */ /* FIXME */
+	border: 1px solid gray;
+	margin-bottom: 0.6em;
+	margin-top: 0.6em;
+	height: auto;
+	flex-grow: 1;
+	min-height: 0;
+	overflow: auto;
+	padding: 6px 6px 0;
+}
+
+div.morebits-scrollbox > h5:first-child {
+	border: 0;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+div.morebits-scrollbox > :last-child {
+	margin-bottom: 6px;
+}
+
+/* Previewbox */
+
+div.morebits-previewbox {
+	border: 2px inset;
+	margin: 0.4em auto 0.2em;
+	padding: 0.2em 0.4em;
+}
+
+div.morebits-usertext {
+	border: 1px solid #a2a9b1;
+	background-color: var(--background-color-neutral-subtle, #f8f9fa);
+	padding: 5px;
+	font-size: 95%;
+}
+
+/* Morebits.SimpleWindow */
+
+.morebits-dialog {
+	padding: 0.2em;
+	border: 1px #666 solid;
+	font-family: sans-serif;
+	background-color: var(--morebits-bgcolor-dialog);
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	overflow: hidden;
+	min-width: 150px;
+	min-height: 150px;
+	/* z-index will be adjusted upwards by JS if there are multiple dialogs open and a dialog gets clicked on. */
+	z-index: 500;
+	/* top, left, width, height, and max-height are set via JS. */
+}
+
+.morebits-dialog-resizer {
+	position: absolute;
+	right: -5px;
+	bottom: -5px;
+	height: 20px;
+	width: 20px;
+	cursor: se-resize;
+	background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgMTYgMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+Cgk8ZyBzdHJva2U9IiM3MmE3Y2UiPgoJCTxwYXRoIGQ9Im0wIDEwTDEwIDAiLz4KCQk8cGF0aCBkPSJtNCAxMEwxMCA0Ii8+CgkJPHBhdGggZD0ibTggMTBMMTAgOCIvPgoJPC9nPgo8L3N2Zz4K);
+}
+
+/* px translations in comments are w.r.t standard browser settings,
+   in other settings, the sizes would be scaled accordingly */
+.skin-vector .morebits-dialog {
+	font-size: 75%; /* 100% is 16px => 75% is 12px */
+}
+
+.skin-timeless .morebits-dialog {
+	font-size: 79%; /* 100% is 15.2px => 79% is 12.008px */
+}
+
+.skin-monobook .morebits-dialog,
+.skin-modern .morebits-dialog {
+	font-size: 120%; /* 100% is 10px => 120% is 12px */
+}
+
+.morebits-dialog .morebits-dialog-titlebar {
+	height: 1em;
+	min-height: 1em;
+	background-color: var(--morebits-bgcolor-titlebar);
+	font: bold 108% sans-serif; /* 100% is 12px (from above) => 108% is 12.96px */
+	overflow: hidden;
+	padding: 0.4em 0.3em 0.5em;
+	white-space: nowrap;
+	display: flex; /* needed so that align-items can be used */
+	align-items: center; /* to vertically center the close button */
+	cursor: move;
+	position: relative; /* so that the close button can be positioned relative to titlebar */
+}
+
+.morebits-dialog-scriptname {
+	font-weight: normal;
+}
+
+.morebits-dialog .morebits-dialog-close {
+	position: absolute;
+	right: 0;
+	background-color: transparent;
+	border: 0;
+	font-size: 1.2em;
+	font-weight: bold;
+	padding: 5px 10px;
+	cursor: pointer;
+	border-radius: 50%;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.morebits-dialog .morebits-dialog-close:hover {
+	background-color: #eee;
+	color: #000;
+}
+
+.morebits-dialog .morebits-dialog-close span {
+	margin: 0.33em;
+}
+
+.morebits-dialog .morebits-dialog-content {
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	height: 100%;
+	flex-grow: 1;
+	overflow-y: auto;
+	min-height: 0;
+}
+
+.morebits-dialog .morebits-dialog-buttonpane {
+	background-color: var(--morebits-bgcolor-titlebar);
+	margin: auto 0 0;
+	padding: 0.3em 1.4em 0.5em 1.2em;
+}
+
+.morebits-dialog .morebits-dialog-buttonpane button {
+	margin-top: 0.2em;
+}
+
+.morebits-dialog-buttons {
+	font-size: 108%; /* 100% is 12px => 108% is 12.96px */
+}
+
+.morebits-dialog-footerlinks {
+	font-size: 97%; /* 100% is 12px (from above) => 97% is 11.64px */
+	float: right;
+	margin: 0.7em 0.4em 0 0;
+}
+
+.morebits-dialog .morebits-dialog-footerlinks a {
+	color: var(--morebits-color-titlebar-links);
+}
+
+.morebits-dialog-buttons[data-empty] + .morebits-dialog-footerlinks {
+	margin: 0.1em 0.4em -0.2em 0;
+}
+
+.morebits-dialog-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+	z-index: 700; /* Higher than morebits-dialog but lesser than morebits-dialog-modal */
+}
+
+.morebits-dialog.morebits-dialog-modal {
+	z-index: 701;
+}
+
+/* Override select2 silliness */
+.select2-morebits,
+.select2-morebits .select2-results,
+.select2-morebits .select2-results__option[aria-selected=true],
+.select2-morebits .select2-selection__rendered,
+.select2-morebits .select2-selection--multiple,
+.select2-morebits .select2-selection__choice {
+	background: var(--background-color-base, #fff) !important;
+	color: inherit !important;
+}

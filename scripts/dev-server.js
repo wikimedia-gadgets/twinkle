@@ -13,11 +13,11 @@ async function readFiles(filePaths) {
 	return Promise.all(filePaths.map(path => fs.readFile(__dirname + '/../' + path).then(blob => blob.toString())));
 }
 const server = http.createServer(async (request, response) => {
-	const moduleFiles = (await fs.readdir('./modules')).filter(f => f.endsWith('.js'));
-	const jsFiles = ['morebits.js', 'twinkle.js'].concat(moduleFiles.map(f => 'modules/' + f));
-	const cssFiles = ['morebits.css', 'twinkle.css'];
+	const moduleFiles = (await fs.readdir('./src/modules')).filter(f => f.endsWith('.js'));
+	const jsFiles = ['src/morebits.js', 'src/twinkle.js'].concat(moduleFiles.map(f => 'src/modules/' + f));
+	const cssFiles = ['src/morebits.css', 'src/twinkle.css'];
 
-	let jsCode = `mw.loader.using(['jquery.ui', 'ext.gadget.select2']).then(function () {\n`;
+	let jsCode = `mw.loader.using(['ext.gadget.select2']).then(function () {\n`;
 
 	if (process.argv[2] !== '--no-sysop') {
 		// Pretend to be a sysop, if not one already - enables testing of sysop modules by non-sysops
@@ -42,7 +42,7 @@ const server = http.createServer(async (request, response) => {
 	response.end(jsCode, 'utf-8');
 });
 
-const hostname = '127.0.0.1';
+const hostname = 'localhost';
 const port = process.env.PORT || '5500';
 const GADGET_NAME = 'Twinkle';
 
@@ -53,14 +53,14 @@ server.listen(port, hostname, async () => {
 	if (!process.env.MW_OAUTH2_TOKEN && (!process.env.MW_USERNAME || !process.env.MW_PASSWORD)) {
 		return console.log("Ensure the Twinkle gadget version is disabled. If you provide your credentials as environment variables (either the BotPassword credentials as MW_USERNAME and MW_PASSWORD, or an owner-only OAuth2 consumer token as MW_OAUTH2_TOKEN), we'll try to automatically disable the gadget for you and re-enable it when you're done testing.");
 	}
-	let mwn, user, initTime;
+	let Mwn, user, initTime;
 	try {
-		mwn = require('mwn').mwn;
+		Mwn = require('mwn').Mwn;
 	} catch (_) {
 		return console.error("Failed to load mwn. Please run `npm install` and retry.");
 	}
 	try {
-		user = await mwn.init({
+		user = await Mwn.init({
 			"apiUrl": "https://commons.wikimedia.org/w/api.php",
 			"username": process.env.MW_USERNAME,
 			"password": process.env.MW_PASSWORD,
@@ -69,7 +69,7 @@ server.listen(port, hostname, async () => {
 		});
 		initTime = Date.now();
 	} catch (e) {
-		if (e instanceof mwn.Error) {
+		if (e instanceof Mwn.Error) {
 			console.log(`[mwn]: can't disable twinkle as gadget: login failure: ${e}`);
 			console.log(e.stack);
 		}

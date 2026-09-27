@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Morebits.unbinder', () => {
+describe('Morebits.Unbinder', () => {
 	test('Construction', () => {
 		assert.throws(() => new Morebits.Unbinder(), 'throws: no string');
 		assert.throws(() => new Morebits.Unbinder([42]), 'throws: not a string');

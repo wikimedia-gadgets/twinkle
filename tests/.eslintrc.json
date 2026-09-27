@@ -3,21 +3,22 @@
 		"wikimedia/server"
 	],
 	"env": {
-		"jest": true
+		"jest": true,
+		// Runs in node environment, but a fake browser env is created via JSDOM
+		"browser": true,
+		"jquery": true
 	},
 	"globals": {
 		"assert": "readonly",
-		"document": "readonly",
-		"jQuery": "readonly",
 		"Morebits": "readonly",
 		"mw": "readonly",
-		"Twinkle": "readonly",
-		"window": "readonly"
+		"Twinkle": "readonly"
 	},
 	"root": true,
 	"rules": {
 		"array-bracket-spacing": "off",
 		"computed-property-spacing": "off",
+		"max-len": "off",
 		"no-shadow": "off",
 		"object-curly-spacing": "off",
 		"space-in-parens": "off"

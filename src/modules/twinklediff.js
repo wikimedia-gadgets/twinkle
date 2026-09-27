@@ -47,7 +47,7 @@ Twinkle.diff.evaluate = function twinklediffEvaluate(me) {
 		action: 'query',
 		titles: mw.config.get('wgPageName'),
 		rvlimit: 1,
-		rvprop: [ 'ids', 'user' ],
+		rvprop: ['ids', 'user'],
 		rvstartid: mw.config.get('wgCurRevisionId') - 1, // i.e. not the current one
 		rvuser: user,
 		format: 'json'

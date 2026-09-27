@@ -1,0 +1,442 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 1`] = `
+[
+  {
+    "hideWhenMultiple": true,
+    "label": "Custom rationale (custom deletion reason)",
+    "subgroup": {
+      "label": "Rationale:",
+      "name": "reason_1",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "{{db}} is short for "delete because". At least one of the other deletion criteria must still apply to the page, and you must make mention of this in your rationale. This is not a "catch-all" for when you can't find any criteria that fit.",
+    "value": "reason",
+  },
+]
+`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 2`] = `
+[
+  {
+    "label": "G8: Talk pages with no corresponding subject page",
+    "tooltip": "This excludes any page that is useful to the project - in particular, user talk pages, talk page archives, and talk pages for files that exist on Wikimedia Commons.",
+    "value": "talk",
+  },
+]
+`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 3`] = `
+[
+  {
+    "code": "f1",
+    "label": "F1: Clear copyright violation",
+    "subgroup": [
+      {
+        "label": "URL of the copyvio, including the "http://".  If the copyvio is of a non-internet source and you cannot provide a URL, you must use the deletion rationale box. ",
+        "name": "imgcopyvio_url",
+        "parameter": "source",
+        "size": 60,
+        "type": "input",
+      },
+      {
+        "label": "Deletion rationale for non-internet copyvios: ",
+        "name": "imgcopyvio_rationale",
+        "parameter": "1",
+        "size": 60,
+        "type": "input",
+      },
+    ],
+    "tooltip": "Content is a clear copyright violation, with evidence that no Commons-compatible licensing has been issued by the copyright holder. This does not apply whenever there is a reasonable possibility of discovering that the work is public domain through further research or a plausible argument that it is below the threshold of originality.",
+    "value": "copyvio",
+  },
+  {
+    "code": "f1",
+    "label": "F1: Logo clearly above Threshold of Originality",
+    "tooltip": "Content is a logo clearly above Threshold of Originality, either in the United States or its source country. If plausibly under the threshold of originality, file a Deletion Request instead.",
+    "value": "logo",
+  },
+  {
+    "code": "f2",
+    "label": "F2: Fair use content",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "fairuse_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "Fair use content. Such content is not allowed on Wikimedia Commons and is subjected to speedy deletion.",
+    "value": "fairuse",
+  },
+  {
+    "code": "f3",
+    "label": "F3: Derivative work of non-free content",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "deriv_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "Derivative works based on non-free content (such as screenshots of non-free content). This does not apply to photographs taken in a public place, though the photograph itself remains subject to the other speedy criteria if its authorship is in question. Given the complexity of copyright rules like freedom of panorama and de minimis, it is best for such issues to be resolved in a formal deletion request.",
+    "value": "deriv",
+  },
+  {
+    "code": "f4",
+    "label": "F4: Failed license review",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "lrfailed_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "The file has been reviewed by a License Reviewer (or administrator), who concluded that the recently uploaded content is based on a non-free license, disallowing commercial use and/or derivative works.",
+    "value": "lrfailed",
+  },
+  {
+    "code": "f4",
+    "label": "F4: Volunteer Response Team",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "vrt_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "Files tagged by VRT Reviewers as having insufficient permission, or files tagged with OTRS pending for over 30 days.",
+    "value": "vrt",
+  },
+  {
+    "code": "f6",
+    "label": "F6: License laundering",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "ll_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+      "utparam": "2",
+    },
+    "tooltip": "Content uploaded via license laundering techniques is a copyright violation. Users uploading in such techniques may be subjected to their account being temporarily or permanently blocked.",
+    "value": "ll",
+  },
+  {
+    "code": "f7",
+    "label": "F7: Corrupt, missing, or empty file",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "noimage_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "Empty file pages are subject to speedy deletion, unless they are being used as redirects. The same is true for files that are corrupt or invalid when viewed in full resolution, or are in a disallowed format.",
+    "value": "noimage",
+  },
+  {
+    "code": "f8",
+    "label": "F8: Duplicate file",
+    "subgroup": {
+      "label": "File this is redundant to: ",
+      "name": "duplicate_filename",
+      "parameter": "1",
+      "tooltip": "The "File:" prefix must be left off.",
+      "type": "input",
+    },
+    "tooltip": "Any file that is a redundant copy, in the same file format and same or lower resolution, of something else on Wikimedia Commons.",
+    "value": "duplicate",
+  },
+  {
+    "code": "f9",
+    "label": "F9: Embedded data",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "embeddeddata_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "The file contains additional embedded data in the form of a password protected archive.",
+    "value": "embeddeddata",
+  },
+  {
+    "code": "f10",
+    "label": "F10: Personal photos by non-contributors",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "selfie_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "Low-to-medium quality selfies and other personal images of or by users who have no constructive global contributions.",
+    "value": "selfie",
+  },
+]
+`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 4`] = `undefined`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 5`] = `
+[
+  {
+    "code": "c1",
+    "label": "C1: Improperly named category",
+    "subgroup": {
+      "label": "Name of correctly named category, without the "Category:" prefix: ",
+      "name": "catbadname_name",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "Categories with incorrect names may be speedily deleted after their contents have been moved to a properly named category. If the old category name is also correct, a redirect should be left in place. See [[Commons:Rename a category: Should the old category be deleted?]]",
+    "value": "catbadname",
+  },
+  {
+    "code": "c2",
+    "label": "C2: Empty categories",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "catempty_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "If a category is empty and is obviously unusable, unlikely to be ever meaningfully used, it may be speedily deleted. Don't apply if the page is marked with an explanation of why it should be kept or if the deletion can be controversial, the category was recently unconsensually emptied, etc. Consider redirecting or renaming the category rather than deleting it.",
+    "value": "catempty",
+  },
+  {
+    "code": "g2",
+    "label": "G2: Broken redirects",
+    "tooltip": "This excludes any page that is useful to the project, and in particular: deletion discussions that are not logged elsewhere, user and user talk pages, talk page archives, plausible redirects that can be changed to valid targets, and file pages or talk pages for files that exist on Wikimedia Commons.",
+    "value": "redirnone",
+  },
+]
+`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 6`] = `
+[
+  {
+    "code": "t1",
+    "label": "T1: Recently created duplicate template",
+    "subgroup": {
+      "label": "Explanation. Please include the template that this duplicates here: ",
+      "name": "t1_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "A recently created template that duplicates an existing older template.",
+    "value": "t1",
+  },
+  {
+    "code": "t2",
+    "label": "T2: Unused template",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "t2_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "Unused templates (except maintenance/project templates that are substituted), are subjected to speedy deletion.",
+    "value": "t2",
+  },
+]
+`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 7`] = `
+[
+  {
+    "code": "u1",
+    "hideSubgroupWhenMultiple": true,
+    "label": "U1: User requested deletion in own user space",
+    "subgroup": null,
+    "tooltip": "User requested deletion of their own user page or user-subpage. User pages that are blanked by the user may also be deleted under this criterion.",
+    "value": "userspacereq",
+  },
+  {
+    "code": "u2",
+    "hideWhenRedirect": true,
+    "label": "U2: Nonexistent user",
+    "tooltip": "User space of non-existent user. Redirects may be created (and protected) for those user names of which the account was renamed.",
+    "value": "nouser",
+  },
+  {
+    "code": "u3",
+    "hideWhenRedirect": true,
+    "label": "U3: Inappropriate use of user pages",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "inappuser_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "Inappropriate use of user pages. These include user pages that contain purely advertising or promotional material, or those that are created with the intention of harassment or attack. Those that contain gibberish or unrecognisable content may also be deleted under this criterion.",
+    "value": "inappuserspace",
+  },
+]
+`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 8`] = `
+[
+  {
+    "code": "g1",
+    "hideInNamespaces": [
+      2,
+    ],
+    "label": "G1: Test page, accidental creation, or page containing nonsense or no valid content",
+    "tooltip": "Page contains redundant content that was previously used for testing, was accidentally created, or contains content that is gibberish or of nothing meaningful. This may also include text placed in talk pages (which has no further history) that doesn't help or refer to the related page.",
+    "value": "g1",
+  },
+  {
+    "code": "g2",
+    "label": "G2: Unused and implausible, or broken redirect",
+    "tooltip": "Page is an unused AND implausible redirect, or a redirect that is dependent on deleted or non-existent content. Unused talk page redirects created as a result of a page move and cross-namespace redirects may also be deleted under this criterion.",
+    "value": "redir",
+  },
+  {
+    "code": "g3",
+    "label": "G3: Content intended as vandalism, threat, attack, or hoax",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "vandalism_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "Content that is posted with the intention of vandalizing, or with the intention of threatening, harassing, or attacking another person or user. Users that commit such acts are subjected to their accounts being temporarily or permanently blocked, depending on the severity of the content. Content posted with the intention of creating/spreading hoaxes may also be deleted under this criterion.",
+    "value": "vandalism",
+  },
+  {
+    "code": "g4",
+    "label": "G4: Recreation of material deleted via a deletion discussion",
+    "subgroup": {
+      "label": "Page where the deletion discussion took place: ",
+      "name": "repost_xfd",
+      "parameter": "2",
+      "size": 60,
+      "tooltip": "Must start with "Commons:"",
+      "type": "input",
+    },
+    "tooltip": "Page or file matches content that was previously deleted per community consensus. Repeated recreation of such content may lead to the user's account being blocked. The author or uploader may ask the deleting administrator to restore the file, or file an Undeletion Request.",
+    "value": "repost",
+  },
+  {
+    "code": "g6",
+    "label": "G6: Uncontroversial maintenance",
+    "subgroup": {
+      "label": "Optional explanation. If this is for a move, include the page name for the page to be moved here and the reason. Otherwise, explain why this should be deleted: ",
+      "name": "g6_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "Content temporarily deleted to make way for a page move, or other uncontroversial maintenance tasks that require temporary or permanent deletion (such as history merging or splitting).",
+    "value": "g6",
+  },
+  {
+    "code": "g7",
+    "label": "G7: Author or uploader request deletion of RECENT content",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "author_rationale",
+      "parameter": "2",
+      "size": 60,
+      "tooltip": "Perhaps linking to where the author requested this deletion.",
+      "type": "input",
+    },
+    "tooltip": "Original author or uploader requests deletion of recently created (<7 days) unused content. For author/uploader requests for deletion of content that is older a deletion request should be filed instead. If the author blanks the page, this can also be taken as a deletion request.",
+    "value": "author",
+  },
+  {
+    "code": "g8",
+    "hideSubgroupWhenSysop": true,
+    "label": "G8: Page dependent on deleted or non-existent content",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "g8_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "The page or file depends on content that was deleted or no longer existing, such as orphaned talk pages without useful content, subpages without parent page, and so on. The criterion only applies to content within Wikimedia, and does not apply to external content (i.e., deleted source).",
+    "value": "g8",
+  },
+  {
+    "code": "g10",
+    "label": "G10: Files and pages created as advertisements",
+    "subgroup": {
+      "label": "Optional explanation: ",
+      "name": "advert_rationale",
+      "parameter": "2",
+      "size": 60,
+      "type": "input",
+    },
+    "tooltip": "This includes only content uploaded to promote goods and services when it is clearly not useful for any educational purpose (see Commons:Project scope). Files that illustrate contemporary or historical advertisements do not fall under this criterion.",
+    "value": "advert",
+  },
+  {
+    "code": "g11",
+    "label": "G11: Blatant text copyright violation",
+    "subgroup": [
+      {
+        "label": "Deletion rationale for copyvios. Include the URL or source of the copyvio: ",
+        "name": "textcopyvio_rationale",
+        "parameter": "2",
+        "size": 60,
+        "type": "input",
+      },
+    ],
+    "tooltip": "Page contains copyrighted text from webpages or documents without permission.",
+    "value": "textcopyvio",
+  },
+]
+`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 9`] = `[]`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 10`] = `undefined`;
+
+exports[`modules/twinklespeedy Twinkle.speedy global variables Should match snapshot 11`] = `
+{
+  "advert": "g10",
+  "author": "g7",
+  "catbadname": "c1",
+  "catempty": "c2",
+  "com1": "com1",
+  "copyvio": "f1",
+  "deriv": "f3",
+  "duplicate": "f8",
+  "embeddeddata": "f9",
+  "emptygallery": "ga1",
+  "encyclopediagallery": "ga2",
+  "fairuse": "f2",
+  "g1": "g1",
+  "g6": "g6",
+  "g8": "g8",
+  "hoax": "g3",
+  "inappuserspace": "u3",
+  "ll": "f6",
+  "logo": "f1",
+  "lrfailed": "f4",
+  "noimage": "f7",
+  "nouser": "u2",
+  "reason": "db",
+  "redir": "g2",
+  "redirnone": "g8",
+  "repost": "g4",
+  "selfie": "f10",
+  "t1": "t1",
+  "t2": "t2",
+  "talk": "g8",
+  "textcopyvio": "g11",
+  "userspacereq": "u1",
+  "vandalism": "g3",
+  "vrt": "f4",
+}
+`;

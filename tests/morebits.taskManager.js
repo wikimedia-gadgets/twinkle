@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Morebits.taskManager', () => {
+describe('Morebits.TaskManager', () => {
 	test('Contruction', () => {
 		const tm = new Morebits.TaskManager();
 		assert.true(tm instanceof Morebits.TaskManager, 'Correct instance');

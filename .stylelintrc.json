@@ -1,0 +1,14 @@
+{
+	"extends": [
+		"stylelint-config-wikimedia/support-modern"
+	],
+	"rules": {
+		"@stylistic/function-parentheses-space-inside": "never",
+		"@stylistic/media-feature-parentheses-space-inside": "never",
+		"@stylistic/selector-attribute-brackets-space-inside": "never",
+		"@stylistic/selector-pseudo-class-parentheses-space-inside": "never",
+		"selector-attribute-quotes": "never",
+		"selector-max-id": 1,
+		"declaration-no-important": null
+	}
+}

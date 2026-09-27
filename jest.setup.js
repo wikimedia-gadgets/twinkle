@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-env node, jest */
 
 // Tweak some mw.configs as needed by tests
 mw.config.set({
@@ -6,20 +7,24 @@ mw.config.set({
 	wgUserGroups: ['interface-admin', 'sysop', '*', 'user', 'autoconfirmed']
 });
 
-require('../morebits.js');
-require('../twinkle.js');
+require('./src/morebits.js');
+require('./src/twinkle.js');
+require('./src/modules/twinklespeedy.js');
+// Load this after twinklespeedy.js. Needs to read Twinkle.speedy.data.
+require('./src/modules/twinkleconfig.js');
 global.Morebits = window.Morebits;
 
-global.assert = require('assert');
+const assert = require('assert');
+global.assert = assert;
 
 // Node.js assert doesn't support these functions unlike Qunit assert,
 // so temporarily monkey-patch them
-assert.true = function (arg, message) {
+assert.true = function(arg, message) {
 	if (arg !== true) {
 		throw new Error(message);
 	}
 };
-assert.false = function (arg, message) {
+assert.false = function(arg, message) {
 	if (arg !== false) {
 		throw new Error(message);
 	}

@@ -165,16 +165,18 @@ Twinkle.image.callback.evaluate = function twinkleimageCallbackEvaluate(event) {
 		// No auto-notification, display what was going to be added.
 		const noteData = document.createElement('pre');
 		noteData.appendChild(document.createTextNode('{{subst:di-' + templatename + '-notice|1=File:' + mw.config.get('wgTitle') + '}} ~~~~'));
-		Morebits.Status.info('Notification', [ 'Following/similar data should be posted to the original uploader:', document.createElement('br'), noteData ]);
+		Morebits.Status.info('Notification', ['Following/similar data should be posted to the original uploader:', document.createElement('br'), noteData]);
 	}
 };
 
 Twinkle.image.callbacks = {
 	taggingImage: function(pageobj) {
-		const text = pageobj.getPageText();
+		let text = pageobj.getPageText();
 		const params = pageobj.getCallbackParameters();
 
-		var tag = '';
+		text = Twinkle.removeMoveToCommonsTagsFromWikicode(text);
+
+		let tag = '{{di-' + params.templatename + '|date={{subst:#time:j F Y}}';
 		switch (params.type) {
 			case 'no license':
 				tag = '{{subst:nld}}';

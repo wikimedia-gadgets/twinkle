@@ -63,16 +63,16 @@ Twinkle.defaultConfig = {
 
 	// Rollback
 	autoMenuAfterRollback: false,
-	openTalkPage: [ 'agf', 'norm', 'vand' ],
+	openTalkPage: ['agf', 'norm', 'vand'],
 	openTalkPageOnAutoRevert: false,
 	rollbackInPlace: false,
-	markRevertedPagesAsMinor: [ 'vand' ],
-	watchRevertedPages: [ 'agf', 'norm', 'vand', 'torev' ],
+	markRevertedPagesAsMinor: ['vand'],
+	watchRevertedPages: ['agf', 'norm', 'vand', 'torev'],
 	watchRevertedExpiry: '1 month',
 	offerReasonOnNormalRevert: true,
 	confirmOnRollback: false,
 	confirmOnMobileRollback: true,
-	showRollbackLinks: [ 'diff', 'others' ],
+	showRollbackLinks: ['diff', 'others'],
 
 	// DI (twinkleimage)
 	notifyUserOnDeli: true,
@@ -86,7 +86,7 @@ Twinkle.defaultConfig = {
 
 	// CSD
 	speedySelectionStyle: 'buttonClick',
-	watchSpeedyPages: [ 'g3', 'g5', 'g10', 'g11', 'g12' ],
+	watchSpeedyPages: ['g3', 'g5', 'g10', 'g11', 'g12'],
 	watchSpeedyExpiry: '1 month',
 	markSpeedyPagesAsPatrolled: false,
 	watchSpeedyUser: '1 month',
@@ -130,15 +130,14 @@ Twinkle.defaultConfig = {
 	speedyWindowWidth: 800,
 	logSpeedyNominations: false,
 	speedyLogPageName: 'CSD log',
-	noLogOnSpeedyNomination: [ 'u1' ],
+	noLogOnSpeedyNomination: ['u1'],
 
 	// Unlink
-	unlinkNamespaces: [ '0', '10'],
+	unlinkNamespaces: ['0', '10'],
 
 	// Warn
 	// defaultWarningGroup: '10',
 	// combinedSingletMenus: false,
-	// showSharedIPNotice: true,
 	// watchWarnings: '1 month',
 	// oldSelect: false,
 	// customWarningList: [],
@@ -167,7 +166,6 @@ Twinkle.defaultConfig = {
 
 	// Formerly defaultConfig.friendly:
 	// Tag
-	// groupByDefault: true,
 	// watchTaggedVenues: ['articles', 'drafts', 'redirects', 'files'],
 	// watchTaggedPages: '1 month',
 	// watchMergeDiscussions: '1 month',
@@ -178,14 +176,20 @@ Twinkle.defaultConfig = {
 	// customFileTagList: [],
 	// customRedirectTagList: [],
 
-	// Talkback
-	// markTalkbackAsMinor: true,
-	// insertTalkbackSignature: true,  // always sign talkback templates
-	// talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
-	// mailHeading: "You've got mail!",
+	// Welcome
+	// topWelcomes: false,
+	// watchWelcomes: '3 months',
+	// insertUsername: true,
+	// quickWelcomeMode: 'norm',
+	// quickWelcomeTemplate: 'welcome',
+	// customWelcomeList: [],
+	// customWelcomeSignature: true,
 
-	// Shared
-	// markSharedIPAsMinor: true
+	// Talkback
+	// markTalkbackAsMinor: false,
+	// insertTalkbackSignature: true, // always sign talkback templates
+	// talkbackHeading: 'New message from ' + mw.config.get('wgUserName'),
+	// mailHeading: "You've got mail!"
 };
 
 Twinkle.getPref = function twinkleGetPref(name) {
@@ -272,7 +276,7 @@ Twinkle.addPortlet = function() {
 		$('#p-twinkle').insertAfter('#p-cactions');
 	} else if (mw.config.get('skin') === 'vector-2022') {
 		const $landmark = $('#right-navigation > .vector-page-tools-landmark');
-		$('#p-twinkle-dropdown').insertAfter($landmark);
+		$('#p-twinkle-dropdown').insertBefore($landmark);
 
 		// .vector-page-tools-landmark is unstable and could change. If so, log it to console, to hopefully get someone's attention.
 		if (!$landmark) {
@@ -286,7 +290,7 @@ Twinkle.addPortlet = function() {
 /**
  * Builds a portlet menu if it doesn't exist yet, and adds a portlet link. This function runs at the top of every Twinkle module, ensuring that the first module to be loaded adds the portlet, and that every module can add a link to itself to the portlet.
  *
- * @param task Either a URL for the portlet link or a function to execute.
+ * @param {string|Function} task Either a URL for the portlet link or a function to execute.
  */
 Twinkle.addPortletLink = function(task, text, id, tooltip) {
 	// Create a portlet to hold all the portlet links (if not created already). And get the portletId.
@@ -319,21 +323,11 @@ Twinkle.addPortletLink = function(task, text, id, tooltip) {
  * **************** General initialization code ****************
  */
 
-const scriptpathbefore = mw.util.wikiScript('index') + '?title=',
-	scriptpathafter = '&action=raw&ctype=text/javascript&happy=yes';
-
 // Retrieve the user's Twinkle preferences
-$.ajax({
-	url: scriptpathbefore + 'User:' + encodeURIComponent(mw.config.get('wgUserName')) + '/twinkleoptions.js' + scriptpathafter,
-	dataType: 'text'
-})
-	.fail(() => {
-		console.log('Could not load your Twinkle preferences, resorting to default preferences'); // eslint-disable-line no-console
-	})
-	.done((optionsText) => {
-
-		// Quick pass if user has no options
-		if (optionsText === '') {
+Morebits.wiki.getCachedPage(`User:${mw.config.get('wgUserName')}/twinkleoptions.js`)
+	.then((optionsText) => {
+		if (!optionsText) {
+			// User has no options
 			return;
 		}
 
@@ -360,6 +354,9 @@ $.ajax({
 			mw.notify('Could not parse your Twinkle preferences', {type: 'error'});
 		}
 	})
+	.catch(() => {
+		console.log('Could not load your Twinkle preferences, resorting to default preferences'); // eslint-disable-line no-console
+	})
 	.always(() => {
 		$(Twinkle.load);
 	});
@@ -367,12 +364,12 @@ $.ajax({
 // Developers: you can import custom Twinkle modules here
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
-Twinkle.load = function () {
+Twinkle.load = function() {
 	// Don't activate on special pages other than those listed here, so
 	// that others load faster, especially the watchlist.
-	let activeSpecialPageList = [ 'Block', 'Contributions', 'Recentchanges', 'Recentchangeslinked' ]; // wgRelevantUserName defined for non-sysops on Special:Block
+	let activeSpecialPageList = ['Block', 'Contributions', 'IPContributions', 'Recentchanges', 'Recentchangeslinked']; // wgRelevantUserName defined for non-sysops on Special:Block
 	if (Morebits.userIsSysop) {
-		activeSpecialPageList = activeSpecialPageList.concat([ 'DeletedContributions', 'Prefixindex' ]);
+		activeSpecialPageList = activeSpecialPageList.concat(['DeletedContributions', 'Prefixindex']);
 	}
 	if (mw.config.get('wgNamespaceNumber') === -1 &&
 		!activeSpecialPageList.includes(mw.config.get('wgCanonicalSpecialPageName'))) {
@@ -440,7 +437,7 @@ Twinkle.hatnoteRegex = 'short description|hatnote|main|correct title|dablink|dis
 /**
  * When performing rollbacks with [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method gets a prefill, either from URL parameters (e.g. &vanarticle=Test) or from data previously stored using Twinkle.setPrefill()
  */
-Twinkle.getPrefill = function (key) {
+Twinkle.getPrefill = function(key) {
 	Twinkle.prefill = Twinkle.prefill || {};
 	if (!Object.prototype.hasOwnProperty.call(Twinkle.prefill, key)) {
 		Twinkle.prefill[key] = mw.util.getParamValue(key);
@@ -451,7 +448,7 @@ Twinkle.getPrefill = function (key) {
 /**
  * When performing rollbacks with [rollback] links, then visiting a user talk page, some data such as page name can be prefilled into Wel/AIV/Warn. Twinkle calls this a "prefill". This method sets a prefill. This data will be lost if the page is refreshed, unless it is added to the URL as a parameter.
  */
-Twinkle.setPrefill = function (key, value) {
+Twinkle.setPrefill = function(key, value) {
 	Twinkle.prefill = Twinkle.prefill || {};
 	Twinkle.prefill[key] = value;
 };
@@ -486,7 +483,7 @@ Twinkle.sortByNamespace = function(first, second) {
 /**
  * Used in batch listings to link to the page in question with >
  */
-Twinkle.generateArrowLinks = function (checkbox) {
+Twinkle.generateArrowLinks = function(checkbox) {
 	const link = Morebits.htmlNode('a', ' >');
 	link.setAttribute('class', 'tw-arrowpage-link');
 	link.setAttribute('href', mw.util.getUrl(checkbox.value));
@@ -497,7 +494,7 @@ Twinkle.generateArrowLinks = function (checkbox) {
 /**
  * Used in deprod and unlink listings to link the page title
  */
-Twinkle.generateBatchPageLinks = function (checkbox) {
+Twinkle.generateBatchPageLinks = function(checkbox) {
 	const $checkbox = $(checkbox);
 	const link = Morebits.htmlNode('a', $checkbox.val());
 	link.setAttribute('class', 'tw-batchpage-link');
@@ -505,6 +502,11 @@ Twinkle.generateBatchPageLinks = function (checkbox) {
 	link.setAttribute('target', '_blank');
 	$checkbox.next().prepend([link, ' ']);
 };
+
+/**
+ * remove "move to Commons" tag - deletion-tagged files cannot be moved to Commons
+ */
+Twinkle.removeMoveToCommonsTagsFromWikicode = (wikicode) => wikicode.replace(/\{\{(mtc|(copy |move )?to ?commons|move to wikimedia commons|copy to wikimedia commons)(?!( in))[^}]*\}\}/gi, '');
 
 }());
 
