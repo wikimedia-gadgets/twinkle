@@ -693,6 +693,11 @@ Twinkle.speedy.data = [
 						label: 'Implausible or nonsensical references',
 						value: 'implausible',
 						tooltip: 'The page contains implausible non-existent or otherwise nonsensical references.'
+					},
+					{
+						label: 'Technical indicators',
+						value: 'technical',
+						tooltip: 'The page contains technical indicators such as model-specific citation bugs, or the presence of "```wiki" markdown code blocks'
 					}
 				]
 			},
