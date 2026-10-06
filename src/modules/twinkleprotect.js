@@ -817,7 +817,7 @@ Twinkle.protect.protectionPresetsInfo = {
 		edit: 'extendedconfirmed',
 		move: 'extendedconfirmed',
 		expiry: 'infinity',
-		reason: '[[WP:30/500|Arbitration enforcement]]',
+		reason: '[[WP:ARBECR|Arbitration enforcement]]',
 		template: 'pp-extended'
 	},
 	'pp-30-500-vandalism': {
