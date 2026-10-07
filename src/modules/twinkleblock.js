@@ -352,6 +352,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 	// field will linger. No need to keep the old value around, so just
 	// remove it; saves trouble when hiding/evaluating
 	$form.find('[name=dstopic]').parent().remove();
+	$form.find('[name=ticket]').parent().remove();
 
 	Twinkle.block.callback.saveFieldset($('[name=field_block_options]'));
 	Twinkle.block.callback.saveFieldset($('[name=field_template_options]'));
@@ -564,6 +565,17 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 		tooltip: 'If selected, it will inform the template and may be added to the blocking message',
 		event: Twinkle.block.callback.toggle_ds_reason
 	};
+
+	// DS selection visible in either the template field set or preset,
+	// joint settings saved here
+	const vrtTicketSettings = {
+		type: 'input',
+		name: 'ticket',
+		label: 'COIVRT ticket',
+		value: '',
+		tooltip: 'If entered, it will mark the block as a COIVRT block',
+		event: Twinkle.block.callback.toggle_vrt_reason
+	};
 	if (templateBox) {
 		fieldTemplateOptions = new Morebits.QuickForm.Element({ type: 'field', label: 'Template options', name: 'field_template_options' });
 		fieldTemplateOptions.append({
@@ -577,6 +589,9 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 
 		// Only visible for aeblock and aepblock, toggled in change_template
 		fieldTemplateOptions.append(dsSelectSettings);
+
+		// Only visible for upeblock, toggled in change_template
+		fieldTemplateOptions.append(vrtTicketSettings);
 
 		fieldTemplateOptions.append({
 			type: 'input',
@@ -1570,6 +1585,7 @@ Twinkle.block.callback.change_preset = function twinkleblockCallbackChangePreset
 		Twinkle.block.callback.change_template(e);
 	} else {
 		Morebits.QuickForm.setElementVisibility(form.dstopic.parentNode, key === 'uw-aeblock' || key === 'uw-aepblock');
+		Morebits.QuickForm.setElementVisibility(form.ticket.parentNode, key === 'uw-upeblock');
 	}
 };
 
@@ -1628,6 +1644,18 @@ Twinkle.block.callback.toggle_ds_reason = function twinkleblockCallbackToggleDSR
 			this.form.reason.value = reason + ' ([[' + Twinkle.block.dsReason + ']])';
 		}
 	});
+};
+
+Twinkle.block.callback.toggle_vrt_reason = function twinkleblockCallbackToggleVRTReason() {
+	const reason = this.form.reason.value.replace(
+		/ ?\(\[\[WP:COIVRT\|COIVRT\]\] ticket \[\[ticket:[\w\d]+\|[\w\d]+\]\]\)/, ''
+	);
+
+	if (!this.value) {
+		this.form.reason.value = reason;
+	} else {
+		this.form.reason.value = reason + ' ([[WP:COIVRT|COIVRT]] ticket [[ticket:' + this.value.trim() + '|' + this.value.trim() + ']])';
+	}
 };
 
 Twinkle.block.callback.update_form = function twinkleblockCallbackUpdateForm(e, data) {
@@ -1746,6 +1774,7 @@ Twinkle.block.callback.change_template = function twinkleblockcallbackChangeTemp
 	}
 
 	Morebits.QuickForm.setElementVisibility(form.dstopic.parentNode, value === 'uw-aeblock' || value === 'uw-aepblock');
+	Morebits.QuickForm.setElementVisibility(form.ticket.parentNode, value === 'uw-upeblock');
 
 	// Only particularly relevant if template form is present
 	Morebits.QuickForm.setElementVisibility(form.article.parentNode, settings && !!settings.pageParam);
@@ -1769,6 +1798,7 @@ Twinkle.block.callback.preview = function twinkleblockcallbackPreview(form) {
 		reason: form.block_reason.value,
 		template: form.template.value,
 		dstopic: form.dstopic.value,
+		ticket: form.ticket.value,
 		partial: $(form).find('[name=actiontype][value=partial]').is(':checked'),
 		pagerestrictions: $(form.pagerestrictions).val() || [],
 		namespacerestrictions: $(form.namespacerestrictions).val() || [],
@@ -1996,6 +2026,9 @@ Twinkle.block.callback.getBlockNoticeWikitext = function(params) {
 		}
 		if (params.dstopic) {
 			text += '|topic=' + params.dstopic;
+		}
+		if (params.ticket) {
+			text += '|ticket=' + params.ticket;
 		}
 
 		if (!/te?mp|^\s*$|min/.exec(params.expiry)) {
