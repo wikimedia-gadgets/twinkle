@@ -1125,6 +1125,14 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Making [[WP:No legal threats|legal threats]]',
 		summary: 'You have been blocked from editing for making [[WP:NLT|legal threats or taking legal action]]'
 	},
+	'uw-llmblock': {
+		autoblock: true,
+		expiry: 'infinity',
+		nocreate: true,
+		pageParam: true,
+		reason: 'Repeatedly misusing a [[WP:Disruptive editing#Persistent LLM use|large language model]]',
+		summary: 'You have been blocked from editing for repeatedly misusing a [[WP:Disruptive editing#Persistent LLM use|large language model]]'
+	},
 	'uw-nothereblock': {
 		autoblock: true,
 		expiry: 'infinity',
@@ -1349,6 +1357,15 @@ Twinkle.block.blockPresetsInfo = {
 		reason: '[[WP:Edit warring|Edit warring]]',
 		summary: 'You have been [[WP:PB|partially blocked]] from editing certain areas of the encyclopedia to prevent further [[WP:DE|disruption]] due to [[WP:EW|edit warring]]'
 	},
+	'uw-llmpblock': {
+		autoblock: true,
+		expiry: 'infinity',
+		nocreate: true,
+		pageParam: true,
+		reasonParam: true,
+		reason: 'Repeatedly misusing a [[WP:Disruptive editing#Persistent LLM use|large language model]]',
+		summary: 'You have been blocked from editing for repeatedly misusing a [[WP:Disruptive editing#Persistent LLM use|large language model]]'
+	},
 	'uw-pblock': {
 		autoblock: true,
 		expiry: '24 hours',
@@ -1421,6 +1438,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Generic block with talk page access revoked', value: 'uw-blocknotalk' },
 			{ label: 'Harassment', value: 'uw-hblock' },
 			{ label: 'Legal threats', value: 'uw-lblock' },
+			{ label: 'LLM misuse', value: 'uw-llmblock' },
 			{ label: 'Personal attacks or harassment', value: 'uw-pablock' },
 			{ label: 'Possible compromised account', value: 'uw-compblock' },
 			{ label: 'Removal of content', value: 'uw-dblock' },
@@ -1482,6 +1500,7 @@ Twinkle.block.blockGroupsPartial = [
 		list: [
 			{ label: 'Arbitration enforcement', value: 'uw-aepblock' },
 			{ label: 'Email harassment', value: 'uw-epblock' },
+			{ label: 'LLM misuse', value: 'uw-llmpblock' },
 			{ label: 'Misusing multiple accounts', value: 'uw-acpblock' },
 			{ label: 'Misusing multiple accounts – indefinite', value: 'uw-acpblockindef' }
 		]
