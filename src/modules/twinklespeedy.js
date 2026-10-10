@@ -1317,7 +1317,7 @@ Twinkle.speedy.callbacks = {
 		api.post();
 	},
 
-	noteToCreator: function(pageobj) {
+	noteToCreator: async function(pageobj) {
 		const params = pageobj.getCallbackParameters();
 		let initialContrib = pageobj.getCreator();
 
@@ -1342,7 +1342,8 @@ Twinkle.speedy.callbacks = {
 			initialContrib = null;
 		}
 
-		if (initialContrib) {
+		// TODO: allow opting out of specific CSD criteria
+		if (initialContrib && !await Twinkle.hasUserOptedOutOfNotice(initialContrib, ['csd'])) {
 			const usertalkpage = new Morebits.wiki.Page('User talk:' + initialContrib, 'Notifying initial contributor (' + initialContrib + ')');
 			let notifytext, i, editsummary;
 
