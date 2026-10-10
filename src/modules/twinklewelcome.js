@@ -504,7 +504,7 @@ Twinkle.welcome.templates = {
 			},
 			'welcome-uk': {
 				description: 'welcome for users with an apparent interest in Ukraine topics',
-				syntax: '{{subst:welcome-uk}} ~~~~'
+				syntax: '{{subst:welcome-ua}} ~~~~'
 			},
 			'welcome-roads': {
 				description: 'welcome for users with an apparent interest in roads and highways topics',
