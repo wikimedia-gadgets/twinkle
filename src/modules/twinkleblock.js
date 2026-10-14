@@ -426,6 +426,44 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 					ns.append({ type: 'option', label: name, value: number });
 				}
 			});
+			const partialblockoptions = [{
+				checked: Twinkle.block.field_block_options.create,
+				label: 'Creating pages',
+				name: 'create',
+				value: '1',
+				tooltip: 'Creating new pages and uploading new files'
+			},
+			{
+				checked: Twinkle.block.field_block_options.move,
+				label: 'Moving pages and files',
+				name: 'move',
+				value: '1'
+			},
+			{
+				checked: Twinkle.block.field_block_options.thanks,
+				label: 'Sending thanks',
+				name: 'thanks',
+				value: '1'
+			},
+			{
+				checked: Twinkle.block.field_block_options.upload,
+				label: 'Uploading files',
+				name: 'upload',
+				value: '1',
+				tooltip: 'Uploading files (including overwriting files)'
+			}];
+			const pbo = fieldBlockOptions.append({
+				type: 'div',
+				name: 'partialblockoptions_label',
+				label: 'Also block from:',
+				style: 'margin-bottom:5px;'
+			});
+			pbo.append({
+				type: 'checkbox',
+				name: 'partialblockoptions',
+				style: 'display:flex; gap:5px',
+				list: partialblockoptions
+			});
 		}
 
 		const blockoptions = [
@@ -1807,9 +1845,11 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 	}
 	templateoptions.pagerestrictions = $form.find('[name=pagerestrictions]').val() || [];
 	templateoptions.namespacerestrictions = $form.find('[name=namespacerestrictions]').val() || [];
+
 	// Format for API here rather than in saveFieldset
 	blockoptions.pagerestrictions = templateoptions.pagerestrictions.join('|');
 	blockoptions.namespacerestrictions = templateoptions.namespacerestrictions.join('|');
+	blockoptions.actionrestrictions = ['create', 'move', 'thanks', 'upload'].filter((option) => Twinkle.block.field_block_options[option]).join('|');
 
 	// use block settings as warn options where not supplied
 	templateoptions.summary = templateoptions.summary || blockoptions.reason;
@@ -1820,9 +1860,9 @@ Twinkle.block.callback.evaluate = function twinkleblockCallbackEvaluate(e) {
 			if (blockoptions.disabletalk && !blockoptions.namespacerestrictions.includes('3')) {
 				return alert('Partial blocks cannot prevent talk page access unless also restricting them from editing User talk space!');
 			}
-			if (!blockoptions.namespacerestrictions && !blockoptions.pagerestrictions) {
+			if (!blockoptions.namespacerestrictions && !blockoptions.pagerestrictions && !blockoptions.actionrestrictions) {
 				if (!blockoptions.noemail && !blockoptions.nocreate) { // Blank entries technically allowed [[phab:T208645]]
-					return alert('No pages or namespaces were selected, nor were email or account creation restrictions applied; please select at least one option to apply a partial block!');
+					return alert('No pages or namespaces were selected, nor were additional restrictions applied; please select at least one option to apply a partial block!');
 				} else if ((templateoptions.template !== 'uw-epblock' || $form.find('select[name="preset"]').val() !== 'uw-epblock') &&
 					// Don't require confirmation if email harassment defaults are set
 					!confirm('You are about to block with no restrictions on page or namespace editing, are you sure you want to proceed?')) {
