@@ -15,7 +15,7 @@
 		"chalk": "^4.1.2",
 		"commander": "^14.0.0",
 		"diff": "^8.0.2",
-		"eslint-config-wikimedia": "^0.32.2",
+		"eslint-config-wikimedia": "^0.32.6",
 		"fs-extra": "^11.3.0",
 		"jest": "^29.7.0",
 		"jest-environment-jsdom": "^29.7.0",
@@ -23,6 +23,6 @@
 		"mwn": "^3.0.1",
 		"simple-git": "^3.28.0",
 		"stylelint": "^17.0.0",
-		"stylelint-config-wikimedia": "^0.18.0"
+		"stylelint-config-wikimedia": "^0.19.4"
 	}
 }

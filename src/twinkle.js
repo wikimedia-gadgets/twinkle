@@ -145,7 +145,6 @@ Twinkle.defaultConfig = {
 	protectionSummaryAd: ' ([[WP:TW|TW]])',
 
 	// Tag
-	groupByDefault: true,
 	watchTaggedVenues: ['articles', 'drafts', 'redirects', 'files'],
 	watchTaggedPages: '1 month',
 	watchMergeDiscussions: '1 month',

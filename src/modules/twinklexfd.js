@@ -1321,6 +1321,7 @@ Twinkle.xfd.callbacks = {
 
 			pageobj.setEditSummary('Nominated for merging; see [[:' + params.discussionpage + ']].');
 			pageobj.setCreateOption('nocreate');
+			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.save();
 		},
 		generateArticleTagWikitext: function(noinclude, outcome, afdtarget, number) {
@@ -2002,6 +2003,7 @@ Twinkle.xfd.callbacks = {
 			pageobj.setChangeTags(Twinkle.changeTags);
 			pageobj.setWatchlist(Twinkle.getPref('xfdWatchDiscussion'));
 			pageobj.setCreateOption('recreate');
+			pageobj.setDiscussionToolsAutoSubscribe(false);
 			pageobj.save(() => {
 				Twinkle.xfd.currentRationale = null; // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
 			});

@@ -600,11 +600,6 @@ Twinkle.config.sections = [
 				type: 'boolean'
 			},
 			{
-				name: 'groupByDefault',
-				label: 'Check the "group into {{multiple issues}}" box by default',
-				type: 'boolean'
-			},
-			{
 				name: 'tagArticleSortOrder',
 				label: 'Default view order for article tags',
 				type: 'enum',
