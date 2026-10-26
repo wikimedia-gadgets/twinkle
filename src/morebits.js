@@ -6023,21 +6023,4 @@ Morebits.wikitext.page = Morebits.wikitext.Page;
 
 }());
 
-/**
- * If this script is being executed outside a ResourceLoader context, we add some
- * global assignments for legacy scripts, hopefully these can be removed down the line.
- *
- * IMPORTANT NOTE:
- * PLEASE DO NOT USE THESE ALIASES IN NEW CODE!
- * Thanks.
- */
-
-if (typeof arguments === 'undefined') { // typeof is here for a reason...
-	/* global Morebits */
-	window.SimpleWindow = Morebits.SimpleWindow;
-	window.QuickForm = Morebits.QuickForm;
-	window.Wikipedia = Morebits.wiki;
-	window.Status = Morebits.Status;
-}
-
 // </nowiki>
