@@ -24,7 +24,10 @@ Twinkle.speedy = function twinklespeedy() {
 		return;
 	}
 
+	mw.loader.load('codex-styles');
+
 	Twinkle.addPortletLink(Twinkle.speedy.callback, 'CSD', 'tw-csd', Morebits.userIsSysop ? 'Delete page according to WP:CSD' : 'Request speedy deletion according to WP:CSD');
+	Twinkle.speedy.addButton();
 };
 
 Twinkle.speedy.data = [
@@ -996,6 +999,156 @@ Twinkle.speedy.initDialog = function twinklespeedyInitDialog(callbackfunc) {
 
 	// Check for prior deletions.  Just once, upon init
 	Twinkle.speedy.callback.priorDeletionCount();
+};
+
+// Fast-track deletion without form
+Twinkle.speedy.instantDelete = function twinklespeedyInstantDelete() {
+	// check if CSD is already on the page and fill in custom rationale
+	if (!Twinkle.speedy.hasCSD) {
+		return;
+	}
+
+	const csdReason = decodeURIComponent($('#delete-reason').text()).replace(/\+/g, ' ');
+
+	// These three consts are literally copying what is returned by the default params
+	// This is not optimal at all, and if we could scan the CSD code instead of making it an ugly custom thing
+	// I'd be all for it
+	const values = ['reason'];
+
+	const templateParams = [[]];
+	templateParams[0][1] = csdReason;
+
+	const normalizeds = values.map((value) => Twinkle.speedy.normalizeHash[value]);
+
+	// analyse each criterion to determine whether to watch the page, prompt for summary, or notify the creator
+	let watchPage, promptForSummary;
+	normalizeds.forEach((norm) => {
+		if (Twinkle.getPref('watchSpeedyPages').includes(norm)) {
+			watchPage = Twinkle.getPref('watchSpeedyExpiry');
+		}
+		if (Twinkle.getPref('promptForSpeedyDeletionSummary').includes(norm)) {
+			promptForSummary = true;
+		}
+	});
+
+	const warnusertalk = !Twinkle.speedy.hasCSD && normalizeds.some((norm, index) => Twinkle.getPref('warnUserOnSpeedyDelete').includes(norm) &&
+			!(norm === 'g6' && values[index] !== 'copypaste') && !(norm === 'g5' && values[index] !== 'gs'));
+
+	const welcomeuser = warnusertalk && normalizeds.some((norm) => Twinkle.getPref('welcomeUserOnSpeedyDeletionNotification').includes(norm));
+
+	const params = {
+		values: values,
+		normalizeds: normalizeds,
+		watch: watchPage,
+		deleteTalkPage: Twinkle.getPref('deleteTalkPageOnDelete'),
+		deleteRedirects: Twinkle.getPref('deleteRedirectsOnDelete'),
+		warnUser: warnusertalk,
+		welcomeuser: welcomeuser,
+		promptForSummary: promptForSummary,
+		templateParams: templateParams
+	};
+
+	Twinkle.speedy.callbacks.sysop.main(params);
+};
+
+Twinkle.speedy.instantDecline = function twinklespeedyInstantDecline() {
+	const wikipediaPage = new Morebits.wiki.Page(mw.config.get('wgPageName'), 'Tagging page');
+	wikipediaPage.load(Twinkle.speedy.instantDecline.main);
+};
+
+Twinkle.speedy.instantDecline.main = function twinklespeedyInstantDeclineMain(pageObj) {
+	// finds the db template
+	const text = pageObj.getPageText();
+	const tag = /(?:\{\{\s*(db|delete|db-.*?|speedy deletion-.*?)(?:\s*\||\s*\}\}))/.exec(text)[1];
+	let wikitextObj = new Morebits.wikitext.page(text);
+
+	// and then removes it
+	wikitextObj.removeTemplate(tag);
+
+	if (wikitextObj.getText()[0] === '\n') {
+		wikitextObj = new Morebits.wikitext.page(wikitextObj.getText().slice(1));
+	}
+
+	pageObj.setPageText(wikitextObj.getText());
+
+	const splitTag = tag.split(/-(.*)/).length > 1 ? tag.split(/-(.*)/)[1] : tag;
+
+	if (splitTag in Twinkle.speedy.normalizeHash) {
+		if (Twinkle.speedy.normalizeHash[splitTag] === 'db') {
+				pageObj.setEditSummary('Declining speedy deletion (no code provided).');
+		} else {
+				pageObj.setEditSummary('Declining speedy deletion ([[WP:CSD#' + Twinkle.speedy.normalizeHash[splitTag].toUpperCase() + '|CSD ' + Twinkle.speedy.normalizeHash[splitTag].toUpperCase() + ']]).');
+		}
+	} else {
+		pageObj.setEditSummary('Declining speedy deletion (multiple criteria).');
+	}
+	pageObj.setChangeTags(Twinkle.changeTags);
+	pageObj.save(window.location.reload.bind(window.location));
+};
+
+Twinkle.speedy.createCodexButton = function twinkleSpeedyCreateCodexButton({ label, action = 'neutral', weight = 'normal', size = 'medium', onClick }) {
+	const button = document.createElement('button');
+	button.classList.add('cdx-button');
+
+	// Action classes
+	if (action !== 'neutral') {
+		button.classList.add(`cdx-button--action-${action}`);
+	}
+
+	// Weight classes
+	if (weight !== 'normal') {
+		button.classList.add(`cdx-button--weight-${weight}`);
+	}
+
+	// Size classes
+	if (size !== 'medium') {
+		button.classList.add(`cdx-button--size-${size}`);
+	}
+
+	button.textContent = label;
+
+	if (typeof onClick === 'function') {
+		button.addEventListener('click', onClick);
+	}
+
+	return button;
+};
+
+// Adds a quick "Delete" button to a speedy deletion template
+Twinkle.speedy.addButton = function twinklespeedyAddButton() {
+	if (!Morebits.userIsSysop) {
+		return;
+	}
+
+	const buttonNodes = {
+		delete: Twinkle.speedy.createCodexButton( { label: 'Delete', action: 'destructive', weight: 'primary', size: 'medium', onClick: Twinkle.speedy.instantDelete } ),
+		decline: Twinkle.speedy.createCodexButton( { label: 'Decline', action: 'neutral', weight: 'normal', size: 'medium', onClick: Twinkle.speedy.instantDecline } )
+	};
+
+	const buttonContainer = document.createElement('div');
+	buttonContainer.style.display = 'flex';
+	buttonContainer.style.gap = '1em';
+	buttonContainer.style.justifyContent = 'center';
+
+	// Append the buttons to the container
+	buttonContainer.appendChild(buttonNodes.delete);
+	buttonContainer.appendChild(buttonNodes.decline);
+
+	const contestButton = document.querySelector(
+		'table.ambox-speedy form[name="commentbox"].mw-inputbox-form-inline'
+	);
+
+	if (contestButton) {
+		// Replace the "Contest this deletion" link if it exists
+		contestButton.replaceWith(buttonContainer);
+	} else {
+		// Otherwise, add it at the end of the template notice
+		const notice = document.querySelector('table.ambox-speedy div.mbox-text-span');
+		if (notice) {
+			notice.appendChild(document.createTextNode(' ')); // space separator
+			notice.appendChild(buttonContainer);
+		}
+	}
 };
 
 Twinkle.speedy.callback.modeChanged = function twinklespeedyCallbackModeChanged(form) {
