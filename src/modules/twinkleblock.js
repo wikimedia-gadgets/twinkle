@@ -978,7 +978,7 @@ Twinkle.block.blockPresetsInfo = {
 		autoblock: false,
 		nocreate: false,
 		pageParam: true,
-		reason: 'Editing disruptively without an account',
+		reason: 'Disruptive editing using multiple temporary accounts',
 		summary: 'You are required to [[Special:CreateAccount|create an account]] before continuing to edit'
 	},
 	'uw-ablock': {
@@ -1454,10 +1454,10 @@ Twinkle.block.blockGroups = [
 			{ label: 'Social networking', value: 'uw-socialmediablock' },
 			{ label: 'Spam', value: 'uw-sblock' },
 			{ label: 'Spam/advertising-only account', value: 'uw-soablock' },
+			{ label: 'Disruptive editing using multiple temporary accounts', value: 'uw-tablock' },
 			{ label: 'Unapproved bot', value: 'uw-botblock' },
 			{ label: 'Undisclosed paid editing', value: 'uw-upeblock' },
-			{ label: 'Violating the three-revert rule', value: 'uw-3block' },
-			{ label: 'Required to create an account', value: 'uw-tablock' }
+			{ label: 'Violating the three-revert rule', value: 'uw-3block' }
 		]
 	},
 	{
