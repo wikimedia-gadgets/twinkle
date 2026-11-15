@@ -1440,6 +1440,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
 			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
+			{ label: 'Disruptive editing using multiple temporary accounts', value: 'uw-tablock' },
 			{ label: 'Edit filter-related', value: 'uw-efblock' },
 			{ label: 'Edit warring', value: 'uw-ewblock' },
 			{ label: 'Generic block with talk page access revoked', value: 'uw-blocknotalk' },
@@ -1454,7 +1455,6 @@ Twinkle.block.blockGroups = [
 			{ label: 'Social networking', value: 'uw-socialmediablock' },
 			{ label: 'Spam', value: 'uw-sblock' },
 			{ label: 'Spam/advertising-only account', value: 'uw-soablock' },
-			{ label: 'Disruptive editing using multiple temporary accounts', value: 'uw-tablock' },
 			{ label: 'Unapproved bot', value: 'uw-botblock' },
 			{ label: 'Undisclosed paid editing', value: 'uw-upeblock' },
 			{ label: 'Violating the three-revert rule', value: 'uw-3block' }
