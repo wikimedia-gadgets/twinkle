@@ -578,6 +578,8 @@ Twinkle.arv.callback.evaluate = function(e) {
 				return;
 			}
 
+			reportData.sockmaster = reportData.sockmaster.replace(/^User:/, '');
+
 			Morebits.SimpleWindow.setButtonsEnabled(false);
 			Morebits.Status.init(form);
 
