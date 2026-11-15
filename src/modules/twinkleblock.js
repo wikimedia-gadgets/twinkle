@@ -1389,8 +1389,7 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: true,
 		summary: 'You have been indefinitely [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
-	},
-	
+	}
 };
 
 Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets() {
@@ -1457,7 +1456,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Spam/advertising-only account', value: 'uw-soablock' },
 			{ label: 'Unapproved bot', value: 'uw-botblock' },
 			{ label: 'Undisclosed paid editing', value: 'uw-upeblock' },
-			{ label: 'Violating the three-revert rule', value: 'uw-3block' }
+			{ label: 'Violating the three-revert rule', value: 'uw-3block' },
 			{ label: 'Required to create an account', value: 'uw-tablock' }
 		]
 	},
