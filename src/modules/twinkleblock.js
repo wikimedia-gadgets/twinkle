@@ -976,7 +976,7 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'uw-tablock': {
 		autoblock: false,
-		expiry: 'infinite',
+		expiry: 'indefinite',
 		forTempAccountsOnly: true,
 		nocreate: false,
 		pageParam: true,
