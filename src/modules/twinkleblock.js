@@ -974,6 +974,13 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Violation of the [[WP:Three-revert rule|three-revert rule]]',
 		summary: 'You have been blocked from editing for violation of the [[WP:3RR|three-revert rule]]'
 	},
+	'uw-tablock': {
+		autoblock: false,
+		nocreate: false,
+		pageParam: true,
+		reason: 'Editing disruptively without an account',
+		summary: 'You are required to [[Special:CreateAccount|create an account]] before continuing to edit'
+	},
 	'uw-ablock': {
 		autoblock: true,
 		expiry: '31 hours',
@@ -1382,7 +1389,8 @@ Twinkle.block.blockPresetsInfo = {
 		pageParam: false,
 		reasonParam: true,
 		summary: 'You have been indefinitely [[WP:PB|partially blocked]] from certain areas of the encyclopedia'
-	}
+	},
+	
 };
 
 Twinkle.block.transformBlockPresets = function twinkleblockTransformBlockPresets() {
@@ -1450,6 +1458,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'Unapproved bot', value: 'uw-botblock' },
 			{ label: 'Undisclosed paid editing', value: 'uw-upeblock' },
 			{ label: 'Violating the three-revert rule', value: 'uw-3block' }
+			{ label: 'Required to create an account', value: 'uw-tablock' }
 		]
 	},
 	{
