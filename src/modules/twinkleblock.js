@@ -974,6 +974,15 @@ Twinkle.block.blockPresetsInfo = {
 		reason: 'Violation of the [[WP:Three-revert rule|three-revert rule]]',
 		summary: 'You have been blocked from editing for violation of the [[WP:3RR|three-revert rule]]'
 	},
+	'uw-tablock': {
+		autoblock: false,
+		expiry: 'infinity',
+		forTempAccountsOnly: true,
+		nocreate: false,
+		pageParam: true,
+		reason: 'Disruptive editing using multiple temporary accounts',
+		summary: 'You are required to [[Special:CreateAccount|create an account]] before continuing to edit'
+	},
 	'uw-ablock': {
 		autoblock: true,
 		expiry: '31 hours',
@@ -1433,6 +1442,7 @@ Twinkle.block.blockGroups = [
 			{ label: 'BLP violations', value: 'uw-bioblock' },
 			{ label: 'Copyright violations', value: 'uw-copyrightblock' },
 			{ label: 'Creating nonsense pages', value: 'uw-npblock' },
+			{ label: 'Disruptive editing using multiple temporary accounts', value: 'uw-tablock' },
 			{ label: 'Edit filter-related', value: 'uw-efblock' },
 			{ label: 'Edit warring', value: 'uw-ewblock' },
 			{ label: 'Generic block with talk page access revoked', value: 'uw-blocknotalk' },
