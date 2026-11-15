@@ -976,6 +976,8 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'uw-tablock': {
 		autoblock: false,
+		expiry: 'infinite',
+		forTempAccountsOnly: true,
 		nocreate: false,
 		pageParam: true,
 		reason: 'Disruptive editing using multiple temporary accounts',
