@@ -29,7 +29,177 @@ Twinkle.tag = function twinkletag() {
 			// away from the latest diff without causing the script to reload
 			!mw.config.get('wgDiffNewId');
 		Twinkle.addPortletLink(Twinkle.tag.callback, 'Tag', 'twinkle-tag', 'Add or remove article maintenance tags');
+		Twinkle.addPortletLink(Twinkle.tag.addReferences, 'Ref', 'twinkle-add-references',
+			'Add a References section with {{reflist}} in the position specified by MOS:ORDER');
 	}
+};
+
+/**
+ * Display the standard Twinkle dialog for adding a References section.
+ */
+Twinkle.tag.addReferences = function twinkletagAddReferences() {
+	const Window = new Morebits.SimpleWindow(630, 350);
+	Window.setScriptName('Twinkle');
+	Window.setTitle('Add references section');
+	Window.addFooterLink('Manual of Style', 'WP:MOSORDER');
+	Window.addFooterLink('Twinkle help', 'WP:TW/DOC#tag');
+	Window.addFooterLink('Give feedback', 'WT:TW');
+
+	const form = new Morebits.QuickForm(Twinkle.tag.addReferencesEvaluate);
+	form.append({
+		type: 'div',
+		label: 'This tool adds a References section containing {{reflist}} to the current article or draft.'
+	});
+	form.append({
+		type: 'div',
+		label: 'The section follows MOS:ORDER: after Works or publications, See also, and Notes (if separate), and before Duplicated citations, Further reading, and External links.'
+	});
+	form.append({
+		type: 'div',
+		label: 'An existing References or Notes and references section is reused. A second reference list is not added if one already exists.'
+	});
+	form.append({ type: 'submit', label: 'Add references', className: 'tw-tag-submit' });
+
+	const result = form.render();
+	Window.setContent(result);
+	Window.display();
+};
+
+/**
+ * Save the References section after the user submits the Twinkle dialog.
+ *
+ * @param {Event} e
+ */
+Twinkle.tag.addReferencesEvaluate = function twinkletagAddReferencesEvaluate(e) {
+	const form = e.target;
+	Morebits.SimpleWindow.setButtonsEnabled(false);
+	Morebits.Status.init(form);
+
+	Morebits.wiki.actionCompleted.redirect = Morebits.pageNameNorm;
+	Morebits.wiki.actionCompleted.notice = 'References section added; reloading the page in a few seconds';
+
+	const pageobj = new Morebits.wiki.Page(Morebits.pageNameNorm, 'Adding a References section');
+	pageobj.setChangeTags(Twinkle.changeTags);
+	pageobj.setCreateOption('nocreate');
+	pageobj.load((pageobj) => {
+		const result = Twinkle.tag.insertReferencesSection(pageobj.getPageText());
+		if (!result.changed) {
+			Morebits.Status.warn('Info', result.message);
+			Morebits.SimpleWindow.setButtonsEnabled(true);
+			return;
+		}
+
+		pageobj.setPageText(result.text);
+		pageobj.setEditSummary('Add a References section with {{reflist}}');
+		pageobj.save(null, () => Morebits.SimpleWindow.setButtonsEnabled(true));
+	}, () => Morebits.SimpleWindow.setButtonsEnabled(true));
+};
+
+/**
+ * Insert {{reflist}} into article wikitext at the MOS:ORDER position.
+ * Existing References/Notes and references sections are reused; existing reference lists are left alone.
+ *
+ * @param {string} pageText
+ * @return {{changed: boolean, text: string, message: string}}
+ */
+Twinkle.tag.insertReferencesSection = function twinkletagInsertReferencesSection(pageText) {
+	const lineEnding = pageText.includes('\r\n') ? '\r\n' : '\n';
+	// Ignore comments and literal-code tags when checking for an existing reference list or headings.
+	const textToScan = pageText.replace(/<!--[\s\S]*?-->|<(nowiki|pre|source|syntaxhighlight)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,
+		(match) => match.replace(/[^\n]/g, ' '));
+
+	// Do not create a second reference list if one is already present.
+	if (/\{\{\s*reflist\s*(?:\||\}\})/i.test(textToScan) || /<references\b/i.test(textToScan)) {
+		return {
+			changed: false,
+			text: pageText,
+			message: 'A reference list ({{reflist}} or <references />) is already present; no changes were made.'
+		};
+	}
+
+	// Only top-level (level-two) headings are relevant to MOS:ORDER.
+	const headings = [];
+	const headingRegex = /^(={2,6})[ \t]*(.*?)[ \t]*\1[ \t\r]*$/gm;
+	let match;
+	while ((match = headingRegex.exec(textToScan)) !== null) {
+		if (match[1].length !== 2) {
+			continue;
+		}
+		const title = match[2].replace(/_/g, ' ').trim();
+		headings.push({ title: title, index: match.index, end: headingRegex.lastIndex });
+	}
+
+	const isReferencesHeading = (title) => /^(?:references?|notes\s*(?:and|&)\s*references|references?\s*(?:and|&)\s*notes|works cited|citations|sources)$/i.test(title);
+	const isEarlierAppendix = (title) => /^(?:works?(?:\s+or\s+publications?)?|selected works|publications?|selected publications?|discography|filmography|selected filmography|videography|notes|footnotes?|endnotes?)$/i.test(title);
+	const isLaterAppendix = (title) => /^(?:further reading|external links)$/i.test(title);
+
+	// Add the list to an existing combined or separate References section rather than creating another heading.
+	const existingReferencesHeading = headings.find((heading) => isReferencesHeading(heading.title));
+	if (existingReferencesHeading) {
+		const lineBreak = textToScan.indexOf('\n', existingReferencesHeading.end);
+		const updatedText = lineBreak === -1 ?
+			pageText + lineEnding + '{{reflist}}' :
+			pageText.slice(0, lineBreak + 1) + '{{reflist}}' + lineEnding + pageText.slice(lineBreak + 1);
+		return {
+			changed: true,
+			text: updatedText,
+			message: 'Added {{reflist}} to the existing references section.'
+		};
+	}
+
+	// Find the beginning of trailing end matter (navigation templates, authority control, DEFAULTSORT, categories, etc.).
+	const findFooterStart = (text) => {
+		const lines = text.split('\n');
+		const footerLine = /^(?:\[\[Category:|\{\{\s*(?:defaultsort|authority control|taxonbar|portal bar|subject bar|coord(?: missing)?|geo ?box|geo group|[a-z0-9 _-]*stub|[a-z0-9 _-]*navbox|succession box|s-(?:start|end|bef|aft|new|inc|vac|non|ttl))\b|\{\{[^{}]+\}\}\s*$)/i;
+		let offset = text.length;
+		let footerStart = text.length;
+		for (let i = lines.length - 1; i >= 0; i--) {
+			const line = lines[i];
+			const lineStart = offset - line.length - (i > 0 ? 1 : 0);
+			const trimmed = line.trim();
+			if (!trimmed || footerLine.test(trimmed) || /^<!--[\s\S]*-->$/.test(trimmed)) {
+				footerStart = lineStart;
+				offset = lineStart;
+				continue;
+			}
+			break;
+		}
+		return footerStart;
+	};
+
+	// MOS:ORDER places Works/publications, See also, and Notes before references,
+	// followed by Duplicated citations, Further reading, and External links.
+	const laterPositions = headings
+		.filter((heading) => isLaterAppendix(heading.title))
+		.map((heading) => heading.index);
+	const duplicateCitations = /^[ \t]*\{\{\s*duplicated citations\b/im.exec(textToScan);
+	if (duplicateCitations) {
+		laterPositions.push(duplicateCitations.index);
+	}
+
+	let insertionPoint;
+	if (laterPositions.length) {
+		insertionPoint = Math.min.apply(null, laterPositions);
+	} else {
+		const earlierAppendices = headings.filter((heading) => isEarlierAppendix(heading.title) || /^see also$/i.test(heading.title));
+		if (earlierAppendices.length) {
+			const lastEarlierAppendix = earlierAppendices[earlierAppendices.length - 1];
+			const nextHeading = headings.find((heading) => heading.index > lastEarlierAppendix.index);
+			insertionPoint = nextHeading ? nextHeading.index : findFooterStart(textToScan);
+		} else {
+			insertionPoint = findFooterStart(textToScan);
+		}
+	}
+
+	const before = pageText.slice(0, insertionPoint).replace(/[\s\t]+$/, '');
+	const after = pageText.slice(insertionPoint).replace(/^[\s\t]+/, '');
+	const section = '== References ==' + lineEnding + '{{reflist}}';
+	const updatedText = before + (before ? lineEnding + lineEnding : '') + section + (after ? lineEnding + lineEnding + after : lineEnding);
+	return {
+		changed: true,
+		text: updatedText,
+		message: 'Added a References section at the MOS:ORDER position.'
+	};
 };
 
 Twinkle.tag.checkedTags = [];
