@@ -1080,7 +1080,7 @@ Twinkle.tag.redirectList = {
 			{ tag: 'R from television episode', description: 'redirect from a television episode title to a related work or lists of episodes', restriction: 'insideMainspaceOnly' },
 			{ tag: 'R from television program', description: 'redirect from a title of television program, television series or web series that is a subtopic of the redirect target' },
 			{ tag: 'R from upcoming film', description: 'redirect from a title that potentially could be expanded into a new article or other type of associated page such as a new template.' },
-			{ tag: 'R from work', description: 'redirect from a creative work a related topic such as the author/artist, publisher, or a subject related to the work' }
+			{ tag: 'R from work', description: 'redirect from a creative work to a related topic such as the author, artist, publisher, or a subject related to the work.' }
 		],
 		Fiction: [
 			{ tag: 'R from fictional character', description: 'redirect from a fictional character to a related fictional work or list of characters', restriction: 'insideMainspaceOnly' },
