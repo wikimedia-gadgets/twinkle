@@ -323,6 +323,11 @@ Twinkle.welcome.templates = {
 				description: 'for someone whose initial efforts seem to be made with a large language model',
 				syntax: '{{subst:welcome-LLM}} ~~~~'
 			},
+			'welcome-suboptimal': {
+				description: 'for someone whose good faith edits were reverted',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-suboptimal|$ARTICLE$|$USERNAME$}} ~~~~'
+			},
 			'welcome-translation': {
 				description: 'for someone whose initial efforts are unattributed translations from another language Wikipedia',
 				syntax: '{{subst:welcome-translation}}'
@@ -375,6 +380,11 @@ Twinkle.welcome.templates = {
 				description: 'for unregistered users who have performed test edits',
 				linkedArticle: true,
 				syntax: '{{subst:welcome-unregistered-test|$ARTICLE$|$USERNAME$}} ~~~~'
+			},
+			'welcome-temp-suboptimal': {
+				description: 'for unregistered users whose good faith edits were reverted',
+				linkedArticle: true,
+				syntax: '{{subst:welcome-temp-suboptimal|$ARTICLE$|$USERNAME$}} ~~~~'
 			},
 			'welcome-unregistered-unconstructive': {
 				description: 'for unregistered users who have vandalized or made unhelpful edits',
