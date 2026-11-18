@@ -1805,6 +1805,10 @@ Twinkle.speedy.callbacks = {
 Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values) {
 	let parameters = [];
 
+	const stripWikilinkMarkup = function(value) {
+    	return value.replace(/^\[\[:?(.+)\]\]$/, '$1');
+	};
+
 	$.each(values, (index, value) => {
 		const currentParams = [];
 		switch (value) {
@@ -1870,7 +1874,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.repost_xfd']) {
 					const deldisc = form['csd.repost_xfd'].value;
 					if (deldisc) {
-						currentParams.xfd = deldisc;
+						currentParams.xfd = stripWikilinkMarkup(deldisc);
 					}
 				}
 				break;
@@ -1901,7 +1905,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						parameters = null;
 						return false;
 					}
-					currentParams.page = movepage;
+					currentParams.page = stripWikilinkMarkup(movepage);
 					currentParams.reason = movereason;
 				}
 				break;
@@ -1910,7 +1914,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 				if (form['csd.xfd_fullvotepage']) {
 					const xfd = form['csd.xfd_fullvotepage'].value;
 					if (xfd) {
-						currentParams.fullvotepage = xfd;
+						currentParams.fullvotepage = stripWikilinkMarkup(xfd);
 					}
 				}
 				break;
@@ -1935,7 +1939,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						parameters = null;
 						return false;
 					}
-					currentParams.sourcepage = copypaste;
+					currentParams.sourcepage = stripWikilinkMarkup(copypaste);
 				}
 				break;
 
@@ -2066,7 +2070,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 						parameters = null;
 						return false;
 					}
-					currentParams.article = duptitle;
+					currentParams.article = stripWikilinkMarkup(duptitle);
 				}
 				break;
 
