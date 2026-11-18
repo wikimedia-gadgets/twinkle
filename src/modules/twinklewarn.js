@@ -1354,8 +1354,8 @@ Twinkle.warn.messages = {
 			summary: 'Warning: Making legal threats'
 		},
 		'uw-login': {
-			label: 'Editing while logged out',
-			summary: 'Warning: Editing while logged out'
+			label: 'Making controversial edits while logged out',
+			summary: 'Warning: Making controversial edits while logged out'
 		},
 		'uw-multipleTAs': {
 			label: 'Usage of multiple temporary accounts',
