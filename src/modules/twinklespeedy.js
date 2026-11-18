@@ -1806,7 +1806,7 @@ Twinkle.speedy.getParameters = function twinklespeedyGetParameters(form, values)
 	let parameters = [];
 
 	const stripWikilinkMarkup = function(value) {
-    	return value.replace(/^\[\[:?(.+)\]\]$/, '$1');
+			return value.replace(/^\[\[:?(.+)\]\]$/, '$1');
 	};
 
 	$.each(values, (index, value) => {
