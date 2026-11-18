@@ -932,7 +932,7 @@ Twinkle.warn.messages = {
 				level2: {
 					label: 'Added statement had source, but it did not verify content',
 					summary: 'Caution: Added statement had source, but it did not verify content'
-				},
+				}
 			},
 			'uw-gaming': {
 				level1: {
