@@ -129,7 +129,7 @@ Twinkle.defaultConfig = {
 	xfdWatchDiscussion: 'default',
 	xfdWatchList: 'no',
 	xfdWatchPage: '1 month',
-	xfdWatchUser: '1 month',
+	xfdWatchUser: 'no', // Topic subscriptions automatically watches
 	xfdWatchRelated: '1 month',
 	markXfdPagesAsPatrolled: true,
 
