@@ -928,6 +928,32 @@ Twinkle.warn.messages = {
 				level1: {
 					label: 'Added statement had source, but it did not verify content',
 					summary: 'General note: Added statement had source, but it did not verify content'
+				},
+				level2: {
+					label: 'Added statement had source, but it did not verify content',
+					summary: 'Caution: Added statement had source, but it did not verify content'
+				}
+			},
+			'uw-gaming': {
+				level1: {
+					label: 'Gaming the system',
+					summary: 'General note: Gaming the system'
+				},
+				level2: {
+					label: 'Gaming the system',
+					summary: 'Caution: Gaming the system'
+				},
+				level3: {
+					label: 'Gaming the system',
+					summary: 'Warning: Gaming the system'
+				},
+				level4: {
+					label: 'Gaming the system',
+					summary: 'Final warning: Gaming the system'
+				},
+				level4im: {
+					label: 'Gaming the system',
+					summary: 'Only warning: Gaming the system'
 				}
 			},
 			'uw-mislead': {
