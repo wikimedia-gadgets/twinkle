@@ -1097,6 +1097,10 @@ Twinkle.warn.messages = {
 			summary: 'Notice: Article blanked and redirected',
 			hideReason: true
 		},
+		'uw-brd': {
+			label: 'Not following the bold, revert, discuss cycle',
+			summary: 'Notice: Follow the bold, revert, discuss cycle'
+		},
 		'uw-circular': {
 			label: 'Using circular sources',
 			summary: 'Notice: Using circular sources'
