@@ -7,18 +7,29 @@
  *** twinkletalkback.js: Talkback module
  ****************************************
  * Mode of invocation:     Tab ("TB")
- * Active on:              Any page with relevant user name (userspace, contribs, etc.) except IP ranges
+ * Active on:              Pages with a relevant user name (except IP ranges), and WikiProject talk pages
  */
+const isWikiProjectTalkPage = function() {
+	const title = (mw.config.get('wgTitle') || '').replace(/_/g, ' ');
+
+	return mw.config.get('wgNamespaceNumber') === 5 &&
+		/^WikiProject(?:[\s:]|$)/i.test(title);
+};
 
 Twinkle.talkback = function() {
-	if (!mw.config.exists('wgRelevantUserName') || Morebits.ip.isRange(mw.config.get('wgRelevantUserName'))) {
+	const relevantUserName = mw.config.get('wgRelevantUserName');
+
+	if ((!relevantUserName || Morebits.ip.isRange(relevantUserName)) &&
+		!isWikiProjectTalkPage()) {
 		return;
 	}
+
 	Twinkle.addPortletLink(Twinkle.talkback.callback, 'TB', 'twinkle-talkback', 'Easy talkback');
 };
 
 Twinkle.talkback.callback = function() {
-	if (mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') && !confirm("Is it really so bad that you're talking back to yourself?")) {
+	const onWikiProjectTalkPage = isWikiProjectTalkPage();
+	if (!onWikiProjectTalkPage && mw.config.get('wgRelevantUserName') === mw.config.get('wgUserName') && !confirm("Is it really so bad that you're talking back to yourself?")) {
 		return;
 	}
 
@@ -31,28 +42,40 @@ Twinkle.talkback.callback = function() {
 
 	const form = new Morebits.QuickForm(Twinkle.talkback.evaluate);
 
-	form.append({ type: 'radio', name: 'tbtarget',
-		list: [
-			{
-				label: 'Talkback',
-				value: 'talkback',
-				checked: 'true'
-			},
-			{
-				label: 'Please see',
-				value: 'see'
-			},
-			{
-				label: 'Noticeboard notification',
-				value: 'notice'
-			},
-			{
-				label: "You've got mail",
-				value: 'mail'
-			}
-		],
-		event: Twinkle.talkback.changeTarget
-	});
+	if (onWikiProjectTalkPage) {
+		// The current page already determines the only valid notification type.
+		// Store it as a hidden QuickForm field instead of showing a redundant radio.
+		form.append({
+			type: 'hidden',
+			name: 'tbtarget',
+			value: 'wikiproject'
+		});
+	} else {
+		form.append({
+			type: 'radio',
+			name: 'tbtarget',
+			list: [
+				{
+					label: 'Talkback',
+					value: 'talkback',
+					checked: 'true'
+				},
+				{
+					label: 'Please see',
+					value: 'see'
+				},
+				{
+					label: 'Noticeboard notification',
+					value: 'notice'
+				},
+				{
+					label: "You've got mail",
+					value: 'mail'
+				}
+			],
+			event: Twinkle.talkback.changeTarget
+		});
+	}
 
 	form.append({
 		type: 'field',
@@ -76,28 +99,44 @@ Twinkle.talkback.callback = function() {
 	Window.display();
 	result.previewer = new Morebits.wiki.Preview($(result).find('div#twinkletalkback-previewbox').last()[0]);
 
-	// We must init the
-	const evt = document.createEvent('Event');
-	evt.initEvent('change', true, true);
-	result.tbtarget[0].dispatchEvent(evt);
+	// Initialize the work area. WikiProject pages use a hidden tbtarget field,
+	// so there is no radio-button change event to build their form automatically.
+	if (onWikiProjectTalkPage) {
+		Twinkle.talkback.renderTarget('wikiproject', result);
+	} else {
+		const evt = document.createEvent('Event');
+		evt.initEvent('change', true, true);
+		const selectedTarget = result.querySelector('input[name="tbtarget"]:checked') ||
+			result.querySelector('input[name="tbtarget"]');
+		if (selectedTarget) {
+			selectedTarget.dispatchEvent(evt);
+		}
+	}
 
-	// Check whether the user has opted out from talkback
-	const query = {
-		action: 'query',
-		prop: 'extlinks',
-		titles: 'User talk:' + mw.config.get('wgRelevantUserName'),
-		elquery: 'userjs.invalid/noTalkback',
-		ellimit: '1',
-		format: 'json'
-	};
-	const wpapi = new Morebits.wiki.Api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
-	wpapi.post();
+	// The opt-out preference applies to user-talk notifications, not WikiProject notices.
+	const relevantUserName = mw.config.get('wgRelevantUserName');
+	if (!onWikiProjectTalkPage && relevantUserName) {
+		const query = {
+			action: 'query',
+			prop: 'extlinks',
+			titles: 'User talk:' + relevantUserName,
+			elquery: 'userjs.invalid/noTalkback',
+			ellimit: '1',
+			format: 'json'
+		};
+		const wpapi = new Morebits.wiki.Api('Fetching talkback opt-out status', query, Twinkle.talkback.callback.optoutStatus);
+		wpapi.post();
+	}
 };
 
 Twinkle.talkback.optout = '';
 
 Twinkle.talkback.callback.optoutStatus = function(apiobj) {
-	const el = apiobj.getResponse().query.pages[0].extlinks;
+	const response = apiobj.getResponse();
+	const pages = response && response.query && response.query.pages;
+	const page = Array.isArray(pages) ? pages[0] : pages && Object.values(pages)[0];
+	const el = page && page.extlinks;
+	Twinkle.talkback.optout = '';
 	if (el && el.length) {
 		Twinkle.talkback.optout = mw.config.get('wgRelevantUserName') + ' prefers not to receive talkbacks';
 		const url = el[0].url;
@@ -110,21 +149,51 @@ Twinkle.talkback.callback.optoutStatus = function(apiobj) {
 let prev_page = '';
 let prev_section = '';
 let prev_message = '';
+let prev_wikiproject_page = '';
+let prev_wikiproject_section = '';
+let prev_wikiproject_message = '';
+let previousTarget = '';
 
 Twinkle.talkback.changeTarget = function(e) {
-	const value = e.target.values;
-	const root = e.target.form;
+	Twinkle.talkback.renderTarget(e.target.values, e.target.form);
+};
 
+// Build the dynamic fields for a notification type. This is also called
+// directly for WikiProject pages, where the notification type is fixed.
+Twinkle.talkback.renderTarget = function(value, root) {
 	const old_area = Morebits.QuickForm.getElements(root, 'work_area')[0];
+	if (!old_area) {
+		return;
+	}
 
-	if (root.section) {
-		prev_section = root.section.value;
-	}
-	if (root.message) {
-		prev_message = root.message.value;
-	}
-	if (root.page) {
-		prev_page = root.page.value;
+	// Preserve values for the form that is being replaced.
+	const getField = (name) => root.elements.namedItem(name);
+	if (previousTarget === 'wikiproject') {
+		const pageField = getField('page');
+		const sectionField = getField('section');
+		const messageField = getField('message');
+		if (pageField) {
+			prev_wikiproject_page = pageField.value;
+		}
+		if (sectionField) {
+			prev_wikiproject_section = sectionField.value;
+		}
+		if (messageField) {
+			prev_wikiproject_message = messageField.value;
+		}
+	} else {
+		const pageField = getField('page');
+		const sectionField = getField('section');
+		const messageField = getField('message');
+		if (pageField) {
+			prev_page = pageField.value;
+		}
+		if (sectionField) {
+			prev_section = sectionField.value;
+		}
+		if (messageField) {
+			prev_message = messageField.value;
+		}
 	}
 
 	let work_area = new Morebits.QuickForm.Element({
@@ -133,7 +202,9 @@ Twinkle.talkback.changeTarget = function(e) {
 		name: 'work_area'
 	});
 
-	root.previewer.closePreview();
+	if (root.previewer) {
+		root.previewer.closePreview();
+	}
 
 	switch (value) {
 		case 'talkback':
@@ -150,7 +221,7 @@ Twinkle.talkback.changeTarget = function(e) {
 				type: 'input',
 				name: 'page',
 				label: 'Page name of the discussion',
-				tooltip: "The page name where the discussion is being held. For example: 'User talk:Jimbo Wales' or Wikipedia talk:Twinkle'. Limited to all talks, Wikipedia-space, and Template-space.",
+				tooltip: "The page name where the discussion is being held. For example: 'User talk:Jimbo Wales' or 'Wikipedia talk:Twinkle'. Limited to talk pages, Wikipedia-space, and Template-space.",
 				value: prev_page || 'User talk:' + mw.config.get('wgUserName')
 			});
 			work_area.append({
@@ -194,6 +265,23 @@ Twinkle.talkback.changeTarget = function(e) {
 				value: prev_section
 			});
 			break;
+		case 'wikiproject':
+			work_area.append({
+				type: 'input',
+				name: 'page',
+				label: 'Page name of the discussion',
+				tooltip: "The page name where the discussion is being held. For example: 'User talk:Jimbo Wales' or 'Wikipedia talk:Twinkle'. Limited to talk pages, Wikipedia-space, and Template-space.",
+				value: prev_wikiproject_page,
+				required: true
+			});
+			work_area.append({
+				type: 'input',
+				name: 'section',
+				label: 'Linked section (optional)',
+				tooltip: "The section heading where the discussion is being held. For example: 'Merge proposal'.",
+				value: prev_wikiproject_section
+			});
+			break;
 		case 'mail':
 			work_area.append({
 				type: 'input',
@@ -205,15 +293,24 @@ Twinkle.talkback.changeTarget = function(e) {
 	}
 
 	if (value !== 'notice') {
-		work_area.append({ type: 'textarea', label: 'Additional message (optional):', name: 'message', tooltip: 'An additional message that you would like to leave below the talkback template. Your signature will be added to the end of the message if you leave one.' });
+		work_area.append({
+			type: 'textarea',
+			label: 'Additional message (optional):',
+			name: 'message',
+			tooltip: value === 'wikiproject' ?
+				'Optional additional context for the WikiProject invitation. The template automatically adds your signature; do not add one here.' :
+				'An additional message that you would like to leave below the talkback template. Your signature will be added to the end of the message if you leave one.'
+		});
 	}
 
 	work_area = work_area.render();
 	root.replaceChild(work_area, old_area);
-	if (root.message) {
-		root.message.value = prev_message;
+	const messageField = root.elements.namedItem('message');
+	if (messageField) {
+		messageField.value = value === 'wikiproject' ? prev_wikiproject_message : prev_message;
 	}
 
+	previousTarget = value;
 	$('#twinkle-talkback-optout-message').text(Twinkle.talkback.optout);
 };
 
@@ -310,15 +407,43 @@ Twinkle.talkback.noticeboards = {
 
 Twinkle.talkback.evaluate = function(e) {
 	const input = Morebits.QuickForm.getInputData(e.target);
+	const isWikiProjectNotification = input.tbtarget === 'wikiproject';
+	let destinationPageName;
 
-	const fullUserTalkPageName = new mw.Title(mw.config.get('wgRelevantUserName'), 3).toText();
-	const talkpage = new Morebits.wiki.Page(fullUserTalkPageName, 'Adding talkback');
+	if (isWikiProjectNotification) {
+		destinationPageName = Twinkle.talkback.callbacks.getCurrentWikiProjectTalkPage();
+		// Read the visible controls directly as well as QuickForm's collected data.
+		// This keeps the separate section field even if it is omitted from input data.
+		input.page = Twinkle.talkback.callbacks.getWikiProjectDiscussionLocation(e.target, input);
+		if (!destinationPageName) {
+			Morebits.Status.init(e.target);
+			new Morebits.Status('Invalid destination', 'WikiProject please see can only be posted from a WikiProject talk page.', 'error');
+			return;
+		}
+		if (!input.page) {
+			Morebits.Status.init(e.target);
+			new Morebits.Status('Invalid discussion page', 'Enter a valid discussion page title.', 'error');
+			return;
+		}
+	} else {
+		const relevantUserName = mw.config.get('wgRelevantUserName');
+		if (!relevantUserName || Morebits.ip.isRange(relevantUserName)) {
+			Morebits.Status.init(e.target);
+			new Morebits.Status('Invalid recipient', 'A user-talk recipient could not be determined for this notification.', 'error');
+			return;
+		}
+		destinationPageName = new mw.Title(relevantUserName, 3).toText();
+	}
+
+	const talkpage = new Morebits.wiki.Page(destinationPageName, 'Adding talkback');
 
 	Morebits.SimpleWindow.setButtonsEnabled(false);
 	Morebits.Status.init(e.target);
 
-	Morebits.wiki.actionCompleted.redirect = fullUserTalkPageName;
-	Morebits.wiki.actionCompleted.notice = 'Talkback complete; reloading talk page in a few seconds';
+	Morebits.wiki.actionCompleted.redirect = destinationPageName;
+	Morebits.wiki.actionCompleted.notice = isWikiProjectNotification ?
+		'WikiProject notification complete; reloading talk page in a few seconds' :
+		'Talkback complete; reloading talk page in a few seconds';
 
 	switch (input.tbtarget) {
 		case 'notice':
@@ -331,6 +456,9 @@ Twinkle.talkback.evaluate = function(e) {
 			input.page = Twinkle.talkback.callbacks.normalizeTalkbackPage(input.page);
 			talkpage.setEditSummary('Please check the discussion at [[:' + input.page +
 			(input.section ? '#' + input.section : '') + ']]');
+			break;
+		case 'wikiproject':
+			talkpage.setEditSummary('Invite to [[:' + input.page + '|discussion]]');
 			break;
 		default: // talkback
 			input.page = Twinkle.talkback.callbacks.normalizeTalkbackPage(input.page);
@@ -352,7 +480,7 @@ Twinkle.talkback.evaluate = function(e) {
 };
 
 Twinkle.talkback.callbacks = {
-	// Not used for notice or mail, default to user page
+	// Normalize the discussion page used by ordinary user-talk notifications.
 	normalizeTalkbackPage: function(page) {
 		page = page || mw.config.get('wgUserName');
 
@@ -369,15 +497,81 @@ Twinkle.talkback.callbacks = {
 		return page;
 	},
 
+	getCurrentWikiProjectTalkPage: function() {
+		if (!isWikiProjectTalkPage()) {
+			return null;
+		}
+		const title = mw.Title.newFromText(mw.config.get('wgPageName'));
+		return title && title.namespace === 5 ? title.getPrefixedText() : null;
+	},
+
+	getWikiProjectDiscussionLocation: function(form, input) {
+		// Read the live controls so page and section are combined identically
+		// for preview and submission. Fall back to collected data if needed.
+		const pageField = form && form.elements && form.elements.namedItem('page');
+		const sectionField = form && form.elements && form.elements.namedItem('section');
+		const page = pageField ? pageField.value : input.page;
+		const section = sectionField ? sectionField.value : input.section;
+		return Twinkle.talkback.callbacks.normalizeWikiProjectDiscussionPage(page, section);
+	},
+
+	normalizeWikiProjectDiscussionPage: function(page, section) {
+		if (typeof page !== 'string' || !page.trim()) {
+			return null;
+		}
+		page = page.trim();
+
+		// Split a section fragment from the page title before passing it to mw.Title.
+		// If both fields are filled, an explicit #fragment in the page field wins.
+		const fragmentIndex = page.indexOf('#');
+		const pageTitle = fragmentIndex === -1 ? page : page.slice(0, fragmentIndex).trim();
+		const inlineSection = fragmentIndex === -1 ? '' : page.slice(fragmentIndex + 1).trim();
+		if (!pageTitle) {
+			return null;
+		}
+
+		// The default namespace is Talk (1), so entering 'Cats' becomes 'Talk:Cats'.
+		let normal;
+		try {
+			normal = mw.Title.newFromText(pageTitle, 1);
+		} catch {
+			return null;
+		}
+		if (!normal || normal.namespace < 0 || !normal.getPrefixedText()) {
+			return null;
+		}
+
+		// Match the normal Talkback convention: bare article titles become talk
+		// pages, while explicit talk pages, Wikipedia pages and templates are kept.
+		if (normal.namespace !== 4 && normal.namespace !== 10 && normal.namespace % 2 === 0) {
+			normal = normal.getTalkPage();
+		}
+		if (!normal) {
+			return null;
+		}
+
+		const separateSection = typeof section === 'string' ? section.trim().replace(/^#+/, '') : '';
+		const sectionText = inlineSection || separateSection;
+		return normal.getPrefixedText() + (sectionText ? '#' + sectionText : '');
+	},
+
 	preview: function(form) {
 		const input = Morebits.QuickForm.getInputData(form);
+		let previewPage = 'User talk:' + mw.config.get('wgRelevantUserName'); // Use a talk-page context for user notifications
 
-		if (input.tbtarget === 'talkback' || input.tbtarget === 'see') {
+		if (input.tbtarget === 'wikiproject') {
+			input.page = Twinkle.talkback.callbacks.getWikiProjectDiscussionLocation(form, input);
+			if (!input.page) {
+				form.previewer.closePreview();
+				return;
+			}
+			previewPage = Twinkle.talkback.callbacks.getCurrentWikiProjectTalkPage() || mw.config.get('wgPageName');
+		} else if (input.tbtarget === 'talkback' || input.tbtarget === 'see') {
 			input.page = Twinkle.talkback.callbacks.normalizeTalkbackPage(input.page);
 		}
 
 		const noticetext = Twinkle.talkback.callbacks.getNoticeWikitext(input);
-		form.previewer.beginRender(noticetext, 'User talk:' + mw.config.get('wgRelevantUserName')); // Force wikitext/correct username
+		form.previewer.beginRender(noticetext, previewPage);
 	},
 
 	getNoticeWikitext: function(input) {
@@ -401,6 +595,10 @@ Twinkle.talkback.callbacks = {
 				var heading = Twinkle.getPref('talkbackHeading');
 				text = '{{subst:Please see|location=' + input.page + (input.section ? '#' + input.section : '') +
 				'|more=' + input.message + '|heading=' + heading + '}}';
+				break;
+			case 'wikiproject':
+				text = '{{subst:WikiProject please see|location=' + input.page +
+				(input.message ? '|more=' + input.message : '') + '}}';
 				break;
 			default: // talkback
 				text = '==' + Twinkle.getPref('talkbackHeading') + '==\n' +
